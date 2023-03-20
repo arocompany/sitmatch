@@ -19,13 +19,13 @@ public class SearchJobEntity {
     @Column(name = "TSR_UNO", nullable = false)
     private int tsrUno;
     @Basic
-    @Column(name = "TSR_IMG_PATH", nullable = false, length = 200)
+    @Column(name = "TSR_IMG_PATH", length = 200)
     private String tsrImgPath;
     @Basic
-    @Column(name = "TSR_IMG_NAME", nullable = false, length = 200)
+    @Column(name = "TSR_IMG_NAME", length = 200)
     private String tsrImgName;
     @Basic
-    @Column(name = "TSR_IMG_EXT", nullable = false, length = 10)
+    @Column(name = "TSR_IMG_EXT", length = 10)
     private String tsrImgExt;
     @Basic
     @Column(name = "FST_DML_DT", nullable = false)

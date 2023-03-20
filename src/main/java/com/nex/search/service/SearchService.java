@@ -9,7 +9,6 @@ import jakarta.persistence.EntityManager;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -113,7 +112,7 @@ public class SearchService {
     @Value("${server.url}")
     private String serverIp;
 
-    public List<SearchResultEntity> searchYandexByText(String url, SearchInfoEntity insertResult) throws Exception {
+    public List<SearchResultEntity> searchYandexByText(String url, String tsrSns, SearchInfoEntity insertResult) throws Exception {
         String jsonInString = "";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders header = new HttpHeaders();
@@ -131,7 +130,7 @@ public class SearchService {
                 SearchResultEntity sre = null;
                 for(Images_resultsByText images_result : yandexByTextResult.getImages_results()){
                     try {
-
+                        log.debug(" ### images_result.link ### : {} ", images_result.link);
                         String imageUrl = images_result.getOriginal();
                         sre = new SearchResultEntity();
                         sre.setTsiUno(insertResult.getTsiUno());
@@ -139,7 +138,31 @@ public class SearchService {
                         sre.setTsrDownloadUrl(imageUrl);
                         sre.setTsrTitle(images_result.title);
                         sre.setTsrSiteUrl(images_result.link);
-                        sre.setTsrSns("11");
+                        //sre.setTsrSns("11");
+
+                        //2023-03-20
+                        //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
+
+                        //Facebook 검색이고, URL 에 facebook.com 이 포함 되어 있을 경우
+                        if ("17".equals(tsrSns) && images_result.link.contains(Consts.FACEBOOK_URL)) {
+                            sre.setTsrSns("17");
+                        }
+                        //Instagram 검색이고, URL 에 instagram.com 이 포함 되어 있을 경우
+                        else if ("15".equals(tsrSns) && images_result.link.contains(Consts.INSTAGRAM_URL)) {
+                            sre.setTsrSns("15");
+                        }
+                        //그 외는 구글
+                        else {
+                            sre.setTsrSns("11");
+                        }
+
+                        
+                        //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
+                        if (!tsrSns.equals(sre.getTsrSns())) {
+                            continue;
+                        }
+
+
                         Resource resource = resourceLoader.getResource(imageUrl);
 
                         if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("")) {
@@ -257,7 +280,31 @@ public class SearchService {
                         sre.setTsrDownloadUrl(imageUrl);
                         sre.setTsrTitle(images_result.title);
                         sre.setTsrSiteUrl(images_result.link);
-                        sre.setTsrSns("11");
+                        //sre.setTsrSns("11");
+
+                        //2023-03-20
+                        //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
+
+                        //Facebook 검색이고, URL 에 facebook.com 이 포함 되어 있을 경우
+                        if (insertResult.getTsiFacebook() == 1 && images_result.link.contains(Consts.FACEBOOK_URL)) {
+                            sre.setTsrSns("17");
+                        }
+                        //Instagram 검색이고, URL 에 instagram.com 이 포함 되어 있을 경우
+                        else if (insertResult.getTsiInstagram() == 1 && images_result.link.contains(Consts.INSTAGRAM_URL)) {
+                            sre.setTsrSns("15");
+                        }
+                        //그 외는 구글
+                        else {
+                            sre.setTsrSns("11");
+                        }
+
+
+                        //구글 검색이 아닌데 SNS 아이콘이 구글 인 경우 스킵
+                        if (insertResult.getTsiGoogle() == 0 && "11".equals(sre.getTsrSns())) {
+                            continue;
+                        }
+
+
                         Resource resource = resourceLoader.getResource(imageUrl);
 
                         if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("")) {

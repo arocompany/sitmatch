@@ -149,60 +149,95 @@ public class SearchController {
         }
         insertResult = searchService.saveSearchInfo(searchInfoEntity);
 
+
         if(tsiGoogle == 1){
+            // Google 검색기능 구현
+            String tsrSns = "11";
+
             // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
-            switch (tsiType) {// 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
-                case "11":// 키워드만 검색한 경우
-                    // Yandex 검색
-                    log.info("키워드 검색");
-                    searchYandexByText(insertResult);
-                    // Google Custom Search 검색
-//                    searchGoogleCustomByText(insertResult);
-                    break;
-                case "13"://키워드 + 이미지 검색인 경우
-                    // Yandex 검색
-                    log.info("키워드/이미지 검색");
-                    searchYandexByText(insertResult);
-                    // Google Custom Search 검색
-//                    searchGoogleCustomByText(insertResult);
-                    break;
-                case "15"://키워드 + 영상 검색인 경우
-                    // 영상처리
-                    // Yandex 검색
-                    log.info("키워드/영상 검색");
-                    searchYandexByText(insertResult);
-                    break;
-                case "17"://이미지만 검색인 경우
-                    // Yandex 검색
-                    log.info("이미지 검색");
-                    searchYandexByImage(insertResult);
-                    break;
-                case "19"://영상만 검색인 경우
-                    // Yandex 검색
-                    log.info("영상 검색");
-                    searchService.searchYandexByVideo(insertResult, fileLocation3, folder);
-                    break;
-            }
-        }
-        if(tsiFacebook == 1){
-            // Facebook 검색기능 구현
+            searchGoogle(tsiType, insertResult, folder, tsrSns);
         }
 
+        //2023-03-20
+        //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
+        if(tsiFacebook == 1){
+            // Facebook 검색기능 구현
+            String tsrSns = "17";
+
+            // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
+            searchGoogle(tsiType, insertResult, folder, tsrSns);
+        }
+
+        //2023-03-20
+        //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
         if(tsiInstagram == 1){
             // Instagram 검색기능 구현
+            String tsrSns = "15";
+
+            // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
+            searchGoogle(tsiType, insertResult, folder, tsrSns);
         }
 
         if(tsiTwitter == 1){
             // Twitter 검색기능 구현
         }
 
+        //2023-03-20
+        //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
+
         return modelAndView;
     }
 
+    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns) {
+        // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
+        switch (tsiType) {// 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
+            case "11":// 키워드만 검색한 경우
+                // Yandex 검색
+                log.info("키워드 검색");
+                searchYandexByText(tsrSns, insertResult);
+                // Google Custom Search 검색
+//                    searchGoogleCustomByText(insertResult);
+                break;
+            case "13"://키워드 + 이미지 검색인 경우
+                // Yandex 검색
+                log.info("키워드/이미지 검색");
+                searchYandexByText(tsrSns, insertResult);
+                // Google Custom Search 검색
+//                    searchGoogleCustomByText(insertResult);
+                break;
+            case "15"://키워드 + 영상 검색인 경우
+                // 영상처리
+                // Yandex 검색
+                log.info("키워드/영상 검색");
+                searchYandexByText(tsrSns, insertResult);
+                break;
+            case "17"://이미지만 검색인 경우
+                // Yandex 검색
+                log.info("이미지 검색");
+                searchYandexByImage(insertResult);
+                break;
+            case "19"://영상만 검색인 경우
+                // Yandex 검색
+                log.info("영상 검색");
+                searchService.searchYandexByVideo(insertResult, fileLocation3, folder);
+                break;
+        }
+    }
+
     // yandex 텍스트 검색 및 후처리
-    public void searchYandexByText(SearchInfoEntity insertResult){
+    public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult){
         int index = 0;
         String tsiKeyword = insertResult.getTsiKeyword();
+        
+        //인스타
+        if ("15".equals(tsrSns)) {
+            tsiKeyword = "인스타그램 " + tsiKeyword;
+        }
+        //페북
+        else if ("17".equals(tsrSns)) {
+            tsiKeyword = "페이스북 " + tsiKeyword;
+        }
+        
         do {
             // yandex search url
             String url = textYandexUrl
@@ -219,7 +254,7 @@ public class SearchController {
                     .supplyAsync(() -> {
                         try {
                             // text기반 yandex 검색 및 결과 저장.(이미지)
-                            return searchService.searchYandexByText(url, insertResult);
+                            return searchService.searchYandexByText(url, tsrSns, insertResult);
                         } catch (Exception e) {
                             log.debug(e.getMessage());
                             return null;
