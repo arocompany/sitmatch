@@ -214,12 +214,12 @@ public class SearchController {
             case "17"://이미지만 검색인 경우
                 // Yandex 검색
                 log.info("이미지 검색");
-                searchYandexByImage(insertResult);
+                searchYandexByImage(tsrSns, insertResult);
                 break;
             case "19"://영상만 검색인 경우
                 // Yandex 검색
                 log.info("영상 검색");
-                searchService.searchYandexByVideo(insertResult, fileLocation3, folder);
+                searchService.searchYandexByVideo(tsrSns, insertResult, fileLocation3, folder);
                 break;
         }
     }
@@ -281,7 +281,7 @@ public class SearchController {
     }
 
     // Yandex 이미지 검색 후처리
-    public void searchYandexByImage(SearchInfoEntity insertResult){
+    public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult){
 
         String url = textYandexUrl
                 + "?GL=" + textYandexGl
@@ -294,7 +294,7 @@ public class SearchController {
                 .supplyAsync(() -> {
                     try {
                         // text기반 yandex 검색 및 결과 저장.(이미지)
-                        return searchService.searchYandexByImage(url, insertResult);
+                        return searchService.searchYandexByImage(url, tsrSns, insertResult);
                     } catch (Exception e) {
                         log.debug(e.getMessage());
                         return null;

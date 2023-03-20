@@ -254,7 +254,7 @@ public class SearchService {
         return "저장 완료";
     }
 
-    public List<SearchResultEntity> searchYandexByImage(String url, SearchInfoEntity insertResult) throws Exception {
+    public List<SearchResultEntity> searchYandexByImage(String url, String tsrSns, SearchInfoEntity insertResult) throws Exception {
         String jsonInString = "";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders header = new HttpHeaders();
@@ -286,11 +286,11 @@ public class SearchService {
                         //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
 
                         //Facebook 검색이고, URL 에 facebook.com 이 포함 되어 있을 경우
-                        if (insertResult.getTsiFacebook() == 1 && images_result.link.contains(Consts.FACEBOOK_URL)) {
+                        if ("17".equals(tsrSns) && images_result.link.contains(Consts.FACEBOOK_URL)) {
                             sre.setTsrSns("17");
                         }
                         //Instagram 검색이고, URL 에 instagram.com 이 포함 되어 있을 경우
-                        else if (insertResult.getTsiInstagram() == 1 && images_result.link.contains(Consts.INSTAGRAM_URL)) {
+                        else if ("15".equals(tsrSns) && images_result.link.contains(Consts.INSTAGRAM_URL)) {
                             sre.setTsrSns("15");
                         }
                         //그 외는 구글
@@ -299,8 +299,8 @@ public class SearchService {
                         }
 
 
-                        //구글 검색이 아닌데 SNS 아이콘이 구글 인 경우 스킵
-                        if (insertResult.getTsiGoogle() == 0 && "11".equals(sre.getTsrSns())) {
+                        //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
+                        if (!tsrSns.equals(sre.getTsrSns())) {
                             continue;
                         }
 
@@ -426,7 +426,7 @@ public class SearchService {
 
     // Yandex 영상 검색 후처리
     @Async
-    public void searchYandexByVideo(SearchInfoEntity insertResult, String folder, String location3){
+    public void searchYandexByVideo(String tsrSns, SearchInfoEntity insertResult, String folder, String location3){
         try {
             List<String> files = processVideo(insertResult);
             for (int i = 0; i < files.size(); i++){
@@ -447,7 +447,7 @@ public class SearchService {
                         .supplyAsync(() -> {
                             try {
                                 // text기반 yandex 검색 및 결과 저장.(이미지)
-                                return searchYandexByImage(url, insertResult);
+                                return searchYandexByImage(url, tsrSns, insertResult);
                             } catch (Exception e) {
                                 log.debug(e.getMessage());
                                 return null;
@@ -687,10 +687,6 @@ public class SearchService {
         }
 
         return progressPercentMap;
-    }
-
-    public List<SearchInfoEntity> findBytsiUnoList(List<Integer> tsiUnoList) {
-        return searchInfoRepository.findAllById(tsiUnoList);
     }
 
 }

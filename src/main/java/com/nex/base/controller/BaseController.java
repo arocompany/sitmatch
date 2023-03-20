@@ -194,12 +194,6 @@ public class BaseController {
             modelAndView.addObject("tsiUno", tsiUno.get());
             modelAndView.addObject("imgSrc", searchService.getSearchInfoImgUrl(tsiUno.get()));
             defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatusAll, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4);
-
-            //tsiUno
-            List<Integer> tsiUnoList = defaultQueryDtoInterface.stream().map(DefaultQueryDtoInterface::getTsiUno).collect(Collectors.toList());
-
-            List<SearchInfoEntity> bytsiUnoList = searchService.findBytsiUnoList(tsiUnoList);
-            //bytsiUnoList
         }
         tsiKeyword.ifPresent(s -> modelAndView.addObject("tsiKeyword", s));
         modelAndView.addObject("sessionInfo", sessionInfoDto);
