@@ -1,0 +1,204 @@
+@charset "utf-8";
+@import "mixin";
+%flex {
+  @include flex(space-between);
+}
+#manage {
+  .manage-contents {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-top: 60px;
+    margin-bottom: 30px;
+    .manager-add {
+      width: 80px;
+      height: 40px;
+      color: $blue;
+    }
+    form{
+      display: flex;
+    }
+    button:active {
+      @extend %btn-on;
+      font-weight: 500;
+    }
+    .selection{
+      width: 150px;
+      margin-right: 20px;
+      button{
+        padding-left: 10px;
+        background-size: 16px;
+      }
+      .option li{
+        font-size: 1rem;
+      }
+    }
+  }
+  .manage-search {
+    flex: 1;
+  }
+  .manage-list {
+    text-align: center;
+    padding: 20px 30px;
+    .num, .position {
+      flex: 4
+    }
+    .id {
+      flex: 10;
+    }
+    .name {
+      flex: 8
+    }
+    .belong {
+      flex: 7
+    }
+    .email {
+      flex: 17;
+    }
+    .phone, .enroll, .final {
+      flex: 11
+    }
+    .distinc {
+      flex: 13;
+    }
+    h2 {
+      padding: 0 20px;
+      height: 50px;
+      @extend %flex;
+      font-size: 0.875rem;
+      color: $blue;
+      font-weight: 700;
+    }
+    .list-con {
+      padding: 20px;
+      p {
+        @extend %flex;
+        font-size: .9375rem;
+        height: 52px;
+        border-bottom: 1px solid $light;
+        &:last-of-type {
+          border-bottom: none;
+        }
+      }
+    }
+    .distinc {
+      button {
+        padding: 6px 13px;
+        font-size: .875rem;
+        &.detail {
+          color: $orange;
+          margin-right: 10px;
+        }
+      }
+      button:active {
+        @extend %btn-on;
+        font-weight: 500;
+      }
+    }
+  }
+}
+// 상담사 추가//디테일 공통
+.counselor {
+  @include modal(3px);
+  margin: 100px auto 0;
+  width: 480px;
+  height: 77.77777777777778vh;
+  overflow-y: scroll;
+  padding: 27px 13px 30px 27px;
+  &::-webkit-scrollbar {
+    width: 14px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: $blue;
+    border-radius: 10px;
+    border: 6px solid $main-bg;
+  }
+  .title {
+    color: $blue;
+    margin-top: 0;
+  }
+  form {
+    text-align: left;
+    display: grid;
+    grid-template: repeat(9, auto) / 1fr 1fr;
+    gap:16px 20px ;
+    > div {
+      grid-column: 1/3;
+      p {
+        padding-left: 10px;
+        font-size: 14px;
+      }
+      &:nth-of-type(6) {
+        @include flex() {
+          flex-wrap: wrap;
+        }
+        p {
+          width: 100%;
+        }
+        input,.selection{
+          width: calc(50% - 15px);
+        }
+        .selection{
+          height: 54px;
+        }
+        span {
+          width: 30px;
+          text-align: center;
+        }
+      }
+      &:nth-of-type(7) {
+        grid-column: 1/2;
+      }
+      &:nth-of-type(8) {
+        grid-column: 2/3;
+      }
+      &:nth-of-type(10) {
+        text-align: center;
+      }
+    }
+
+    input{
+      height: 54px;
+      padding: 0 20px;
+    }
+    textarea {
+      height: 150px;
+      padding: 10px 20px;
+    }
+    input, textarea {
+      width: 100%;
+      margin-top: 4px;
+    }
+    .counselor-btn button{
+      height: 50px;
+      width: 140px;
+      color: $middle;
+      &:first-of-type{
+        color: $blue;
+        margin-right: 20px;
+      }
+      &:active{
+        @extend %btn-on;
+        font-weight: 500;
+      }
+    }
+  }
+}
+.counselor-detail{
+  form{
+    grid-template: repeat(10, auto) / 1fr 1fr;
+    >div{
+      &:nth-of-type(10){
+        grid-column: 1/2;
+        text-align: left;
+      }
+      &:nth-of-type(11){
+        grid-column: 2/3;
+      }
+      &:nth-of-type(12){
+        text-align: center;
+      }
+    }
+  }
+}
+

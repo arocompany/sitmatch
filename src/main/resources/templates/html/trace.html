@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>디지털 성범죄</title>
+  <link rel="stylesheet" href="/css/common.min.css" />
+  <link rel="stylesheet" href="/css/trace.min.css" />
+  <link rel="stylesheet" href="/css/detail.min.css" />
+  <script src="/js/footer.js"></script>
+  <script src="/js/style.js"></script>
+  <script src="/js/function.js"></script>
+</head>
+
+<body>
+<article class="trace-wrap wrapper">
+  <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
+  <seciton class="layout" id="trace">
+    <h1 class="title">추적 대상 모니터링</h1>
+    <div class="trace-contents">
+      <form name="trace-list" class="search-box" action="/trace" id="searchForm">
+        <input type="hidden" name="page" id="searchPage">
+        <input type="hidden" name="listType" id="listType">
+        <div class="selection">
+          <button type="button">전체</button>
+          <input type="hidden" class="bor10 M-box-in" name="trkStatCd">
+          <ul class="option">
+            <li>전체</li>
+            <li>삭제 요청 중</li>
+            <li>관리 중</li>
+          </ul>
+        </div>
+        <input type="text" name="keyword" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${keyword}">
+      </form>
+      <p class="total-num">총 <span th:text="${traceListCount}">123</span>건</p>
+      <div class="view-type">
+        <button type="button" class="list-btn btn-off">목록형</button>
+        <button type="button" class="img-btn btn-off">이미지형</button>
+      </div>
+    </div>
+    <div class="trace-list list-content ">
+      <section class="list M-box-up bor10" th:each="list:${traceList}">
+        <div class="img-box">
+          <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
+          <div class="img"><img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="" loading="lazy" ></div>
+          <th:block th:switch="${list.getTsrSns()}">
+            <img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">
+            <img th:case="13" src="/img/common/sns/twitter-round.png" alt="" class="sns">
+            <img th:case="15" src="/img/common/sns/insta-round.png" alt="" class="sns">
+            <img th:case="17" src="/img/common/sns/face.png" alt="" class="sns">
+          </th:block>
+        </div>
+        <th:block th:switch="${list.getTrkStatCd()}">
+          <h2 class="unity" th:case="10"><strong class="state" style="color: #194894">관리 중</strong> <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span></th:block></h2>
+          <h2 class="unity" th:case="20"><strong class="state">삭제 요청 중</strong> <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span></th:block></h2>
+          <h2 class="unity" th:case="30"><strong class="state">삭제 완료</strong> <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span></th:block></h2>
+        </th:block>
+        <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url"><p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p></a>
+        <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
+        <p class="" th:text="'상담사 : '+${list.getTuUserId()}">상담사 : tester001</p>
+        <p class="detail"><span class="detail-info"></span> <span class="detail-time" th:text="${#dates.format(list.getTsrFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}">추가일이 들어갑니다</span></p>
+        <button class="del del-btn btn-off" th:value="${list.getTsrUno()}">삭제</button>
+      </section>
+      <section style="text-align: center;" class="" th:if="${traceListCount == 0}">조회 결과가 없습니다.</section>
+    </div>
+  </seciton>
+  <nav>
+    <ul id="pagination" th:with="start=${(number / maxPage * maxPage) + 1}, end=(${(totalPages == 0) ? 1 : ((start + maxPage - 1) < totalPages ? (start + maxPage - 1) : totalPages)})">
+      <li class="page-num" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${1} + ');'" class="btn-off" style="width:30px;">처음</a></li>
+      <li class="page-prev" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
+      <li class="page-num" th:each="pageNum : ${#numbers.sequence(start, end)}"><a th:onclick="'javascript:searchEvent('+ ${pageNum} + ');'" class="btn-off" th:classappend="${number + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a></li>
+      <li class="page-next" th:if="${end < totalPages}"><a th:onclick="'javascript:searchEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
+      <li class="page-num" th:if="${end < totalPages}"><a th:onclick="'javascript:searchEvent('+ ${totalPages} + ');'" class="btn-off" style="width:30px;">마지막</a></li>
+    </ul>
+  </nav>
+  <script>
+    footer();
+  </script>
+</article>
+<script>
+// 페이징하고 검색이력
+const searchForm = document.querySelector("#searchForm");
+const searchPage = document.querySelector("#searchPage");
+const searchEvent = (pageNum) => {
+  searchPage.value = pageNum;
+  searchForm.submit();
+}
+
+// 모니터링 이력 삭제
+const delBtn = document.querySelectorAll(".del");
+delBtn.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    if((confirm("삭제하시겠습니까?"))) {
+      //XMLHttpRequest 객체 생성
+      const xhr = new XMLHttpRequest();
+      //요청을 보낼 방식, 주소, 비동기여부 설정
+      xhr.open('GET', '/search/deleteMornitoringInfo?tsrUno='+btn.value, true);
+      //요청 전송
+      xhr.send(null);
+      //통신후 작업
+      xhr.onload = () => {
+        if (xhr.status === 200) {  //통신 성공
+          console.log("통신 성공");
+          window.location.href="/trace"
+        } else {  //통신 실패
+          console.log("통신 실패");
+        }
+      }
+    }
+  })
+});
+
+// 셀렉트 구현
+const select = document.querySelector(".selection");
+const option = document.querySelectorAll(".selection .option li");
+const tType = document.querySelector('input[name=trkStatCd]');
+select.addEventListener("click", (e) => {
+  select.classList.toggle('active');
+  option.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      select.children[0].innerHTML = e.target.innerText;
+      tType.value = e.target.innerText;
+    })
+  });
+});
+// 대상 디테일
+const imgBtn = document.querySelectorAll(".img-box");
+const modal = document.querySelector("#modal");
+imgBtn.forEach((btn) => {
+  const tsrUno = btn.querySelector("#tsrUno");
+  btn.addEventListener('click', () => {
+    //XMLHttpRequest 객체 생성
+    var xhr = new XMLHttpRequest();
+    //요청을 보낼 방식, 주소, 비동기여부 설정
+    xhr.open('GET', 'trace-detail?tsrUno='+tsrUno.value, true);
+    //요청 전송
+    xhr.send(null);
+    //통신후 작업
+    xhr.onload = () => {
+      //통신 성공
+      if (xhr.status == 200) {
+        document.body.style.overflow = 'hidden';
+        modal.style.display = 'block';
+        modal.innerHTML = xhr.response;
+        const esc = document.querySelector(".trace-detail .esc-btn");
+        esc.onclick = () => {
+          modal.style.display = 'none';
+          document.body.style.overflow = 'unset';
+        }
+        const _CANVASBOX = document.querySelectorAll(`.preview-img `);
+        //비디오 태그의 메타데이터가 들어오면
+        _CANVASBOX.forEach(img => {
+          let _VIDEO = img.querySelector('video');
+          _VIDEO.addEventListener('loadedmetadata', function (e) {
+            img.children[0].width = _VIDEO.videoWidth;
+            img.children[0].height = _VIDEO.videoHeight;
+            const time = Math.random() * _VIDEO.duration;
+            _VIDEO.currentTime = time; //비디오의 영상길이 중 랜덤 타임을 뽑음
+            img.children[1].getContext("2d").drawImage(_VIDEO, 0, 0, _VIDEO.videoWidth, _VIDEO.videoHeight);
+            // 비디오 플레이
+            const video = document.querySelectorAll(".img-box .video");
+            if (video) {
+              video.forEach(vid => {
+                const btn = vid.querySelector('.play-btn');
+                btn.onclick = () => {
+                  vid.querySelector("video").play();
+                  vid.querySelector("video").controls = true;
+                  vid.querySelector(".play-wrap").style.display = 'none';
+                }
+              })
+            }
+          })
+        })
+      } else {
+        //통신 실패
+        console.log("통신 실패");
+      }
+    }
+  })
+});
+// 요청값에 따른 색상 변화 (0317추가)
+// const listTit = list.querySelectorAll('.unity .state');
+// console.log(listTit)
+// listTit.forEach(e => {
+//   if (e.innerText === '관리 중') {
+//     e.style.color='#194894';
+//   }
+// })
+view_type();
+</script>
+</body>
+
+</html>

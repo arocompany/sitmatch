@@ -1,0 +1,224 @@
+@charset "utf-8";
+@import "mixin";
+.notice-wrap {
+  label {
+    cursor: pointer;
+  }
+  .unity-setting, form, .notice-contents, h2 {
+    @include flex()
+  }
+  .selection {
+    width: 90px;
+    height: 40px;
+    margin-left: 20px;
+    button {
+      background-size: 16px;
+      background-position: 90% center;
+    }
+  }
+  .notice-contents {
+    justify-content: space-between;
+    font-size: .875rem;
+    margin-top: 60px;
+    margin-bottom: 20px;
+    .auto-trace {
+      height: 40px;
+      padding: 0 30px;
+      background-color: $modal-bg;
+      color: #fff;
+      &:active {
+        @extend %dark-on;
+      }
+    }
+  }
+  .view-type {
+    label {
+      margin-left: 20px;
+      &:first-of-type {
+        margin-left: 60px;
+      }
+    }
+  }
+  h2 {
+    padding: 0 20px 8px;
+    justify-content: start;
+    text-align: center;
+    > span {
+      font-size: .9375rem;
+      color: $blue;
+      font-weight: 700;
+    }
+    .img {
+      width: 7.04%;
+    }
+    .social {
+      width: 6.88%;
+    }
+  }
+  .time {
+    width: 8%;
+    text-align: center;
+  }
+  .type {
+    width: 9.6%;
+  }
+  .unity {
+    width: 7.2%;
+    text-align: center;
+  }
+  .cont {
+    width: 24%;
+  }
+  .url {
+    flex: 1;
+  }
+  .notice-list {
+    li {
+      @include flex();
+      padding: 15px 20px;
+      margin-bottom: 10px;
+      .img {
+        margin: 0 20px;
+        width: 48px;
+        height: 48px;
+        @include border(4px);
+        overflow: hidden;
+      }
+      .type {
+        span {
+          display: block;
+          text-align: center;
+        }
+      }
+      .social {
+        width: 28px;
+        height: 28px;
+        margin: 0 30px;
+      }
+      .cont {
+        display: flex;
+        .con {
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+      }
+      .trace-add {
+        margin-left: 20px;
+      }
+    }
+  }
+}
+.keyword {
+  @include modal(3px);
+  position: relative;
+  margin: 0 auto;
+  width: 680px;
+  max-height: 77.77777777777778vh;
+  padding: 27px 30px 30px 27px;
+  &::-webkit-scrollbar {
+    width: 14px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: $blue;
+    border-radius: 10px;
+    border: 6px solid $main-bg;
+  }
+  .title {
+    color: $blue;
+    margin-top: 0;
+  }
+  form {
+    margin: 30px 0 20px;
+    input, button {
+      height: 40px;
+      padding: 0 20px;
+    }
+    button {
+      margin-left: 10px;
+      color: #fff;
+      background-color: rgba($color: $modal-bg, $alpha: 0.4);
+      &:active {
+        @extend %dark-on;
+        font-weight: 500;
+      }
+    }
+  }
+  .keyword-box {
+    padding: 10px;
+    margin-bottom: 40px;
+    > div {
+      @include flex(flex-start, flex-start) {
+        align-content: start;
+      }
+      ;
+      overflow-y: scroll;
+      flex-wrap: wrap;
+      color: $black;
+      height: 10vh;
+    }
+    .word-list {
+      @include border(4px);
+      display: flex;
+      align-items: center;
+      margin: 5px;
+      font-size: .875rem;
+      padding: 4px 4px 4px 8px;
+      background-color: rgba($color: $modal-bg, $alpha: 0.1);
+      span {
+        cursor: pointer;
+        font-size: 0;
+        width: 14px;
+        height: 14px;
+        background: url(../img/common/delet.png) no-repeat center / 10px;
+        margin-left: 4px;
+      }
+    }
+  }
+  .neologism-title {
+    color: $orange;
+  }
+  .neologism {
+    margin-top: 15px;
+    padding: 10px 10px 20px;
+    .tit, .list-con p {
+      display: flex;
+      text-align: center;
+    }
+    .tit {
+      color: $blue;
+      font-weight: 700;
+      padding: 0 14px;
+      font-size: .9375rem;
+      margin-bottom: 4px;
+    }
+    .list-con {
+      > div {
+        height: 208px;
+        overflow-y: scroll;
+      }
+      padding: 14px;
+      p {
+        @include border(4px);
+        padding: 6px 0;
+        &:nth-of-type(2n-1) {
+          background-color: rgba($color: $blue, $alpha: 0.04);
+        }
+      }
+    }
+    .num {
+      flex: 1
+    }
+    .word {
+      flex: 5
+    }
+    .count {
+      flex: 3
+    }
+  }
+  .esc-btn {
+    position: absolute;
+    right: 10px;
+    top: 7px;
+  }
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>디지털 성범죄</title>
+  <link rel="stylesheet" href="/css/common.min.css" />
+  <link rel="stylesheet" href="/css/login.min.css" />
+  <script src="/js/function.js"></script>
+  <script src="/js/footer.js"></script>
+</head>
+<script>
+  // 익스 접속시 엣지로 자동 열기
+  if (window.navigator.userAgent.match(/MSIE|Internet Explorer|Trident/i)) {
+    window.location = "microsoft-edge:" + window.location.href;
+}
+</script>
+<body>
+  <article class="login-wrap wrapper">
+    <section id="login">
+      <h1><img src="/img/common/logo.png" alt="서울기술 연구원 로고"></h1>
+<!--      <form class="bor10 L-box-up" name="login_form" method="post" action="/user/login" onsubmit="login();">-->
+      <form class="bor10 L-box-up" name="login_form" method="post" action="/user/login">
+        <input type="text" placeholder="아이디를 입력하세요" class="M-box-in bor10" name="loginId">
+        <input type="password" placeholder="비밀번호를 입력하세요" class="M-box-in bor10" name="loginPw">
+        <button class="bor10 login-btn" type="submit" disabled>로그인</button>
+      </form>
+    </section>
+    <script>footer();</script>
+  </article>
+
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    const errMsg = [[${errorMessage}]];
+    console.log(errMsg);
+    window.onload = function() {
+      if(errMsg !== null && errMsg !== undefined) {
+        alert(errMsg);
+      }
+    }
+
+    const loginId = document.login_form.loginId;
+    const loginPw = document.login_form.loginPw;
+
+    //  폼 입력시 버튼 활성화
+    const btn = document.querySelector('.login-btn');
+    window.addEventListener("keyup", () => {
+      if (loginId.value.trim().length > 0 && loginPw.value.trim().length > 0) {
+        btn.disabled = false;
+        btn.classList.add('active');
+        btn.setAttribute('type','submit');
+      } else {
+        btn.disabled = true;
+        btn.classList.remove('active');
+      }
+    })
+    /*]]>*/
+  </script>
+</body>
+
+</html>

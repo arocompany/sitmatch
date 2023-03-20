@@ -1,0 +1,25 @@
+#warning {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  visibility: hidden;
+  opacity: 0;
+}
+#warning.active {
+  -webkit-transition: all ease-in-out 500ms;
+  transition: all ease-in-out 500ms;
+  top: 50%;
+  opacity: 1;
+  visibility: visible;
+}
+#warning.active .warn-co {
+  background-color: rgba(232, 119, 40, 0.6);
+  border: 1px solid #E87728;
+  color: #1B1E20;
+  width: 400px;
+  padding: 20px 10px;
+  text-align: center;
+  border-radius: 10px 10px 10px 10px;
+}

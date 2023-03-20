@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>디지털 성범죄</title>
+  <link rel="stylesheet" href="/css/common.min.css" />
+  <link rel="stylesheet" href="/css/result.min.css" />
+  <link rel="stylesheet" href="/css/detail.min.css" />
+  <script src="/js/style.js"></script>
+  <script src="/js/footer.js"></script>
+  <script src="/js/function.js"></script>
+</head>
+
+<body>
+<article class="result-wrap wrapper">
+  <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
+  <div class="re-search M-box-up bor10 layout">
+    <form name="re-search" action="/result" id="searchForm">
+      <input type="hidden" name="page" id="searchPage">
+      <input type="hidden" name="listType" id="listType">
+      <input type="hidden" name="tsiUno" th:value="${tsiUno}">
+      <input type="hidden" name="tsiKeyword" th:value="${tsiKeyword}">
+      <section class="video-chk">
+        <h2>일치율 높은순</h2>
+        <div class="chk-box">
+          <label><input type="checkbox" name="video" value=1 class="W" checked>전체</label>
+          <label><input type="checkbox" name="video" value=0>이미지</label>
+          <label><input type="checkbox" name="video" value=0>오디오</label>
+          <label><input type="checkbox" name="video" value=0>텍스트</label>
+        </div>
+      </section>
+      <section class="sort-chk">
+        <h2>분류</h2>
+        <div class="chk-box">
+          <label><input type="checkbox" name="tsjStatusAll" value="1" class="W" checked>전체</label>
+          <label><input type="checkbox" name="tsjStatus11" value="0" id="equal">일치율</label>
+          <label><input type="checkbox" name="tsjStatus01" value="0">처리중</label>
+          <label><input type="checkbox" name="tsjStatus00" value="0">대기중</label>
+          <label><input type="checkbox" name="tsjStatus10" value="0">SKIP</label>
+        </div>
+      </section>
+      <section class="pri-chk">
+        <h2>우선순위</h2>
+        <div class="chk-box">
+          <label><input type="radio" name="priority" value="1" checked>일치율 높은순</label>
+          <label><input type="radio" name="priority" value="0">일치율 낮은순</label>
+        </div>
+      </section>
+      <div class="search-bar bor10 bor10 btn-off">
+        <input type="text" name="keyword" placeholder="검색어를 입력하세요" th:value="${keyword}">
+      </div>
+    </form>
+  </div>
+  <seciton class="layout" id="result">
+    <h1 class="sound">검색 결과</h1>
+    <div class="search-contents">
+      <div class="search-list">
+        <div class="search-tab">
+          <div class="tab on">
+            <div class="search-img"><img th:if="${imgSrc != null}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt=""></div>
+            <p><span th:if="${tsiKeyword} != ''" th:text="|&quot;${tsiKeyword}&quot;|"></span>에 대한 검색 결과 입니다.</p>
+          </div>
+          <img th:if="${!#strings.isEmpty(keyword)}" src="/img/result/double-right.png" alt="" class="next research" style="display: block">
+          <div class="tab research" th:if="${!#strings.isEmpty(keyword)}">
+            <p>"<span th:text="${keyword}">sitting</span>"에 대한 검색 결과 입니다.</p>
+          </div>
+          <div class="">
+            <p><span>상담사 : </span><span th:text="${userId}">상담사 아이디</span></p>
+          </div>
+        </div>
+      </div>
+      <p class="total-num">총 <span th:text="${searchResultListCount}"></span> 건</p>
+      <div class="view-type">
+        <button type="button" class="list-btn btn-off">목록형</button>
+        <button class="img-btn btn-off">이미지형</button>
+      </div>
+    </div>
+    <div class="result-list  list-content">
+      <section class="list M-box-up bor10" th:each="list:${searchResultList}">
+        <div class="img-box">
+          <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
+          <div class="img">
+<!--            <img src="./img/replace/man.png" alt="" loading="lazy" >-->
+            <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="" loading="lazy" >
+          </div>
+<!--          <div class="video">-->
+<!--            <video src="./img/replace/replacevideo.mp4" loading="lazy"></video>-->
+<!--            <div class="play-wrap">-->
+<!--              <div class="play-btn"></div>-->
+<!--            </div>-->
+<!--          </div>-->
+          <th:block th:switch="${list.getTsrSns()}">
+            <img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">
+            <img th:case="13" src="/img/common/sns/twitter-round.png" alt="" class="sns">
+            <img th:case="15" src="/img/common/sns/insta-round.png" alt="" class="sns">
+            <img th:case="17" src="/img/common/sns/facebook-round.png" alt="" class="sns">
+          </th:block>
+        </div>
+        <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span>
+          <span th:case="11">
+            <h2 class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
+          </span>
+        </th:block>
+<!--        <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span><span th:case="11"><h2 class="unity" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h2></span></th:block>-->
+        <a th:href="${list.getTsrDownloadUrl()}" target="_blank" class="url"><p class="url" th:text="${list.getTsrDownloadUrl()}">url이 들어갑니다</p></a>
+        <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
+        <p class="detail" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),', ','파일명 : ',list.getTsrImgName())}">파일 정보가 들어갑니다</p>
+        <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}">추가</button>
+        <!--
+        <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}" th:disabled="${list.getTrkStatCd() != null}">추가</button>
+        -->
+<!--        <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}">추가</button>-->
+      </section>
+      <section th:if="${searchResultListCount == 0}" style="width: 100%; text-align: center;">조회 결과가 없습니다.</section>
+    </div>
+  </seciton>
+  <nav>
+    <ul id="pagination" th:with="start=${(number / maxPage * maxPage) + 1}, end=(${(totalPages == 0) ? 1 : ((start + maxPage - 1) < totalPages ? (start + maxPage - 1) : totalPages)})">
+      <li class="page-num" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${1} + ');'" class="btn-off" style="width:30px;">처음</a></li>
+      <li class="page-prev" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
+      <li class="page-num" th:each="pageNum : ${#numbers.sequence(start, end)}"><a th:onclick="'javascript:searchEvent('+ ${pageNum} + ');'" class="btn-off" th:classappend="${number + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a></li>
+      <li class="page-next" th:if="${end < totalPages}"><a th:onclick="'javascript:searchEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
+      <li class="page-num" th:if="${end < totalPages}"><a th:onclick="'javascript:searchEvent('+ ${totalPages} + ');'" class="btn-off" style="width:30px;">끝</a></li>
+    </ul>
+  </nav>
+  <script>footer();</script>
+</article>
+<script th:inline="javascript">
+/*<![CDATA[*/
+// const list = document.querySelector(".result-list");
+
+// 페이징하고 검색이력
+const searchForm = document.querySelector("#searchForm");
+const searchPage = document.querySelector("#searchPage");
+const searchEvent = (pageNum) => {
+    searchPage.value = pageNum;
+    searchForm.submit();
+}
+const pageBtn = document.querySelectorAll(".btn-off");
+pageBtn.forEach((btn) => {
+    btn.style.cursor = "pointer";
+})
+
+// 검색 디테일
+const imgBtn = document.querySelectorAll(".img-box");
+const modal = document.querySelector("#modal");
+imgBtn.forEach((btn) => {
+  const tsrUno = btn.querySelector("#tsrUno");
+  btn.addEventListener('click', () => {
+    //XMLHttpRequest 객체 생성
+    var xhr = new XMLHttpRequest();
+    //요청을 보낼 방식, 주소, 비동기여부 설정
+    xhr.open('GET', 'result-detail?tsrUno='+tsrUno.value, true);
+    //요청 전송
+    xhr.send(null);
+    //통신후 작업
+    xhr.onload = () => {
+      //통신 성공
+      if (xhr.status === 200) {
+        document.body.style.overflow = 'hidden';
+        modal.style.display = 'block';
+        modal.innerHTML = xhr.response;
+        const esc = document.querySelector(".trace-detail .esc-btn");
+        esc.onclick = () => {
+          modal.style.display = 'none';
+          document.body.style.overflow = 'unset';
+        }
+      } else {
+        //통신 실패
+        console.log("통신 실패");
+      }
+
+    }
+  })
+});
+
+// 추적 상태 추가 버튼
+const addTraceBtn = document.querySelectorAll(".trace-add");
+addTraceBtn.forEach((btn) => {
+    btn.addEventListener('click', () => {
+        btn.disabled = true;
+        //XMLHttpRequest 객체 생성
+        const xhr = new XMLHttpRequest();
+        //요청을 보낼 방식, 주소, 비동기여부 설정
+        xhr.open('GET', 'search/addTrkStat?tsrUno='+btn.value, true);
+        //요청 전송
+        xhr.send(null);
+        //통신후 작업
+        xhr.onload = () => {
+            if (xhr.status === 200) {   //통신 성공
+                console.log("통신 성공");
+                btn.disabled = false;
+            } else {  //통신 실패
+                console.log("통신 실패");
+                btn.disabled = false;
+            }
+        }
+    })
+});
+
+// 재검색 (0317수정)
+// const reSearch = (con) => {
+//   const tabW = document.querySelector('.search-tab');
+//   const text = `
+//       <div class="tab research">
+//               <p>${con.re_search.value}</p>
+//             </div>
+//       `;
+//   tabW.insertAdjacentHTML("beforeend", text);
+//   document.querySelector('.next').style.display = 'block';
+//   document.querySelector('.search-bar').style.display='none';
+// }
+
+// 검색내용 이미지 클릭시 팝업(0317추가)
+const searchImg = document.querySelector('.search-img');
+searchImg.addEventListener('click', function () {
+  document.body.style.overflow = 'hidden';
+  modal.style.display = 'block';
+  modal.innerHTML = `<div class='modal bor10 searchmodal'>
+        ${this.children[0].outerHTML}
+      <button class="esc-btn">닫기</button>
+        </div>`;
+  const esc = modal.querySelector(".esc-btn");
+  esc.onclick = () => {
+    modal.style.display = 'none';
+    document.body.style.overflow = 'unset';
+  }
+})
+
+// ----------체크박스------------ 추가----------------------------------------
+/* 검색파일이 video일경우*/
+const video = true;//임시값
+if (video) {
+  document.querySelector('.video-chk').style.display = 'block';
+} else {
+  document.querySelector('.video-chk').style.display = 'none';
+}
+
+// check된 값1로 넘기기
+const chk = document.querySelectorAll('.chk-box input[type=checkbox]');
+for (let i = 0; i < chk.length; i++) {
+  chk[i].addEventListener('change', function () {
+    this.value ^= 1;
+    // 일치율선택시 우선순위 나오기
+    if (this.id === 'equal') {
+      if (this.checked) {
+        document.querySelector('.pri-chk').style.display = 'block';
+      } else {
+        document.querySelector('.pri-chk').style.display = 'none';
+      }
+    }
+    // 전체 누르면 다른값 체크해제
+    if (this.className ==='W') {
+        if(this.checked) {
+            [...chk].filter(check=>check.className !=='W' && check.name !== this.name).forEach(e => {
+                if (e.checked) {
+                    e.checked = false;
+                    e.value ^= 1;
+                }
+            })
+            document.querySelector('.pri-chk').style.display = 'none';
+            this.disabled = true;
+        }
+    }
+    // 다른체크시 전체 체크값해제
+    if (this.className !== 'W') {
+      [...chk].filter(check => check.className === 'W' && check.name !== this.name).forEach(e => {
+        if(e.checked) {
+          e.checked = false;
+          e.value ^= 1;
+          e.disabled = false;
+        }
+      })
+    }
+    console.log("chk[4] => %s", chk[4].value);
+    console.log("chk[5] => %s", chk[5].value);
+    console.log("chk[6] => %s", chk[6].value);
+    console.log("chk[7] => %s", chk[7].value);
+    console.log("chk[8] => %s", chk[8].value);
+    console.log(chk[5].value+chk[6].value+chk[7].value+chk[8].value);
+    if (chk[5].value+chk[6].value+chk[7].value+chk[8].value === "0000") {
+      chk[4].checked = true;
+      chk[4].value ^= 1;
+      chk[4].disabled = true;
+    }
+  })
+}
+// --------------------------------------------------------------------------------------------
+view_type();
+/*]]>*/
+</script>
+</body>
+
+</html>

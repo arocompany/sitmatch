@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>디지털 성범죄</title>
+  <link rel="stylesheet" href="/css/common.min.css" />
+  <link rel="stylesheet" href="/css/login.min.css" />
+  <script src="/js/style.js"></script>
+</head>
+
+<body>
+  <article class="manage-wrap wrapper">
+    <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
+    <section id="infomation">
+      <h1 class="title">정보 수정</h1>
+      <form class="bor10 L-box-up" action="/user/modify" method="post" id="userModifyForm">
+        <input type="hidden" th:value="${userInfo.getUserUno()}" name="userUno" id="userUno">
+        <div>
+          <label for="userId">아이디</label>
+          <input type="text" th:value="${userInfo.getUserId()}" class="bor10" name="userId" id="userId" readonly>
+        </div>
+        <div>
+          <label for="new_pw">새 비밀번호</label>
+          <input type="password" placeholder="" class="bor10 M-box-in" id="new_pw">
+        </div>
+        <div>
+          <label for="check_pw">새 비밀번호 확인</label><span class="pin-check newpin-check" style="color:red;"></span>
+          <input type="password" placeholder="" class="bor10 M-box-in" name="userPw" id="check_pw">
+        </div>
+        <div>
+          <label for="userNm">이름</label>
+          <input type="text" th:value="${userInfo.getUserNm()}" class="bor10 M-box-in" name="userNm" id="userNm">
+        </div>
+        <div>
+          <label for="phoneNum1">핸드폰</label>
+          <input type="text" th:value="|${userInfo.getPhoneNum1()}-${userInfo.getPhoneNum2()}-${userInfo.getPhoneNum3()}|" maxlength="13" class="bor10 M-box-in" id="phoneNum">
+          <input type="hidden" th:value="${userInfo.getPhoneNum1()}" name="phoneNum1" id="phoneNum1">
+          <input type="hidden" th:value="${userInfo.getPhoneNum2()}" name="phoneNum2" id="phoneNum2">
+          <input type="hidden" th:value="${userInfo.getPhoneNum3()}" name="phoneNum3" id="phoneNum3">
+        </div>
+        <div>
+          <label for="emailId">이메일</label>
+          <input type="text" th:value="${userInfo.getEmailId()}" class="bor10 M-box-in" name="emailId" id="emailId">
+          <span>@</span>
+          <input type="text" th:value="${userInfo.getEmailDomain()}" class="bor10 M-box-in" name="emailDomain" id="emailDomain">
+        </div>
+        <div>
+          <label for="orgNm">소속</label>
+          <input type="text" th:value="${userInfo.getOrgNm()}" class="bor10 M-box-in" name="orgNm" id="orgNm">
+        </div>
+        <div>
+          <label for="userPosition">직위</label>
+          <input type="text" th:value="${userInfo.getUserPosition()}" class="bor10 M-box-in" name="userPosition" id="userPosition">
+        </div>
+        <div>
+          <label for="bizDetail">업무내용</label>
+          <textarea class="bor10 M-box-in" th:text="${userInfo.getBizDetail()}" name="bizDetail" id="bizDetail"></textarea>
+        </div>
+        <div><button class="bor10 btn-off" type="button" onclick="modify()" id="modifyBtn">수정하기</button></div>
+      </form>
+    </section>
+
+    <footer>
+      <p class="copy">Copyright ⓒ 서울기술연구원 Corp. All Rights Reserved.</p>
+    </footer>
+  </article>
+  <script>
+    const userModifyForm = document.querySelector("#userModifyForm");
+    const new_pw = document.querySelector("#new_pw");
+    const check_pw = document.querySelector("#check_pw");
+    const userNm = document.querySelector("#userNm");
+    const phoneNum = document.querySelector("#phoneNum");
+    const phoneNum1 = document.querySelector("#phoneNum1");
+    const phoneNum2 = document.querySelector("#phoneNum2");
+    const phoneNum3 = document.querySelector("#phoneNum3");
+    const emailId = document.querySelector("#emailId");
+    const emailDomain = document.querySelector("#emailDomain");
+    const orgNm = document.querySelector("#orgNm");
+    const userPosition = document.querySelector("#userPosition");
+    const bizDetail = document.querySelector("#bizDetail");
+
+    const change = document.querySelector("#modifyBtn");
+
+    phoneNum.addEventListener("keyup", function () {
+      regexPhoneNumber(phoneNum);
+    })
+    new_pw.addEventListener("keyup", function () {
+      isPwCheck();
+    })
+    check_pw.addEventListener("keyup", function () {
+      isPwCheck();
+    })
+
+    const isPwCheck = function () {
+      const pinchk = document.querySelector(".newpin-check");
+      const regExpPwCheck = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}$/;
+
+      if(new_pw.value === '' && check_pw.value === '') {
+        change.classList.add('active');
+        change.disabled = false;
+        pinchk.innerText=``;
+      } else {
+        if(!regExpPwCheck.test(new_pw.value) ) {
+          change.classList.remove('active');
+          change.disabled = true;
+          pinchk.innerText=`*비밀번호는 8~16자 이내 영문,숫자 조합 으로 사용해야 합니다.`;
+        } else if (new_pw.value !== '' && new_pw.value === check_pw.value) {
+          change.classList.add('active');
+          change.disabled = false;
+          pinchk.innerText=``;
+        } else if(new_pw.value !== check_pw.value) {
+          change.classList.remove('active');
+          change.disabled = true;
+          pinchk.innerText=`*비밀번호가 불일치합니다.`;
+        }
+      }
+    }
+
+    // 전화번호 자동 정규식 처리
+    const regexPhoneNumber = (target) => {
+      target.value = target.value.replace(/[^0-9]/g, '').replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`);
+    }
+
+    const checkValidation = () => {
+      const emailExp = /^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$/;
+      const phoneNumExp = /^(\\d{2,3})(\\d{3,4})(\\d{4})$/;
+
+      if (userNm.value.length === 0 || userNm.value.trim() === "") {
+        alert("이름을 입력해주세요.");
+        return false;
+      } else if(phoneNum.value.length === 0 || phoneNum.value === "" || phoneNum.value === null) {
+        alert("전화번호를 입력해주세요.");
+        return false;
+      } else if(phoneNumExp.test(phoneNum.value.replace(/[^0-9]/g, ''))) {
+        alert("올바른 전화번호 형식이 아닙니다. 다시 확인해주세요.");
+        return false;
+      } else if(emailId.value.length === 0 || emailId.value === "" || emailId.value === null
+              || emailDomain.value.length === 0 || emailDomain.value === "" || emailDomain.value === null) {
+        alert("이메일을 입력해주세요.");
+        return false;
+      } else if(emailExp.test(emailId+'@'+emailDomain)) {
+        alert("올바른 이메일 형식이 아닙니다. 다시 확인해주세요.");
+        return false;
+      } else if(orgNm.value.length === 0 || orgNm.value === "" || orgNm.value === null) {
+        alert("소속을 입력해 주세요.");
+        return false;
+      } else if(userPosition.value.length === 0 || userPosition.value === "" || userPosition.value === null) {
+        alert("직위를 입력해 주세요.");
+        return false;
+      } else if(bizDetail.value.length === 0 || bizDetail.value === "" || bizDetail.value === null) {
+        alert("업무내용을 입력해주세요");
+        return false;
+      } else {
+        const phoneNumArr = phoneNum.value.split("-");
+        phoneNum1.value = phoneNumArr[0];
+        phoneNum2.value = phoneNumArr[1];
+        phoneNum3.value = phoneNumArr[2];
+        return true;
+      }
+    }
+
+    const modify = () => {
+      if(checkValidation()) {
+        userModifyForm.submit();
+      } else {
+        console.log("checkValidation false");
+      }
+    }
+  </script>
+</body>
+
+</html>

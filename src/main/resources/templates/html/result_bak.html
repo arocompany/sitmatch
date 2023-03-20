@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>디지털 성범죄</title>
+  <link rel="stylesheet" href="/css/common.min.css" />
+  <link rel="stylesheet" href="/css/result.min.css" />
+  <link rel="stylesheet" href="/css/detail.min.css">
+  <script src="/js/style.js"></script>
+  <script src="/js/footer.js"></script>
+  <script src="/js/pagination.js"></script>
+</head>
+<body>
+  <article class="result-wrap wrapper">
+      <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
+    <div class="re-search M-box-up bor10">
+<!--      <form name="re-search" action="javascript://" onsubmit="reSearch()">-->
+      <form name="re-search" action="/result" id="searchForm">
+        <input type="hidden" name="page" id="searchPage">
+          <input type="hidden" name="tsiUno" th:value="${tsiUno}">
+          <input type="hidden" name="tsiKeyword" th:value="${tsiKeyword}">
+        <div class="search-bar bor10">
+          <input type="text" placeholder="검색어를 입력하세요" th:value="${keyword}">
+        </div>
+      </form>
+    </div>
+    <seciton class="layout" id="result">
+      <h1 class="sound">검색 결과</h1>
+      <div class="search-contents">
+        <div class="search-list">
+          <div class="search-tab">
+            <div class="tab  on">
+              <img th:if="${imgSrc != null}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
+              <p><span th:if="${tsiKeyword} != ''" th:text="|&quot;${tsiKeyword}&quot;|"></span>에 대한 검색 결과 입니다.</p>
+            </div>
+            <img src="/img/result/double-right.png" alt="" class="next research">
+          </div>
+        </div>
+        <p class="total-num">총 <span th:text="${searchResultListCount}"></span>건</p>
+        <div class="view-type">
+          <button type="button" class="list-btn btn-off active">목록형</button>
+          <button class="img-btn btn-off">이미지형</button>
+        </div>
+      </div>
+      <div class="result-list  list-content">
+        <section class="list M-box-up bor10" th:each="searchResultList:${searchResultList}">
+          <div class="img-box">
+            <input type="hidden" th:value="${searchResultList.getTsrUno()}" id="tsrUno">
+            <div class="img">
+              <img th:if="${not #strings.isEmpty(searchResultList.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(searchResultList.getTsrImgPath(),7)+searchResultList.getTsrImgName()}" alt="" loading="lazy" >
+            </div>
+            <img src="/img/common/sns/google-round.png" alt="" class="sns">
+          </div>
+          <h2 class="unity" th:text="${searchResultList.getTmrSimilarity()+'%' == null ? '0%' : searchResultList.getTmrSimilarity()}">99%</h2>
+          <a th:href="${searchResultList.getTsrDownloadUrl()}" target="_blank" class="url">
+            <p class="url" th:text="${searchResultList.getTsrDownloadUrl()}">url이 들어갑니다</p>
+          </a>
+<!--          <p class="content">글의 내용이 들어갑니다</p>-->
+          <p class="detail">파일 정보가 들어갑니다</p>
+          <button class="trace-add btn-off" th:classappend="${searchResultList.getTrkStatCd() != null ? 'active' : ''}" th:value="${searchResultList.getTsrUno()}" th:disabled="${searchResultList.getTrkStatCd() != null}">추가</button>
+        </section>
+        <!-- 하단 스크립트 -->
+      </div>
+    </seciton>
+    <nav>
+      <ul id="pagination" th:with="start=${(number / maxPage * maxPage) + 1}, end=(${(totalPages == 0) ? 1 : ((start + maxPage - 1) < totalPages ? (start + maxPage - 1) : totalPages)})">
+        <li class="page-num" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${1} + ');'" class="btn-off" style="width:30px;">처음</a></li>
+        <li class="page-prev" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
+        <li class="page-num" th:each="pageNum : ${#numbers.sequence(start, end)}"><a th:onclick="'javascript:searchEvent('+ ${pageNum} + ');'" class="btn-off" th:classappend="${number + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a></li>
+        <li class="page-next" th:if="${end < totalPages}"><a th:onclick="'javascript:searchEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
+        <li class="page-num" th:if="${end < totalPages}"><a th:onclick="'javascript:searchEvent('+ ${totalPages} + ');'" class="btn-off" style="width:30px;">마지막</a></li>
+      </ul>
+    </nav>
+    <script>footer();</script>
+  </article>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+// 페이징하고 검색이력
+const searchForm = document.querySelector("#searchForm");
+const searchPage = document.querySelector("#searchPage");
+const searchEvent = (pageNum) => {
+    searchPage.value = pageNum;
+    searchForm.submit();
+}
+const pageBtn = document.querySelectorAll(".btn-off");
+pageBtn.forEach((btn) => {
+  btn.style.cursor = "pointer";
+})
+
+// 검색 디테일
+const imgBtn = document.querySelectorAll(".img-box");
+const modal = document.querySelector("#modal");
+imgBtn.forEach((btn) => {
+  const tsrUno = btn.querySelector("#tsrUno");
+  btn.addEventListener('click', () => {
+    //XMLHttpRequest 객체 생성
+    var xhr = new XMLHttpRequest();
+    //요청을 보낼 방식, 주소, 비동기여부 설정
+    xhr.open('GET', 'result-detail?tsrUno='+tsrUno.value, true);
+    //요청 전송
+    xhr.send(null);
+    //통신후 작업
+    xhr.onload = () => {
+      //통신 성공
+      if (xhr.status === 200) {
+        document.body.style.overflow = 'hidden';
+        modal.style.display = 'block';
+        modal.innerHTML = xhr.response;
+        const esc = document.querySelector(".trace-detail .esc-btn");
+        esc.onclick = () => {
+          modal.style.display = 'none';
+          document.body.style.overflow = 'unset';
+        }
+      } else {
+        //통신 실패
+        console.log("통신 실패");
+      }
+
+    }
+  })
+});
+
+// 추적 상태 추가 버튼
+const addTraceBtn = document.querySelectorAll(".trace-add");
+addTraceBtn.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    btn.disabled = true;
+
+    //XMLHttpRequest 객체 생성
+    const xhr = new XMLHttpRequest();
+    //요청을 보낼 방식, 주소, 비동기여부 설정
+    xhr.open('GET', 'search/addTrkStat?tsrUno='+btn.value, true);
+    //요청 전송
+    xhr.send(null);
+    //통신후 작업
+    xhr.onload = () => {
+      if (xhr.status === 200) {   //통신 성공
+        console.log("통신 성공");
+      } else {  //통신 실패
+        console.log("통신 실패");
+      }
+    }
+  })
+});
+
+const reSearch = () => {
+  const tabW = document.querySelector('.search-tab');
+  const text = `
+  <div class="tab research">에
+          <video src="/img/replace/replacevideo.mp4"></video>
+          <p>"<span>sitting</span>"에 대한 검색 결과 입니다.</p>
+        </div>
+  `;
+  tabW.insertAdjacentHTML("beforeend", text);
+  document.querySelector('.next').style.display = 'block'
+  tabplay();
+}
+// 탭
+const tabplay = () => {
+  const tab = document.querySelectorAll(".tab");
+  tab[0].onclick = function () {
+    this.classList.add('on');
+    tab[1].classList.remove('on');
+    document.querySelector('.re-search').style.display = 'block';
+  }
+  tab[1].onclick = function () {
+    this.classList.add('on');
+    tab[0].classList.remove('on');
+    document.querySelector('.re-search').style.display = 'none';
+  }
+  tab[1].click();
+}
+
+// 이미지 버튼
+const img_Btn = document.querySelector(".img-btn");
+img_Btn.addEventListener("click", () => {
+  document.querySelector(".img-search").style.display = "block";
+});
+const imgEsc = document.querySelector(".img-search .esc");
+imgEsc.onclick = () => {
+  document.querySelector(".img-search").style.display = "none";
+}
+// 이미지 드롭
+const dropImg = document.querySelector(".file-drop");
+dropImg.ondragover = (e) => {
+  e.preventDefault();
+}
+dropImg.addEventListener('drop', function (event) {
+  event.preventDefault();
+  const file = event.dataTransfer.files;
+  console.log(file.mozFullPath);
+  document.querySelector(".file-name").value = file[0].name;
+});
+// 파일 업로드 인식
+const fileUp = document.querySelector("#file");
+fileUp.onchange = function () {
+  document.querySelector(".file-name").value = this.files[0].name;
+}
+
+view_type();
+/*]]>*/
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+@charset "utf-8";
+@import "mixin";
+
+#warning {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  visibility: hidden;
+  opacity: 0;
+  &.active {
+    transition: all ease-in-out 500ms;
+    top: 50%;
+    opacity: 1;
+    visibility: visible;
+    .warn-co {
+      background-color: rgba($orange, 0.6);
+      border: 1px solid $orange;
+      color: $black;
+      width: 400px;
+      padding: 20px 10px;
+      text-align: center;
+      @include border(10px);
+    }
+  }
+}

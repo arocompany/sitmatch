@@ -1,0 +1,63 @@
+<html lagn="ko" xmlns:th="http://www.thymeleaf.org">
+<section class="counselor counselor-add bor10">
+  <h3 class="title">상담사 추가</h3>
+<!--  <form action="/user/signup" method="post" id="counselorAddForm">-->
+  <form id="counselorAddForm">
+    <div>
+      <p>아이디</p>
+      <input type="text" class="bor10 M-box-in" name="userId" id="userId">
+<!--      <input type="text" class="bor10 M-box-in" name="userId" id="userId" value="asdf">-->
+    </div>
+    <div>
+      <p>비밀번호</p>
+      <input type="password" class="bor10 M-box-in" autoComplete="off" name="userPw" id="userPw">
+<!--      <input type="password" class="bor10 M-box-in" autoComplete="off" name="userPw" id="userPw" value="asdfasdf1">-->
+    </div>
+    <div>
+      <p>비밀번호 확인</p><span class="pin-check newpin-check" style="color:red;"></span>
+      <input type="password" class="bor10 M-box-in" autoComplete="off" id="checkPw">
+<!--      <input type="password" class="bor10 M-box-in" autoComplete="off" id="checkPw" value="asdfasdf1">-->
+     </div>
+    <div>
+      <p>이름</p>
+      <input type="text" class="bor10 M-box-in" name="userNm" id="userNm">
+<!--      <input type="text" class="bor10 M-box-in" name="userNm" id="userNm" value="asdf">-->
+    </div>
+    <div>
+      <p>핸드폰</p>
+      <input type="tel" maxlength="13" class="bor10 M-box-in" id="phoneNum">
+<!--      <input type="tel" maxlength="13" class="bor10 M-box-in" id="phoneNum" value="123-1234-1234">-->
+      <input type="hidden" name="phoneNum1" id="phoneNum1">
+      <input type="hidden" name="phoneNum2" id="phoneNum2">
+      <input type="hidden" name="phoneNum3" id="phoneNum3">
+    </div>
+    <div>
+      <p>이메일</p>
+      <input type="text" class="bor10 M-box-in" name="emailId" id="emailId">
+<!--      <input type="text" class="bor10 M-box-in" name="emailId" id="emailId" value="asdf">-->
+      <span>@</span>
+      <input type="text" class="bor10 M-box-in" name="emailDomain" id="emailDomain">
+<!--      <input type="text" class="bor10 M-box-in" name="emailDomain" id="emailDomain" value="asdf.asdf">-->
+    </div>
+    <div>
+      <p>소속</p>
+      <input type="text" class="bor10 M-box-in" name="orgNm" id="orgNm">
+<!--      <input type="text" class="bor10 M-box-in" name="orgNm" id="orgNm" value="asdf">-->
+    </div>
+    <div>
+      <p>직위</p>
+      <input type="text" class="bor10 M-box-in" name="userPosition" id="userPosition">
+<!--      <input type="text" class="bor10 M-box-in" name="userPosition" id="userPosition" value="asdf">-->
+    </div>
+    <div>
+      <p>업무내용</p>
+      <textarea class="bor10 M-box-in" name="bizDetail" id="bizDetail"></textarea>
+<!--      <textarea class="bor10 M-box-in" name="bizDetail" id="bizDetail">asdf</textarea>-->
+    </div>
+    <div class="counselor-btn">
+      <button type="button" class="bor10 btn-off reg">등록</button>
+      <button type="button" class="bor10 btn-off esc">취소</button>
+    </div>
+  </form>
+</section>
+</html>

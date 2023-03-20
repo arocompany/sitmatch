@@ -1,0 +1,272 @@
+@charset "utf-8";
+@import "mixin";
+%flex {
+  @include flex(space-between);
+}
+%bor4 {
+  @include border(4px);
+}
+.dot-wrap {
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.dot, .dot::after, .dot::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: $logo-grey;
+  position: absolute;
+}
+.dot {
+  position: relative;
+  animation: dotBf 1500ms steps(1) infinite alternate;
+  margin-bottom: 4px;
+}
+.dot::after, .dot::before {
+  content: "";
+  position: absolute;
+  top: 0;
+}
+.dot::before {
+  right: -12px;
+}
+.dot::after {
+  right: 12px;
+  background-color: $blue;
+  animation: dotAf 1500ms ease-in-out 0s infinite alternate-reverse;
+}
+.dot-per {
+  font-size: .875rem;
+  line-height: 1;
+  color: $middle;
+}
+@keyframes dotAf {
+  0% {
+    right: -12px;
+  }
+  50% {
+    right: 0px;
+  }
+  100% {
+    right: 12px;
+  }
+}
+@keyframes dotBf {
+  0% {
+    background-color: $logo-grey;
+  }
+  50% {
+    background-color: transparent;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+#history {
+  .title {
+    @include flex(center);
+    margin: 60px auto 0;
+    color: $logo-grey;
+    padding: 10px;
+    width: 340px;
+    font-weight: 400;
+    font-size: 1.125rem;
+    span {
+      padding: 10px 0;
+      width: 50%;
+      @extend %bor4;
+      cursor: pointer;
+      &.active {
+        background-color: $orange;
+        color: white;
+        font-weight: 700;
+      }
+    }
+  }
+  .history {
+    display: none;
+    &.active {
+      display: block;
+    }
+  }
+  .searchbox {
+    margin-top: 60px;
+    @extend %flex;
+    align-items: end;
+    margin-bottom: 20px;
+  }
+  h2,
+  .history-list li {
+    @extend %flex;
+  }
+  h2 {
+    color: $blue;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px 20px;
+    .dist {
+      width: 11.52%;
+    }
+  }
+  // 검색 이력
+  .search-history {
+    P {
+      @include flex(center);
+    }
+    .history-list {
+      li {
+        margin-bottom: 10px;
+        padding: 16px 20px;
+      }
+      .type, .cont {
+        justify-content: start;
+      }
+      .cont {
+        span {
+          max-width: 50%;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+    .num {
+      width: 4%;
+    }
+    .type, .social {
+      width: 12%;
+      .reply {
+        margin: 0 6px 0 0;
+      }
+    }
+    .cont {
+      flex: 1;
+      overflow: hidden;
+    }
+    .social {
+      justify-content: center;
+      img {
+        width: 20px;
+        margin-right: 4px;
+        &:last-of-type {
+          margin-right: 0;
+        }
+      }
+    }
+    .time {
+      width: 14.4%;
+    }
+    .progress {
+      width: 8.8%;
+    }
+    .review {
+      font-size: 0.875rem;
+      color: $middle;
+      margin-right: 30px;
+      padding: 4px 0;
+      width: 90px;
+      @extend %bor4;
+      &:active {
+        @extend %btn-on;
+        font-weight: 500;
+      }
+    }
+  }
+  // 추적 이력
+  .trace-history {
+    .selection {
+      .option li {
+        font-size: 1rem;
+      }
+    }
+    .currently-state {
+      font-size: 14px;
+      @extend %flex;
+      span {
+        margin-left: 20px;
+        color: $normal;
+      }
+    }
+    .cont {
+      flex: 1;
+    }
+    .memo {
+      @include border(4px);
+      width: 16%;
+      font-size: .875rem;
+    }
+    .num {
+      width: 4%;
+      text-align: center;
+    }
+    .url {
+      color: $normal;
+      font-weight: 400;
+    }
+    button {
+      height: 40px;
+      @extend %bor4;
+      &:active {
+        @extend %btn-on;
+      }
+    }
+    .state {
+      width: 12.8%;
+      padding: 0 20px;
+      .selection {
+        button {
+          background-size: 14px;
+          padding-left: 10px;
+        }
+      }
+    }
+    .double-chk {
+      width: 7.2%;
+    }
+    .history-list {
+      > li {
+        padding: 10px 20px;
+        margin-bottom: 10px;
+      }
+      .cont {
+        @include flex(stretch) {
+          flex-wrap: wrap;
+          margin-left: 10px;
+        }
+        .img {
+          width: 78px;
+          height: 78px;
+        }
+        .sns {
+          right: 4px;
+          bottom: 4px;
+          width: 22px;
+        }
+        .text {
+          @include flex(stretch) {
+            padding: 0 10px;
+            flex-direction: column;
+            flex: 1;
+            p {
+              width: 100%;
+            }
+          }
+          .detail {
+            .detail-time {
+              margin-left: 30px;
+            }
+          }
+        }
+      }
+      .memo {
+        height: 78px;
+        padding: 5px 10px;
+      }
+      .double-chk {
+        color: $orange;
+      }
+    }
+  }
+}

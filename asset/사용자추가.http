@@ -1,0 +1,5 @@
+### 사원24
+POST {{host}}/user/signup
+Content-Type: application/x-www-form-urlencoded
+
+userId=tester0024&userPw=asdfasdf1&userNm=사원24&orgNm=서울시청&userPosition=사원&emailId=tester0024&emailDomain=gmail.com&phoneNum1=010&phoneNum2=9999&phoneNum3=9924&bizDetail=페이스북 인스타 담당

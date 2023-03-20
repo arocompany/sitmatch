@@ -1,0 +1,121 @@
+@charset "utf-8";
+@import "mixin";
+%grid {
+  display: grid;
+}
+%flex {
+  @include flex(space-between);
+}
+#trace {
+  .trace-contents {
+    @extend %flex;
+    margin-top: 60px;
+    margin-bottom: 30px;
+    align-items: end;
+    form {
+      flex: 1;
+      display: flex;
+    }
+    .selection{
+      width: 150px;
+      margin-right: 20px;
+      button{
+        padding-left: 10px;
+        background-size: 16px;
+      }
+      .option li{
+        font-size: 1rem;
+      }
+    }
+  }
+  .trace-list.active {
+    @extend %flex;
+    flex-wrap: wrap;
+  }
+  .list {
+    position: relative;
+    @extend %grid;
+    grid-template-columns: 104px auto;
+    grid-template-rows: repeat(4, auto);
+    margin-bottom: 10px;
+    padding: 10px 20px;
+    column-gap: 16px;
+    .img-box {
+      grid-area: 1/1/5/2;
+    }
+    .unity,
+    .content,
+    .url,
+    .detail {
+      grid-column: 2/3;
+    }
+    .img,
+    .video {
+      width: 104px;
+      height: 104px;
+      object-fit: cover;
+    }
+    .sns {
+      right: 4px;
+      bottom: 4px;
+    }
+    .url {
+      color: $normal;
+    }
+    .unity {
+      font-size: 1rem;
+      span {
+        color: $normal;
+        font-weight: 400;
+      }
+    }
+    .detail {
+      @extend %flex;
+    }
+    .del {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
+    // 이미지형
+    &.active {
+      width: 23.25581395348837%;
+      grid-template-columns: 100%;
+      grid-template-rows: repeat(5, auto);
+      padding: 14px 10px;
+      margin-bottom: 30px;
+      .img-box {
+        width: 100%;
+        grid-row: 2/3;
+        margin: 4px 0;
+      }
+      .unity,
+      .content,
+      .url,
+      .detail {
+        grid-column-start: 1;
+        grid-column-end: 2;
+      }
+      .unity,
+      .content,
+      .url {
+        padding: 0 4px;
+      }
+      .unity {
+        grid-row: 1/2;
+      }
+      .img,
+      .video {
+        width: 100%;
+        height: 180px;
+      }
+      .detail {
+        justify-content: end;
+        .detail-info {
+          display: none;
+        }
+      }
+    }
+  }
+}
+

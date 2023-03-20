@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>디지털 성범죄</title>
+  <link rel="stylesheet" href="/css/common.min.css" />
+  <link rel="stylesheet" href="/css/histroy.min.css">
+  <script src="/js/style.js"></script>
+  <script src="/js/footer.js"></script>
+  <script src="/js/function.js"></script>
+</head>
+
+<body>
+  <article class="history-wrap wrapper" id="history">
+    <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
+    <h1 class="title bor10 btn-off"><span class="s-tit active">검색 이력</span><span class="t-tit">추적 이력</span> </h1>
+    <!-- 검색 이력 -->
+    <section class="search-history layout history active">
+      <div class="searchbox">
+        <form name="history-search" class="search-box" action="/history" id="searchForm">
+          <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${searchKeyword}" name="searchKeyword" id="searchKeyword">
+          <input type="hidden" name="searchPage" id="searchPage">
+        </form>
+        <p class="total-num">총 <span th:text="${searchInfoListCount}"></span>건</p>
+      </div>
+      <h2>
+        <span class="num">순번</span>
+        <span class="">상담사</span>
+        <span class="type">검색 유형</span>
+        <span class="cont">내용</span>
+        <span class="social">SNS</span>
+        <span class="time">검색 일시</span>
+        <span class="progress">검색 진행률</span>
+        <span class="dist">구분</span>
+      </h2>
+      <ul class="history-list history-search-list">
+        <li class="btn-off bor10" th:each="searchInfoList:${searchInfoList}">
+          <p class="num" th:text="${searchInfoList.getTsiUno()}"></p>
+          <p class="" th:text="${userIdMap.get(searchInfoList.getUserUno())}">상담사 아이디</p>
+          <p class="type">
+              <th:block th:switch="${searchInfoList.getTsiType()}">
+                  <span th:case="${'11'}">키워드</span>
+                  <span th:case="${'13'}">키워드 + 사진</span>
+                  <span th:case="${'15'}">키워드 + 영상</span>
+                  <span th:case="${'17'}">사진</span>
+                  <span th:case="${'19'}">영상</span>
+              </th:block>
+          </p>
+          <p class="cont">
+            <span class="con1" th:text="${searchInfoList.getTsiKeyword()}"></span>
+            <span th:if="${searchInfoList.getTsiType() == '13'||searchInfoList.getTsiType() == '15'}">&nbsp;/&nbsp;</span>
+            <a th:href="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" target="_blank"><span class='con2' th:text="${searchInfoList.getTsiImgName()}"></span></a>
+          </p>
+          <p class="social">
+            <img th:if="${searchInfoList.getTsiGoogle() == 1}" src="/img/common/sns/google.png" alt="">
+            <img th:if="${searchInfoList.getTsiFacebook() == 1}" src="/img/common/sns/face.png" alt="">
+            <img th:if="${searchInfoList.getTsiTwitter() == 1}" src="/img/common/sns/twitter.png" alt="">
+            <img th:if="${searchInfoList.getTsiInstagram() == 1}" src="/img/common/sns/insta.png" alt="">
+          </p>
+          <p class="time" th:text="${#dates.format(searchInfoList.getFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></p>
+          <p class="dot-wrap progress">
+            <span class="dot"></span>
+            <span class="dot-per" th:text="${getProgressPercentMap.get(searchInfoList.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(searchInfoList.getTsiUno())}"></span>
+          </p>
+          <button class="btn-off review" th:onclick="|location.href='@{/result(tsiUno=${searchInfoList.getTsiUno()}, tsiKeyword=${searchInfoList.getTsiKeyword()})}'|">검색중</button>
+          <button class="del-btn btn-off del" th:value="${searchInfoList.getTsiUno()}">삭제</button>
+        </li>
+          <li th:if="${searchInfoListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
+      </ul>
+      <nav>
+        <ul id="pagination" th:with="start=${(searchNumber / maxPage * maxPage) + 1}, end=(${(searchTotalPages == 0) ? 1 : ((start + maxPage - 1) < searchTotalPages ? (start + maxPage - 1) : searchTotalPages)})">
+          <li class="page-num" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${1} + ');'" class="btn-off" style="width:30px;">처음</a></li>
+          <li class="page-prev" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
+          <li class="page-num" th:each="pageNum : ${#numbers.sequence(start, end)}"><a th:onclick="'javascript:searchEvent('+ ${pageNum} + ');'" class="btn-off" th:classappend="${searchNumber + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a></li>
+          <li class="page-next" th:if="${end < searchTotalPages}"><a th:onclick="'javascript:searchEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
+          <li class="page-num" th:if="${end < searchTotalPages}"><a th:onclick="'javascript:searchEvent('+ ${searchTotalPages} + ');'" class="btn-off" style="width:30px;">끝</a></li>
+        </ul>
+      </nav>
+    </section>
+    <!-- 추적이력 -->
+    <section class="trace-history layout history">
+      <div class="searchbox">
+        <form name="history-search" class="search-box" action="/history" id="traceForm">
+          <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${traceKeyword}" name="traceKeyword" id="traceKeyword">
+          <input type="hidden" name="tracePage" id="tracePage">
+        </form>
+        <ul class="currently-state">
+          <li><span>전체 :</span> <span th:text="${traceHistoryListCount}">32</span></li>
+          <li><span>모니터링 :</span> <span th:text="${countMonitoring}">8</span></li>
+          <li><span>삭제 요청 :</span> <span th:text="${countDelReq}">10</span></li>
+          <li><span>삭제 완료 :</span> <span th:text="${countDelCmpl}">14</span></li>
+        </ul>
+      </div>
+      <h2><span class="num">순번</span><span class="cont">내용 및 검색 정보</span> <span class="memo">메모</span> <span class="state">상태</span><span class="double-chk">2차 검증</span></h2>
+      <ul class="history-list history-trace-list">
+        <li class="btn-off bor10" th:each="traceHistoryList : ${traceHistoryList}">
+          <p class="num" th:text="${traceHistoryList.getTsrUno()}">${i}</p>
+          <div class="cont">
+            <div class="img-box">
+              <div class="img">
+                <img th:src="${'/imagePath'+#strings.substring(traceHistoryList.getTsrImgPath(),7)+traceHistoryList.getTsrImgName()}" alt="">
+              </div>
+              <th:block th:switch="${traceHistoryList.getTsrSns()}">
+                <img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">
+                <img th:case="13" src="/img/common/sns/twitter-round.png" alt="" class="sns">
+                <img th:case="15" src="/img/common/sns/insta-round.png" alt="" class="sns">
+                <img th:case="17" src="/img/common/sns/facebook-round.png" alt="" class="sns">
+              </th:block>
+            </div>
+            <div class="text" style="width: 100px;">
+              <a class="url" style="width:100%" th:href="${traceHistoryList.getTsrSiteUrl()}" target="_blank" th:text="${traceHistoryList.getTsrSiteUrl()}">url이 들어갑니다</a>
+              <p class="content" th:text="${traceHistoryList.getTsrTitle()}">내용이 들어갑니다</p>
+              <p class="detail"><span class="detail-info">검색정보 : <th:block th:switch="${tsiTypeMap.get(traceHistoryList.getTsiUno())}"><span th:case="11">키워드</span><span th:case="13">키워드 + 사진</span><span th:case="15">키워드 + 영상</span><span th:case="17">사진</span><span th:case="19">영상</span></th:block> / <span th:text="${tsiKeyword.get(traceHistoryList.getTsiUno())}">키워드가 들어 갑니다</span> <span th:text="${traceHistoryList.tsrImgName}">파일명이 들어갑니다</span> </span> <span class="detail-time">검색일 : <span th:text="${#dates.format(tsiFstDmlDt.get(traceHistoryList.getTsiUno()), 'yyyy.MM.dd')}">2022.01.12</span></span></p>
+              <p class="">상담사 : <span th:text="${traceHistoryList.getTuUserId()}"></span></p>
+            </div>
+          </div>
+          <textarea placeholder="내용 입력" class="btn-on memo" th:data-uno="${traceHistoryList.getTsrUno()}" th:text="${traceHistoryList.getTrkHistMemo()}"></textarea>
+          <div class="state">
+            <input type="hidden" class="bor10 M-box-in" name="trace-state">
+            <div class="selection" th:data-uno="${traceHistoryList.getTsrUno()}">
+                <th:block th:switch="${traceHistoryList.getTrkStatCd()}">
+                    <button th:case="10" style="color: #194894;">모니터링</button>
+                    <button th:case="20" style="color: #e87728;">삭제 요청</button>
+                    <button th:case="30">삭제 완료</button>
+                </th:block>
+              <ul class="option">
+                <li data-cd="30">삭제 완료</li>
+                <li data-cd="20" style="color: #e87728;">삭제 요청</li>
+                <li data-cd="10" style="color: #194894;">모니터링</li>
+              </ul>
+            </div>
+          </div>
+          <button class="btn-off double-chk" th:value="${traceHistoryList.getTsrSiteUrl()}">2차 검증</button>
+        </li>
+        <li th:if="${traceHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
+      </ul>
+      <nav>
+        <ul id="pagination" th:with="start=${(traceNumber / maxPage * maxPage) + 1}, end=(${(traceTotalPages == 0) ? 1 : ((start + maxPage - 1) < traceTotalPages ? (start + maxPage - 1) : traceTotalPages)})">
+          <li class="page-num" th:if="${start > 1}"><a th:onclick="'javascript:traceEvent('+ ${1} + ');'" class="btn-off" style="width:30px;">처음</a></li>
+          <li class="page-prev" th:if="${start > 1}"><a th:onclick="'javascript:traceEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
+          <li class="page-num" th:each="pageNum : ${#numbers.sequence(start, end)}"><a th:onclick="'javascript:traceEvent('+ ${pageNum} + ');'" class="btn-off" th:classappend="${traceNumber + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a></li>
+          <li class="page-next" th:if="${end < traceTotalPages}"><a th:onclick="'javascript:traceEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
+          <li class="page-num" th:if="${end < traceTotalPages}"><a th:onclick="'javascript:traceEvent('+ ${traceTotalPages} + ');'" class="btn-off" style="width:30px;">끝</a></li>
+        </ul>
+      </nav>
+    </section>
+    <script>
+      footer();
+    </script>
+  </article>
+<script th:inline="javascript">
+/*<![CDATA[*/
+
+//추적 이력
+
+// 페이징 처리 시에 탭 전환 방지
+const sTit = document.querySelector('.s-tit');
+const tTit = document.querySelector('.t-tit');
+const searchhistory = document.querySelector('.search-history');
+const tracehistory = document.querySelector('.trace-history');
+
+
+// const isTabType = /*[[${tabType}]]*/;
+const isTabType = sessionStorage.getItem('tabType') != null ? sessionStorage.getItem('tabType') : 'search';
+
+console.log(isTabType);
+if(isTabType !== 'search') {
+    searchhistory.classList.remove('active');
+    tracehistory.classList.add('active');
+    sTit.classList.remove('active');
+    tTit.classList.add('active');
+}
+
+// 히스토리 탭
+const hisTab = document.querySelectorAll('.title span');
+const his = document.querySelectorAll('.history');
+
+hisTab.forEach((tab, idx) => {
+  tab.onclick = (e) => {
+    console.log(e.target.innerHTML);
+    if(e.target.className.substring(0,5) === 's-tit') {
+      sessionStorage.setItem('tabType', 'search');
+    } else {
+      sessionStorage.setItem('tabType', 'trace');
+    }
+    getSiblings(e.target).forEach(t => {
+      t.classList.remove('active');
+    });
+    his.forEach(gr => {
+      gr.classList.remove('active');
+    })
+    e.target.classList.add('active');
+    his[idx].classList.add('active');
+  }
+})
+
+// 셀렉트 구현
+const select = document.querySelectorAll(".selection");
+select.forEach(sel => {
+  sel.addEventListener("click", (e) => {
+    sel.classList.toggle('active');
+    const option = sel.querySelectorAll(".option li");
+    option.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        let val = e.target.innerText;
+        sel.children[0].innerHTML = val;
+
+          //XMLHttpRequest 객체 생성
+          const xhr = new XMLHttpRequest();
+          //요청을 보낼 방식, 주소, 비동기여부 설정
+          xhr.open('GET', '/search/setTrkStatCd?tsrUno='+sel.dataset.uno+'&trkStatCd='+e.target.dataset.cd, true);
+          //요청 전송
+          xhr.send(null);
+          //통신후 작업
+          xhr.onload = () => {
+              if (xhr.status === 200) {  //통신 성공
+                  console.log("통신 성공");
+              } else {  //통신 실패
+                  console.log("통신 실패");
+              }
+          }
+      })
+    });
+  });
+})
+
+
+const searchForm = document.querySelector("#searchForm");
+const searchPage = document.querySelector("#searchPage");
+const searchEvent = (pageNum) => {
+    searchPage.value = pageNum;
+    searchForm.submit();
+}
+
+const traceForm = document.querySelector("#traceForm");
+const tracePage = document.querySelector("#tracePage");
+const traceEvent = (pageNum) => {
+    tracePage.value = pageNum;
+    traceForm.submit();
+}
+
+//검색이력 내용 넓이
+const context = document.querySelectorAll(".history-search-list .cont");
+context.forEach(con => {
+  if (con.querySelector('.con2').innerHTML === '') {
+    con.querySelector('.con2').style.display = 'none';
+    con.querySelector('.con1').style.maxWidth = '100%';
+  }
+})
+
+// 검색 진행률
+const progress = document.querySelectorAll(".dot-wrap.progress");
+progress.forEach(pro => {
+  const per = pro.querySelector(".dot-per");
+  const loading = pro.querySelector(".dot");
+  if (per.innerText === '100%') {
+    loading.style.display = 'none';
+    per.style.fontSize = '1rem';
+    per.style.cssText = "font-size:1rem; color:#545759;";
+    pro.nextElementSibling.innerHTML = "검색결과";
+    pro.nextElementSibling.style.color="#e87728";
+  }
+})
+
+// 검색 이력 삭제
+const delBtn = document.querySelectorAll(".del");
+delBtn.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    if((confirm("삭제하시겠습니까?"))) {
+      //XMLHttpRequest 객체 생성
+      const xhr = new XMLHttpRequest();
+      //요청을 보낼 방식, 주소, 비동기여부 설정
+      xhr.open('GET', '/search/deleteSearchInfo?tsiUno='+btn.value, true);
+      //요청 전송
+      xhr.send(null);
+      //통신후 작업
+      xhr.onload = () => {
+        if (xhr.status === 200) {  //통신 성공
+          console.log("통신 성공");
+          window.location.href="/history"
+        } else {  //통신 실패
+          console.log("통신 실패");
+        }
+      }
+    }
+  })
+});
+
+// 추적 이력 메모
+const trkHistMemo = document.querySelectorAll(".memo");
+trkHistMemo.forEach((memo) => {
+  memo.addEventListener('focusout', () => {
+      //XMLHttpRequest 객체 생성
+      const xhr = new XMLHttpRequest();
+      //요청을 보낼 방식, 주소, 비동기여부 설정
+      xhr.open('GET', '/search/setTrkHistMemo?tsrUno='+memo.dataset.uno+'&memo='+memo.value, true);
+      //요청 전송
+      xhr.send(null);
+      //통신후 작업
+      xhr.onload = () => {
+          if (xhr.status === 200) {  //통신 성공
+              console.log("통신 성공");
+          } else {  //통신 실패
+              console.log("통신 실패");
+          }
+      }
+  })
+});
+
+// 2차 검증 버튼
+const chkBtn = document.querySelectorAll(".btn-off.double-chk")
+chkBtn.forEach((btn) => {
+   btn.addEventListener('click', () => {
+        window.open(btn.value, '_blank');
+   })
+});
+/*]]>*/
+</script>
+</body>
+
+</html>

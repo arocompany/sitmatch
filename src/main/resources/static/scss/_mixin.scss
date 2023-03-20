@@ -1,0 +1,46 @@
+// 공통 색상
+$black:#1B1E20;
+$normal:#545759;
+$blue:#194894;
+$orange:#E87728;
+$light:#E5E5E5;
+$middle:#8A8A95;
+$logo-grey:#B0B2B4;
+$modal-bg:rgba(57, 72, 96, 0.4);
+$main-bg:#F2F2F8;
+$white:#fff;
+%btn-on{
+  box-shadow: -3px -3px 7px rgba(255, 255, 255, 0.6), inset -3px -3px 5px #ffffff,
+    inset 3px 3px 5px rgba(25, 72, 148, 0.32);
+}
+%dark-on{
+  box-shadow: -3px -3px 7px rgba(255, 255, 255, 0.6), inset -3px -3px 5px rgba($color: #fff, $alpha: 0.5),
+    inset 3px 3px 5px rgba(25, 72, 148, 0.32);
+}
+
+%M-box-in{
+  box-shadow: -3px -3px 9px rgba(255, 255, 255, 0.9), inset -3px -3px 6px #ffffff,
+    inset 3px 3px 6px rgba(25, 72, 148, 0.28);
+}
+@mixin border($bor1:10px,$bor2:$bor1,$bor3:$bor1,$bor4:$bor1){
+  border-radius: $bor1 $bor2 $bor3 $bor4;
+}
+@mixin convex($wid,$hei,$blur,$shadow:0.2){
+  background: $main-bg;
+  box-shadow: -$wid+px #{-$hei+px} $blur+px #FFFFFF, $wid+px $hei+px $blur+px rgba(25, 72, 148, $shadow);
+}
+@mixin modal($bor:3px){
+  background: $main-bg;
+  border-width: $bor 0 0 $bor;
+  border-color: $white;
+  border-style: solid;
+  box-shadow: 6px 6px 12px rgba(25, 72, 148, 0.5), -2px -2px 4px rgba(255, 255, 255, 0.2);
+}
+@mixin flex($jc:default,$ai:center){
+  display: flex;
+  @if($jc){justify-content: $jc;}
+  @if($ai){
+    align-items: $ai;
+  }
+  @content;
+}

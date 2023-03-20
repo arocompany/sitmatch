@@ -1,0 +1,88 @@
+<html lagn="ko" xmlns:th="http://www.thymeleaf.org">
+<div class="trace-detail modal bor10 layout">
+  <button class="esc-btn">닫기</button>
+  <section class="detail-box">
+    <h2 class="tit">
+      대상추가 정보
+    </h2>
+    <div class="detail-content M-box-up bor10">
+      <div class="trace-img bor10 img-box">
+        <div class="img">
+<!--          <img src="./img/replace/man.png" alt="">-->
+          <img id="deatilImg" th:src="${'/imagePath'+#strings.substring(traceInfo.getTsrImgPath(),7)+traceInfo.getTsrImgName()}" alt="">
+        </div>
+      </div>
+      <div class="img-info">
+        <p><span>일치율</span><th:block th:switch="${traceInfo.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span><span th:case="11"><span th:text="${#strings.concat(traceInfo.getTmrSimilarity(), '%')}">99%</span></span></th:block></p>
+<!--        <p><span>일치율</span><th:block th:switch="${traceInfo.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span><span th:case="11"><span th:text="${#strings.concat(#strings.substringBefore(traceInfo.getTmrSimilarity(),'.'),'%')}">99%</span></span></th:block></p>-->
+        <p><span>SNS분류</span><th:block th:switch="${traceInfo.getTsrSns()}"><span th:case="11">구글</span><span th:case="13">트위터</span><span th:case="15">인스타그램</span><span th:case="17">페이스북</span></th:block></p>
+        <p><span>URL</span><span th:text="${traceInfo.getTsrDownloadUrl()}">https://sit amet consectetur adipisicing elit. Natus maiores, possimus, nam corporis quae
+          minus nulla numquam nobis dignissimos voluptatibus atque! Dolor repellendus modi velit! Beatae, sit ducimus
+          quo repellendus aut non voluptatibus sapiente laboriosam, fugiat eaque inventore, sequi voluptate harum
+          omnis eius velit officiis sunt mollitia esse atque doloremque ut autem quae. Nobis voluptate esse corporis,
+          beatae dolorem minima veniam provident nulla alias et minus, nostrum aspernatur assumenda autem quos natus
+          placeat! Rerum quod consectetur veritatis adipisci deleniti nam reprehenderit eum facilis enim! Quis,
+          voluptas aliquam! Accusamus culpa cumque quod, quam magni, nemo expedita repellendus dignissimos impedit
+          quia commodi!</span></p>
+        <p><span>게시글 내용</span><span th:text="${traceInfo.getTsrTitle()}">내용이요</span></p>
+        <p><span>파일명</span></span><span th:text="${traceInfo.getTsrImgName()}">replace.png</span></p>
+        <p><span>파일유형</span><span th:text="${traceInfo.getTsrImgExt()}">PNG</span></p>
+        <p><span>파일크기</span><span th:text="${traceInfo.getTsrImgSize()}+'KB'">100MB</p>
+        <p><span>사진크기</span><span th:text="|${traceInfo.getTsrImgWidth()} x ${traceInfo.getTsrImgHeight()}|">1000*500</span></p>
+        <p><span>대상추가 일시</span><span th:text="${#dates.format(traceInfo.getTsrFstDmlDt(), 'yyyy-MM-dd')}">2023-01-02</span></p>
+      </div>
+    </div>
+  </section>
+  <section class="detail-box"><!--  -->
+    <h2 class="tit">
+      재검색 정보
+    </h2>
+    <div class="detail-content M-box-up bor10">
+      <div class="trace-img img-box ">
+        <img th:if="${traceInfo.getTsiImgPath() != null}" th:src="'/imagePath'+${#strings.substring(traceInfo.getTsiImgPath(),7)}+${traceInfo.getTsiImgName()}" alt="">
+<!--        <div class="video">-->
+<!--          <video src="/img/replace/replacevideo.mp4"></video>-->
+<!--          <div class="play-wrap">-->
+<!--            <div class="play-btn"></div>-->
+<!--          </div>-->
+<!--        </div>-->
+      </div>
+      <div class="img-info">
+        <p><span>검색유형</span><th:block th:switch="${traceInfo.getTsiType()}"><span th:case="${'11'}">키워드</span><span th:case="${'13'}">키워드 + 사진</span><span th:case="${'15'}">키워드 + 영상</span><span th:case="${'17'}">사진</span><span th:case="${'19'}">영상</span> / <span th:if="${traceInfo.getTsiGoogle()}">구글</span> <span th:if="${traceInfo.getTsiTwitter()}">트위터</span> <span th:if="${traceInfo.getTsiInstagram()}">인스타그램</span> <span th:if="${traceInfo.getTsiFacebook()}">페이스북</span></th:block></p>
+        <p><span>파일명</span><span th:text="${traceInfo.getTsiImgName()}">replace.mp4</span></p>
+        <p><span>파일유형</span><span th:text="${traceInfo.getTsiImgExt()}">MP4</span></p>
+        <p><span>파일크기</span><span th:text="${traceInfo.getTsiImgSize()}+'KB'">100MB</span></p>
+        <p><span>사진크기</span><span th:text="|${traceInfo.getTsiImgWidth()} x ${traceInfo.getTsiImgHeight()}|">1000*500</span></p>
+<!--        <p><span>영상 길이</span><span th:text="${'검토필요'}">00:00:40</span></p>-->
+<!--        <p><span>재검색 일시</span><span th:text="${'검토필요'}">2023-01-02</span></p>-->
+      </div>
+      <div id="preview">
+        <h3 class="preview-tit">영상 미리보기</h3>
+        <div class="preview-box">
+          <div class="preview-img bor10" th:each="list:${videoInfoList}">
+<!--            <video src="/img/replace/replacevideo.mp4"></video>-->
+            <video th:src="|${list.getTviImgRealPath()}${list.getTviImgName()}|"></video>
+            <canvas></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="detail-box">
+    <h2 class="tit">
+      검색 정보
+    </h2>
+    <div class="detail-content M-box-up bor10">
+      <div class="img-info noimg">
+        <p><span>검색유형</span><th:block th:switch="${traceInfo.getTsiType()}"><span th:case="${'11'}">키워드</span><span th:case="${'13'}">키워드 + 사진</span><span th:case="${'15'}">키워드 + 영상</span><span th:case="${'17'}">사진</span><span th:case="${'19'}">영상</span></th:block> / <span th:if="${traceInfo.getTsiGoogle()}">구글</span><span th:if="${traceInfo.getTsiTwitter()}">트위터</span><span th:if="${traceInfo.getTsiInstagram()}">인스타그램</span><span th:if="${traceInfo.getTsiFacebook()}">페이스북</span></p></th:block>
+        <p><span>파일명</span><span th:text="${traceInfo.getTsiImgName()}">replace.mp4</span></p>
+        <p><span>파일유형</span><span th:text="${traceInfo.getTsiImgExt()}">MP4</span></p>
+        <p><span>파일크기</span><span th:text="${traceInfo.getTsiImgSize()}+'KB'">100MB</span></p>
+        <p><span>사진크기</span><span th:text="|${traceInfo.getTsiImgWidth()} x ${traceInfo.getTsiImgHeight()}|">1000*500</span></p>
+<!--        <p><span>영상 길이</span><span th:text="${'검토필요'}">00:00:40</span></p>-->
+<!--        <p><span>재검색 일시</span><span th:text="${'검토필요'}">2023-01-02</span></p>-->
+      </div>
+    </div>
+  </section>
+</div>
+</html>

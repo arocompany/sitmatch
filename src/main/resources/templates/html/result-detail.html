@@ -1,0 +1,51 @@
+<html lagn="ko" xmlns:th="http://www.thymeleaf.org">
+<div class="trace-detail modal bor10 layout">
+  <button class="esc-btn">닫기</button>
+  <section class="detail-box">
+    <h2 class="tit">
+      대상추가 정보
+    </h2>
+    <div class="detail-content M-box-up bor10">
+      <div class="trace-img bor10 img-box">
+        <div class="img">
+          <img th:src="${'/imagePath'+#strings.substring(searchResultInfo.getTsrImgPath(),7)+searchResultInfo.getTsrImgName()}" alt="">
+        </div>
+      </div>
+      <div class="img-info">
+        <div>
+          <h3>일치율</h3>
+          <th:block th:switch="${searchResultInfo.getTsjStatus()}"><p th:case="10">대기중</p><p th:case="01">처리중</p><p th:case="10">SKIP</p><p th:case="11" th:text="${#strings.concat(searchResultInfo.getTmrSimilarity(), '%')}">99%</p></th:block>
+        </div>
+        <div>
+          <h3>SNS분류</h3>
+          <th:block th:switch="${searchResultInfo.getTsrSns()}"><p th:case="11">구글</p><p th:case="13">트위터</p><p th:case="15">인스타그램</p><p th:case="17">페이스북</p></th:block>
+        </div>
+        <div>
+          <h3>URL</h3>
+          <p th:text="${searchResultInfo.getTsrDownloadUrl()}"></p>
+        </div>
+        <div>
+          <h3>게시글 </h3>
+          <p th:text="${searchResultInfo.getTsrTitle()}">내용이요</p>
+        </div>
+        <div>
+          <h3>파일명</h3>
+          <p th:text="${searchResultInfo.getTsrImgName()}">-</p>
+        </div>
+        <div>
+          <h3>파일유형</h3>
+          <p th:text="${searchResultInfo.getTsrImgExt()}">-</p>
+        </div>
+        <div>
+          <h3>파일크기</h3>
+          <p th:text="${searchResultInfo.getTsrImgSize()+'KB'}">-</p>
+        </div>
+        <div>
+          <h3>사진크기</h3>
+          <p th:text="${searchResultInfo.getTsrImgWidth() + ' x ' +searchResultInfo.getTsrImgHeight()}"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</html>

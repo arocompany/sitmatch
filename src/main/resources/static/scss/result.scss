@@ -1,0 +1,214 @@
+@charset "utf-8";
+@import "mixin";
+%flex {
+  @include flex();
+}
+.re-search {
+  z-index: 100;
+  width: 400px;
+  top: 18px;
+  left: 820px;
+  position: fixed;
+  .search-bar {
+    @extend %flex;
+    height: 54px;
+    padding: 0 12px 0 46px;
+    background: url(../img/common/search.png) no-repeat 20px center/26px, $main-bg;
+    input {
+      flex: 1;
+      width: 100%;
+    }
+    .img-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      color: transparent;
+      background: url(../img/common/photo-search.png) no-repeat center/22px;
+      &:active{
+        @extend %btn-on;
+      }
+    }
+  }
+  // 이미지로 검색
+  .img-search {
+    display: none;
+    position: absolute;
+    z-index: 101;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    color: $logo-grey;
+    background-color: $main-bg;
+    @include modal(2px);
+    padding: 30px 24px 20px;
+    font-size: .875rem;
+    .file-drop {
+      display: block;
+      background: url(../img/main/upload.png) no-repeat center 20px/80px;
+      padding: 110px 0 20px;
+      text-align: center;
+      border: 1px dashed $logo-grey;
+      margin-bottom: 20px;
+      span {
+        font-size: 1rem;
+        margin: 0 3px;
+        font-weight: 500;
+      }
+      .img-type span{
+        color: $blue;
+      }
+    }
+    .esc {
+      background: url(../img/common/esc.png) no-repeat center/16px;
+      font-size: 0;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      width: 16px;
+      height: 16px;
+    }
+    .file-box {
+      @include flex();
+      .file-name {
+        height: 38px;
+        padding-left: 20px;
+        border-radius: 25px;
+        color: $normal;
+        margin-right: 10px;
+      }
+      .file-btn {
+        @include border(4px);
+        height: 34px;
+        line-height: 34px;
+        padding:  0 20px;
+        color: $blue;
+        &:active{
+          @extend %btn-on;
+        }
+      }
+    }
+  }
+}
+#result {
+  .search-contents {
+    @extend %flex;
+    margin-top: 60px;
+    margin-bottom: 30px;
+    align-items: end;
+  }
+  .search-list {
+    flex: 1;
+  }
+  %tab {
+    @extend %flex;
+    align-items: center;
+  }
+  .search-tab {
+    @extend %tab;
+    .tab {
+      @extend %tab;
+      cursor: pointer;
+      color: $middle;
+      p {
+        margin-left: 6px;
+      }
+      img,
+      video {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        filter: saturate(0%);
+        @include border(4px);
+      }
+      // 탭 액티브
+      &.on {
+        color: $black;
+        img,
+        video {
+          filter: saturate(100%);
+        }
+      }
+    }
+    .next {
+      margin: 0 16px;
+      display: none;
+    }
+  }
+  .result-list.active {
+    @extend %flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .list {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 104px auto 32px;
+    grid-template-rows: repeat(4, auto);
+    margin-bottom: 10px;
+    padding: 10px 20px;
+    column-gap: 16px;
+    .img-box {
+      grid-area: 1/1/5/2;
+    }
+    .unity,
+    .content,
+    .url,
+    .detail {
+      grid-column: 2/3;
+    }
+    .img,
+    .video {
+      width: 104px;
+      height: 104px;
+      object-fit: cover;
+    }
+    .sns {
+      right: 4px;
+      bottom: 4px;
+    }
+    &.active {
+      width: 23.25581395348837%;
+      grid-template-columns: 100%;
+      grid-template-rows: repeat(5, auto);
+      padding: 14px 10px;
+      margin-bottom: 30px;
+      position: relative;
+      .img-box {
+        width: 100%;
+        grid-row: 2/3;
+        margin: 4px 0;
+      }
+      .unity,
+      .content,
+      .url,
+      .detail {
+        grid-column-start: 1;
+        grid-column-end: 2;
+      }
+      .unity,
+      .content,
+      .url {
+        padding: 0 4px;
+      }
+      .unity {
+        grid-row: 1/2;
+      }
+      .img,
+      .video {
+        width: 100%;
+        height: 180px;
+      }
+      .detail {
+        justify-content: end;
+      }
+      .trace-add {
+        position: absolute;
+        width: 28px;
+        height: 28px;
+        right: 10px;
+        top: 10px;
+        grid-area: none;
+      }
+    }
+  }
+}
