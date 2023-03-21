@@ -21,5 +21,9 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
     List<UserIdDtoInterface> getUserIdByTsiUno();
     @Query("select concat(TSI.tsiImgPath, TSI.tsiImgName) from SearchInfoEntity TSI where TSI.tsiUno = :tsiUno")
     String getSearchInfoImgUrl(Integer tsiUno);
+
+    @Query(value = "SELECT TSI.TSI_TYPE FROM TB_SEARCH_INFO TSI WHERE TSI.TSI_UNO = :tsiUno", nativeQuery = true)
+    String getSearchInfoTsiType(Integer tsiUno);
+
     SearchInfoEntity findByTsiUno(Integer tsiUno);
 }

@@ -22,23 +22,24 @@
       <input type="hidden" name="listType" id="listType">
       <input type="hidden" name="tsiUno" th:value="${tsiUno}">
       <input type="hidden" name="tsiKeyword" th:value="${tsiKeyword}">
-      <section class="video-chk">
+      <input type="hidden" name="tsiType" th:value="${tsiType}">
+      <section class="video-chk" th:if="${tsiType == '19'}">
         <h2>일치율 높은순</h2>
         <div class="chk-box">
           <label><input type="checkbox" name="video" value=1 class="W" checked>전체</label>
-          <label><input type="checkbox" name="video" value=0>이미지</label>
-          <label><input type="checkbox" name="video" value=0>오디오</label>
-          <label><input type="checkbox" name="video" value=0>텍스트</label>
+          <label><input type="checkbox" name="video" value=1>이미지</label>
+          <label><input type="checkbox" name="video" value=1>오디오</label>
+          <label><input type="checkbox" name="video" value=1>텍스트</label>
         </div>
       </section>
       <section class="sort-chk">
         <h2>분류</h2>
         <div class="chk-box">
-          <label><input type="checkbox" name="tsjStatusAll" value="1" class="W" checked>전체</label>
-          <label><input type="checkbox" name="tsjStatus11" value="0" id="equal">일치율</label>
-          <label><input type="checkbox" name="tsjStatus01" value="0">처리중</label>
-          <label><input type="checkbox" name="tsjStatus00" value="0">대기중</label>
-          <label><input type="checkbox" name="tsjStatus10" value="0">SKIP</label>
+          <label><input type="checkbox" name="tsjStatusAll" value="1" class="W"  checked>전체</label>
+          <label><input type="checkbox" name="tsjStatus11" value="1" id="equal">일치율</label>
+          <label><input type="checkbox" name="tsjStatus01" value="1">처리중</label>
+          <label><input type="checkbox" name="tsjStatus00" value="1">대기중</label>
+          <label><input type="checkbox" name="tsjStatus10" value="1">SKIP</label>
         </div>
       </section>
       <section class="pri-chk">

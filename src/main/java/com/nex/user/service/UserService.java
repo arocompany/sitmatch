@@ -1,7 +1,10 @@
 package com.nex.user.service;
 
 import com.nex.common.EncryptUtil;
+import com.nex.user.entity.AutoEntity;
+import com.nex.user.entity.AutoKeywordInterface;
 import com.nex.user.entity.UserEntity;
+import com.nex.user.repo.AutoRepository;
 import com.nex.user.repo.UserRepository;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -9,12 +12,16 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final AutoRepository autoRepository;
     private final EncryptUtil encryptUtil = new EncryptUtil();
 
     public String memberSignUp(UserEntity userInfo) {
@@ -104,5 +111,14 @@ public class UserService {
 
     public UserEntity getUserInfoByUserId(String userId) {
         return userRepository.findByUserId(userId);
+    }
+
+    public Map<String, Object> getAutoKeyword(String auto_user_id){
+        Map<String,Object> outMap = new HashMap<>();
+        List<AutoKeywordInterface> autoKeyword_list = autoRepository.auto_list_select(auto_user_id);
+
+        outMap.put("autoKeyword_list", autoKeyword_list);
+
+        return outMap;
     }
 }

@@ -6,10 +6,13 @@
   </form>
   <div class="keyword-box btn-on bor10">
     <div>
-      <p class="word-list">고등학생<span type="button" class="delete" onclick='aTDelete(this)'>삭제</span></p>
-      <p class="word-list">여고생<span type="button" class="delete" onclick='aTDelete(this)'>삭제</span></p>
-      <p class="word-list">ㄱㄷ<span type="button" class="delete" onclick='aTDelete(this)'>삭제</span></p>
-      <p class="word-list">성인사이트<span type="button" class="delete" onclick='aTDelete(this)'>삭제</span></p>
+      <p class="word-list" th:each="autoKeyword_list : ${autoKeyword_list}">
+        <b th:text="${autoKeyword_list.getAuto_keyword()}"></b>
+        <span type="button" class="delete" th:field="*{autoKeyword_list.getAuto_keyword()}" onclick='aTDelete(this)'>삭제</span>
+      </p>
+<!--      <p class="word-list">여고생<span type="button" class="delete" onclick='aTDelete(this)'>삭제</span></p>-->
+<!--      <p class="word-list">ㄱㄷ<span type="button" class="delete" onclick='aTDelete(this)'>삭제</span></p>-->
+<!--      <p class="word-list">성인사이트<span type="button" class="delete" onclick='aTDelete(this)'>삭제</span></p>-->
     </div>
   </div>
   <h3 class="title neologism-title">신조어 검색순위</h3>

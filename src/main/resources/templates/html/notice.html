@@ -12,6 +12,7 @@
   <script src="/js/pagination.js"></script>
   <script src="/js/footer.js"></script>
   <script src="/js/style.js"></script>
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 </head>
 
 <body>
@@ -90,14 +91,42 @@
         `;
     }
     function autoTrace(val){
-      let word=val.querySelector("input").value;
-      document.querySelector('.keyword-box>div').innerHTML+=
-        `<p class="word-list">${word}<span type="button" class="delete" onclick='aTDelete(this);'>삭제</span></p>`;
-      val.querySelector("input").value='';
+      $.ajax({
+        type : "POST",
+        url : "/ajax_auto_Insert",
+        data : {'auto_keyword' : $('.keyword-add').val()},
+        success : function(res){
+          let word=val.querySelector("input").value;
+          document.querySelector('.keyword-box>div').innerHTML+=
+                  `<p class="word-list">${word}<span type="button" field="${word}" class="delete" onclick='aTDelete(this);'>삭제</span></p>`;
+          val.querySelector("input").value='';
+        },
+        error : function(XMLHttpRequest, textStatus, errorThrown){
+          alert("통신 실패.")
+        }
+      });
     }
     function aTDelete(del){
-      del.parentNode.remove();
+      var field = $(del).attr('field');
+      $.ajax({
+        type : "POST",
+        url : "/ajax_auto_Delete",
+        data : {'auto_keyword' : $(del).attr('field')},
+        success : function(res){
+
+          $('.delete').each(function(index, item){
+            if($(this).attr('field') == field){
+              item.parentNode.remove();
+            }
+          })
+        },
+        error : function(XMLHttpRequest, textStatus, errorThrown){
+          alert("통신 실패.")
+        }
+      });
+
     }
+
     // 키워드
     const autoKey = document.querySelector(".auto-trace");
     autoKey.addEventListener("click", () => {

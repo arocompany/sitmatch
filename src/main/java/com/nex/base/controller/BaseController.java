@@ -2,10 +2,12 @@ package com.nex.base.controller;
 
 import com.nex.common.Consts;
 import com.nex.search.entity.DefaultQueryDtoInterface;
-import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.service.SearchService;
+import com.nex.user.entity.AutoKeywordInterface;
 import com.nex.user.entity.SessionInfoDto;
 import com.nex.user.repo.UserRepository;
+import com.nex.user.repo.AutoRepository;
+import com.nex.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,6 +29,8 @@ public class BaseController {
 
     private final UserRepository userRepository;
     private final SearchService searchService;
+    private final UserService userService;
+    private final AutoRepository autoRepository;
 
     @GetMapping("/")
     public ModelAndView index(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
@@ -184,15 +188,72 @@ public class BaseController {
                                @RequestParam(required = false, defaultValue = "") String tsjStatus2,
                                @RequestParam(required = false, defaultValue = "") String tsjStatus3,
                                @RequestParam(required = false, defaultValue = "") String tsjStatus4,
+                               @RequestParam(required = false, defaultValue = "") String tsjStatus11,
+                               @RequestParam(required = false, defaultValue = "") String tsjStatus01,
+                               @RequestParam(required = false, defaultValue = "") String tsjStatus00,
+                               @RequestParam(required = false, defaultValue = "") String tsjStatus10,
                                @RequestParam(required = false, defaultValue = "1") String priority) {
         ModelAndView modelAndView = new ModelAndView("html/result");
         Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = null;
 
         log.debug("priority => {}", priority);
 
+//        String order_by_0 = "";
+//        String order_by_1 = " FIELD(TSJ_STATUS, ";
+
+//        if(tsjStatus11.equals("1")){
+//            order_by_0 += " TMR_SIMILARITY ASC ";
+//        }
+//
+//        order_by_1 = " , "+order_by_1;
+//
+//        if(tsjStatus01.equals("1")){
+//            if(order_by_1.equals(" FIELD(TSJ_STATUS, ")){
+//                order_by_1 += " '01'";
+//            }else{
+//                order_by_1 += " ,'01'";
+//            }
+//        }
+//
+//        if(tsjStatus00.equals("1")){
+//            if(order_by_1.equals(" FIELD(TSJ_STATUS, ")){
+//                order_by_1 += " '00'";
+//            }else{
+//                order_by_1 += " ,'00'";
+//            }
+//        }
+//
+//        if(tsjStatus10.equals("1")){
+//            if(order_by_1.equals(" FIELD(TSJ_STATUS, ")){
+//                order_by_1 += " '11'";
+//            }else{
+//                order_by_1 += " ,'11'";
+//            }
+//        }
+//
+//        if(order_by_1.equals(" FIELD(TSJ_STATUS, ")) {
+//            order_by_1 = "";
+//        }
+//
+//        if(!order_by_0.equals("") && !order_by_1.equals("")){
+//            order_by_2 = order_by_0+", "+order_by_1;
+//        }
+//
+//        if(!order_by_2.equals("")){
+//            order_by_2 += " ) asc, ";
+//        }
+
+
+
+        modelAndView.addObject("tsjStatus11", tsjStatus11);//일치율
+        modelAndView.addObject("tsjStatus01", tsjStatus01);//처리중
+        modelAndView.addObject("tsjStatus00", tsjStatus00);//대기중
+        modelAndView.addObject("tsjStatus10", tsjStatus10);//SKIP
+
         if(tsiUno.isPresent()) {
             modelAndView.addObject("tsiUno", tsiUno.get());
             modelAndView.addObject("imgSrc", searchService.getSearchInfoImgUrl(tsiUno.get()));
+            modelAndView.addObject("tsiType", searchService.getSearchInfoTsiType(tsiUno.get()));
             defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatusAll, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4);
         }
         tsiKeyword.ifPresent(s -> modelAndView.addObject("tsiKeyword", s));
@@ -279,8 +340,24 @@ public class BaseController {
     @GetMapping("/keyword")
     public ModelAndView trace_detail(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
         ModelAndView modelAndView = new ModelAndView("html/keyword");
+        Map<String, Object> autoKeyword_list = userService.getAutoKeyword(sessionInfoDto.getUserId());
+
+        modelAndView.addObject("autoKeyword_list", autoKeyword_list.get("autoKeyword_list"));
         modelAndView.addObject("sessionInfo", sessionInfoDto);
 
         return modelAndView;
     }
+
+    @PostMapping("/ajax_auto_Insert")
+    public int ajax_auto_Insert(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
+                                         @RequestParam String auto_keyword) {
+        return autoRepository.auto_Insert(auto_keyword,sessionInfoDto.getUserId());
+    }
+
+    @PostMapping("/ajax_auto_Delete")
+    public int ajax_auto_Delete(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
+                                @RequestParam String auto_keyword) {
+        return autoRepository.auto_Delete(auto_keyword,sessionInfoDto.getUserId());
+    }
+
 }

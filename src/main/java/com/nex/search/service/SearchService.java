@@ -506,6 +506,8 @@ public class SearchService {
         }
         log.debug("priority => {}", priority);
 
+        String orderByTmrSimilarityDesc = " ORDER BY tmrSimilarity desc, TMR.TSR_UNO desc";
+
         if(priority.equals("1")) {
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, pageRequest);
         } else {
@@ -596,6 +598,10 @@ public class SearchService {
 
     public String getSearchInfoImgUrl(Integer tsiUno) {
         return searchInfoRepository.getSearchInfoImgUrl(tsiUno);
+    }
+
+    public String getSearchInfoTsiType(Integer tsiUno) {
+        return searchInfoRepository.getSearchInfoTsiType(tsiUno);
     }
 
     public void addTrkStat(Integer tsrUno) {
