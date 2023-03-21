@@ -67,6 +67,13 @@ public class SearchService {
         private String link;
         private String thumbnail;
 
+        public boolean isInstagram() {
+            return "Instagram".equals(source);
+        }
+
+        public boolean isFacebook() {
+            return "Facebook".equals(source);
+        }
     }
 
     @Data
@@ -84,6 +91,13 @@ public class SearchService {
         private String thumbnail;
         private String source_name;
 
+        public boolean isInstagram() {
+            return "Instagram".equals(source);
+        }
+
+        public boolean isFacebook() {
+            return "Facebook".equals(source);
+        }
     }
 
     private final SearchInfoRepository searchInfoRepository;
@@ -130,25 +144,25 @@ public class SearchService {
                 SearchResultEntity sre = null;
                 for(Images_resultsByText images_result : yandexByTextResult.getImages_results()){
                     try {
-                        log.debug(" ### images_result.link ### : {} ", images_result.link);
+                        log.debug(" ### images_result.link ### : {} ", images_result.getLink());
                         String imageUrl = images_result.getOriginal();
                         sre = new SearchResultEntity();
                         sre.setTsiUno(insertResult.getTsiUno());
                         sre.setTsrJson(images_result.toString());
                         sre.setTsrDownloadUrl(imageUrl);
-                        sre.setTsrTitle(images_result.title);
-                        sre.setTsrSiteUrl(images_result.link);
+                        sre.setTsrTitle(images_result.getTitle());
+                        sre.setTsrSiteUrl(images_result.getLink());
                         //sre.setTsrSns("11");
 
                         //2023-03-20
-                        //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
+                        //Facebook, Instagram 도 Google 로 검색, source 값으로 Facebook, Instagram 판별
 
-                        //Facebook 검색이고, URL 에 facebook.com 이 포함 되어 있을 경우
-                        if ("17".equals(tsrSns) && images_result.link.contains(Consts.FACEBOOK_URL)) {
+                        //Facebook 검색이고, source 값이 Facebook 인 경우
+                        if ("17".equals(tsrSns) && images_result.isFacebook()) {
                             sre.setTsrSns("17");
                         }
-                        //Instagram 검색이고, URL 에 instagram.com 이 포함 되어 있을 경우
-                        else if ("15".equals(tsrSns) && images_result.link.contains(Consts.INSTAGRAM_URL)) {
+                        //Instagram 검색이고, source 값이 Instagram 인 경우
+                        else if ("15".equals(tsrSns) && images_result.isInstagram()) {
                             sre.setTsrSns("15");
                         }
                         //그 외는 구글
@@ -163,7 +177,11 @@ public class SearchService {
                         }
 
 
-                        Resource resource = resourceLoader.getResource(imageUrl);
+                        //Resource resource = resourceLoader.getResource(imageUrl);
+                        //2023-03-21
+                        //구글은 original, Facebook, Instagram 는 thumbnail 로 값을 가져오도록 변경
+                        Resource resource = resourceLoader.getResource("11".equals(sre.getTsrSns()) ? imageUrl : images_result.getThumbnail());
+
 
                         if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("")) {
 
@@ -278,19 +296,19 @@ public class SearchService {
                         sre.setTsiUno(insertResult.getTsiUno());
                         sre.setTsrJson(images_result.toString());
                         sre.setTsrDownloadUrl(imageUrl);
-                        sre.setTsrTitle(images_result.title);
-                        sre.setTsrSiteUrl(images_result.link);
+                        sre.setTsrTitle(images_result.getTitle());
+                        sre.setTsrSiteUrl(images_result.getLink());
                         //sre.setTsrSns("11");
 
                         //2023-03-20
-                        //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
+                        //Facebook, Instagram 도 Google 로 검색, source 값으로 Facebook, Instagram 판별
 
-                        //Facebook 검색이고, URL 에 facebook.com 이 포함 되어 있을 경우
-                        if ("17".equals(tsrSns) && images_result.link.contains(Consts.FACEBOOK_URL)) {
+                        //Facebook 검색이고, source 값이 Facebook 인 경우
+                        if ("17".equals(tsrSns) && images_result.isFacebook()) {
                             sre.setTsrSns("17");
                         }
-                        //Instagram 검색이고, URL 에 instagram.com 이 포함 되어 있을 경우
-                        else if ("15".equals(tsrSns) && images_result.link.contains(Consts.INSTAGRAM_URL)) {
+                        //Instagram 검색이고, source 값이 Instagram 인 경우
+                        else if ("15".equals(tsrSns) && images_result.isInstagram()) {
                             sre.setTsrSns("15");
                         }
                         //그 외는 구글
@@ -305,7 +323,11 @@ public class SearchService {
                         }
 
 
-                        Resource resource = resourceLoader.getResource(imageUrl);
+                        //Resource resource = resourceLoader.getResource(imageUrl);
+                        //2023-03-21
+                        //구글은 original, Facebook, Instagram 는 thumbnail 로 값을 가져오도록 변경
+                        Resource resource = resourceLoader.getResource("11".equals(sre.getTsrSns()) ? imageUrl : images_result.getThumbnail());
+
 
                         if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("")) {
 
