@@ -23,23 +23,23 @@
       <input type="hidden" name="tsiUno" th:value="${tsiUno}">
       <input type="hidden" name="tsiKeyword" th:value="${tsiKeyword}">
       <input type="hidden" name="tsiType" th:value="${tsiType}">
-      <section class="video-chk" th:if="${tsiType == '19'}">
+      <section class="video-chk">
         <h2>일치율 높은순</h2>
         <div class="chk-box">
-          <label><input type="checkbox" name="video" value=1 class="W" checked>전체</label>
-          <label><input type="checkbox" name="video" value=1>이미지</label>
-          <label><input type="checkbox" name="video" value=1>오디오</label>
-          <label><input type="checkbox" name="video" value=1>텍스트</label>
+          <label><input type="checkbox" name="video" value="1" class="W" checked>전체</label>
+          <label><input type="checkbox" name="video" value="0">이미지</label>
+          <label><input type="checkbox" name="video" value="0">오디오</label>
+          <label><input type="checkbox" name="video" value="0">텍스트</label>
         </div>
       </section>
-      <section class="sort-chk">
+      <section class="sort-chk" th:if="${tsiType != '11'}">
         <h2>분류</h2>
         <div class="chk-box">
-          <label><input type="checkbox" name="tsjStatusAll" value="1" class="W"  checked>전체</label>
-          <label><input type="checkbox" name="tsjStatus11" value="1" id="equal">일치율</label>
-          <label><input type="checkbox" name="tsjStatus01" value="1">처리중</label>
-          <label><input type="checkbox" name="tsjStatus00" value="1">대기중</label>
-          <label><input type="checkbox" name="tsjStatus10" value="1">SKIP</label>
+          <label><input type="checkbox" name="tsjStatusAll" value="1" class="W">전체</label>
+          <label><input type="checkbox" name="tsjStatus11" value="0" id="equal">일치율</label>
+          <label><input type="checkbox" name="tsjStatus01" value="0">처리중</label>
+          <label><input type="checkbox" name="tsjStatus00" value="0">대기중</label>
+          <label><input type="checkbox" name="tsjStatus10" value="0">SKIP</label>
         </div>
       </section>
       <section class="pri-chk">
@@ -99,7 +99,10 @@
             <img th:case="17" src="/img/common/sns/facebook-round.png" alt="" class="sns">
           </th:block>
         </div>
-        <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span>
+        <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}">
+          <span th:case="00">대기중</span>
+          <span th:case="01">처리중</span>
+          <span th:case="10">SKIP</span>
           <span th:case="11">
             <h2 class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
           </span>
@@ -232,7 +235,9 @@ searchImg.addEventListener('click', function () {
 
 // ----------체크박스------------ 추가----------------------------------------
 /* 검색파일이 video일경우*/
-const video = true;//임시값
+//const video = true;//임시값
+//2023-03-22 수정
+const video = [[${tsiType}]] == '15' || [[${tsiType}]] == '19';
 if (video) {
   document.querySelector('.video-chk').style.display = 'block';
 } else {

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -183,7 +184,7 @@ public class BaseController {
                                @RequestParam(required = false, defaultValue = "1") Integer page,
                                @RequestParam(required = false, defaultValue = "") String keyword,
                                @RequestParam(required = false, defaultValue = "list") String listType,
-                               @RequestParam(required = false, defaultValue = "1") String tsjStatusAll,
+                               @RequestParam(required = false, defaultValue = "") String tsjStatusAll,
                                @RequestParam(required = false, defaultValue = "") String tsjStatus1,
                                @RequestParam(required = false, defaultValue = "") String tsjStatus2,
                                @RequestParam(required = false, defaultValue = "") String tsjStatus3,
@@ -243,17 +244,46 @@ public class BaseController {
 //            order_by_2 += " ) asc, ";
 //        }
 
-
+        //2023-03-22
+        //검색 조건 값이 다 없을 경우
+        if (!StringUtils.hasText(tsjStatusAll)
+                && !StringUtils.hasText(tsjStatus00)
+                && !StringUtils.hasText(tsjStatus01)
+                && !StringUtils.hasText(tsjStatus10)
+                && !StringUtils.hasText(tsjStatus11)) {
+            tsjStatusAll = "1";
+        }
 
         modelAndView.addObject("tsjStatus11", tsjStatus11);//일치율
         modelAndView.addObject("tsjStatus01", tsjStatus01);//처리중
         modelAndView.addObject("tsjStatus00", tsjStatus00);//대기중
         modelAndView.addObject("tsjStatus10", tsjStatus10);//SKIP
 
+        //2023-03-22 값이 없어서 추가
+        modelAndView.addObject("tsjStatusAll", tsjStatusAll);//전체
+
         if(tsiUno.isPresent()) {
             modelAndView.addObject("tsiUno", tsiUno.get());
             modelAndView.addObject("imgSrc", searchService.getSearchInfoImgUrl(tsiUno.get()));
             modelAndView.addObject("tsiType", searchService.getSearchInfoTsiType(tsiUno.get()));
+
+
+            //2023-03-22
+            //tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4 값이 안넘어와서 세팅 추가
+            if ("1".equals(tsjStatus00)) {
+                tsjStatus1 = "00";
+            }
+            if ("1".equals(tsjStatus01)) {
+                tsjStatus2 = "01";
+            }
+            if ("1".equals(tsjStatus10)) {
+                tsjStatus3 = "10";
+            }
+            if ("1".equals(tsjStatus11)) {
+                tsjStatus4 = "11";
+            }
+
+
             defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatusAll, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4);
         }
         tsiKeyword.ifPresent(s -> modelAndView.addObject("tsiKeyword", s));
