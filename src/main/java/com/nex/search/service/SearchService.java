@@ -144,12 +144,10 @@ public class SearchService {
                 SearchResultEntity sre = null;
                 for(Images_resultsByText images_result : yandexByTextResult.getImages_results()){
                     try {
-                        log.debug(" ### images_result.link ### : {} ", images_result.getLink());
-                        String imageUrl = images_result.getOriginal();
                         sre = new SearchResultEntity();
                         sre.setTsiUno(insertResult.getTsiUno());
                         sre.setTsrJson(images_result.toString());
-                        sre.setTsrDownloadUrl(imageUrl);
+                        sre.setTsrDownloadUrl(images_result.getOriginal());
                         sre.setTsrTitle(images_result.getTitle());
                         sre.setTsrSiteUrl(images_result.getLink());
                         //sre.setTsrSns("11");
@@ -180,7 +178,8 @@ public class SearchService {
                         //Resource resource = resourceLoader.getResource(imageUrl);
                         //2023-03-21
                         //구글은 original, Facebook, Instagram 는 thumbnail 로 값을 가져오도록 변경
-                        Resource resource = resourceLoader.getResource("11".equals(sre.getTsrSns()) ? imageUrl : images_result.getThumbnail());
+                        String imageUrl = "11".equals(sre.getTsrSns()) ? images_result.getOriginal() : images_result.getThumbnail();
+                        Resource resource = resourceLoader.getResource(imageUrl);
 
 
                         if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("")) {
