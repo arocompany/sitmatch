@@ -517,7 +517,7 @@ public class SearchService {
     }
 
     public Page<DefaultQueryDtoInterface> getSearchResultList(Integer tsiUno, String keyword, Integer page, String priority,
-                                                              String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4) {
+                                                              String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String order_type) {
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
 
         log.debug("priority => {}", priority);
@@ -525,11 +525,30 @@ public class SearchService {
 
         String orderByTmrSimilarityDesc = " ORDER BY tmrSimilarity desc, TMR.TSR_UNO desc";
 
-        if(priority.equals("1")) {
+
+
+        if("1".equals(order_type)){
+            return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_1(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, pageRequest);
+        }else if("2".equals(order_type)){
+            return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_2(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, pageRequest);
+        }else if("3".equals(order_type)){
+            return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_3(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, pageRequest);
+        }else if("4".equals(order_type)){
+            return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_4(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, pageRequest);
+        }else if("5".equals(order_type)){
+            return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_5(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, pageRequest);
+        }else if("6".equals(order_type)){
+            return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_6(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, pageRequest);
+        }else{
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, pageRequest);
-        } else {
-            return searchResultRepository.getResultInfoListOrderByTmrSimilarityAsc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, pageRequest);
         }
+
+
+//        if(priority.equals("1")) {
+//            return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, pageRequest);
+//        } else {
+//            return searchResultRepository.getResultInfoListOrderByTmrSimilarityAsc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, pageRequest);
+//        }
     }
 
     public DefaultQueryDtoInterface getResultInfo(Integer tsrUno) {

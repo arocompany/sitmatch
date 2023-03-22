@@ -25,17 +25,17 @@
       <input type="hidden" name="tsiType" th:value="${tsiType}">
       <section class="video-chk">
         <h2>일치율 높은순</h2>
-        <div class="chk-box">
-          <label><input type="checkbox" name="video" value="1" class="W" checked>전체</label>
-          <label><input type="checkbox" name="video" value="0">이미지(V)</label>
-          <label><input type="checkbox" name="video" value="0">오디오(A)</label>
-          <label><input type="checkbox" name="video" value="0">텍스트(T)</label>
+        <div class="chk-box chk-box-od">
+          <label><input type="checkbox" class="W" name="odStatusAll" value="1"  th:checked="${odStatusAll != ''}">전체</label>
+          <label><input type="checkbox" name="odStatus01" th:value="${odStatus01}" th:checked="${odStatus01 != ''}">이미지(V)</label>
+          <label><input type="checkbox" name="odStatus02" th:value="${odStatus02}" th:checked="${odStatus02 != ''}">오디오(A)</label>
+          <label><input type="checkbox" name="odStatus03" th:value="${odStatus03}" th:checked="${odStatus03 != ''}">텍스트(T)</label>
         </div>
       </section>
       <section class="sort-chk" th:if="${tsiType != '11'}">
         <h2>분류</h2>
-        <div class="chk-box">
-          <label><input type="checkbox" name="tsjStatusAll" value="1" class="W" th:checked="${tsjStatusAll != ''}">전체</label>
+        <div class="chk-box chk-box-tsj">
+          <label><input type="checkbox" class="W" name="tsjStatusAll" value="1" th:checked="${tsjStatusAll != ''}">전체</label>
           <label><input type="checkbox" name="tsjStatus11" th:value="${tsjStatus11}" th:checked="${tsjStatus11 != ''}">일치율</label>
           <label><input type="checkbox" name="tsjStatus01" th:value="${tsjStatus01}" th:checked="${tsjStatus01 != ''}">처리중</label>
           <label><input type="checkbox" name="tsjStatus00" th:value="${tsjStatus00}" th:checked="${tsjStatus00 != ''}">대기중</label>
@@ -263,7 +263,7 @@ if (video) {
 }
 
 // check된 값1로 넘기기
-const chk = document.querySelectorAll('.chk-box input[type=checkbox]');
+const chk = document.querySelectorAll('.chk-box-tsj input[type=checkbox]');
 for (let i = 0; i < chk.length; i++) {
   chk[i].addEventListener('change', function () {
     this.value ^= 1;
@@ -298,16 +298,67 @@ for (let i = 0; i < chk.length; i++) {
         }
       })
     }
-    console.log("chk[4] => %s", chk[4].value);
-    console.log("chk[5] => %s", chk[5].value);
-    console.log("chk[6] => %s", chk[6].value);
-    console.log("chk[7] => %s", chk[7].value);
-    console.log("chk[8] => %s", chk[8].value);
-    console.log(chk[5].value+chk[6].value+chk[7].value+chk[8].value);
-    if (chk[5].value+chk[6].value+chk[7].value+chk[8].value === "0000") {
-      chk[4].checked = true;
-      chk[4].value ^= 1;
-      chk[4].disabled = true;
+    // console.log("chk[4] => %s", chk[4].value);
+    // console.log("chk[5] => %s", chk[5].value);
+    // console.log("chk[6] => %s", chk[6].value);
+    // console.log("chk[7] => %s", chk[7].value);
+    // console.log("chk[8] => %s", chk[8].value);
+    // console.log(chk[5].value+chk[6].value+chk[7].value+chk[8].value);
+    if (chk[1].value+chk[2].value+chk[3].value+chk[4].value === "0000") {
+      chk[0].checked = true;
+      chk[0].value ^= 1;
+      chk[0].disabled = true;
+    }
+  })
+}
+
+// check된 값1로 넘기기
+const od_chk = document.querySelectorAll('.chk-box-od input[type=checkbox]');
+for (let i = 0; i < od_chk.length; i++) {
+  console.log(this.className);
+  od_chk[i].addEventListener('change', function () {
+    this.value ^= 1;
+    // 일치율선택시 우선순위 나오기
+    if (this.id === 'equal') {
+      if (this.checked) {
+        document.querySelector('.pri-chk').style.display = 'block';
+      } else {
+        document.querySelector('.pri-chk').style.display = 'none';
+      }
+    }
+    // 전체 누르면 다른값 체크해제
+    if (this.className ==='W') {
+      if(this.checked) {
+        [...od_chk].filter(check=>check.className !=='W' && check.name !== this.name).forEach(e => {
+          if (e.checked) {
+            e.checked = false;
+            e.value ^= 1;
+          }
+        })
+        document.querySelector('.pri-chk').style.display = 'none';
+        this.disabled = true;
+      }
+    }
+    // 다른체크시 전체 체크값해제
+    if (this.className !== 'W') {
+      [...od_chk].filter(check => check.className === 'W' && check.name !== this.name).forEach(e => {
+        if(e.checked) {
+          e.checked = false;
+          e.value ^= 1;
+          e.disabled = false;
+        }
+      })
+    }
+    // console.log("chk[4] => %s", chk[4].value);
+    // console.log("chk[5] => %s", chk[5].value);
+    // console.log("chk[6] => %s", chk[6].value);
+    // console.log("chk[7] => %s", chk[7].value);
+    // console.log("chk[8] => %s", chk[8].value);
+    // console.log(chk[5].value+chk[6].value+chk[7].value+chk[8].value);
+    if (od_chk[1].value+od_chk[2].value+od_chk[3].value === "0000") {
+      od_chk[0].checked = true;
+      od_chk[0].value ^= 1;
+      od_chk[0].disabled = true;
     }
   })
 }

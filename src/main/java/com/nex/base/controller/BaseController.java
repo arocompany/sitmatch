@@ -193,6 +193,10 @@ public class BaseController {
                                @RequestParam(required = false, defaultValue = "") String tsjStatus01,
                                @RequestParam(required = false, defaultValue = "") String tsjStatus00,
                                @RequestParam(required = false, defaultValue = "") String tsjStatus10,
+                               @RequestParam(required = false, defaultValue = "") String odStatus01,
+                               @RequestParam(required = false, defaultValue = "") String odStatus02,
+                               @RequestParam(required = false, defaultValue = "") String odStatus03,
+                               @RequestParam(required = false, defaultValue = "") String odStatusAll,
                                @RequestParam(required = false, defaultValue = "1") String priority) {
         ModelAndView modelAndView = new ModelAndView("html/result");
         Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = null;
@@ -210,10 +214,18 @@ public class BaseController {
             tsjStatusAll = "1";
         }
 
+        if (!StringUtils.hasText(odStatusAll)
+                && !StringUtils.hasText(odStatus01)
+                && !StringUtils.hasText(odStatus02)
+                && !StringUtils.hasText(odStatus03)) {
+            odStatusAll = "1";
+        }
+
 
 
         //2023-03-22 값이 없어서 추가
         modelAndView.addObject("tsjStatusAll", tsjStatusAll);//전체
+        modelAndView.addObject("odStatusAll", odStatusAll);
 
         if(tsiUno.isPresent()) {
             modelAndView.addObject("tsiUno", tsiUno.get());
@@ -227,7 +239,7 @@ public class BaseController {
                 tsjStatus1 = "11";
             }
             if ("1".equals(tsjStatus01)) {
-                tsjStatus2 = "10";
+                tsjStatus2 = "01";
             }
             if ("1".equals(tsjStatus00)) {
                 tsjStatus3 = "00";
@@ -241,6 +253,11 @@ public class BaseController {
             modelAndView.addObject("tsjStatus00", tsjStatus00);//대기중
             modelAndView.addObject("tsjStatus10", tsjStatus10);//SKIP
 
+            modelAndView.addObject("odStatus01", odStatus01);//이미지
+            modelAndView.addObject("odStatus02", odStatus02);//오디오
+            modelAndView.addObject("odStatus03", odStatus03);//텍스트
+
+
             if(!"".equals(tsjStatusAll)) {
                 tsjStatus1 = "00";
                 tsjStatus2 = "01";
@@ -248,10 +265,35 @@ public class BaseController {
                 tsjStatus4 = "11";
             }
 
+            if(!"".equals(odStatusAll)) {
+                odStatus01 = "1";
+                odStatus02 = "1";
+                odStatus03 = "1";
+            }
+
+            String order_type = "";
+
+            if("1".equals(odStatus01) && "1".equals(odStatus02) && "1".equals(odStatus03)){
+                order_type = "0"; // 모두선택 또는 전체
+            }else if("1".equals(odStatus01) && !"1".equals(odStatus02) && !"1".equals(odStatus03)){
+                order_type = "1"; // 이미지만선택
+            }else if(!"1".equals(odStatus01) && "1".equals(odStatus02) && !"1".equals(odStatus03)){
+                order_type = "2"; // 오디오만선택
+            }else if(!"1".equals(odStatus01) && !"1".equals(odStatus02) && "1".equals(odStatus03)){
+                order_type = "3"; // 텍스트만선택
+            }else if("1".equals(odStatus01) && "1".equals(odStatus02) && !"1".equals(odStatus03)){
+                order_type = "4"; //이미지, 오디오 선택
+            }else if("1".equals(odStatus01) && !"1".equals(odStatus02) && "1".equals(odStatus03)){
+                order_type = "5"; //이미지, 텍스트 선택
+            }else if(!"1".equals(odStatus01) && "1".equals(odStatus02) && !"1".equals(odStatus03)){
+                order_type = "6"; //오디오, 텍스트 선택
+            }
+
+            System.out.println("testtesttest==============="+order_type);
 
 
 
-            defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4);
+            defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, order_type);
         }
         tsiKeyword.ifPresent(s -> modelAndView.addObject("tsiKeyword", s));
         modelAndView.addObject("sessionInfo", sessionInfoDto);
