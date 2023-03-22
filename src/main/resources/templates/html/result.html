@@ -36,10 +36,10 @@
         <h2>분류</h2>
         <div class="chk-box">
           <label><input type="checkbox" name="tsjStatusAll" value="1" class="W" th:checked="${tsjStatusAll != ''}">전체</label>
-          <label><input type="checkbox" name="tsjStatus11" value="0" id="equal" th:checked="${tsjStatus11 != ''}">일치율</label>
-          <label><input type="checkbox" name="tsjStatus01" value="0" th:checked="${tsjStatus01 != ''}">처리중</label>
-          <label><input type="checkbox" name="tsjStatus00" value="0" th:checked="${tsjStatus00 != ''}">대기중</label>
-          <label><input type="checkbox" name="tsjStatus10" value="0" th:checked="${tsjStatus10 != ''}">SKIP
+          <label><input type="checkbox" name="tsjStatus11" th:value="${tsjStatus11}" id="equal" th:checked="${tsjStatus11 != ''}">일치율</label>
+          <label><input type="checkbox" name="tsjStatus01" th:value="${tsjStatus01}" th:checked="${tsjStatus01 != ''}">처리중</label>
+          <label><input type="checkbox" name="tsjStatus00" th:value="${tsjStatus00}" th:checked="${tsjStatus00 != ''}">대기중</label>
+          <label><input type="checkbox" name="tsjStatus10" th:value="${tsjStatus10}" th:checked="${tsjStatus10 != ''}">SKIP
             <span class="describe" flow="up" tooltip="해당 검색 결과의 일치율 비교 불가 데이터">?</span>
           </label>
         </div>

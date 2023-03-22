@@ -210,10 +210,7 @@ public class BaseController {
             tsjStatusAll = "1";
         }
 
-        modelAndView.addObject("tsjStatus11", tsjStatus11);//일치율
-        modelAndView.addObject("tsjStatus01", tsjStatus01);//처리중
-        modelAndView.addObject("tsjStatus00", tsjStatus00);//대기중
-        modelAndView.addObject("tsjStatus10", tsjStatus10);//SKIP
+
 
         //2023-03-22 값이 없어서 추가
         modelAndView.addObject("tsjStatusAll", tsjStatusAll);//전체
@@ -226,18 +223,23 @@ public class BaseController {
 
             //2023-03-22
             //tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4 값이 안넘어와서 세팅 추가
-            if ("1".equals(tsjStatus00)) {
-                tsjStatus1 = "00";
+            if ("1".equals(tsjStatus11)) {
+                tsjStatus1 = "11";
             }
             if ("1".equals(tsjStatus01)) {
-                tsjStatus2 = "01";
+                tsjStatus2 = "10";
+            }
+            if ("1".equals(tsjStatus00)) {
+                tsjStatus3 = "00";
             }
             if ("1".equals(tsjStatus10)) {
-                tsjStatus3 = "10";
+                tsjStatus4 = "10";
             }
-            if ("1".equals(tsjStatus11)) {
-                tsjStatus4 = "11";
-            }
+
+            modelAndView.addObject("tsjStatus11", tsjStatus11);//일치율
+            modelAndView.addObject("tsjStatus01", tsjStatus01);//처리중
+            modelAndView.addObject("tsjStatus00", tsjStatus00);//대기중
+            modelAndView.addObject("tsjStatus10", tsjStatus10);//SKIP
 
             if(!"".equals(tsjStatusAll)) {
                 tsjStatus1 = "00";
