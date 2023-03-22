@@ -14,7 +14,13 @@
       <div class="img-info">
         <div>
           <h3>일치율</h3>
-          <th:block th:switch="${searchResultInfo.getTsjStatus()}"><p th:case="10">대기중</p><p th:case="01">처리중</p><p th:case="10">SKIP</p><p th:case="11" th:text="${#strings.concat(searchResultInfo.getTmrSimilarity(), '%')}">99%</p></th:block>
+          <th:block th:switch="${searchResultInfo.getTsjStatus()}">
+            <p th:case="10">대기중</p>
+            <p th:case="01">처리중</p>
+            <p th:case="10">SKIP</p>
+            <p style="display:inline-block" th:case="11" th:text="${#strings.concat(searchResultInfo.getTmrSimilarity(), '%')}">99%
+            </p>
+          </th:block>
         </div>
         <div>
           <h3>SNS분류</h3>

@@ -27,28 +27,30 @@
         <h2>일치율 높은순</h2>
         <div class="chk-box">
           <label><input type="checkbox" name="video" value="1" class="W" checked>전체</label>
-          <label><input type="checkbox" name="video" value="0">이미지</label>
-          <label><input type="checkbox" name="video" value="0">오디오</label>
-          <label><input type="checkbox" name="video" value="0">텍스트</label>
+          <label><input type="checkbox" name="video" value="0">이미지(V)</label>
+          <label><input type="checkbox" name="video" value="0">오디오(A)</label>
+          <label><input type="checkbox" name="video" value="0">텍스트(T)</label>
         </div>
       </section>
       <section class="sort-chk" th:if="${tsiType != '11'}">
         <h2>분류</h2>
         <div class="chk-box">
-          <label><input type="checkbox" name="tsjStatusAll" value="1" class="W">전체</label>
-          <label><input type="checkbox" name="tsjStatus11" value="0" id="equal">일치율</label>
-          <label><input type="checkbox" name="tsjStatus01" value="0">처리중</label>
-          <label><input type="checkbox" name="tsjStatus00" value="0">대기중</label>
-          <label><input type="checkbox" name="tsjStatus10" value="0">SKIP</label>
+          <label><input type="checkbox" name="tsjStatusAll" value="1" class="W" th:checked="${tsjStatusAll != ''}">전체</label>
+          <label><input type="checkbox" name="tsjStatus11" value="0" id="equal" th:checked="${tsjStatus11 != ''}">일치율</label>
+          <label><input type="checkbox" name="tsjStatus01" value="0" th:checked="${tsjStatus01 != ''}">처리중</label>
+          <label><input type="checkbox" name="tsjStatus00" value="0" th:checked="${tsjStatus00 != ''}">대기중</label>
+          <label><input type="checkbox" name="tsjStatus10" value="0" th:checked="${tsjStatus10 != ''}">SKIP
+            <span class="describe" flow="up" tooltip="해당 검색 결과의 일치율 비교 불가 데이터">?</span>
+          </label>
         </div>
       </section>
-      <section class="pri-chk">
-        <h2>우선순위</h2>
-        <div class="chk-box">
-          <label><input type="radio" name="priority" value="1" checked>일치율 높은순</label>
-          <label><input type="radio" name="priority" value="0">일치율 낮은순</label>
-        </div>
-      </section>
+<!--      <section class="pri-chk">-->
+<!--        <h2>우선순위</h2>-->
+<!--        <div class="chk-box">-->
+<!--          <label><input type="radio" name="priority" value="1" checked>일치율 높은순</label>-->
+<!--          <label><input type="radio" name="priority" value="0">일치율 낮은순</label>-->
+<!--        </div>-->
+<!--      </section>-->
       <div class="search-bar bor10 bor10 btn-off">
         <input type="text" name="keyword" placeholder="검색어를 입력하세요" th:value="${keyword}">
       </div>
@@ -60,15 +62,18 @@
       <div class="search-list">
         <div class="search-tab">
           <div class="tab on">
-            <div class="search-img"><img th:if="${imgSrc != null}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt=""></div>
+            <div class="search-img">
+              <img th:if="${(imgSrc != null && tsiType != '15' && tsiType != '19')}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
+              <video th:if="${(imgSrc != null && (tsiType == '15' || tsiType == '19'))}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
+            </div>
             <p><span th:if="${tsiKeyword} != ''" th:text="|&quot;${tsiKeyword}&quot;|"></span>에 대한 검색 결과 입니다.</p>
           </div>
           <img th:if="${!#strings.isEmpty(keyword)}" src="/img/result/double-right.png" alt="" class="next research" style="display: block">
           <div class="tab research" th:if="${!#strings.isEmpty(keyword)}">
             <p>"<span th:text="${keyword}">sitting</span>"에 대한 검색 결과 입니다.</p>
           </div>
-          <div class="">
-            <p><span>상담사 : </span><span th:text="${userId}">상담사 아이디</span></p>
+          <div  style="margin-left:5px;" >
+            <p><span> | 상담사 : </span><span th:text="${userId}">상담사 아이디</span></p>
           </div>
         </div>
       </div>
@@ -99,14 +104,24 @@
             <img th:case="17" src="/img/common/sns/facebook-round.png" alt="" class="sns">
           </th:block>
         </div>
-        <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}">
-          <span th:case="00">대기중</span>
-          <span th:case="01">처리중</span>
-          <span th:case="10">SKIP</span>
-          <span th:case="11">
-            <h2 class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
-          </span>
-        </th:block>
+        <div>
+          <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}">
+            <span th:case="00">대기중</span>
+            <span th:case="01">처리중</span>
+            <span th:case="10">SKIP</span>
+            <span th:case="11">
+              <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
+              <span th:if="${(tsiType == '15' || tsiType == '19')}">
+                <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">V : <span th:text="${list.getTmrVScore()}">100</span>%</b>
+                <b th:if="${list.getTmrVScore() == null || list.getTmrVScore() == '0.0'}">V : <span>비교없음</span></b>
+                <b th:if="${list.getTmrAScore() != null && list.getTmrAScore() != '0.0'}">A : <span th:text="${list.getTmrAScore()}">100</span>%</b>
+                <b th:if="${list.getTmrAScore() == null || list.getTmrAScore() == '0.0'}">A : <span>비교없음</span></b>
+                <b th:if="${list.getTmrTScore() != null && list.getTmrTScore() != '0.0'}">T : <span th:text="${list.getTmrTScore()}">100</span>%</b>
+                <b th:if="${list.getTmrTScore() == null || list.getTmrTScore() == '0.0'}">T : <span>비교없음</span></b>
+              </span>
+            </span>
+          </th:block>
+        </div>
 <!--        <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span><span th:case="11"><h2 class="unity" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h2></span></th:block>-->
         <a th:href="${list.getTsrDownloadUrl()}" target="_blank" class="url"><p class="url" th:text="${list.getTsrDownloadUrl()}">url이 들어갑니다</p></a>
         <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
@@ -226,6 +241,9 @@ searchImg.addEventListener('click', function () {
         ${this.children[0].outerHTML}
       <button class="esc-btn">닫기</button>
         </div>`;
+  if(modal.querySelector('video')){
+    modal.querySelector('video').controls=true;
+  }
   const esc = modal.querySelector(".esc-btn");
   esc.onclick = () => {
     modal.style.display = 'none';

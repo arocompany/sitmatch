@@ -27,7 +27,7 @@
       </div>
       <h2>
         <span class="num">순번</span>
-        <span class="">상담사</span>
+        <span class="counselor">상담사</span>
         <span class="type">검색 유형</span>
         <span class="cont">내용</span>
         <span class="social">SNS</span>
@@ -38,7 +38,7 @@
       <ul class="history-list history-search-list">
         <li class="btn-off bor10" th:each="searchInfoList:${searchInfoList}">
           <p class="num" th:text="${searchInfoList.getTsiUno()}"></p>
-          <p class="" th:text="${userIdMap.get(searchInfoList.getUserUno())}">상담사 아이디</p>
+          <p class="counselor" th:text="${userIdMap.get(searchInfoList.getUserUno())}">상담사 아이디</p>
           <p class="type">
               <th:block th:switch="${searchInfoList.getTsiType()}">
                   <span th:case="${'11'}">키워드</span>

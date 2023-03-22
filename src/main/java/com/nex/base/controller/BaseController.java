@@ -199,50 +199,6 @@ public class BaseController {
 
         log.debug("priority => {}", priority);
 
-//        String order_by_0 = "";
-//        String order_by_1 = " FIELD(TSJ_STATUS, ";
-
-//        if(tsjStatus11.equals("1")){
-//            order_by_0 += " TMR_SIMILARITY ASC ";
-//        }
-//
-//        order_by_1 = " , "+order_by_1;
-//
-//        if(tsjStatus01.equals("1")){
-//            if(order_by_1.equals(" FIELD(TSJ_STATUS, ")){
-//                order_by_1 += " '01'";
-//            }else{
-//                order_by_1 += " ,'01'";
-//            }
-//        }
-//
-//        if(tsjStatus00.equals("1")){
-//            if(order_by_1.equals(" FIELD(TSJ_STATUS, ")){
-//                order_by_1 += " '00'";
-//            }else{
-//                order_by_1 += " ,'00'";
-//            }
-//        }
-//
-//        if(tsjStatus10.equals("1")){
-//            if(order_by_1.equals(" FIELD(TSJ_STATUS, ")){
-//                order_by_1 += " '11'";
-//            }else{
-//                order_by_1 += " ,'11'";
-//            }
-//        }
-//
-//        if(order_by_1.equals(" FIELD(TSJ_STATUS, ")) {
-//            order_by_1 = "";
-//        }
-//
-//        if(!order_by_0.equals("") && !order_by_1.equals("")){
-//            order_by_2 = order_by_0+", "+order_by_1;
-//        }
-//
-//        if(!order_by_2.equals("")){
-//            order_by_2 += " ) asc, ";
-//        }
 
         //2023-03-22
         //검색 조건 값이 다 없을 경우
@@ -283,8 +239,17 @@ public class BaseController {
                 tsjStatus4 = "11";
             }
 
+            if(!"".equals(tsjStatusAll)) {
+                tsjStatus1 = "00";
+                tsjStatus2 = "01";
+                tsjStatus3 = "10";
+                tsjStatus4 = "11";
+            }
 
-            defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatusAll, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4);
+
+
+
+            defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4);
         }
         tsiKeyword.ifPresent(s -> modelAndView.addObject("tsiKeyword", s));
         modelAndView.addObject("sessionInfo", sessionInfoDto);

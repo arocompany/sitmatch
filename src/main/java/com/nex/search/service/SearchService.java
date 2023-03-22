@@ -517,15 +517,11 @@ public class SearchService {
     }
 
     public Page<DefaultQueryDtoInterface> getSearchResultList(Integer tsiUno, String keyword, Integer page, String priority,
-                                                              String tsjStatusAll, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4) {
+                                                              String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4) {
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
-        if(tsjStatusAll.equals("1")) {
-            tsjStatus1 = "00";
-            tsjStatus2 = "01";
-            tsjStatus3 = "10";
-            tsjStatus4 = "11";
-        }
+
         log.debug("priority => {}", priority);
+
 
         String orderByTmrSimilarityDesc = " ORDER BY tmrSimilarity desc, TMR.TSR_UNO desc";
 
