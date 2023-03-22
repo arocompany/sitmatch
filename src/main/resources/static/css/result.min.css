@@ -318,8 +318,12 @@
     flex-direction: column
 }
 
-.searchmodal img, .searchmodal video {
-    width: 300px
+.searchmodal img {
+    max-width: 300px
+}
+
+.searchmodal video {
+    max-width: 500px
 }
 
 .searchmodal .esc-btn {
