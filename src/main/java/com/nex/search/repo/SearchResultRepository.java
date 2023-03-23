@@ -45,22 +45,23 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     // WHERE
     String whereTsiUnoTsrTitleLikeTsrStatusIn = " WHERE TSI.TSI_UNO = :tsiUno AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') " +
-            "AND (TSJ.TSJ_STATUS = :tsjStatus1 OR TSJ.TSJ_STATUS = :tsjStatus2 OR TSJ.TSJ_STATUS = :tsjStatus3 OR TSJ.TSJ_STATUS = :tsjStatus4)";
+            "AND (tsj.TSJ_STATUS = :tsjStatus1 OR tsj.TSJ_STATUS = :tsjStatus2 OR tsj.TSJ_STATUS = :tsjStatus3 OR tsj.TSJ_STATUS = :tsjStatus4)" +
+            "AND (tsr.TSR_SNS = :snsStatus01 OR tsr.TSR_SNS = :snsStatus02 OR tsr.TSR_SNS = :snsStatus03 OR tsr.TSR_SNS = :snsStatus04)";
     String whereTsrUno = " WHERE TSR.TSR_UNO = :tsrUno";
     String whereTrkStatCdNotNullAndTsrTitleContaining = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%')";
     String whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike = " WHERE TSR.DATA_STAT_CD = :tsrDataStatCd AND TSR.TRK_STAT_CD != :trkStatCd AND TSR.TRK_STAT_CD LIKE CONCAT('%',:trkStatCd2,'%') AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%')";
 
     // ORDER BY
-    String orderByTmrSimilarityDesc = " ORDER BY TMR_V_SCORE desc, TMR_A_SCORE desc, TMR_T_SCORE desc, tmrSimilarity desc, TMR.TSR_UNO desc";
-    String orderByTmrSimilarityDesc_1 = " ORDER BY TMR_V_SCORE desc, tmrSimilarity desc, TMR.TSR_UNO desc";
-    String orderByTmrSimilarityDesc_2 = " ORDER BY TMR_A_SCORE desc, tmrSimilarity desc, TMR.TSR_UNO desc";
-    String orderByTmrSimilarityDesc_3 = " ORDER BY TMR_T_SCORE desc, tmrSimilarity desc, TMR.TSR_UNO desc";
-    String orderByTmrSimilarityDesc_4 = " ORDER BY TMR_V_SCORE desc, TMR_A_SCORE desc, tmrSimilarity desc, TMR.TSR_UNO desc";
-    String orderByTmrSimilarityDesc_5 = " ORDER BY TMR_V_SCORE desc, TMR_T_SCORE desc, tmrSimilarity desc, TMR.TSR_UNO desc";
-    String orderByTmrSimilarityDesc_6 = " ORDER BY TMR_A_SCORE desc, TMR_T_SCORE desc, tmrSimilarity desc, TMR.TSR_UNO desc";
+    String orderByTmrSimilarityDesc = " ORDER BY tmrVScore desc, tmrAScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_1 = " ORDER BY tmrVScore desc, tmrSimilarity desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_2 = " ORDER BY tmrAScore desc, tmrSimilarity desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_3 = " ORDER BY tmrTScore desc, tmrSimilarity desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_4 = " ORDER BY tmrVScore desc, tmrAScore desc, tmrSimilarity desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_5 = " ORDER BY tmrVScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_6 = " ORDER BY tmrVScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
 
-    String orderByTmrSimilarityAsc = " ORDER BY tmrSimilarity asc, TMR.TSR_UNO desc";
-    String orderByTsrUnoDesc = " ORDER BY TMR.TSR_UNO desc";
+    String orderByTmrSimilarityAsc = " ORDER BY tmrSimilarity asc, tsrUno desc";
+    String orderByTsrUnoDesc = " ORDER BY tsrUno desc";
 
     // 검색결과 관련 ORDER BY
     String orderByResult01 = " ORDER BY TMR.TSR_UNO DESC, TMR.TMR_V_SCORE DESC, TMR.TMR_A_SCORE DESC, TMR_T_SCORE DESC";
@@ -97,22 +98,30 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     // 검색 결과
 
     @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn)
-    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
+                                                                               String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
     @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_1, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn)
-    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_1(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_1(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
+                                                                               String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
     @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_2, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn)
-    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_2(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_2(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
+                                                                               String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
     @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_3, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn)
-    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_3(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_3(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
+                                                                               String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
     @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_4, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn)
-    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_4(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_4(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
+                                                                               String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
     @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_5, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn)
-    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_5(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_5(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
+                                                                               String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
     @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_6, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn)
-    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_6(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_6(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
+                                                                               String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
 
     @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityAsc, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn)
-    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityAsc(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityAsc(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
+                                                                            String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
 
     // 검색 결과 팝업
     @Query(value = defaultQeury+from+whereTsrUno, nativeQuery = true, countQuery = countQuery+from+whereTsrUno)

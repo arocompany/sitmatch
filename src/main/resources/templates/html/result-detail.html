@@ -18,7 +18,16 @@
             <p th:case="10">대기중</p>
             <p th:case="01">처리중</p>
             <p th:case="10">SKIP</p>
-            <p style="display:inline-block" th:case="11" th:text="${#strings.concat(searchResultInfo.getTmrSimilarity(), '%')}">99%
+            <p style="display:inline-block" th:case="11">
+              <b th:text="${#strings.concat(searchResultInfo.getTmrSimilarity(), '%')}">99%</b>
+              <span>
+                  <b th:if="${searchResultInfo.getTmrVScore() != null && searchResultInfo.getTmrVScore() != '0.0'}">(V : <span th:text="${searchResultInfo.getTmrVScore()}">100</span>%,&nbsp;</b>
+                  <b th:if="${searchResultInfo.getTmrVScore() == null || searchResultInfo.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>
+                  <b th:if="${searchResultInfo.getTmrAScore() != null && searchResultInfo.getTmrAScore() != '0.0'}">A : <span th:text="${searchResultInfo.getTmrAScore()}">100</span>%,&nbsp;</b>
+                  <b th:if="${searchResultInfo.getTmrAScore() == null || searchResultInfo.getTmrAScore() == '0.0'}">A : <span>비교없음,</span>&nbsp;</b>
+                  <b th:if="${searchResultInfo.getTmrTScore() != null && searchResultInfo.getTmrTScore() != '0.0'}">T : <span th:text="${searchResultInfo.getTmrTScore()}">100</span>%)</b>
+                  <b th:if="${searchResultInfo.getTmrTScore() == null || searchResultInfo.getTmrTScore() == '0.0'}">T : <span>비교없음</span>)</b>
+              </span>
             </p>
           </th:block>
         </div>
@@ -28,7 +37,7 @@
         </div>
         <div>
           <h3>URL</h3>
-          <p th:text="${searchResultInfo.getTsrDownloadUrl()}"></p>
+          <p th:text="${searchResultInfo.getTsrSiteUrl()}"></p>
         </div>
         <div>
           <h3>게시글 </h3>

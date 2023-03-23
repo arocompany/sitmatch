@@ -14,7 +14,32 @@
       <div class="img-info">
         <div>
           <h3>일치율</h3>
-          <th:block th:switch="${traceInfo.getTsjStatus()}"><p th:case="10">대기중</p><p th:case="01">처리중</p><p th:case="10">SKIP</p><p th:case="11" th:text="${#strings.concat(traceInfo.getTmrSimilarity(), '%')}">99%</p></th:block>
+          <th:block th:switch="${traceInfo.getTsjStatus()}">
+            <p th:case="10">대기중</p>
+            <p th:case="01">처리중</p>
+            <p th:case="10">SKIP</p>
+            <p th:case="11"><b th:text="${#strings.concat(traceInfo.getTmrSimilarity(), '%')}">99%</b>
+              <span>
+                  <b th:if="${traceInfo.getTmrVScore() != null && traceInfo.getTmrVScore() != '0.0'}">(V : <span th:text="${traceInfo.getTmrVScore()}">100</span>%,&nbsp;</b>
+                  <b th:if="${traceInfo.getTmrVScore() == null || traceInfo.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>
+                  <b th:if="${traceInfo.getTmrAScore() != null && traceInfo.getTmrAScore() != '0.0'}">A : <span th:text="${traceInfo.getTmrAScore()}">100</span>%,&nbsp;</b>
+                  <b th:if="${traceInfo.getTmrAScore() == null || traceInfo.getTmrAScore() == '0.0'}">A : <span>비교없음,</span>&nbsp;</b>
+                  <b th:if="${traceInfo.getTmrTScore() != null && traceInfo.getTmrTScore() != '0.0'}">T : <span th:text="${traceInfo.getTmrTScore()}">100</span>%)</b>
+                  <b th:if="${traceInfo.getTmrTScore() == null || traceInfo.getTmrTScore() == '0.0'}">T : <span>비교없음</span>)</b>
+              </span>
+            </p>
+          </th:block>
+
+
+
+<!--          <div th:if="${traceInfo.getTsiType() == '15' || traceInfo.getTsiType() == '19'}">-->
+<!--            <b th:if="${traceInfo.getTmrVScore() != null && traceInfo.getTmrVScore() != '0.0'}">V : <span th:text="${list.getTmrVScore()}">100</span>%</b>-->
+<!--            <b th:if="${traceInfo.getTmrVScore() == null || traceInfo.getTmrVScore() == '0.0'}">V : <span>비교없음</span></b>-->
+<!--            <b th:if="${traceInfo.getTmrAScore() != null && traceInfo.getTmrAScore() != '0.0'}">A : <span th:text="${list.getTmrAScore()}">100</span>%</b>-->
+<!--            <b th:if="${traceInfo.getTmrAScore() == null || traceInfo.getTmrAScore() == '0.0'}">A : <span>비교없음</span></b>-->
+<!--            <b th:if="${traceInfo.getTmrTScore() != null && traceInfo.getTmrTScore() != '0.0'}">T : <span th:text="${list.getTmrTScore()}">100</span>%</b>-->
+<!--            <b th:if="${traceInfo.getTmrTScore() == null || traceInfo.getTmrTScore() == '0.0'}">T : <span>비교없음</span></b>-->
+<!--          </div>-->
         </div>
         <div>
           <h3>SNS분류</h3>
@@ -22,7 +47,7 @@
         </div>
         <div>
           <h3>URL</h3>
-          <p th:text="${traceInfo.getTsrDownloadUrl()}"></p>
+          <p th:text="${traceInfo.getTsrSiteUrl()}"></p>
         </div>
         <div>
           <h3>게시글 내용</h3>
@@ -128,18 +153,32 @@
     <div class="detail-content M-box-up bor10">
 <!--      <div class="img-info noimg">-->
       <div class="trace-img img-box" th:if="${traceInfo.getTsiType() != '11'}">
-        <img th:src="'/imagePath'+${#strings.substring(traceInfo.getTsiImgPath(),7)}+${traceInfo.getTsiImgName()}" alt="">
-<!--        <div class="video">-->
-<!--          <video src="./img/replace/replacevideo.mp4"></video>-->
-<!--          <div class="play-wrap">-->
-<!--            <div class="play-btn"></div>-->
-<!--          </div>-->
-<!--        </div>-->
+
+          <img th:if="${traceInfo.getTsiType() != '15' && traceInfo.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(traceInfo.getTsiImgPath(),7)}+${traceInfo.getTsiImgName()}" alt="">
+
+
+        <div class="video" th:if="${traceInfo.getTsiType() != '15' || traceInfo.getTsiType() != '19'}">
+          <video th:src="'/imagePath'+${#strings.substring(traceInfo.getTsiImgPath(),7)}+${traceInfo.getTsiImgName()}" controls></video>
+        </div>
       </div>
       <div class="img-info">
         <div>
           <h3>검색유형</h3>
-          <p><th:block th:switch="${traceInfo.getTsiType()}"><span th:case="${'11'}">키워드</span><span th:case="${'13'}">키워드 + 사진</span><span th:case="${'15'}">키워드 + 영상</span><span th:case="${'17'}">사진</span><span th:case="${'19'}">영상</span></th:block> / <span th:if="${traceInfo.getTsiGoogle()}">구글</span> <span th:if="${traceInfo.getTsiTwitter()}">트위터</span> <span th:if="${traceInfo.getTsiInstagram()}">인스타그램</span> <span th:if="${traceInfo.getTsiFacebook()}">페이스북</span></p>
+          <p><th:block th:switch="${traceInfo.getTsiType()}">
+            <span th:case="${'11'}">키워드</span>
+            <span th:case="${'13'}">키워드 + 사진</span>
+            <span th:case="${'15'}">키워드 + 영상</span>
+            <span th:case="${'17'}">사진</span>
+            <span th:case="${'19'}">영상</span></th:block> /
+
+            <span th:if="${traceInfo.getTsiGoogle()}">구글</span>
+            <span th:if="${traceInfo.getTsiTwitter()}">트위터</span>
+            <span th:if="${traceInfo.getTsiInstagram()}">인스타그램</span>
+            <span th:if="${traceInfo.getTsiFacebook()}">페이스북</span>
+          </p>
+        </div>
+        <div th:if="${traceInfo.getTsiType() == '15' || traceInfo.getTsiType() == '19'}">
+
         </div>
         <div th:if="${traceInfo.getTsiType() != '11'}">
           <h3>파일명</h3>

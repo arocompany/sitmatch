@@ -49,9 +49,13 @@
               </th:block>
           </p>
           <p class="cont">
+
+          <div class="search-img">
+          <img th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="">
+          <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="">
+          </div>
+            <span th:if="${searchInfoList.getTsiType() == '13'||searchInfoList.getTsiType() == '15'}"> + </span>
             <span class="con1" th:text="${searchInfoList.getTsiKeyword()}"></span>
-            <span th:if="${searchInfoList.getTsiType() == '13'||searchInfoList.getTsiType() == '15'}">&nbsp;/&nbsp;</span>
-            <a th:href="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" target="_blank"><span class='con2' th:text="${searchInfoList.getTsiImgName()}"></span></a>
           </p>
           <p class="social">
             <img th:if="${searchInfoList.getTsiGoogle() == 1}" src="/img/common/sns/google.png" alt="">
@@ -132,7 +136,7 @@
               </ul>
             </div>
           </div>
-          <button class="btn-off double-chk" th:value="${traceHistoryList.getTsrSiteUrl()}">2차 검증</button>
+          <button class="btn-off double-chk" th:value="${traceHistoryList.getTsrSiteUrl()}">24시간 모니터링</button>
         </li>
         <li th:if="${traceHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
       </ul>

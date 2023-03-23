@@ -193,10 +193,15 @@ public class BaseController {
                                @RequestParam(required = false, defaultValue = "") String tsjStatus01,
                                @RequestParam(required = false, defaultValue = "") String tsjStatus00,
                                @RequestParam(required = false, defaultValue = "") String tsjStatus10,
+                               @RequestParam(required = false, defaultValue = "") String odStatusAll,
                                @RequestParam(required = false, defaultValue = "") String odStatus01,
                                @RequestParam(required = false, defaultValue = "") String odStatus02,
                                @RequestParam(required = false, defaultValue = "") String odStatus03,
-                               @RequestParam(required = false, defaultValue = "") String odStatusAll,
+                               @RequestParam(required = false, defaultValue = "") String snsStatusAll,
+                               @RequestParam(required = false, defaultValue = "") String snsStatus01,
+                               @RequestParam(required = false, defaultValue = "") String snsStatus02,
+                               @RequestParam(required = false, defaultValue = "") String snsStatus03,
+                               @RequestParam(required = false, defaultValue = "") String snsStatus04,
                                @RequestParam(required = false, defaultValue = "1") String priority) {
         ModelAndView modelAndView = new ModelAndView("html/result");
         Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = null;
@@ -221,11 +226,20 @@ public class BaseController {
             odStatusAll = "1";
         }
 
+        if (!StringUtils.hasText(snsStatusAll)
+                && !StringUtils.hasText(snsStatus01)
+                && !StringUtils.hasText(snsStatus02)
+                && !StringUtils.hasText(snsStatus03)
+                && !StringUtils.hasText(snsStatus04)) {
+            snsStatusAll = "1";
+        }
+
 
 
         //2023-03-22 값이 없어서 추가
         modelAndView.addObject("tsjStatusAll", tsjStatusAll);//전체
         modelAndView.addObject("odStatusAll", odStatusAll);
+        modelAndView.addObject("snsStatusAll", snsStatusAll);
 
         if(tsiUno.isPresent()) {
             modelAndView.addObject("tsiUno", tsiUno.get());
@@ -248,6 +262,19 @@ public class BaseController {
                 tsjStatus4 = "10";
             }
 
+            if ("1".equals(snsStatus01)) {
+                snsStatus01 = "11";
+            }
+            if ("1".equals(snsStatus02)) {
+                snsStatus02 = "13";
+            }
+            if ("1".equals(snsStatus03)) {
+                snsStatus03 = "15";
+            }
+            if ("1".equals(snsStatus04)) {
+                snsStatus04 = "17";
+            }
+
             modelAndView.addObject("tsjStatus11", tsjStatus11);//일치율
             modelAndView.addObject("tsjStatus01", tsjStatus01);//처리중
             modelAndView.addObject("tsjStatus00", tsjStatus00);//대기중
@@ -256,6 +283,11 @@ public class BaseController {
             modelAndView.addObject("odStatus01", odStatus01);//이미지
             modelAndView.addObject("odStatus02", odStatus02);//오디오
             modelAndView.addObject("odStatus03", odStatus03);//텍스트
+
+            modelAndView.addObject("snsStatus01", snsStatus01);//구글
+            modelAndView.addObject("snsStatus02", snsStatus02);//트위터
+            modelAndView.addObject("snsStatus03", snsStatus03);//인스타
+            modelAndView.addObject("snsStatus04", snsStatus04);//페이스북
 
 
             if(!"".equals(tsjStatusAll)) {
@@ -269,6 +301,13 @@ public class BaseController {
                 odStatus01 = "1";
                 odStatus02 = "1";
                 odStatus03 = "1";
+            }
+
+            if(!"".equals(snsStatusAll)) {
+                snsStatus01 = "11";
+                snsStatus02 = "13";
+                snsStatus03 = "15";
+                snsStatus04 = "17";
             }
 
             String order_type = "";
@@ -293,7 +332,8 @@ public class BaseController {
 
 
 
-            defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, order_type);
+            defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, order_type);
         }
         tsiKeyword.ifPresent(s -> modelAndView.addObject("tsiKeyword", s));
         modelAndView.addObject("sessionInfo", sessionInfoDto);

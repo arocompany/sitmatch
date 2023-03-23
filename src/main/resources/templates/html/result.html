@@ -23,6 +23,18 @@
       <input type="hidden" name="tsiUno" th:value="${tsiUno}">
       <input type="hidden" name="tsiKeyword" th:value="${tsiKeyword}">
       <input type="hidden" name="tsiType" th:value="${tsiType}">
+
+      <section class="sns-chk">
+        <h2>SNS</h2>
+        <div class="chk-box chk-box-sns">
+          <label><input type="checkbox" class="W" name="snsStatusAll" value="1"  th:checked="${snsStatusAll != ''}">전체</label>
+          <label><input type="checkbox" name="snsStatus01" th:value="${snsStatus01}" th:checked="${snsStatus01 != ''}">구글</label>
+          <label><input type="checkbox" name="snsStatus02" th:value="${snsStatus02}" th:checked="${snsStatus02 != ''}">트위터</label>
+          <label><input type="checkbox" name="snsStatus03" th:value="${snsStatus03}" th:checked="${snsStatus03 != ''}">인스타</label>
+          <label><input type="checkbox" name="snsStatus04" th:value="${snsStatus04}" th:checked="${snsStatus04 != ''}">페이스북</label>
+        </div>
+      </section>
+
       <section class="video-chk">
         <h2>일치율 높은순</h2>
         <div class="chk-box chk-box-od">
@@ -32,7 +44,8 @@
           <label><input type="checkbox" name="odStatus03" th:value="${odStatus03}" th:checked="${odStatus03 != ''}">텍스트(T)</label>
         </div>
       </section>
-      <section class="sort-chk" th:if="${tsiType != '11'}">
+
+      <section class="sort-chk">
         <h2>분류</h2>
         <div class="chk-box chk-box-tsj">
           <label><input type="checkbox" class="W" name="tsjStatusAll" value="1" th:checked="${tsjStatusAll != ''}">전체</label>
@@ -112,18 +125,18 @@
             <span th:case="11">
               <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
               <span th:if="${(tsiType == '15' || tsiType == '19')}">
-                <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">V : <span th:text="${list.getTmrVScore()}">100</span>%</b>
-                <b th:if="${list.getTmrVScore() == null || list.getTmrVScore() == '0.0'}">V : <span>비교없음</span></b>
-                <b th:if="${list.getTmrAScore() != null && list.getTmrAScore() != '0.0'}">A : <span th:text="${list.getTmrAScore()}">100</span>%</b>
-                <b th:if="${list.getTmrAScore() == null || list.getTmrAScore() == '0.0'}">A : <span>비교없음</span></b>
-                <b th:if="${list.getTmrTScore() != null && list.getTmrTScore() != '0.0'}">T : <span th:text="${list.getTmrTScore()}">100</span>%</b>
-                <b th:if="${list.getTmrTScore() == null || list.getTmrTScore() == '0.0'}">T : <span>비교없음</span></b>
+                <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">(V : <span th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>
+                <b th:if="${list.getTmrVScore() == null || list.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>
+                <b th:if="${list.getTmrAScore() != null && list.getTmrAScore() != '0.0'}">A : <span th:text="${list.getTmrAScore()}">100</span>%,&nbsp;</b>
+                <b th:if="${list.getTmrAScore() == null || list.getTmrAScore() == '0.0'}">A : <span>비교없음,&nbsp;</span></b>
+                <b th:if="${list.getTmrTScore() != null && list.getTmrTScore() != '0.0'}">T : <span th:text="${list.getTmrTScore()}">100</span>%)</b>
+                <b th:if="${list.getTmrTScore() == null || list.getTmrTScore() == '0.0'}">T : <span>비교없음</span>)</b>
               </span>
             </span>
           </th:block>
         </div>
 <!--        <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span><span th:case="11"><h2 class="unity" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h2></span></th:block>-->
-        <a th:href="${list.getTsrDownloadUrl()}" target="_blank" class="url"><p class="url" th:text="${list.getTsrDownloadUrl()}">url이 들어갑니다</p></a>
+        <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url"><p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p></a>
         <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
         <p class="detail" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),', ','파일명 : ',list.getTsrImgName())}">파일 정보가 들어갑니다</p>
         <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}">추가</button>
@@ -262,7 +275,58 @@ if (video) {
   document.querySelector('.video-chk').style.display = 'none';
 }
 
-// check된 값1로 넘기기
+const sortChkDiv = [[${tsiType}]] != '11';
+if (sortChkDiv) {
+  document.querySelector('.sort-chk').style.display = 'block';
+} else {
+  document.querySelector('.sort-chk').style.display = 'none';
+}
+
+// SNS check된 값1로 넘기기
+const sns_chk = document.querySelectorAll('.chk-box-sns input[type=checkbox]');
+for (let i = 0; i < sns_chk.length; i++) {
+  sns_chk[i].addEventListener('change', function () {
+    this.value ^= 1;
+    // 일치율선택시 우선순위 나오기
+    if (this.id === 'equal') {
+      if (this.checked) {
+        document.querySelector('.pri-chk').style.display = 'block';
+      } else {
+        document.querySelector('.pri-chk').style.display = 'none';
+      }
+    }
+    // 전체 누르면 다른값 체크해제
+    if (this.className ==='W') {
+      if(this.checked) {
+        [...sns_chk].filter(check=>check.className !=='W' && check.name !== this.name).forEach(e => {
+          if (e.checked) {
+            e.checked = false;
+            e.value ^= 1;
+          }
+        })
+        document.querySelector('.pri-chk').style.display = 'none';
+        this.disabled = true;
+      }
+    }
+    // 다른체크시 전체 체크값해제
+    if (this.className !== 'W') {
+      [...sns_chk].filter(check => check.className === 'W' && check.name !== this.name).forEach(e => {
+        if(e.checked) {
+          e.checked = false;
+          e.value ^= 1;
+          e.disabled = false;
+        }
+      })
+    }
+    if (sns_chk[1].value+sns_chk[2].value+sns_chk[3].value+sns_chk[4].value === "0000") {
+      sns_chk[0].checked = true;
+      sns_chk[0].value ^= 1;
+      sns_chk[0].disabled = true;
+    }
+  })
+}
+
+//분류 check된 값1로 넘기기
 const chk = document.querySelectorAll('.chk-box-tsj input[type=checkbox]');
 for (let i = 0; i < chk.length; i++) {
   chk[i].addEventListener('change', function () {
@@ -298,12 +362,6 @@ for (let i = 0; i < chk.length; i++) {
         }
       })
     }
-    // console.log("chk[4] => %s", chk[4].value);
-    // console.log("chk[5] => %s", chk[5].value);
-    // console.log("chk[6] => %s", chk[6].value);
-    // console.log("chk[7] => %s", chk[7].value);
-    // console.log("chk[8] => %s", chk[8].value);
-    // console.log(chk[5].value+chk[6].value+chk[7].value+chk[8].value);
     if (chk[1].value+chk[2].value+chk[3].value+chk[4].value === "0000") {
       chk[0].checked = true;
       chk[0].value ^= 1;
@@ -312,7 +370,7 @@ for (let i = 0; i < chk.length; i++) {
   })
 }
 
-// check된 값1로 넘기기
+//일치율 check된 값1로 넘기기
 const od_chk = document.querySelectorAll('.chk-box-od input[type=checkbox]');
 for (let i = 0; i < od_chk.length; i++) {
   console.log(this.className);
@@ -349,12 +407,6 @@ for (let i = 0; i < od_chk.length; i++) {
         }
       })
     }
-    // console.log("chk[4] => %s", chk[4].value);
-    // console.log("chk[5] => %s", chk[5].value);
-    // console.log("chk[6] => %s", chk[6].value);
-    // console.log("chk[7] => %s", chk[7].value);
-    // console.log("chk[8] => %s", chk[8].value);
-    // console.log(chk[5].value+chk[6].value+chk[7].value+chk[8].value);
     if (od_chk[1].value+od_chk[2].value+od_chk[3].value === "0000") {
       od_chk[0].checked = true;
       od_chk[0].value ^= 1;
