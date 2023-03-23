@@ -2,10 +2,13 @@ package com.nex.search.repo;
 
 import com.nex.search.entity.DefaultQueryDtoInterface;
 import com.nex.search.entity.SearchResultEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -138,6 +141,12 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     // 모니터링 팝업
     @Query(value = defaultQeury+from+whereTsrUno, nativeQuery = true, countQuery = countQuery+from+whereTsrUno)
     DefaultQueryDtoInterface getTraceInfo(Integer tsrUno);
+
+    //추적이력 삭제
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE tb_search_result SET TRK_STAT_CD = null WHERE TSR_UNO = :tsrUno", nativeQuery = true)
+    int stat_co_del(@Param("tsrUno") Integer tsrUno);    // 자동추적 키워드 목록
 
 }
 

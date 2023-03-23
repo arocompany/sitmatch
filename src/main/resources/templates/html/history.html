@@ -48,15 +48,18 @@
                   <span th:case="${'19'}">영상</span>
               </th:block>
           </p>
-          <p class="cont">
+          <div class="cont">
 
-          <div class="search-img">
-          <img th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="">
-          <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="">
+            <div class="img-box">
+              <div class="img" th:if="${searchInfoList.getTsiType() != '11'}">
+                <img th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="">
+                <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="">
+              </div>
+            </div>
+            <p class="con1">
+              <span class="con1" th:text="${searchInfoList.getTsiKeyword()}"></span>
+            </p>
           </div>
-            <span th:if="${searchInfoList.getTsiType() == '13'||searchInfoList.getTsiType() == '15'}"> + </span>
-            <span class="con1" th:text="${searchInfoList.getTsiKeyword()}"></span>
-          </p>
           <p class="social">
             <img th:if="${searchInfoList.getTsiGoogle() == 1}" src="/img/common/sns/google.png" alt="">
             <img th:if="${searchInfoList.getTsiFacebook() == 1}" src="/img/common/sns/face.png" alt="">
@@ -97,7 +100,14 @@
           <li><span>삭제 완료 :</span> <span th:text="${countDelCmpl}">14</span></li>
         </ul>
       </div>
-      <h2><span class="num">순번</span><span class="cont">내용 및 검색 정보</span> <span class="memo">메모</span> <span class="state">상태</span><span class="double-chk">2차 검증</span></h2>
+      <h2>
+        <span class="num">순번</span>
+        <span class="cont">내용 및 검색 정보</span>
+        <span class="memo">메모</span>
+        <span class="state">상태</span>
+        <span class="all-time">구분</span>
+        <span class="double-chk">재유포</span>
+      </h2>
       <ul class="history-list history-trace-list">
         <li class="btn-off bor10" th:each="traceHistoryList : ${traceHistoryList}">
           <p class="num" th:text="${traceHistoryList.getTsrUno()}">${i}</p>
@@ -116,14 +126,28 @@
             <div class="text" style="width: 100px;">
               <a class="url" style="width:100%" th:href="${traceHistoryList.getTsrSiteUrl()}" target="_blank" th:text="${traceHistoryList.getTsrSiteUrl()}">url이 들어갑니다</a>
               <p class="content" th:text="${traceHistoryList.getTsrTitle()}">내용이 들어갑니다</p>
-              <p class="detail"><span class="detail-info">검색정보 : <th:block th:switch="${tsiTypeMap.get(traceHistoryList.getTsiUno())}"><span th:case="11">키워드</span><span th:case="13">키워드 + 사진</span><span th:case="15">키워드 + 영상</span><span th:case="17">사진</span><span th:case="19">영상</span></th:block> / <span th:text="${tsiKeyword.get(traceHistoryList.getTsiUno())}">키워드가 들어 갑니다</span> <span th:text="${traceHistoryList.tsrImgName}">파일명이 들어갑니다</span> </span> <span class="detail-time">검색일 : <span th:text="${#dates.format(tsiFstDmlDt.get(traceHistoryList.getTsiUno()), 'yyyy.MM.dd')}">2022.01.12</span></span></p>
+              <p class="detail"><span class="detail-info">검색정보 :
+                <th:block th:switch="${tsiTypeMap.get(traceHistoryList.getTsiUno())}">
+                  <span th:case="11">키워드</span>
+                  <span th:case="13">키워드 + 사진</span>
+                  <span th:case="15">키워드 + 영상</span>
+                  <span th:case="17">사진</span>
+                  <span th:case="19">영상</span>
+                </th:block>
+                /
+                <span th:text="${tsiKeyword.get(traceHistoryList.getTsiUno())}">키워드가 들어 갑니다</span> <span th:text="${traceHistoryList.tsrImgName}">파일명이 들어갑니다</span>
+                </span>
+                <span class="detail-time">
+                  검색일 : <span th:text="${#dates.format(tsiFstDmlDt.get(traceHistoryList.getTsiUno()), 'yyyy.MM.dd')}">2022.01.12</span>
+                </span>
+              </p>
               <p class="">상담사 : <span th:text="${traceHistoryList.getTuUserId()}"></span></p>
             </div>
           </div>
           <textarea placeholder="내용 입력" class="btn-on memo" th:data-uno="${traceHistoryList.getTsrUno()}" th:text="${traceHistoryList.getTrkHistMemo()}"></textarea>
           <div class="state">
             <input type="hidden" class="bor10 M-box-in" name="trace-state">
-            <div class="selection" th:data-uno="${traceHistoryList.getTsrUno()}">
+            <div class="selection setTraceHistory" th:data-uno="${traceHistoryList.getTsrUno()}">
                 <th:block th:switch="${traceHistoryList.getTrkStatCd()}">
                     <button th:case="10" style="color: #194894;">모니터링</button>
                     <button th:case="20" style="color: #e87728;">삭제 요청</button>
@@ -136,7 +160,8 @@
               </ul>
             </div>
           </div>
-          <button class="btn-off double-chk" th:value="${traceHistoryList.getTsrSiteUrl()}">24시간 모니터링</button>
+          <button class="btn-off all-time">24시간 모니터링</button>
+          <button class="btn-off double-chk">0건</button>
         </li>
         <li th:if="${traceHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
       </ul>
@@ -201,7 +226,7 @@ hisTab.forEach((tab, idx) => {
 })
 
 // 셀렉트 구현
-const select = document.querySelectorAll(".selection");
+const select = document.querySelectorAll(".selection.setTraceHistory");
 select.forEach(sel => {
   sel.addEventListener("click", (e) => {
     sel.classList.toggle('active');
@@ -246,13 +271,13 @@ const traceEvent = (pageNum) => {
 }
 
 //검색이력 내용 넓이
-const context = document.querySelectorAll(".history-search-list .cont");
-context.forEach(con => {
-  if (con.querySelector('.con2').innerHTML === '') {
-    con.querySelector('.con2').style.display = 'none';
-    con.querySelector('.con1').style.maxWidth = '100%';
-  }
-})
+// const context = document.querySelectorAll(".history-search-list .cont");
+// context.forEach(con => {
+//   if (con.querySelector('.con2').innerHTML === '') {
+//     con.querySelector('.con2').style.display = 'none';
+//     con.querySelector('.con1').style.maxWidth = '100%';
+//   }
+// })
 
 // 검색 진행률
 const progress = document.querySelectorAll(".dot-wrap.progress");
@@ -314,13 +339,43 @@ trkHistMemo.forEach((memo) => {
 });
 
 // 2차 검증 버튼
-const chkBtn = document.querySelectorAll(".btn-off.double-chk")
-chkBtn.forEach((btn) => {
-   btn.addEventListener('click', () => {
-        window.open(btn.value, '_blank');
-   })
-});
+// const chkBtn = document.querySelectorAll(".btn-off.double-chk")
+// chkBtn.forEach((btn) => {
+//    btn.addEventListener('click', () => {
+//         window.open(btn.value, '_blank');
+//    })
+// });
 /*]]>*/
+
+// 0323추가 사진 클릭시 이미지 팝업
+const modal = document.querySelector("#modal");
+const searchImg = document.querySelectorAll('.img');
+for (let i = 0; i < searchImg.length; i++) {
+  searchImg[i].addEventListener('click', function () {
+    document.body.style.overflow = 'hidden';
+    modal.style.display = 'block';
+    modal.innerHTML = `<div class='modal bor10 imgmodal'>
+        ${this.children[0].outerHTML}
+      <button class="esc-btn">닫기</button>
+        </div>`;
+    if (modal.querySelector('video')) {
+      modal.querySelector('video').controls = true;
+    }
+    const esc = modal.querySelector(".esc-btn");
+    esc.onclick = () => {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'unset';
+    }
+  })
+}
+
+// 24시간 모니터링 버튼 활성화
+const allTime = document.querySelectorAll(".all-time");
+for (let i = 0; i < allTime.length; i++) {
+  allTime[i].addEventListener('click', function () {
+    this.classList.toggle('active');
+  })
+}
 </script>
 </body>
 

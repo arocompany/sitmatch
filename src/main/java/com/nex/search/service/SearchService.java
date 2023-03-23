@@ -664,6 +664,7 @@ public class SearchService {
         SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
         searchResultEntity.setDataStatCd(Consts.DATA_STAT_CD_DELETE);
         searchResultRepository.save(searchResultEntity);
+        searchResultRepository.stat_co_del(tsrUno);
     }
 
     public void setTrkHistMemo(Integer tsrUno, String memo) {

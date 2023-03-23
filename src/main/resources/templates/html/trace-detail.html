@@ -8,7 +8,10 @@
     <div class="detail-content M-box-up bor10">
       <div class="trace-img bor10 img-box">
         <div class="img">
-          <img th:src="${'/imagePath'+#strings.substring(traceInfo.getTsrImgPath(),7)+traceInfo.getTsrImgName()}" alt="">
+          <img  th:if="${traceInfo.getTsiType() != '15' && traceInfo.getTsiType() != '19'}"  th:src="${'/imagePath'+#strings.substring(traceInfo.getTsrImgPath(),7)+traceInfo.getTsrImgName()}" alt="">
+          <div class="video" th:if="${traceInfo.getTsiType() != '15' || traceInfo.getTsiType() != '19'}">
+            <video th:if="${traceInfo.getTsiType() == '15' && traceInfo.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(traceInfo.getTsiImgPath(),7)}+${traceInfo.getTsrImgName()}" controls></video>
+          </div>
         </div>
       </div>
       <div class="img-info">
@@ -19,7 +22,7 @@
             <p th:case="01">처리중</p>
             <p th:case="10">SKIP</p>
             <p th:case="11"><b th:text="${#strings.concat(traceInfo.getTmrSimilarity(), '%')}">99%</b>
-              <span>
+              <span th:if="${(traceInfo.getTsiType == '15' || traceInfo.getTsiType == '19')}">
                   <b th:if="${traceInfo.getTmrVScore() != null && traceInfo.getTmrVScore() != '0.0'}">(V : <span th:text="${traceInfo.getTmrVScore()}">100</span>%,&nbsp;</b>
                   <b th:if="${traceInfo.getTmrVScore() == null || traceInfo.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>
                   <b th:if="${traceInfo.getTmrAScore() != null && traceInfo.getTmrAScore() != '0.0'}">A : <span th:text="${traceInfo.getTmrAScore()}">100</span>%,&nbsp;</b>
@@ -30,16 +33,6 @@
             </p>
           </th:block>
 
-
-
-<!--          <div th:if="${traceInfo.getTsiType() == '15' || traceInfo.getTsiType() == '19'}">-->
-<!--            <b th:if="${traceInfo.getTmrVScore() != null && traceInfo.getTmrVScore() != '0.0'}">V : <span th:text="${list.getTmrVScore()}">100</span>%</b>-->
-<!--            <b th:if="${traceInfo.getTmrVScore() == null || traceInfo.getTmrVScore() == '0.0'}">V : <span>비교없음</span></b>-->
-<!--            <b th:if="${traceInfo.getTmrAScore() != null && traceInfo.getTmrAScore() != '0.0'}">A : <span th:text="${list.getTmrAScore()}">100</span>%</b>-->
-<!--            <b th:if="${traceInfo.getTmrAScore() == null || traceInfo.getTmrAScore() == '0.0'}">A : <span>비교없음</span></b>-->
-<!--            <b th:if="${traceInfo.getTmrTScore() != null && traceInfo.getTmrTScore() != '0.0'}">T : <span th:text="${list.getTmrTScore()}">100</span>%</b>-->
-<!--            <b th:if="${traceInfo.getTmrTScore() == null || traceInfo.getTmrTScore() == '0.0'}">T : <span>비교없음</span></b>-->
-<!--          </div>-->
         </div>
         <div>
           <h3>SNS분류</h3>
@@ -155,11 +148,9 @@
       <div class="trace-img img-box" th:if="${traceInfo.getTsiType() != '11'}">
 
           <img th:if="${traceInfo.getTsiType() != '15' && traceInfo.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(traceInfo.getTsiImgPath(),7)}+${traceInfo.getTsiImgName()}" alt="">
-
-
-        <div class="video" th:if="${traceInfo.getTsiType() != '15' || traceInfo.getTsiType() != '19'}">
-          <video th:src="'/imagePath'+${#strings.substring(traceInfo.getTsiImgPath(),7)}+${traceInfo.getTsiImgName()}" controls></video>
-        </div>
+          <div class="video" th:if="${traceInfo.getTsiType() != '15' || traceInfo.getTsiType() != '19'}">
+            <video th:if="${traceInfo.getTsiType() == '15' && traceInfo.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(traceInfo.getTsiImgPath(),7)}+${traceInfo.getTsiImgName()}" controls></video>
+          </div>
       </div>
       <div class="img-info">
         <div>

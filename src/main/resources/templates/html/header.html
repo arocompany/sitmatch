@@ -12,10 +12,29 @@
         <li th:class="${headerMenu == 'manage' ? 'menu-on' : 'M-box-up'}" th:if="${sessionInfo.isAdmin}"><a href="/manage">상담사 관리</a></li>
       </ul>
       <ul class="login">
+        <li class="M-box-up bor10 login-btn setting-btn detail-btn">설정
+          <div class="setting-detail login-detail bor10">
+            <div class="setSearchNumber">
+              <button type="button">500</button>
+              <input type="hidden" class="bor10 M-box-in" name="searchNumber" value="500">
+              <ul class="option">
+                <li>500</li>
+                <li>600</li>
+                <li>700</li>
+                <li>800</li>
+                <li>900</li>
+                <li>1000</li>
+                <li>무제한</li>
+              </ul>
+            </div>
+            <button class="esc">닫기</button>
+          </div>
+        </li>
         <li class="M-box-up bor10 login-btn notice-btn"><a href="/notice">알람</a></li>
-        <li class="M-box-up bor10 login-btn user-btn">사용자
-          <div class="user-detail bor10" >
-            <p class="user-name"><strong><span th:text="${sessionInfo.getUserNm()}">홍길동</span> 님</strong>(<span th:text="${sessionInfo.getUserId()}">usertest0001</span>)</p>
+        <li class="M-box-up bor10 login-btn user-btn detail-btn">사용자
+          <div class="user-detail login-detail bor10">
+            <p class="user-name"><strong><span th:text="${sessionInfo.getUserNm()}">홍길동</span> 님</strong>(<span
+                    th:text="${sessionInfo.getUserId()}">usertest0001</span>)</p>
             <a href="/user/info" class="my-info">내정보</a>
             <button class="logout" type="button" onclick="logout()">로그아웃</button>
             <button class="esc">닫기</button>
