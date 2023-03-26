@@ -24,9 +24,9 @@ public class ScheduleTasks {
     /**
      * 추적 이력
      */
-    //@Scheduled(cron = "${batch.schedule.tracking.cron}", zone = "Asia/Seoul")
+    @Scheduled(cron = "${batch.schedule.tracking.cron}", zone = "Asia/Seoul")
     //@Scheduled(cron = "0 */1 * * * *", zone = "Asia/Seoul")
-    @Scheduled(cron = "0 57 * * * *", zone = "Asia/Seoul")
+    //@Scheduled(cron = "0 21 * * * *", zone = "Asia/Seoul")
     public void trackingTask() {
         //TODO : 임시
         try {

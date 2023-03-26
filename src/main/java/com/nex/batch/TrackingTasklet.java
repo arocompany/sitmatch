@@ -8,6 +8,7 @@ import com.nex.search.repo.SearchResultRepository;
 import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -16,10 +17,14 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -195,6 +200,7 @@ public class TrackingTasklet implements Tasklet {
 
             //검색 결과 엔티티 List 가 있으면
             if (searchResultEntities != null && !searchResultEntities.isEmpty()) {
+                log.info(" ### searchResultEntities.size() ### : {} ", searchResultEntities.size());
                 //검색 결과 List 저장
                 List<SearchResultEntity> saveSearchResultEntities = searchResultRepository.saveAll(searchResultEntities);
 
@@ -238,13 +244,34 @@ public class TrackingTasklet implements Tasklet {
         searchInfoEntity.setTsiInstagram(searchInfoEntityByTsiUno.getTsiInstagram());   //인스타그램 검색 여부
         searchInfoEntity.setTsiKeyword(searchInfoEntityByTsiUno.getTsiKeyword());       //검색어
 
+        //기존 searchResult 이미지 파일 복사
+        String folder = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String filePath = fileLocation1 + folder;
+        String uuid = UUID.randomUUID().toString();
+        String extension = searchResultEntity.getTsrImgExt();
+        File destdir = new File(filePath);
+        if (!destdir.exists()) {
+            destdir.mkdirs();
+        }
+
+        File srcFile  = new File(searchResultEntity.getTsrImgPath() + searchResultEntity.getTsrImgName());
+        File destFile = new File(destdir + File.separator + uuid + "." + extension);
+
+        try {
+            FileUtils.copyFile(srcFile, destFile);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+
         //기존 searchResult 값 세팅 (이미지 정보)
-        searchInfoEntity.setTsiImgPath(searchResultEntity.getTsrImgPath());
-        searchInfoEntity.setTsiImgName(searchResultEntity.getTsrImgName());
+        searchInfoEntity.setTsiImgPath((destdir + File.separator).replaceAll("\\\\", "/"));
+        searchInfoEntity.setTsiImgName(uuid + "." + extension);
         searchInfoEntity.setTsiImgExt(searchResultEntity.getTsrImgExt());
         searchInfoEntity.setTsiImgHeight(searchResultEntity.getTsrImgHeight());
         searchInfoEntity.setTsiImgWidth(searchResultEntity.getTsrImgWidth());
         searchInfoEntity.setTsiImgSize(searchResultEntity.getTsrImgSize());
+        searchInfoEntity.setTsrUno(searchResultEntity.getTsrUno());
 
         //검색 정보 엔티티 기본값 세팅
         searchService.setSearchInfoDefault(searchInfoEntity);
@@ -545,6 +572,8 @@ public class TrackingTasklet implements Tasklet {
     private <RESULT> List<SearchResultEntity> resultsToSearchResultEntity(int tsiUno, List<RESULT> results
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
+        log.info(" ### resultsToSearchResultEntity ### ");
+
         return results.stream().map(result -> {
             String tsrSns;                                      //SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북)
             RestTemplate restTemplate = new RestTemplate();     //RestTemplate
@@ -564,7 +593,6 @@ public class TrackingTasklet implements Tasklet {
 
             //검색 결과 엔티티 추출
             SearchResultEntity searchResultEntity = searchService.getSearchResultEntity(tsiUno, tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
-
 
             try {
                 //이미지 파일 저장
