@@ -41,7 +41,6 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .tasklet(trackingTasklet, transactionManager)
                 .allowStartIfComplete(true)
                 .build();
-
     }
 
     @Bean

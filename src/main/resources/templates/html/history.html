@@ -161,7 +161,7 @@
             </div>
           </div>
           <button class="btn-off all-time" th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>
-          <button class="btn-off double-chk">0건</button>
+          <button class="btn-off double-chk" th:value="${traceHistoryList.getTsrUno()}">0건</button>
         </li>
         <li th:if="${traceHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
       </ul>
@@ -346,6 +346,12 @@ trkHistMemo.forEach((memo) => {
 //    })
 // });
 /*]]>*/
+const chkBtn = document.querySelectorAll(".btn-off.double-chk")
+chkBtn.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    window.location.href = '/notice?tsrUno=' + btn.value;
+  })
+});
 
 // 0323추가 사진 클릭시 이미지 팝업
 const modal = document.querySelector("#modal");
