@@ -3,7 +3,6 @@ package com.nex.search.entity;
 import java.sql.Timestamp;
 
 public interface DefaultQueryDtoInterface {
-
     Integer getTsrUno();
     Integer getTsiUno();
     String getTsrTitle();
@@ -46,4 +45,7 @@ public interface DefaultQueryDtoInterface {
     String getTmrSimilarity();
     String getProgressPercent();
     String getTuUserId();
+
+    String getMonitoringCd();
+
 }

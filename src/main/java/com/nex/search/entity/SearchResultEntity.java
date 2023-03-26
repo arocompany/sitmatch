@@ -43,6 +43,9 @@ public class SearchResultEntity {
     @Column(name = "DATA_STAT_CD")
     private String dataStatCd;
     @Basic
+    @Column(name = "MONITORING_CD")
+    private String monitoringCd;
+    @Basic
     @Column(name = "TRK_HIST_MEMO")
     private String trkHistMemo;
     @Basic
@@ -163,6 +166,14 @@ public class SearchResultEntity {
 
     public void setDataStatCd(String dataStatCd) {
         this.dataStatCd = dataStatCd;
+    }
+
+    public String getMonitoringCd() {
+        return monitoringCd;
+    }
+
+    public void setMonitoringCd(String monitoringCd) {
+        this.monitoringCd = monitoringCd;
     }
 
     public String getTrkHistMemo() {

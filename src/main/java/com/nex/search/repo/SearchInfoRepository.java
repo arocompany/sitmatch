@@ -26,4 +26,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
     String getSearchInfoTsiType(Integer tsiUno);
 
     SearchInfoEntity findByTsiUno(Integer tsiUno);
+
+    List<SearchInfoEntity> findByTsiUnoIn(List<Integer> tsiUno);
+
+    List<SearchInfoEntity> findByTsrUnoIn(List<Integer> tsrUno);
 }

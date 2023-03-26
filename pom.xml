@@ -95,6 +95,23 @@
             <version>2.7.0</version>
         </dependency>
 
+        <!-- 2023-03-24 추적 이력으로 인해 추가 -->
+        <!-- Batch -->
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-batch -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-batch</artifactId>
+            <version>3.0.4</version>
+        </dependency>
+
+        <!-- 2023-04-26 로그 추가 -->
+        <!-- https://mvnrepository.com/artifact/com.github.gavlyukovskiy/p6spy-spring-boot-starter -->
+        <dependency>
+            <groupId>com.github.gavlyukovskiy</groupId>
+            <artifactId>p6spy-spring-boot-starter</artifactId>
+            <version>1.9.0</version>
+        </dependency>
+
     </dependencies>
     <dependencyManagement>
         <dependencies>
