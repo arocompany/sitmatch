@@ -80,7 +80,6 @@ public class TrackingTasklet implements Tasklet {
     @Value("${server.url}")
     private String serverIp;
 
-    private String searchImageUrl;
 
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
@@ -158,7 +157,7 @@ public class TrackingTasklet implements Tasklet {
                 if (!allResults.isEmpty()) {
                     //결과를 검색 결과 엔티티로 변환
                     searchResultEntities = resultsToSearchResultEntity(
-                            searchResultEntity.getTsiUno()
+                            searchInfoEntityByTsrUno.getTsiUno()
                             , allResults
                             , Images_resultsByImage::getOriginal
                             , Images_resultsByImage::getThumbnail
@@ -186,7 +185,7 @@ public class TrackingTasklet implements Tasklet {
                 if (!allResults.isEmpty()) {
                     //결과를 검색 결과 엔티티로 변환
                     searchResultEntities = resultsToSearchResultEntity(
-                            searchResultEntity.getTsiUno()
+                            searchInfoEntityByTsrUno.getTsiUno()
                             , allResults
                             , Images_resultsByText::getOriginal
                             , Images_resultsByText::getThumbnail
