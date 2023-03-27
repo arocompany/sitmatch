@@ -191,6 +191,21 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
      */
     List<SearchResultEntity> findByMonitoringCd(String monitoringCd);
 
+    @Query(value =
+            """
+            select sr
+            from   SearchResultEntity sr
+            inner  join SearchInfoEntity si
+                   on   si.tsiUno = sr.tsiUno
+                   and  si.tsrUno is not null
+            where  not exists (
+                              select 1
+                              from   SearchJobEntity sj
+                              where  sj.tsrUno = sr.tsrUno
+                              )
+            """
+    )
+    SearchResultEntity findAllBy();
 
 }
 

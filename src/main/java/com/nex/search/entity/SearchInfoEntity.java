@@ -265,4 +265,5 @@ public class SearchInfoEntity {
     public void setTsrUno(Integer tsrUno) {
         this.tsrUno = tsrUno;
     }
+
 }
