@@ -24,13 +24,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
             "tsr.TSR_IMG_EXT as tsrImgExt, tsr.TSR_DOWNLOAD_URL as tsrDownloadUrl, tsr.TSR_IMG_HEIGHT as tsrImgHeight, "+
             "tsr.TSR_IMG_WIDTH as tsrImgWidth, tsr.TSR_IMG_SIZE as tsrImgSize, tsr.TRK_STAT_CD as trkStatCd, " +
-            "tsr.TRK_HIST_MEMO as trkHistMemo, tsr.DATA_STAT_CD as tsrDataStatCd, tsr.FST_DML_DT as tsrFstDmlDt, "+
+            "tsr.TRK_HIST_MEMO as trkHistMemo, tsr.DATA_STAT_CD as tsrDataStatCd, tsr.FST_DML_DT as tsrFstDmlDt, tsr.MST_DML_DT as mstDmlDt, "+
             "tsi.TSI_TYPE as tsiType, tsi.TSI_GOOGLE as tsiGoogle, tsi.TSI_TWITTER as tsiTwitter, " +
             "tsi.TSI_FACEBOOK as tsiFacebook, tsi.TSI_INSTAGRAM as tsiInstagram, tsi.TSI_KEYWORD as tsiKeyword, "+
             "tsi.TSI_IMG_PATH as tsiImgPath, tsi.TSI_IMG_NAME as tsiImgName, tsi.TSI_IMG_EXT as tsiImgExt, "+
             "tsi.TSI_IMG_HEIGHT as tsiImgHeight, tsi.TSI_IMG_WIDTH as tsiImgWidth, tsi.TSI_IMG_SIZE as tsiImgSize, "+
             "tsi.TSI_STAT as tsiStat, tsi.TSI_DNA_PATH as tsiDnaPath, tsi.TSI_DNA_TEXT as tsiDnaText, "+
-            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, "+
+            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus,tsr.MONITORING_CD as monitoringCd, "+
             "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
             "tmr.TMR_STAT as tmrStat, tmr.TMR_MESSAGE as tmrMessage, tu.USER_ID as tuUserId, "+
             "if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', "+
@@ -51,6 +51,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "AND (tsj.TSJ_STATUS = :tsjStatus1 OR tsj.TSJ_STATUS = :tsjStatus2 OR tsj.TSJ_STATUS = :tsjStatus3 OR tsj.TSJ_STATUS = :tsjStatus4)" +
             "AND (tsr.TSR_SNS = :snsStatus01 OR tsr.TSR_SNS = :snsStatus02 OR tsr.TSR_SNS = :snsStatus03 OR tsr.TSR_SNS = :snsStatus04)";
     String whereTsrUno = " WHERE TSR.TSR_UNO = :tsrUno";
+    String whereMonitoringCd = " WHERE TSR.MONITORING_CD = :monitoringCd";
     String whereTrkStatCdNotNullAndTsrTitleContaining = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%')";
     String whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike = " WHERE TSR.DATA_STAT_CD = :tsrDataStatCd AND TSR.TRK_STAT_CD != :trkStatCd AND TSR.TRK_STAT_CD LIKE CONCAT('%',:trkStatCd2,'%') AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%')";
 
@@ -65,6 +66,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     String orderByTmrSimilarityAsc = " ORDER BY tmrSimilarity asc, tsrUno desc";
     String orderByTsrUnoDesc = " ORDER BY tsrUno desc";
+
+    String orderByTsrUnoDesc_trace = " ORDER BY mstDmlDt desc, tsrUno desc";
 
     // 검색결과 관련 ORDER BY
     String orderByResult01 = " ORDER BY TMR.TSR_UNO DESC, TMR.TMR_V_SCORE DESC, TMR.TMR_A_SCORE DESC, TMR_T_SCORE DESC";
@@ -96,7 +99,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String limit4 = " LIMIT 4";
 
     // 추적 이력
-    @Query(value = defaultQeury+from+whereTrkStatCdNotNullAndTsrTitleContaining+orderByTsrUnoDesc, nativeQuery = true, countQuery = countQuery+from+whereTrkStatCdNotNullAndTsrTitleContaining)
+    @Query(value = defaultQeury+from+whereTrkStatCdNotNullAndTsrTitleContaining+orderByTsrUnoDesc_trace, nativeQuery = true, countQuery = countQuery+from+whereTrkStatCdNotNullAndTsrTitleContaining)
     Page<DefaultQueryDtoInterface> getTraceHistoryList(String keyword, Pageable pageable);
     // 검색 결과
 
@@ -131,22 +134,43 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     DefaultQueryDtoInterface getResultInfo(Integer tsrUno);
 
     // index 추적대상 4개
-    @Query(value = defaultQeury+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc+limit4, nativeQuery = true, countQuery = countQuery+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+limit4)
+    @Query(value = defaultQeury+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc_trace+limit4, nativeQuery = true, countQuery = countQuery+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+limit4)
     List<DefaultQueryDtoInterface> getTraceListByHome(String tsrDataStatCd, String trkStatCd, String trkStatCd2, String keyword);
 
     // 모니터링
-    @Query(value = defaultQeury+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc, nativeQuery = true, countQuery = countQuery+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike)
+    @Query(value = defaultQeury+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc_trace, nativeQuery = true, countQuery = countQuery+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike)
     Page<DefaultQueryDtoInterface> getTraceList(String tsrDataStatCd, String trkStatCd, String trkStatCd2, String keyword, Pageable pageable);
 
     // 모니터링 팝업
     @Query(value = defaultQeury+from+whereTsrUno, nativeQuery = true, countQuery = countQuery+from+whereTsrUno)
     DefaultQueryDtoInterface getTraceInfo(Integer tsrUno);
 
+    @Query(value = "SELECT TRK_STAT_CD FROM tb_search_result WHERE TSR_UNO = :tsrUno", nativeQuery = true)
+    String getTrkStatCd(Integer tsrUno);
+
     //추적이력 삭제
     @Transactional
     @Modifying
     @Query(value = "UPDATE tb_search_result SET TRK_STAT_CD = null WHERE TSR_UNO = :tsrUno", nativeQuery = true)
     int stat_co_del(@Param("tsrUno") Integer tsrUno);    // 자동추적 키워드 목록
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE tb_search_result SET MST_DML_DT = now(),DATA_STAT_CD = '10', TRK_STAT_CD = '10' WHERE TSR_UNO = :tsrUno", nativeQuery = true)
+    int addTrkStat(@Param("tsrUno") Integer tsrUno);    // 자동추적 키워드 목록
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE tb_search_result SET TRK_STAT_CD = null WHERE TSR_UNO = :tsrUno", nativeQuery = true)
+    int subTrkStat(@Param("tsrUno") Integer tsrUno);    // 자동추적 키워드 목록
+
+    /**
+     * 검색 결과 목록 조회
+     *
+     * @param  monitoringCd             (24시간 모니터링 코드 (10 : 안함, 20 : 모니터링))
+     * @return List<SearchResultEntity> (검색 결과 엔티티 List)
+     */
+    List<SearchResultEntity> findByMonitoringCd(String monitoringCd);
 
 }
 

@@ -649,9 +649,16 @@ public class SearchService {
     }
 
     public void addTrkStat(Integer tsrUno) {
-        SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
-        searchResultEntity.setTrkStatCd(StringUtils.hasText(searchResultEntity.getTrkStatCd()) ? Consts.TRK_STAT_CD_NULL : Consts.TRK_STAT_CD_MONITORING);
-        searchResultRepository.save(searchResultEntity);
+//        SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
+//        searchResultEntity.setTrkStatCd(StringUtils.hasText(searchResultEntity.getTrkStatCd()) ? Consts.TRK_STAT_CD_NULL : Consts.TRK_STAT_CD_MONITORING);
+//        searchResultRepository.save(searchResultEntity);
+
+        String trkStatCd = searchResultRepository.getTrkStatCd(tsrUno);
+        if("10".equals(trkStatCd)) {
+            searchResultRepository.subTrkStat(tsrUno);
+        }else{
+            searchResultRepository.addTrkStat(tsrUno);
+        }
     }
 
     public void deleteSearchInfo(Integer tsiUno) {
@@ -682,7 +689,7 @@ public class SearchService {
     public Map<String, Object> getSearchInfoList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
-        Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingOrderByTsiUnoDesc("10", keyword, pageRequest);
+        Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
@@ -696,7 +703,7 @@ public class SearchService {
     public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
-        Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndUserUnoOrderByTsiUnoDesc("10", keyword, userUno, pageRequest);
+        Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, userUno, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
@@ -740,5 +747,46 @@ public class SearchService {
         return progressPercentMap;
     }
 
+    /**
+     * 검색 결과 목록 조회
+     *
+     * @param  monitoringCd             (24시간 모니터링 코드 (10 : 안함, 20 : 모니터링))
+     * @return List<SearchResultEntity> (검색 결과 엔티티 List)
+     */
+    public List<SearchResultEntity> findByMonitoringCd(String monitoringCd) {
+        return searchResultRepository.findByMonitoringCd(monitoringCd);
+    }
+    /**
+     * 검색 결과 사이트 URL 목록 조회
+     *
+     * @param  tsiUno       (검색 정보 테이블의 key)
+     * @return List<String> (검색 결과 사이트 URL List)
+     */
+    public List<String> findTsrSiteUrlDistinctByTsiUno(Integer tsiUno) {
+        return searchResultRepository.findTsrSiteUrlDistinctByTsiUno(tsiUno);
+    }
+
+    /**
+     * TODO : 재확산 자동추적
+     *
+     * @param tsjStatus      (일치율)
+     * @param optionalTsrUno (검색 결과 PK)
+     * @param page           (페이지)
+     * @param modelAndView   (ModelAndView)
+     */
+    public void getNotice(String tsjStatus, Optional<Integer> optionalTsrUno, Integer page, ModelAndView modelAndView) {
+        if (optionalTsrUno.isPresent()) {
+            Optional<SearchInfoEntity> searchInfo = searchInfoRepository.findByTsrUno(optionalTsrUno.get());
+            if (searchInfo.isPresent()) {
+                modelAndView.addObject("searchInfo", searchInfo.get());
+            }
+        }
+
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        /*
+        searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
+                snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
+         */
+    }
 }
 

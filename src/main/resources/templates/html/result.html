@@ -211,8 +211,9 @@ imgBtn.forEach((btn) => {
 // 추적 상태 추가 버튼
 const addTraceBtn = document.querySelectorAll(".trace-add");
 addTraceBtn.forEach((btn) => {
+
     btn.addEventListener('click', () => {
-        btn.disabled = true;
+        // btn.disabled = true;
         //XMLHttpRequest 객체 생성
         const xhr = new XMLHttpRequest();
         //요청을 보낼 방식, 주소, 비동기여부 설정

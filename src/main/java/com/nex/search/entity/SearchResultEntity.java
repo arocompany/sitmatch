@@ -37,11 +37,17 @@ public class SearchResultEntity {
     @Column(name = "LST_DML_DT")
     private Timestamp lstDmlDt;
     @Basic
+    @Column(name = "MST_DML_DT")
+    private Timestamp mstDmlDt;
+    @Basic
     @Column(name = "TRK_STAT_CD")
     private String trkStatCd;
     @Basic
     @Column(name = "DATA_STAT_CD")
     private String dataStatCd;
+    @Basic
+    @Column(name = "MONITORING_CD")
+    private String monitoringCd;
     @Basic
     @Column(name = "TRK_HIST_MEMO")
     private String trkHistMemo;
@@ -136,6 +142,14 @@ public class SearchResultEntity {
         this.lstDmlDt = lstDmlDt;
     }
 
+    public Timestamp getMstDmlDt() {
+        return mstDmlDt;
+    }
+
+    public void setMstDmlDt(Timestamp mstDmlDt) {
+        this.mstDmlDt = mstDmlDt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -164,7 +178,13 @@ public class SearchResultEntity {
     public void setDataStatCd(String dataStatCd) {
         this.dataStatCd = dataStatCd;
     }
+    public String getMonitoringCd() {
+        return monitoringCd;
+    }
 
+    public void setMonitoringCd(String monitoringCd) {
+        this.monitoringCd = monitoringCd;
+    }
     public String getTrkHistMemo() {
         return trkHistMemo;
     }
@@ -221,3 +241,4 @@ public class SearchResultEntity {
         this.tsrImgSize = tsrImgSize;
     }
 }
+

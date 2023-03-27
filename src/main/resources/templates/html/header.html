@@ -9,7 +9,7 @@
         <li th:class="${headerMenu == 'history' ? 'menu-on' : 'M-box-up'}"><a href="/history">이력관리</a></li>
         <li th:class="${headerMenu == 'trace' ? 'menu-on' : 'M-box-up'}"><a href="/trace">모니터링</a></li>
 <!--        <li th:class="${headerMenu == 'history' ? 'menu-on' : 'M-box-up'}"><a href="/result">검색결과</a></li>-->
-        <li th:class="${headerMenu == 'manage' ? 'menu-on' : 'M-box-up'}" th:if="${sessionInfo.isAdmin}"><a href="/manage">상담사 관리</a></li>
+        <li th:class="${headerMenu == 'manage' ? 'menu-on' : 'M-box-up'}" th:if="${sessionInfo.isAdmin}"><a href="/manage">계정관리</a></li>
       </ul>
       <ul class="login">
         <li class="M-box-up bor10 login-btn setting-btn detail-btn">설정
