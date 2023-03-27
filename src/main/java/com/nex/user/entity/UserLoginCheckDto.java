@@ -14,9 +14,16 @@ public class UserLoginCheckDto {
     @NotBlank(message = "비밀번호는 필수입니다.")
         private String loginPw;
 
+    private Integer crawling_limit;
+    private Integer percent_limit;
+    private Long userUno;
+
     @Builder
-    public UserLoginCheckDto(String loginId, String loginPw) {
+    public UserLoginCheckDto(String loginId, String loginPw, Integer crawling_limit, Integer percent_limit, Long userUno) {
         this.loginId = loginId;
         this.loginPw = loginPw;
+        this.crawling_limit = crawling_limit;
+        this.percent_limit = percent_limit;
+        this.userUno = userUno;
     }
 }

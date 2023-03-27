@@ -48,4 +48,6 @@ public interface DefaultQueryDtoInterface {
 
     String getMonitoringCd();
 
+    String getRe_monitor_cnt();
+
 }

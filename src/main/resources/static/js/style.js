@@ -71,19 +71,71 @@ document.addEventListener("DOMContentLoaded", function () {
   })
 
   // 헤더 셀렉트 구현
-  const select = document.querySelector(".setSearchNumber");
-  const option = document.querySelectorAll(".setSearchNumber .option li");
-  const tType = document.querySelector('input[name=searchNumber]');
-  select.addEventListener("click", (e) => {
+  const searchNumber = document.querySelector(".setSearchNumber");
+  searchNumber.addEventListener("click", (e) => {
     e.stopPropagation();
-    select.classList.toggle('active');
+    const option = searchNumber.querySelectorAll(".option li");
+    const tType = searchNumber.querySelector('input[name=searchNumber]');
+    searchNumber.classList.toggle('active');
     option.forEach(btn => {
       btn.addEventListener('click', (e) => {
-        select.children[0].innerHTML = e.target.innerText;
+        searchNumber.children[0].innerHTML = e.target.innerText;
+        tType.value = e.target.innerText;
+      })
+    });
+  });
+  // 일치율
+  const unity = document.querySelector(".selection.setUnity");
+  if (unity) {
+    let ops = '';
+    for (let i = 100; i >= 5; i -= 5) {
+      ops += `<li class='unity_num' value=${i}>${i}</li>`
+    }
+    unity.querySelector('.option').innerHTML = ops;
+  }
+  unity.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const option = unity.querySelectorAll(".option li");
+    const tType = unity.querySelector('input[type=hidden]');
+    unity.classList.toggle('active');
+    option.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        unity.children[0].innerHTML = e.target.innerText;
         tType.value = e.target.innerText;
       })
     });
   });
 
+  // 키워드
+  const autoKey = document.querySelector(".auto-trace");
+  autoKey.addEventListener("click", () => {
+    //XMLHttpRequest 객체 생성
+    var xhr = new XMLHttpRequest();
+    //요청을 보낼 방식, 주소, 비동기여부 설정
+    xhr.open('GET', '/keyword', true);
+    //요청 전송
+    xhr.send(null);
+    //통신후 작업
+    xhr.onload = () => {
+      //통신 성공
+      if (xhr.status == 200) {
+        document.body.style.overflow = 'hidden';
+        modal.style.display = 'flex';
+        modal.innerHTML = xhr.response;
+
+        const esc = document.querySelector(".esc-btn");
+        esc.onclick = () => {
+          modal.style.display = 'none';
+          document.body.style.overflow = 'unset';
+        }
+      } else {
+        //통신 실패
+        console.log("통신 실패");
+      }
+    }
+  });
+
 });
+
+
 

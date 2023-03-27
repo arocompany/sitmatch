@@ -1,9 +1,11 @@
 package com.nex.user.repo;
 
 import com.nex.user.entity.UserEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -28,5 +30,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Page<UserEntity> findAllByUserClfCdNotAndUseYnAndUserNmContainingOrderByUserUnoDesc(String userClfCd, String useYn, String keyword, Pageable pageable);
     @Query(value = findAllByEntire, nativeQuery = true)
     Page<UserEntity> findAllByEntire(@Param("userClfCd") String userClfCd, @Param("useYn") String useYn, @Param("keyword") String keyword, Pageable pageable);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE tb_user SET CRAWLING_LIMIT = :getCrawling_limit, PERCENT_LIMIT = :getPercent_limit WHERE USER_UNO = :tsrUno", nativeQuery = true)
+    int ajax_con_limit_update(Long tsrUno, int getCrawling_limit, int getPercent_limit);    // 자동추적 키워드 목록
 
 }

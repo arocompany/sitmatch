@@ -70,6 +70,30 @@ public class UserEntity {
     @Column(name = "LST_DML_DT")
     private Timestamp lstDmlDt;
 
+    @Basic
+    @Column(name = "CRAWLING_LIMIT")
+    private Integer crawling_limit;
+
+    @Basic
+    @Column(name = "PERCENT_LIMIT")
+    private Integer percent_limit;
+
+    public Integer getCrawling_limit() {
+        return crawling_limit;
+    }
+
+    public void setCrawling_limit(Integer crawling_limit) {
+        this.crawling_limit = crawling_limit;
+    }
+
+    public Integer getPercent_limit() {
+        return percent_limit;
+    }
+
+    public void setPercent_limit(Integer percent_limit) {
+        this.percent_limit = percent_limit;
+    }
+
     public Long getUserUno() {
         return userUno;
     }

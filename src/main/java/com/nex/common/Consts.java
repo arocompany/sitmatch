@@ -5,6 +5,8 @@ public interface Consts {
     String SESSION_USER_UNO = "userUno";
     String SESSION_USER_ID = "userId";
     String SESSION_USER_NM = "userNm";
+    String SESSION_USER_CL = "crawling_limit";
+    String SESSION_USER_PL = "percent_limit";
     String SESSION_IS_ADMIN = "isAdmin";
 
     Integer PAGE_SIZE = 12;     // 1page에 보여줄 row 개수

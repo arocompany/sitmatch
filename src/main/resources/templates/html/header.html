@@ -14,20 +14,35 @@
       <ul class="login">
         <li class="M-box-up bor10 login-btn setting-btn detail-btn">설정
           <div class="setting-detail login-detail bor10">
-            <div class="setSearchNumber">
-              <button type="button">500</button>
-              <input type="hidden" class="bor10 M-box-in" name="searchNumber" value="500">
-              <ul class="option">
-                <li>500</li>
-                <li>600</li>
-                <li>700</li>
-                <li>800</li>
-                <li>900</li>
-                <li>1000</li>
-                <li>무제한</li>
-              </ul>
-            </div>
-            <button class="esc">닫기</button>
+            <form>
+              <h2>웹 크롤링 뎁스 설정</h2>
+              <div class="selection setSearchNumber">
+                <button type="button"  th:if="${sessionInfo.getCrawling_limit() != 0}" th:text="${sessionInfo.getCrawling_limit()}">500</button>
+                <button type="button"  th:if="${sessionInfo.getCrawling_limit() == 0}">무제한</button>
+                <input type="hidden" class="bor10 M-box-in" name="searchNumber" id="searchNumber" th:value="${sessionInfo.getCrawling_limit()}">
+                <ul class="option">
+                  <li>500</li>
+                  <li>600</li>
+                  <li>700</li>
+                  <li>800</li>
+                  <li>900</li>
+                  <li>1000</li>
+                  <li>무제한</li>
+                </ul>
+              </div>
+              <h2>유사도 가중치 설정</h2>
+              <div class="selection setUnity">
+                <button type="button"  th:if="${sessionInfo.getPercent_limit() != 0}" th:text="${sessionInfo.getPercent_limit()}">500</button>
+                <input type="hidden" class="bor10 M-box-in" name="unity-set" id="unity-set" th:value="${sessionInfo.getPercent_limit()}">
+                <ul class="option">
+                  <!-- 하단 스크립트 -->
+                </ul>
+              </div>
+              <h2>자동 추적 키워드</h2>
+              <button type="button" class="bor10 btn-off auto-trace">자동추적 키워드</button>
+              <button type="button" class="save bor10 btn-off limit_save">저장</button>
+            </form>
+            <button type="button" class="esc">닫기</button>
           </div>
         </li>
         <li class="M-box-up bor10 login-btn notice-btn"><a href="/notice">알람</a></li>
@@ -35,6 +50,7 @@
           <div class="user-detail login-detail bor10">
             <p class="user-name"><strong><span th:text="${sessionInfo.getUserNm()}">홍길동</span> 님</strong>(<span
                     th:text="${sessionInfo.getUserId()}">usertest0001</span>)</p>
+            <input type="hidden" class="bor10 M-box-in" name="userUno" id="userUno" th:value="${sessionInfo.getUserUno()}">
             <a href="/user/info" class="my-info">내정보</a>
             <button class="logout" type="button" onclick="logout()">로그아웃</button>
             <button class="esc">닫기</button>
@@ -42,6 +58,9 @@
         </li>
       </ul>
     </nav>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script th:inline="javascript">
       /*<![CDATA[*/
       const logout = () => {
@@ -52,6 +71,21 @@
         location.href = '/user/logout';
       }
       /*]]>*/
+
+      $('.limit_save').click(function(){
+        $.ajax({
+          type : "POST",
+          url : "/user/ajax_con_limit_update",
+          data : {crawling_limit : $('#searchNumber').val(),
+                  percent_limit : $('#unity-set').val(),
+                  userUno : $('#userUno').val()},
+          dataType: "text",
+          success : function(data){
+            alert('저장되었습니다.');
+            location.reload();
+          }
+        });
+      })
     </script>
   </header>
 </nav>

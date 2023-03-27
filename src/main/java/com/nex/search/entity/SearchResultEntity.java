@@ -70,6 +70,18 @@ public class SearchResultEntity {
     @Column(name = "TSR_IMG_SIZE")
     private String tsrImgSize;
 
+    @Basic
+    @Column(name = "re_monitor_cnt")
+    private String re_monitor_cnt;
+
+    public String getRe_monitor_cnt() {
+        return re_monitor_cnt;
+    }
+
+    public void setRe_monitor_cnt(String re_monitor_cnt) {
+        this.re_monitor_cnt = re_monitor_cnt;
+    }
+
     public int getTsrUno() {
         return tsrUno;
     }

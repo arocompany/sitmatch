@@ -22,6 +22,14 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     SearchResultEntity findByTsrUno(Integer TsrUno);
     /*----------------------------------------------------------------------------------------------------------------*/
+
+    String from_2 = " from  tb_search_info TSI " +
+            " LEFT JOIN tb_search_result TSR ON TSR.TSR_UNO = TSI.TSR_UNO " +
+            " LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
+            " LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
+            " LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO " +
+            " LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO ";
+
     String defaultQeury = "SELECT TSR.TSR_UNO as tsrUno, tsr.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
             "tsr.TSR_IMG_EXT as tsrImgExt, tsr.TSR_DOWNLOAD_URL as tsrDownloadUrl, tsr.TSR_IMG_HEIGHT as tsrImgHeight, "+
@@ -32,9 +40,10 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "tsi.TSI_IMG_PATH as tsiImgPath, tsi.TSI_IMG_NAME as tsiImgName, tsi.TSI_IMG_EXT as tsiImgExt, "+
             "tsi.TSI_IMG_HEIGHT as tsiImgHeight, tsi.TSI_IMG_WIDTH as tsiImgWidth, tsi.TSI_IMG_SIZE as tsiImgSize, "+
             "tsi.TSI_STAT as tsiStat, tsi.TSI_DNA_PATH as tsiDnaPath, tsi.TSI_DNA_TEXT as tsiDnaText, "+
-            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, "+
+            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, TSR.MONITORING_CD as monitoringCd, "+
             "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
-            "tmr.TMR_STAT as tmrStat, tmr.TMR_MESSAGE as tmrMessage, tu.USER_ID as tuUserId, "+
+            "tmr.TMR_STAT as tmrStat, tmr.TMR_MESSAGE as tmrMessage, tu.USER_ID as tuUserId, " +
+            "(select count(*) as re_monitor_cnt from TB_SEARCH_INFO TTSI where TTSI.TSR_UNO = TSR.TSR_UNO) as re_monitor_cnt, "+
             "if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', "+
                 "ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + "+
                     "case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + "+
@@ -53,6 +62,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "AND (tsj.TSJ_STATUS = :tsjStatus1 OR tsj.TSJ_STATUS = :tsjStatus2 OR tsj.TSJ_STATUS = :tsjStatus3 OR tsj.TSJ_STATUS = :tsjStatus4)" +
             "AND (tsr.TSR_SNS = :snsStatus01 OR tsr.TSR_SNS = :snsStatus02 OR tsr.TSR_SNS = :snsStatus03 OR tsr.TSR_SNS = :snsStatus04)";
     String whereTsrUno = " WHERE TSR.TSR_UNO = :tsrUno";
+
+    String whereNotice = " WHERE TSI.TSR_UNO is not null ";
     String whereMonitoringCd = " WHERE TSR.MONITORING_CD = :monitoringCd";
     String whereTrkStatCdNotNullAndTsrTitleContaining = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%')";
     String whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike = " WHERE TSR.DATA_STAT_CD = :tsrDataStatCd AND TSR.TRK_STAT_CD != :trkStatCd AND TSR.TRK_STAT_CD LIKE CONCAT('%',:trkStatCd2,'%') AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%')";
@@ -149,6 +160,12 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     @Query(value = "SELECT TRK_STAT_CD FROM tb_search_result WHERE TSR_UNO = :tsrUno", nativeQuery = true)
     String getTrkStatCd(Integer tsrUno);
+
+    @Query(value = defaultQeury+from_2+" WHERE TSI.TSR_UNO IS NOT null", nativeQuery = true, countQuery = countQuery+from+whereNotice)
+    Page<DefaultQueryDtoInterface> getNoticeList(Pageable pageable);
+
+    @Query(value = defaultQeury+from_2+" WHERE TSI.TSR_UNO = :tsrUno ", nativeQuery = true, countQuery = countQuery+from+whereNotice)
+    Page<DefaultQueryDtoInterface> getNoticeSelList(Pageable pageable, Integer tsrUno);
 
     //추적이력 삭제
     @Transactional

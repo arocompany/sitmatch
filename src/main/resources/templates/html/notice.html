@@ -1,305 +1,355 @@
 <!DOCTYPE html>
-<html lang="ko">
-
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>알림보드</title>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>디지털 성범죄</title>
   <link rel="stylesheet" href="/css/common.min.css" />
-  <link rel="stylesheet" href="/css/notice.min.css" />
-<!--  <script src="/js/header.js"></script>-->
-  <script src="/js/pagination.js"></script>
-  <script src="/js/footer.js"></script>
+  <link rel="stylesheet" href="/css/result.min.css" />
+  <link rel="stylesheet" href="/css/detail.min.css" />
   <script src="/js/style.js"></script>
-  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="/js/footer.js"></script>
+  <script src="/js/function.js"></script>
 </head>
 
 <body>
-<article class="notice-wrap wrapper">
+<article class="result-wrap wrapper">
   <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
-  <script>header();</script>
-  <seciton class="layout" id="trace">
-    <h1 class="title">재확산 자동추적</h1>
-    <!-- <div class="search-contents btn-on bor10" >
+
+  <seciton class="layout" id="result">
+    <h1 class="sound">검색 결과</h1>
+    <div class="search-contents">
       <div class="search-list">
-        <div class="search-tab">
-          <div class="tab on">
-            <div class="search-img">
-              <video src="./img/replace/replacevideo.mp4">
-            </div>
-            <p>"<span>고딩</span>"에 대한 검색 결과 입니다.</p>
-          </div>
-          <img src="./img/result/double-right.png" alt="" class="next research">
-        </div>
       </div>
-      <p class="total-num">총 <span>123</span>건</p>
-    </div> -->
-    <div class="notice-contents">
-      <form name="notice-list" class="unity-box">
-        <div class="unity-setting">
-          <p>일치율 조건(%)</p>
-          <div class="selection setUnity">
-            <button type="button">80</button>
-            <input type="hidden" class="bor10 M-box-in" name="unity-set" value="80">
-            <ul class="option">
-              <!-- 하단 스크립트 -->
-            </ul>
-          </div>
-        </div>
-      </form>
-      <button type="button" class="bor10 btn-off auto-trace">자동추적 키워드</button>
+      <p class="total-num">총 <span th:text="${searchResultListCount}"></span> 건</p>
       <div class="view-type">
         <button type="button" class="list-btn btn-off">목록형</button>
         <button class="img-btn btn-off">이미지형</button>
       </div>
     </div>
-    <div class="notice-list list-content ">
-      <section class="list M-box-up bor10">
+    <div class="result-list  list-content">
+      <section class="list M-box-up bor10" th:each="list:${searchResultList}">
         <div class="img-box">
+          <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
           <div class="img">
-            <img src="./img/replace/img1-1.jpg" alt="" loading="lazy">
+            <!--            <img src="./img/replace/man.png" alt="" loading="lazy" >-->
+            <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="" loading="lazy" >
           </div>
-          <img src="./img/common/sns/google-round.png" alt="" class="sns">
+          <!--          <div class="video">-->
+          <!--            <video src="./img/replace/replacevideo.mp4" loading="lazy"></video>-->
+          <!--            <div class="play-wrap">-->
+          <!--              <div class="play-btn"></div>-->
+          <!--            </div>-->
+          <!--          </div>-->
+          <th:block th:switch="${list.getTsrSns()}">
+            <img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">
+            <img th:case="13" src="/img/common/sns/twitter-round.png" alt="" class="sns">
+            <img th:case="15" src="/img/common/sns/insta-round.png" alt="" class="sns">
+            <img th:case="17" src="/img/common/sns/facebook-round.png" alt="" class="sns">
+          </th:block>
         </div>
-        <h2 class="unity">100%</h2>
-        <a href="https://www.gamtantimes.com/news/articleView.html?idxno=30861" class="url" target="_blank">https://www.gamtantimes.com/news/articleView.html?idxno=30861</a>
-        <p class="content">서울시가 제2·제3의 ‘n번방 사건’ 피해를 막기 위해 디지털 성범죄 피해자를 통합 지원하는 ‘서울 디지털성범죄 안심지원센터’를 29일 개관했다.
-          출처 : 감탄시대(https://www.gamtantimes.com)</p>
-        <p class="detail">파일유형 : jpg, 파일명 : 1391_123gjaei.jpg</p>
-        <button class="trace-add btn-off ">추가</button>
-      </section>
-      <section class="list M-box-up bor10">
-        <div class="img-box">
-          <div class="img">
-            <img src="./img/replace/img1-10.jpg" alt="" loading="lazy">
-          </div>
-          <img src="./img/common/sns/facebook-round.png" alt="" class="sns">
+        <div>
+          <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}">
+            <span th:case="00">대기중</span>
+            <span th:case="01">처리중</span>
+            <span th:case="10">SKIP</span>
+            <span th:case="11">
+              <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
+              <span th:if="${(tsiType == '15' || tsiType == '19')}">
+                <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">(V : <span th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>
+                <b th:if="${list.getTmrVScore() == null || list.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>
+                <b th:if="${list.getTmrAScore() != null && list.getTmrAScore() != '0.0'}">A : <span th:text="${list.getTmrAScore()}">100</span>%,&nbsp;</b>
+                <b th:if="${list.getTmrAScore() == null || list.getTmrAScore() == '0.0'}">A : <span>비교없음,&nbsp;</span></b>
+                <b th:if="${list.getTmrTScore() != null && list.getTmrTScore() != '0.0'}">T : <span th:text="${list.getTmrTScore()}">100</span>%)</b>
+                <b th:if="${list.getTmrTScore() == null || list.getTmrTScore() == '0.0'}">T : <span>비교없음</span>)</b>
+              </span>
+            </span>
+          </th:block>
         </div>
-        <h2 class="unity">86%</h2>
-        <a href="https://m.facebook.com/seoulwomen/posts/1849525968551229/?locale=ms_MY" class="url" target="_blank">https://m.facebook.com/seoulwomen/posts/1849525968551229/?locale=ms_MY</a>
-        <p class="content">'서울시 디지털성범죄 안심지원센터' 개관</p>
-        <p class="detail">파일유형 : jpg, 파일명 : 1256691_zdfdsjaei.jpg</p>
-        <button class="trace-add btn-off ">추가</button>
+        <!--        <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span><span th:case="11"><h2 class="unity" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h2></span></th:block>-->
+        <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url"><p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p></a>
+        <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
+        <p class="detail" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),', ','파일명 : ',list.getTsrImgName())}">파일 정보가 들어갑니다</p>
+        <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}">추가</button>
+        <!--
+        <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}" th:disabled="${list.getTrkStatCd() != null}">추가</button>
+        -->
+        <!--        <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}">추가</button>-->
       </section>
-      <section class="list M-box-up bor10">
-        <div class="img-box">
-          <div class="img">
-            <img src="./img/replace/img1-2.jpg" alt="" loading="lazy">
-          </div>
-          <img src="./img/common/sns/google-round.png" alt="" class="sns">
-        </div>
-        <h2 class="unity">92%</h2>
-        <a href="http://news.tf.co.kr/read/life/1927680.htm" class="url" target="_blank">http://news.tf.co.kr/read/life/1927680.htm</a>
-        <p class="content">서울시는 29일 오후 동작구 서울여성가족재단 내 '서울 디지털성범죄 안심지원센터'에서 현판식을 열었다. </p>
-        <p class="detail">파일유형 : jpg, 파일명 : 0e2f714e-1391.jpg</p>
-        <button class="trace-add btn-off ">추가</button>
-      </section>
-      <section class="list M-box-up bor10">
-        <div class="img-box">
-          <div class="img">
-            <img src="./img/replace/img1-3.jpg" alt="" loading="lazy">
-          </div>
-          <img src="./img/common/sns/google-round.png" alt="" class="sns">
-        </div>
-        <h2 class="unity">90%</h2>
-        <a href="https://v.daum.net/v/20220329155754213" class="url" target="_blank">https://v.daum.net/v/20220329155754213</a>
-        <p class="content">[더팩트ㅣ이새롬 기자] 오세훈 서울시장과 최관호 서울경찰청장이 29일 오후 서울 동작구 대방동 서울여성가족재단에서 열린 '서울 디지털성범죄 안심지원센터' 개관식에 참석해 기념촬영을 하고 있다. </p>
-        <p class="detail">파일유형 : jpg, 파일명 : 0e2f714eadfasera124.jpg</p>
-        <button class="trace-add btn-off ">추가</button>
-      </section>
-      <section class="list M-box-up bor10">
-        <div class="img-box">
-          <div class="img">
-            <img src="./img/replace/img1-4.jpg" alt="" loading="lazy">
-          </div>
-          <img src="./img/common/sns/google-round.png" alt="" class="sns">
-        </div>
-        <h2 class="unity">81%</h2>
-        <a href="https://www.newdaily.co.kr/site/data/html/2022/03/29/2022032900234.html" class="url" target="_blank">https://www.newdaily.co.kr/site/data/html/2022/03/29/2022032900234.html</a>
-        <p class="content">오세훈 서울시장과 최관호 서울경찰청장을 비롯한 참석자들이 29일 오후 서울 동작구 서울시여성가족재단에서 열린 서울시 디지털성범죄 안심지원센터 개관식에서 현판 제막에 앞서 기념촬영을 하고 있다. </p>
-        <p class="detail">파일유형 : jpg, 파일명 : 0esdaw6999887d.jpg</p>
-        <button class="trace-add btn-off ">추가</button>
-      </section>
-      <section class="list M-box-up bor10">
-        <div class="img-box">
-          <div class="img">
-            <img src="./img/replace/img1-5.jpg" alt="" loading="lazy">
-          </div>
-          <img src="./img/common/sns/facebook-round.png" alt="" class="sns">
-        </div>
-        <h2 class="unity">99%</h2>
-        <a href="https://www.facebook.com/hashtag/%EC%84%9C%EC%9A%B8%EA%B8%B0%EC%88%A0%EC%97%B0%EA%B5%AC%EC%9B%90/?source=feed_text&epa=HASHTAG" class="url" target="_blank">https://www.facebook.com/hashtag/%EC%84%9C%EC%9A%B8%EA%B8%B0%EC%88%A0%EC%97%B0%EA%B5%AC%EC%9B%90/?source=feed_text&epa=HASHTAG</a>
-        <p class="content">올해로 4회째로 맞이하는 #2022서울빅데이터포럼 🎊
-          ‘빅데이터와 AI로 그리는 동행·매력 서울’을 주제로 ‘2022 서울 빅데이터 포럼’ 이 개최됩니다!! </p>
-        <p class="detail">파일유형 : jpg, 파일명 : 123122-09976g44.jpg</p>
-        <button class="trace-add btn-off ">추가</button>
-      </section>
-      <section class="list M-box-up bor10">
-        <div class="img-box">
-          <div class="img">
-            <img src="./img/replace/img1-6.jpg" alt="" loading="lazy">
-          </div>
-          <img src="./img/common/sns/facebook-round.png" alt="" class="sns">
-        </div>
-        <h2 class="unity">84%</h2>
-        <a href="https://www.facebook.com/hashtag/%EC%84%9C%EC%9A%B8%EA%B8%B0%EC%88%A0%EC%97%B0%EA%B5%AC%EC%9B%90/?source=feed_text&epa=HASHTAG" class="url" target="_blank">https://www.facebook.com/hashtag/%EC%84%9C%EC%9A%B8%EA%B8%B0%EC%88%A0%EC%97%B0%EA%B5%AC%EC%9B%90/?source=feed_text&epa=HASHTAG</a>
-        <p class="content">올해로 4회째로 맞이하는 #2022서울빅데이터포럼 🎊
-          ‘빅데이터와 AI로 그리는 동행·매력 서울’을 주제로 ‘2022 서울 빅데이터 포럼’ 이 개최됩니다!! </p>
-        <p class="detail">파일유형 : jpg, 파일명 : 1231-123dfe4j554e.jpg</p>
-        <button class="trace-add btn-off ">추가</button>
-      </section>
-      <section class="list M-box-up bor10">
-        <div class="img-box">
-          <div class="img">
-            <img src="./img/replace/img1-7.jpg" alt="" loading="lazy">
-          </div>
-          <img src="./img/common/sns/google-round.png" alt="" class="sns">
-        </div>
-        <h2 class="unity">88%</h2>
-        <a href="https://www.newdaily.co.kr/site/data/html/2022/03/29/2022032900234.html" class="url" target="_blank">https://www.newdaily.co.kr/site/data/html/2022/03/29/2022032900234.html</a>
-        <p class="content">오세훈 서울시장과 최관호 서울경찰청장을 비롯한 참석자들이 29일 오후 서울 동작구 서울시여성가족재단에서 열린 서울시 디지털성범죄 안심지원센터 개관식에서 현판 제막에 앞서 기념촬영을 하고 있다. </p>
-        <p class="detail">파일유형 : jpg, 파일명 : 144r1-123sswgar32.jpg</p>
-        <button class="trace-add btn-off ">추가</button>
-      </section>
-      <section class="list M-box-up bor10">
-        <div class="img-box">
-          <div class="img">
-            <img src="./img/replace/img1-8.jpg" alt="" loading="lazy">
-          </div>
-          <img src="./img/common/sns/google-round.png" alt="" class="sns">
-        </div>
-        <h2 class="unity">100%</h2>
-        <a href="https://www.edaily.co.kr/news/read?newsId=03598166632268240&mediaCodeNo=257" class="url" target="_blank">https://www.edaily.co.kr/news/read?newsId=03598166632268240&mediaCodeNo=257</a>
-        <p class="content">[이데일리 김태형 기자] 오세훈(오른쪽) 서울시장과 최관호 서울경찰청장이 29일 오후 서울 동작구 서울시여성가족재단에서 열린 서울 디지털성범죄 안심지원센터 개관식에 참석해 기념촬영을 하고 있다.</p>
-        <p class="detail">파일유형 : jpg, 파일명 : 12_cse_de33r32.jpg</p>
-        <button class="trace-add btn-off ">추가</button>
-      </section>
-      <section class="list M-box-up bor10">
-        <div class="img-box">
-          <div class="img">
-            <img src="./img/replace/img1-9.jpg" alt="" loading="lazy">
-          </div>
-          <img src="./img/common/sns/google-round.png" alt="" class="sns">
-        </div>
-        <h2 class="unity">80%</h2>
-        <a href="https://www.newdaily.co.kr/site/data/html/2022/03/29/2022032900234.html" class="url" target="_blank">https://www.newdaily.co.kr/site/data/html/2022/03/29/2022032900234.html</a>
-        <p class="content">오세훈 서울시장과 최관호 서울경찰청장을 비롯한 참석자들이 29일 오후 서울 동작구 서울시여성가족재단에서 열린 서울시 디지털성범죄 안심지원센터 개관식에서 현판 제막에 앞서 기념촬영을 하고 있다.
-        </p>
-        <p class="detail">파일유형 : jpg, 파일명 : 1dfg_cse_ddsfee33r35562.jpg</p>
-        <button class="trace-add btn-off ">추가</button>
-      </section>
+      <section th:if="${searchResultListCount == 0}" style="width: 100%; text-align: center;">조회 결과가 없습니다.</section>
     </div>
   </seciton>
   <nav>
-    <ul id="pagination">
-      <li class="page-num"><a href="#" class="btn-off active">1</a></li>
+    <ul id="pagination" th:with="start=${(number / maxPage * maxPage) + 1}, end=(${(totalPages == 0) ? 1 : ((start + maxPage - 1) < totalPages ? (start + maxPage - 1) : totalPages)})">
+      <li class="page-num" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${1} + ');'" class="btn-off" style="width:30px;">처음</a></li>
+      <li class="page-prev" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
+      <li class="page-num" th:each="pageNum : ${#numbers.sequence(start, end)}"><a th:onclick="'javascript:searchEvent('+ ${pageNum} + ');'" class="btn-off" th:classappend="${number + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a></li>
+      <li class="page-next" th:if="${end < totalPages}"><a th:onclick="'javascript:searchEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
+      <li class="page-num" th:if="${end < totalPages}"><a th:onclick="'javascript:searchEvent('+ ${totalPages} + ');'" class="btn-off" style="width:30px;">끝</a></li>
     </ul>
   </nav>
-  <script>
-    // pagination();
-    footer();
-  </script>
+  <script>footer();</script>
 </article>
-<script>
-  // 셀렉트 구현
-  const select = document.querySelector(".selection.setUnity");
-  let ops = '';
-  for (let i = 50; i <= 100; i += 5) {
-    ops += `<li class='unity_num' value=${i}>${i}</li>`
-  }
-  select.querySelector('.option').innerHTML = ops;
-  const option = document.querySelectorAll(".selection .option li");
-  const tType = document.querySelector('input[name=unity-set]');
-  select.addEventListener("click", (e) => {
-    select.classList.toggle('active');
-    option.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        select.children[0].innerHTML = e.target.innerText;
-        tType.value = e.target.innerText;
-      })
-    });
-  });
-  const noticeList = document.querySelector(".notice-list");
-  // for (let i = 32; i > 0; i--) {
-  //   noticeList.innerHTML += `
-  //     <li class="btn-off bor10">
-  //         <p class="time"><span class="date">2022.12.12</span> <br> <span class="hour">12:44:01</span></p>
-  //         <p class="img"><img src="./img/replace/man.png" alt=""></p>
-  //         <p class="type"><span>모니터링</span><span>(키워드)</span></p>
-  //         <p class="unity">99%</p>
-  //         <p class="cont"><span class="con">엄훠나 세솽에 이런 일이 다 있고 참 이상하네요 정말 정말 정말 왜 이렇게 이상할까요?????</span></p>
-  //         <img src="./img/common/sns/face.png" alt="" class="social">
-  //         <p class="url"><a href="#">https//:wwwgooglecomsearchq=%EC%9D%B8%EC%8A%A4%ED%83%80oq=%EC%9D%B8%EC%8A%A4%ED%83%80&aASDFsdfas...</a></p>
-  //         <button class="trace-add btn-off">추가</button>
-  //       </li>
-  //       `;
-  // }
-  function autoTrace(val){
-    $.ajax({
-      type : "POST",
-      url : "/ajax_auto_Insert",
-      data : {'auto_keyword' : $('.keyword-add').val()},
-      success : function(res){
-        let word=val.querySelector("input").value;
-        document.querySelector('.keyword-box>div').innerHTML+=
-                `<p class="word-list">${word}<span type="button" field="${word}" class="delete" onclick='aTDelete(this);'>삭제</span></p>`;
-        val.querySelector("input").value='';
-      },
-      error : function(XMLHttpRequest, textStatus, errorThrown){
-        alert("통신 실패.")
-      }
-    });
-  }
-  function aTDelete(del){
-    var field = $(del).attr('field');
-    $.ajax({
-      type : "POST",
-      url : "/ajax_auto_Delete",
-      data : {'auto_keyword' : $(del).attr('field')},
-      success : function(res){
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  // const list = document.querySelector(".result-list");
 
-        $('.delete').each(function(index, item){
-          if($(this).attr('field') == field){
-            item.parentNode.remove();
+  // 페이징하고 검색이력
+  const searchForm = document.querySelector("#searchForm");
+  const searchPage = document.querySelector("#searchPage");
+  const searchEvent = (pageNum) => {
+    searchPage.value = pageNum;
+    searchForm.submit();
+  }
+  const pageBtn = document.querySelectorAll(".btn-off");
+  pageBtn.forEach((btn) => {
+    btn.style.cursor = "pointer";
+  })
+
+  // 검색 디테일
+  const imgBtn = document.querySelectorAll(".img-box");
+  const modal = document.querySelector("#modal");
+  imgBtn.forEach((btn) => {
+    const tsrUno = btn.querySelector("#tsrUno");
+    btn.addEventListener('click', () => {
+      //XMLHttpRequest 객체 생성
+      var xhr = new XMLHttpRequest();
+      //요청을 보낼 방식, 주소, 비동기여부 설정
+      xhr.open('GET', 'result-detail?tsrUno='+tsrUno.value, true);
+      //요청 전송
+      xhr.send(null);
+      //통신후 작업
+      xhr.onload = () => {
+        //통신 성공
+        if (xhr.status === 200) {
+          document.body.style.overflow = 'hidden';
+          modal.style.display = 'block';
+          modal.innerHTML = xhr.response;
+          const esc = document.querySelector(".trace-detail .esc-btn");
+          esc.onclick = () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'unset';
           }
-        })
-      },
-      error : function(XMLHttpRequest, textStatus, errorThrown){
-        alert("통신 실패.")
-      }
-    });
-
-  }
-
-  // 키워드
-  const autoKey = document.querySelector(".auto-trace");
-  autoKey.addEventListener("click", () => {
-    //XMLHttpRequest 객체 생성
-    var xhr = new XMLHttpRequest();
-    //요청을 보낼 방식, 주소, 비동기여부 설정
-    xhr.open('GET', '/keyword', true);
-    //요청 전송
-    xhr.send(null);
-    //통신후 작업
-    xhr.onload = () => {
-      //통신 성공
-      if (xhr.status == 200) {
-        document.body.style.overflow = 'hidden';
-        modal.style.display = 'flex';
-        modal.innerHTML = xhr.response;
-
-        const esc = document.querySelector(".esc-btn");
-        esc.onclick = () => {
-          modal.style.display = 'none';
-          document.body.style.overflow = 'unset';
+        } else {
+          //통신 실패
+          console.log("통신 실패");
         }
-      } else {
-        //통신 실패
-        console.log("통신 실패");
+
       }
+    })
+  });
+
+  // 추적 상태 추가 버튼
+  const addTraceBtn = document.querySelectorAll(".trace-add");
+  addTraceBtn.forEach((btn) => {
+
+    btn.addEventListener('click', () => {
+      // btn.disabled = true;
+      //XMLHttpRequest 객체 생성
+      const xhr = new XMLHttpRequest();
+      //요청을 보낼 방식, 주소, 비동기여부 설정
+      xhr.open('GET', 'search/addTrkStat?tsrUno='+btn.value, true);
+      //요청 전송
+      xhr.send(null);
+      //통신후 작업
+      xhr.onload = () => {
+        if (xhr.status === 200) {   //통신 성공
+          console.log("통신 성공");
+          btn.disabled = false;
+        } else {  //통신 실패
+          console.log("통신 실패");
+          btn.disabled = false;
+        }
+      }
+    })
+  });
+
+  // 재검색 (0317수정)
+  // const reSearch = (con) => {
+  //   const tabW = document.querySelector('.search-tab');
+  //   const text = `
+  //       <div class="tab research">
+  //               <p>${con.re_search.value}</p>
+  //             </div>
+  //       `;
+  //   tabW.insertAdjacentHTML("beforeend", text);
+  //   document.querySelector('.next').style.display = 'block';
+  //   document.querySelector('.search-bar').style.display='none';
+  // }
+
+  // 검색내용 이미지 클릭시 팝업(0317추가)
+  const searchImg = document.querySelector('.search-img');
+  searchImg.addEventListener('click', function () {
+    document.body.style.overflow = 'hidden';
+    modal.style.display = 'block';
+    modal.innerHTML = `<div class='modal bor10 searchmodal'>
+        ${this.children[0].outerHTML}
+      <button class="esc-btn">닫기</button>
+        </div>`;
+    if(modal.querySelector('video')){
+      modal.querySelector('video').controls=true;
+    }
+    const esc = modal.querySelector(".esc-btn");
+    esc.onclick = () => {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'unset';
     }
   })
+
+  // ----------체크박스------------ 추가----------------------------------------
+  /* 검색파일이 video일경우*/
+  //const video = true;//임시값
+  //2023-03-22 수정
+  const video = [[${tsiType}]] == '15' || [[${tsiType}]] == '19';
+  if (video) {
+    document.querySelector('.video-chk').style.display = 'block';
+  } else {
+    document.querySelector('.video-chk').style.display = 'none';
+  }
+
+  const sortChkDiv = [[${tsiType}]] != '11';
+  if (sortChkDiv) {
+    document.querySelector('.sort-chk').style.display = 'block';
+  } else {
+    document.querySelector('.sort-chk').style.display = 'none';
+  }
+
+  // SNS check된 값1로 넘기기
+  const sns_chk = document.querySelectorAll('.chk-box-sns input[type=checkbox]');
+  for (let i = 0; i < sns_chk.length; i++) {
+    sns_chk[i].addEventListener('change', function () {
+      this.value ^= 1;
+      // 일치율선택시 우선순위 나오기
+      if (this.id === 'equal') {
+        if (this.checked) {
+          document.querySelector('.pri-chk').style.display = 'block';
+        } else {
+          document.querySelector('.pri-chk').style.display = 'none';
+        }
+      }
+      // 전체 누르면 다른값 체크해제
+      if (this.className ==='W') {
+        if(this.checked) {
+          [...sns_chk].filter(check=>check.className !=='W' && check.name !== this.name).forEach(e => {
+            if (e.checked) {
+              e.checked = false;
+              e.value ^= 1;
+            }
+          })
+          document.querySelector('.pri-chk').style.display = 'none';
+          this.disabled = true;
+        }
+      }
+      // 다른체크시 전체 체크값해제
+      if (this.className !== 'W') {
+        [...sns_chk].filter(check => check.className === 'W' && check.name !== this.name).forEach(e => {
+          if(e.checked) {
+            e.checked = false;
+            e.value ^= 1;
+            e.disabled = false;
+          }
+        })
+      }
+      if (sns_chk[1].value+sns_chk[2].value+sns_chk[3].value+sns_chk[4].value === "0000") {
+        sns_chk[0].checked = true;
+        sns_chk[0].value ^= 1;
+        sns_chk[0].disabled = true;
+      }
+    })
+  }
+
+  //분류 check된 값1로 넘기기
+  const chk = document.querySelectorAll('.chk-box-tsj input[type=checkbox]');
+  for (let i = 0; i < chk.length; i++) {
+    chk[i].addEventListener('change', function () {
+      this.value ^= 1;
+      // 일치율선택시 우선순위 나오기
+      if (this.id === 'equal') {
+        if (this.checked) {
+          document.querySelector('.pri-chk').style.display = 'block';
+        } else {
+          document.querySelector('.pri-chk').style.display = 'none';
+        }
+      }
+      // 전체 누르면 다른값 체크해제
+      if (this.className ==='W') {
+        if(this.checked) {
+          [...chk].filter(check=>check.className !=='W' && check.name !== this.name).forEach(e => {
+            if (e.checked) {
+              e.checked = false;
+              e.value ^= 1;
+            }
+          })
+          document.querySelector('.pri-chk').style.display = 'none';
+          this.disabled = true;
+        }
+      }
+      // 다른체크시 전체 체크값해제
+      if (this.className !== 'W') {
+        [...chk].filter(check => check.className === 'W' && check.name !== this.name).forEach(e => {
+          if(e.checked) {
+            e.checked = false;
+            e.value ^= 1;
+            e.disabled = false;
+          }
+        })
+      }
+      if (chk[1].value+chk[2].value+chk[3].value+chk[4].value === "0000") {
+        chk[0].checked = true;
+        chk[0].value ^= 1;
+        chk[0].disabled = true;
+      }
+    })
+  }
+
+  //일치율 check된 값1로 넘기기
+  const od_chk = document.querySelectorAll('.chk-box-od input[type=checkbox]');
+  for (let i = 0; i < od_chk.length; i++) {
+    console.log(this.className);
+    od_chk[i].addEventListener('change', function () {
+      this.value ^= 1;
+      // 일치율선택시 우선순위 나오기
+      if (this.id === 'equal') {
+        if (this.checked) {
+          document.querySelector('.pri-chk').style.display = 'block';
+        } else {
+          document.querySelector('.pri-chk').style.display = 'none';
+        }
+      }
+      // 전체 누르면 다른값 체크해제
+      if (this.className ==='W') {
+        if(this.checked) {
+          [...od_chk].filter(check=>check.className !=='W' && check.name !== this.name).forEach(e => {
+            if (e.checked) {
+              e.checked = false;
+              e.value ^= 1;
+            }
+          })
+          document.querySelector('.pri-chk').style.display = 'none';
+          this.disabled = true;
+        }
+      }
+      // 다른체크시 전체 체크값해제
+      if (this.className !== 'W') {
+        [...od_chk].filter(check => check.className === 'W' && check.name !== this.name).forEach(e => {
+          if(e.checked) {
+            e.checked = false;
+            e.value ^= 1;
+            e.disabled = false;
+          }
+        })
+      }
+      if (od_chk[1].value+od_chk[2].value+od_chk[3].value === "0000") {
+        od_chk[0].checked = true;
+        od_chk[0].value ^= 1;
+        od_chk[0].disabled = true;
+      }
+    })
+  }
+  // --------------------------------------------------------------------------------------------
+  view_type();
+  /*]]>*/
 </script>
 </body>
 

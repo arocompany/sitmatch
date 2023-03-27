@@ -82,7 +82,10 @@ public class UserController {
                 SessionInfoDto sessionInfo = SessionInfoDto.builder()
                         .userUno(Math.toIntExact(user.getUserUno()))
                         .userId(user.getUserId())
-                        .userNm(user.getUserNm()).build();
+                        .userNm(user.getUserNm())
+                        .crawling_limit(user.getCrawling_limit())
+                        .percent_limit(user.getPercent_limit())
+                        .build();
                 if( user.getUserClfCd().equals("99") ) {
                     sessionInfo.setAdmin(true);
                     session.setAttribute(Consts.SESSION_IS_ADMIN, true);
@@ -93,6 +96,8 @@ public class UserController {
                 session.setAttribute(Consts.SESSION_USER_UNO, user.getUserUno());
                 session.setAttribute(Consts.SESSION_USER_ID, user.getUserId());
                 session.setAttribute(Consts.SESSION_USER_NM, user.getUserNm());
+                session.setAttribute(Consts.SESSION_USER_CL, user.getCrawling_limit());
+                session.setAttribute(Consts.SESSION_USER_PL, user.getPercent_limit());
                 session.setAttribute(Consts.LOGIN_SESSION, sessionInfo);
             } else {    // 로그인 실패
                 modelAndView.addObject("errorMessage", "아이디 또는 비밀번호를 다시 입력해주세요.");
@@ -157,4 +162,33 @@ public class UserController {
         return new ModelAndView("redirect:/manage");
     }
 
+    @PostMapping("ajax_con_limit_update")
+    public void ajax_con_limit_update(@Valid UserLoginCheckDto userLoginCheckDto, BindingResult result, HttpServletRequest request) {
+System.out.println("testtest////"+userLoginCheckDto.getUserUno()+'/'+userLoginCheckDto.getCrawling_limit()+'/'+userLoginCheckDto.getPercent_limit());
+        userRepository.ajax_con_limit_update(userLoginCheckDto.getUserUno(), userLoginCheckDto.getCrawling_limit(), userLoginCheckDto.getPercent_limit());
+        UserEntity user = userRepository.findByUserUno(userLoginCheckDto.getUserUno());
+        HttpSession session = request.getSession();
+        SessionInfoDto sessionInfo = SessionInfoDto.builder()
+                .userUno(Math.toIntExact(user.getUserUno()))
+                .userId(user.getUserId())
+                .userNm(user.getUserNm())
+                .crawling_limit(user.getCrawling_limit())
+                .percent_limit(user.getPercent_limit())
+                .build();
+
+        if( user.getUserClfCd().equals("99") ) {
+            sessionInfo.setAdmin(true);
+            session.setAttribute(Consts.SESSION_IS_ADMIN, true);
+        } else {
+            sessionInfo.setAdmin(false);
+            session.setAttribute(Consts.SESSION_IS_ADMIN, false);
+        }
+        session.setAttribute(Consts.SESSION_USER_UNO, user.getUserUno());
+        session.setAttribute(Consts.SESSION_USER_ID, user.getUserId());
+        session.setAttribute(Consts.SESSION_USER_NM, user.getUserNm());
+        session.setAttribute(Consts.SESSION_USER_CL, user.getCrawling_limit());
+        session.setAttribute(Consts.SESSION_USER_PL, user.getPercent_limit());
+        session.setAttribute(Consts.LOGIN_SESSION, sessionInfo);
+
+    }
 }

@@ -474,7 +474,7 @@ public class SearchService {
                             sre.setTsrSns("11");
                         }
 
-                        
+
                         //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                         if (!tsrSns.equals(sre.getTsrSns())) {
                             continue;
@@ -1364,6 +1364,16 @@ public class SearchService {
 //        }
     }
 
+    public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsrUno) {
+        PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
+
+        if(tsrUno == 0) {
+            return searchResultRepository.getNoticeList(pageRequest);
+        }else{
+            return searchResultRepository.getNoticeSelList(pageRequest,tsrUno);
+        }
+    }
+
     public DefaultQueryDtoInterface getResultInfo(Integer tsrUno) {
         return searchResultRepository.getResultInfo(tsrUno);
     }
@@ -1497,6 +1507,14 @@ public class SearchService {
         searchResultRepository.save(searchResultEntity);
     }
 
+//    public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsrUno) {
+//        Map<String, Object> outMap = new HashMap<>();
+//        PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
+//        Page<SearchInfoEntity> noticeListPage ;
+//        noticeListPage = searchInfoRepository.getNoticeListPage(pageRequest);
+//
+//        return outMap;
+//    }
     public Map<String, Object> getSearchInfoList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);

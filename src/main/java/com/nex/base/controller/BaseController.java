@@ -100,18 +100,31 @@ public class BaseController {
         return modelAndView;
     }
 
-    @GetMapping("/notice")
-    public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
-            , @RequestParam(required = false, defaultValue = "80") String tsjStatus
-            , @RequestParam Optional<Integer> tsrUno
-            , @RequestParam(required = false, defaultValue = "1") Integer page) {
-        ModelAndView modelAndView = new ModelAndView("html/notice");
-        modelAndView.addObject("sessionInfo", sessionInfoDto);
-
-        searchService.getNotice(tsjStatus, tsrUno, page, modelAndView);
-
-        return modelAndView;
-    }
+//    @GetMapping("/notice")
+//    public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
+//            , @RequestParam(required = false, defaultValue = "80") String tsjStatus
+//            , @RequestParam (required = false, defaultValue = "0") Integer tsrUno
+//            , @RequestParam(required = false, defaultValue = "1") Integer page) {
+//        Map<String, Object> noticeListMap = new HashMap<>();
+//        noticeListMap = searchService.getNoticeList(page, tsrUno);
+//
+//        ModelAndView modelAndView = new ModelAndView("html/notice");
+//        modelAndView.addObject("sessionInfo", sessionInfoDto);
+//        modelAndView.addObject("searchResultList", defaultQueryDtoInterface);
+//        assert defaultQueryDtoInterface != null;
+//        modelAndView.addObject("searchResultListCount", defaultQueryDtoInterface.getTotalElements());
+//        modelAndView.addObject("number", defaultQueryDtoInterface.getNumber());
+//        modelAndView.addObject("maxPage", Consts.MAX_PAGE);
+//        modelAndView.addObject("totalPages", defaultQueryDtoInterface.getTotalPages());
+//        modelAndView.addObject("listType", listType);
+//        modelAndView.addObject("keyword", keyword);
+//        modelAndView.addObject("userId", searchService.getUserIdByTsiUnoMap().get(tsiUno.get()));
+//
+//
+////        searchService.getNotice(tsjStatus, tsrUno, page, modelAndView);
+//
+//        return modelAndView;
+//    }
 
     @GetMapping("/counselor-add")
     public ModelAndView counselor_add(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
@@ -350,6 +363,30 @@ public class BaseController {
         modelAndView.addObject("listType", listType);
         modelAndView.addObject("keyword", keyword);
         modelAndView.addObject("userId", searchService.getUserIdByTsiUnoMap().get(tsiUno.get()));
+
+        return modelAndView;
+    }
+
+    @GetMapping("/notice")
+    public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
+            , @RequestParam(required = false, defaultValue = "80") String tsjStatus
+            , @RequestParam (required = false, defaultValue = "0") Integer tsrUno
+            , @RequestParam(required = false, defaultValue = "1") Integer page) {
+
+        Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = null;
+        defaultQueryDtoInterface = searchService.getNoticeList(page, tsrUno);
+
+        ModelAndView modelAndView = new ModelAndView("html/notice");
+        modelAndView.addObject("sessionInfo", sessionInfoDto);
+        modelAndView.addObject("searchResultList", defaultQueryDtoInterface);
+        assert defaultQueryDtoInterface != null;
+        modelAndView.addObject("searchResultListCount", defaultQueryDtoInterface.getTotalElements());
+        modelAndView.addObject("number", defaultQueryDtoInterface.getNumber());
+        modelAndView.addObject("maxPage", Consts.MAX_PAGE);
+        modelAndView.addObject("totalPages", defaultQueryDtoInterface.getTotalPages());
+
+
+//        searchService.getNotice(tsjStatus, tsrUno, page, modelAndView);
 
         return modelAndView;
     }
