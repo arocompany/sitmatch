@@ -18,7 +18,11 @@ public interface Consts {
     String TRK_STAT_CD_DEL_REQ = "20";      // 삭제요청
     String TRK_STAT_CD_DEL_CMPL = "30";  // 삭제완료
 
-    String FACEBOOK_URL = "facebook.com";
-    String INSTAGRAM_URL = "instagram.com";
+    String GOOGLE = "GOOGLE";
+    String FACEBOOK = "FACEBOOK";
+    String INSTAGRAM = "INSTAGRAM";
+
+    String MONITORING_CD_NONE = "10";
+    String MONITORING_CD_ING = "20";
 
 }

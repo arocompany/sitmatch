@@ -149,7 +149,7 @@ public class SearchController {
         }
         insertResult = searchService.saveSearchInfo(searchInfoEntity);
 
-
+        /*
         if(tsiGoogle == 1){
             // Google 검색기능 구현
             String tsrSns = "11";
@@ -181,13 +181,17 @@ public class SearchController {
         if(tsiTwitter == 1){
             // Twitter 검색기능 구현
         }
-
-        //2023-03-20
-        //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
+         */
+        //2023-03-26 위 로직 searchService 로 이동
+        searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder);
 
         return modelAndView;
     }
 
+    /**
+     * @Deprecated 2023-03-26 사용 중지 SearchService 로 이동 {@link com.nex.search.service.SearchService#searchGoogle(String, SearchInfoEntity, String, String)}
+     */
+    @Deprecated
     private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns) {
         // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
         switch (tsiType) {// 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
@@ -224,7 +228,10 @@ public class SearchController {
         }
     }
 
-    // yandex 텍스트 검색 및 후처리
+    /**
+     * @Deprecated 2023-03-26 사용 중지 SearchService 로 이동 {@link com.nex.search.service.SearchService#searchYandexByText(String, SearchInfoEntity)}}
+     */
+    @Deprecated
     public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult){
         int index = 0;
         String tsiKeyword = insertResult.getTsiKeyword();
@@ -345,6 +352,13 @@ public class SearchController {
                                @RequestParam Optional<Integer> tsrUno,
                                @RequestParam String trkStatCd) {
         tsrUno.ifPresent(integer -> searchService.setTrkStatCd(integer, trkStatCd));
+        return "success";
+    }
+
+    @GetMapping("/monitoring")
+    public String setMonitoringCd(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
+                                  @RequestParam Optional<Integer> tsrUno) {
+        tsrUno.ifPresent(searchService::setMonitoringCd);
         return "success";
     }
 

@@ -6,7 +6,6 @@ import com.nex.common.Consts;
 import com.nex.search.entity.*;
 import com.nex.search.repo.*;
 import jakarta.persistence.EntityManager;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -40,6 +40,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 import static com.nex.common.CmnUtil.execPython;
 
@@ -50,14 +51,16 @@ public class SearchService {
 
     private final EntityManager em;
 
+    /*
+    2023-03-26 각각 class 생성
     @Data
-    static class YandexByTextResult {
+    public static class YandexByTextResult {
         private String error;
         private List<Images_resultsByText> images_results;
     }
 
     @Data
-    static class Images_resultsByText {
+    public static class Images_resultsByText {
         private int position;
         private String original;
         private int original_width;
@@ -77,13 +80,13 @@ public class SearchService {
     }
 
     @Data
-    static class YandexByImageResult {
+    public static class YandexByImageResult {
         private String error;
         private List<Images_resultsByImage> inline_images;
     }
 
     @Data
-    static class Images_resultsByImage {
+    public static class Images_resultsByImage {
         private String original;
         private String source;
         private String title;
@@ -99,6 +102,7 @@ public class SearchService {
             return "Facebook".equals(source);
         }
     }
+     */
 
     private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
@@ -119,13 +123,315 @@ public class SearchService {
     private String textYandexGl;
     @Value("${search.yandex.text.no_cache}")
     private String textYandexNocache;
+    @Value("${search.yandex.text.location}")
+    private String textYandexLocation;
+    @Value("${search.yandex.text.tbm}")
+    private String textYandexTbm;
     @Value("${search.yandex.text.api_key}")
     private String textYandexApikey;
+    @Value("${search.yandex.text.engine}")
+    private String textYandexEngine;
     @Value("${search.yandex.image.engine}")
     private String imageYandexEngine;
+    @Value("${search.yandex.text.count.limit}")
+    private String textYandexCountLimit;
+    @Value("${file.location1}")
+    private String fileLocation1;
+    @Value("${file.location3}")
+    private String fileLocation3;
     @Value("${server.url}")
     private String serverIp;
 
+    private Boolean loop = true;
+
+
+    /**
+     * 검색
+     *
+     * 2023-03-26
+     * SearchController 에 있던 로직 이동
+     *
+     * @param tsiGoogle    (구글 검색 여부)
+     * @param tsiFacebook  (페이스북 검색 여부)
+     * @param tsiInstagram (인스타그램 검색 여부)
+     * @param tsiTwitter   (트위터 검색 여부)
+     * @param tsiType      (검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19: 영상)
+     * @param insertResult (검색 이력 Entity)
+     * @param folder       (저장 폴더)
+     */
+    public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, byte tsiTwitter, String tsiType, SearchInfoEntity insertResult, String folder) {
+        if(tsiGoogle == 1){
+            // Google 검색기능 구현
+            String tsrSns = "11";
+
+            // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
+            searchGoogle(tsiType, insertResult, folder, tsrSns);
+        }
+
+        //2023-03-20
+        //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
+        if(tsiFacebook == 1){
+            // Facebook 검색기능 구현
+            String tsrSns = "17";
+
+            // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
+            searchGoogle(tsiType, insertResult, folder, tsrSns);
+        }
+
+        //2023-03-20
+        //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
+        if(tsiInstagram == 1){
+            // Instagram 검색기능 구현
+            String tsrSns = "15";
+
+            // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
+            searchGoogle(tsiType, insertResult, folder, tsrSns);
+        }
+
+        if(tsiTwitter == 1){
+            // Twitter 검색기능 구현
+        }
+    }
+
+    /**
+     * 구글 검색
+     *
+     * 2023-03-26
+     * SearchController 에 있던 로직 이동
+     *
+     * @param tsiType      (검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19: 영상)
+     * @param insertResult (검색 이력 Entity)
+     * @param folder       (저장 폴더)
+     * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
+     */
+    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns) {
+        // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
+        switch (tsiType) {// 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
+            case "11":// 키워드만 검색한 경우
+                // Yandex 검색
+                log.info("키워드 검색");
+                searchYandexByText(tsrSns, insertResult);
+                // Google Custom Search 검색
+//                    searchGoogleCustomByText(insertResult);
+                break;
+            case "13"://키워드 + 이미지 검색인 경우
+                // Yandex 검색
+                log.info("키워드/이미지 검색");
+                searchYandexByText(tsrSns, insertResult);
+                // Google Custom Search 검색
+//                    searchGoogleCustomByText(insertResult);
+                break;
+            case "15"://키워드 + 영상 검색인 경우
+                // 영상처리
+                // Yandex 검색
+                log.info("키워드/영상 검색");
+                searchYandexByText(tsrSns, insertResult);
+                break;
+            case "17"://이미지만 검색인 경우
+                // Yandex 검색
+                log.info("이미지 검색");
+                searchYandexByImage(tsrSns, insertResult);
+                break;
+            case "19"://영상만 검색인 경우
+                // Yandex 검색
+                log.info("영상 검색");
+                searchYandexByVideo(tsrSns, insertResult, fileLocation3, folder);
+                break;
+        }
+    }
+
+    /**
+     * Yandex 텍스트 검색
+     *
+     * 2023-03-26
+     * SearchController 에 있던 로직 이동
+     *
+     * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
+     * @param insertResult (검색 이력 Entity)
+     */
+    public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult){
+        int index = 0;
+        String tsiKeyword = insertResult.getTsiKeyword();
+
+        //인스타
+        if ("15".equals(tsrSns)) {
+            tsiKeyword = "인스타그램 " + tsiKeyword;
+        }
+        //페북
+        else if ("17".equals(tsrSns)) {
+            tsiKeyword = "페이스북 " + tsiKeyword;
+        }
+
+        do {
+            // yandex search url
+            String url = textYandexUrl
+                    + "?q=" + tsiKeyword
+                    + "&GL=" + textYandexGl
+                    + "&no_cache=" + textYandexNocache
+                    + "&location=" + textYandexLocation
+                    + "&tbm=" + textYandexTbm
+                    + "&ijn=" + String.valueOf(index)
+                    + "&api_key=" + textYandexApikey
+                    + "&engine=" + textYandexEngine;
+
+            /*
+            CompletableFuture
+                    .supplyAsync(() -> {
+                        try {
+                            // text기반 yandex 검색 및 결과 저장.(이미지)
+                            return searchYandexByText(url, tsrSns, insertResult);
+                        } catch (Exception e) {
+                            log.debug(e.getMessage());
+                            return null;
+                        }
+                    })
+                    .thenAccept((r) -> {
+                        try {
+                            // yandex검색을 통해 결과 db에 적재.
+                            saveImgSearchYandexByText(r, insertResult);
+                        } catch (Exception e) {
+                            log.debug(e.getMessage());
+                        }
+                    });
+             */
+            //2023-03-26
+            //기존 searchYandexByText 를 데이터 가져 오는 부분, 저장 하는 부분으로 분리
+            CompletableFuture
+                    .supplyAsync(() -> {
+                        try {
+                            // text기반 yandex 검색
+                            return searchYandex(url, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                        } catch (Exception e) {
+                            log.debug(e.getMessage());
+                            return null;
+                        }
+                    })
+                    .thenApply((r) -> {
+                        try {
+                            // 결과 저장.(이미지)
+                            return saveYandex(
+                                    r
+                                    , tsrSns
+                                    , insertResult
+                                    , Images_resultsByText::getOriginal
+                                    , Images_resultsByText::getThumbnail
+                                    , Images_resultsByText::getTitle
+                                    , Images_resultsByText::getLink
+                                    , Images_resultsByText::isFacebook
+                                    , Images_resultsByText::isInstagram
+                            );
+                        } catch (Exception e) {
+                            log.debug(e.getMessage());
+                            return null;
+                        }
+                    })
+                    .thenAccept((r) -> {
+                        try {
+                            // yandex검색을 통해 결과 db에 적재.
+                            saveImgSearchYandex(r, insertResult);
+                        } catch (Exception e) {
+                            log.debug(e.getMessage());
+                        }
+                    });
+            // properties에 설정된 limit 에 따라 총 데이터 저장 한계를 설정하는 부분
+            // ex)limit이 10이라면 페이지당 데이터가 100건이므로 100건*limit 10 해서
+            // 검색 결과가 limit 건수보다 많다면 총 1000건의 데이터까지만 저장,
+            // 해당 검색 결과가 limit 건수보다 낮다면 데이터 건수만큼만 저장됨
+            if(index >= Integer.parseInt(textYandexCountLimit)-1){
+                loop = false;
+            }
+
+            index++;
+        } while (loop);
+    }
+
+    /**
+     * Yandex 이미지 검색
+     *
+     * 2023-03-26
+     * SearchController 에 있던 로직 이동
+     *
+     * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
+     * @param insertResult (검색 이력 Entity)
+     */
+    public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult){
+        String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
+        searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+
+        String url = textYandexUrl
+                + "?GL=" + textYandexGl
+                + "&no_cache=" + textYandexNocache
+                + "&api_key=" + textYandexApikey
+                + "&engine=" + imageYandexEngine
+                + "&image_url=" + searchImageUrl;
+
+        /*
+        CompletableFuture
+                .supplyAsync(() -> {
+                    try {
+                        // text기반 yandex 검색 및 결과 저장.(이미지)
+                        return searchYandexByImage(url, tsrSns, insertResult);
+                    } catch (Exception e) {
+                        log.debug(e.getMessage());
+                        return null;
+                    }
+                })
+                .thenApplyAsync((r) -> {
+                    try {
+                        // yandex검색을 통해 결과 db에 적재.
+                        return saveImgSearchYandexByImage(r, insertResult);
+                    } catch (Exception e) {
+                        log.debug(e.getMessage());
+                        return null;
+                    }
+                });
+         */
+        //2023-03-26
+        //기존 searchYandexByText 를 데이터 가져 오는 부분, 저장 하는 부분으로 분리
+        CompletableFuture
+                .supplyAsync(() -> {
+                    try {
+                        // text기반 yandex 검색
+                        return searchYandex(url, YandexByImageResult.class, YandexByImageResult::getError, YandexByImageResult::getInline_images);
+                    } catch (Exception e) {
+                        log.debug(e.getMessage());
+                        return null;
+                    }
+                })
+                .thenApply((r) -> {
+                    try {
+                        // 결과 저장.(이미지)
+                        return saveYandex(
+                                r
+                                , tsrSns
+                                , insertResult
+                                , Images_resultsByImage::getOriginal
+                                , Images_resultsByImage::getThumbnail
+                                , Images_resultsByImage::getTitle
+                                , Images_resultsByImage::getLink
+                                , Images_resultsByImage::isFacebook
+                                , Images_resultsByImage::isInstagram
+                        );
+                    } catch (Exception e) {
+                        log.debug(e.getMessage());
+                        return null;
+                    }
+                })
+                .thenApplyAsync((r) -> {
+                    try {
+                        // yandex검색을 통해 결과 db에 적재.
+                        return saveImgSearchYandex(r, insertResult);
+                    } catch (Exception e) {
+                        log.debug(e.getMessage());
+                        return null;
+                    }
+                });
+    }
+
+    /**
+     * @deprecated 2023-03-26 사용 중지, 메소드 2개로 분리 {@link #searchYandex(String, Class, Function, Function)}, {@link #saveYandex(List, String, SearchInfoEntity, Function, Function, Function, Function, Function, Function)}
+     */
+    @Deprecated
     public List<SearchResultEntity> searchYandexByText(String url, String tsrSns, SearchInfoEntity insertResult) throws Exception {
         String jsonInString = "";
         RestTemplate restTemplate = new RestTemplate();
@@ -235,7 +541,162 @@ public class SearchService {
         return sreList;
     }
 
-    public String saveImgSearchYandexByText(List<SearchResultEntity> result, SearchInfoEntity insertResult) throws Exception {
+    /**
+     * RESULT 로 검색 결과 엔티티 추출
+     *
+     * @param  tsiUno        (검색 정보 테이블의 key)
+     * @param  tsrSns        (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
+     * @param  result        (결과)
+     * @param  getOriginalFn (original getter Function)
+     * @param  getTitleFn    (title getter Function)
+     * @param  getLinkFn     (link getter Function)
+     * @param  isFacebookFn  (isFacebook Function)
+     * @param  isInstagramFn (isInstagram Function)
+     * @return RESULT        (결과)
+     * @param  <RESULT>      (결과)
+     */
+    public <RESULT> SearchResultEntity getSearchResultEntity(int tsiUno, String tsrSns, RESULT result
+            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
+        SearchResultEntity sre = new SearchResultEntity();
+        sre.setTsiUno(tsiUno);
+        sre.setTsrJson(result.toString());
+        sre.setTsrDownloadUrl(getOriginalFn.apply(result));
+        sre.setTsrTitle(getTitleFn.apply(result));
+        sre.setTsrSiteUrl(getLinkFn.apply(result));
+        //sre.setTsrSns("11");
+
+        //2023-03-20
+        //Facebook, Instagram 도 Google 로 검색, source 값으로 Facebook, Instagram 판별
+
+        //Facebook 검색이고, source 값이 Facebook 인 경우
+        if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
+            sre.setTsrSns("17");
+        }
+        //Instagram 검색이고, source 값이 Instagram 인 경우
+        else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
+            sre.setTsrSns("15");
+        }
+        //그 외는 구글
+        else {
+            sre.setTsrSns("11");
+        }
+
+        return sre;
+    }
+
+    /**
+     * 검색 작업 엔티티 추출
+     *
+     * 2023-03-26 추가
+     *
+     * @param  sre             (검색 결과 엔티티)
+     * @return SearchJobEntity (검색 작업 엔티티)
+     */
+    public static SearchJobEntity getSearchJobEntity(SearchResultEntity sre) {
+        SearchJobEntity sje = new SearchJobEntity();
+        sje.setTsiUno(sre.getTsiUno());
+        sje.setTsrUno(sre.getTsrUno());
+        if(StringUtils.hasText(sre.getTsrImgPath())) {
+            sje.setTsrImgPath(sre.getTsrImgPath().replaceAll("\\\\", "/"));
+        } else {
+            sje.setTsrImgPath("");
+        }
+        sje.setTsrImgName(sre.getTsrImgName());
+        sje.setTsrImgExt(sre.getTsrImgExt());
+        return sje;
+    }
+
+    /**
+     * 이미지 파일 저장
+     *
+     * @param  tsiUno         (검색 정보 테이블의 key)
+     * @param  restTemplate   (RestTemplate)
+     * @param  sre            (검색 결과 엔티티)
+     * @param  result         (결과)
+     * @param  getOriginalFn  (original getter Function)
+     * @param  getThumbnailFn (thumbnail getter Function)
+     * @param  <RESULT>       (결과)
+     * @throws IOException
+     */
+    public <RESULT> void saveImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
+            , RESULT result, Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn) throws IOException {
+        //Resource resource = resourceLoader.getResource(imageUrl);
+        //2023-03-21
+        //구글은 original, Facebook, Instagram 는 thumbnail 로 값을 가져오도록 변경
+        String imageUrl = "11".equals(sre.getTsrSns()) ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
+        Resource resource = resourceLoader.getResource(imageUrl);
+
+        //2023-03-26 에러 나는 url 처리
+        byte[] imageBytes = null;
+        try {
+            imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
+        } catch (Exception e) {
+            //구글인 경우 IGNORE
+            if ("11".equals(sre.getTsrSns())) {
+                imageUrl = getThumbnailFn.apply(result);
+                resource = resourceLoader.getResource(imageUrl);
+                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
+            }
+            else {
+                log.error(e.getMessage(), e);
+                throw new RuntimeException(e);
+            }
+        }
+
+        //2023-03-26 에러가 안나도 imageBytes 가 null 일 때가 있음
+        if (imageBytes == null) {
+            imageUrl = getThumbnailFn.apply(result);
+            resource = resourceLoader.getResource(imageUrl);
+            imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
+        }
+
+        if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("") && imageBytes != null) {
+
+            LocalDate now = LocalDate.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            String folder = now.format(formatter);
+            String restrictChars = "|\\\\?*<\":>/";
+            String regExpr = "[" + restrictChars + "]+";
+            String uuid = UUID.randomUUID().toString();
+            String extension = "";
+            String extension_ = "";
+            if(resource.getFilename().indexOf(".") > 0){
+                extension = resource.getFilename().substring(resource.getFilename().lastIndexOf("."));
+                extension = extension.replaceAll(regExpr, "").substring(0, Math.min(extension.length(), 10));
+                extension_ = extension.substring(1);
+            }
+
+            File destdir = new File(fileLocation2 + folder + File.separator + tsiUno);
+
+            if (!destdir.exists()) {
+                destdir.mkdirs();
+            }
+
+            Files.write(Paths.get(destdir + File.separator + uuid + extension), imageBytes);
+
+            sre.setTsrImgExt(extension_);
+            sre.setTsrImgName(uuid + extension);
+            sre.setTsrImgPath((destdir + File.separator).replaceAll("\\\\", "/"));
+
+            Image img = new ImageIcon(destdir + File.separator + uuid + extension).getImage();
+            sre.setTsrImgHeight(String.valueOf(img.getHeight(null)));
+            sre.setTsrImgWidth(String.valueOf(img.getWidth(null)));
+            sre.setTsrImgSize(String.valueOf(destdir.length() / 1024));
+            img.flush();
+        }
+    }
+
+    /**
+     * 검색 작업 저장
+     *
+     * 2023-03-26 두 메소드 내용이 같아서 하나로 사용 {@link #saveImgSearchYandexByText(List, SearchInfoEntity)}, {@link #saveImgSearchYandexByImage(List, SearchInfoEntity)}
+     *
+     * @param  result       (검색 결과 엔티티 List)
+     * @param  insertResult (검색 이력 엔티티)
+     * @return String       (저장 결과)
+     */
+    public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
 
         insertResult.setTsiStat("13");
         if(insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()){
@@ -244,9 +705,10 @@ public class SearchService {
         SearchInfoEntity updateResult = saveSearchInfo(insertResult);
 
         List<SearchResultEntity> searchResultEntity = result;
-        SearchJobEntity sje = null;
+        //SearchJobEntity sje = null;
         for (SearchResultEntity sre : searchResultEntity){
             try {
+                /*
                 sje = new SearchJobEntity();
                 sje.setTsiUno(sre.getTsiUno());
                 sje.setTsrUno(sre.getTsrUno());
@@ -257,6 +719,10 @@ public class SearchService {
                 }
                 sje.setTsrImgName(sre.getTsrImgName());
                 sje.setTsrImgExt(sre.getTsrImgExt());
+                */
+                //2023-03-26
+                //위 내용 메소드로 추출
+                SearchJobEntity sje = getSearchJobEntity(sre);
                 saveSearchJob(sje);
             } catch(JpaSystemException e){
                 log.error(e.getMessage());
@@ -271,6 +737,55 @@ public class SearchService {
         return "저장 완료";
     }
 
+    /**
+     * @Deprecated 2023-03-26 사용 중지 {@link #saveImgSearchYandex(List, SearchInfoEntity)}
+     */
+    @Deprecated
+    public String saveImgSearchYandexByText(List<SearchResultEntity> result, SearchInfoEntity insertResult) throws Exception {
+
+        insertResult.setTsiStat("13");
+        if(insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()){
+            insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\","/"));
+        }
+        SearchInfoEntity updateResult = saveSearchInfo(insertResult);
+
+        List<SearchResultEntity> searchResultEntity = result;
+        //SearchJobEntity sje = null;
+        for (SearchResultEntity sre : searchResultEntity){
+            try {
+                /*
+                sje = new SearchJobEntity();
+                sje.setTsiUno(sre.getTsiUno());
+                sje.setTsrUno(sre.getTsrUno());
+                if(insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
+                    sje.setTsrImgPath(sre.getTsrImgPath().replaceAll("\\\\", "/"));
+                } else {
+                    sje.setTsrImgPath("");
+                }
+                sje.setTsrImgName(sre.getTsrImgName());
+                sje.setTsrImgExt(sre.getTsrImgExt());
+                */
+                //2023-03-26
+                //위 내용 메소드로 추출
+                SearchJobEntity sje = getSearchJobEntity(sre);
+                saveSearchJob(sje);
+            } catch(JpaSystemException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new JpaSystemException(e);
+            } catch(Exception e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+        return "저장 완료";
+    }
+
+    /**
+     * @deprecated 2023-03-26 사용 중지, 메소드 2개로 분리 {@link #searchYandex(String, Class, Function, Function)}, {@link #saveYandex(List, String, SearchInfoEntity, Function, Function, Function, Function, Function, Function)}
+     */
+    @Deprecated
     public List<SearchResultEntity> searchYandexByImage(String url, String tsrSns, SearchInfoEntity insertResult) throws Exception {
         String jsonInString = "";
         RestTemplate restTemplate = new RestTemplate();
@@ -380,6 +895,244 @@ public class SearchService {
         return sreList;
     }
 
+    /**
+     * Images_resultsByImage 추출
+     *
+     * 2023-03-26
+     * 기존에 데이터 가져오는 부분, 저장 하는 부분 분리
+     *
+     * @param  url                         (검색 Url)
+     * @return List<Images_resultsByImage> (Images_resultsByImage List)
+     * @throws Exception
+     */
+    public List<Images_resultsByImage> searchYandexByImage(String url) throws Exception {
+        String jsonInString = "";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders header = new HttpHeaders();
+        HttpEntity<?> entity = new HttpEntity<>(header);
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+        ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        List<Images_resultsByImage> inlineImages = null;
+
+        if(resultMap.getStatusCodeValue() == 200){
+            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            jsonInString = mapper.writeValueAsString(resultMap.getBody());
+            YandexByImageResult YandexByImageResult = mapper.readValue(jsonInString, YandexByImageResult.class);
+
+            if(YandexByImageResult.getError() == null){
+                inlineImages = YandexByImageResult.getInline_images();
+            }
+        }
+
+        return inlineImages;
+    }
+
+    /**
+     * 텍스트, 이미지 검색
+     *
+     * 2023-03-26 추가
+     * 2개 메소드의 내용이 비슷하여 조회, 저장 메소드를 따로 분리하여 통합
+     * {@link #searchYandexByText(String, String, SearchInfoEntity)} {@link #searchYandexByImage(String, String, SearchInfoEntity)}}
+     *
+     * @param  url          (URL)
+     * @param  infoClass    (YandexByTextResult or YandexByImageResult Class)
+     * @param  getErrorFn   (info error getter Function)
+     * @param  getResultFn  (RESULT getter Function)
+     * @return List<RESULT> (RESULT List)
+     * @param  <INFO>       (YandexByTextResult or YandexByImageResult)
+     * @param  <RESULT>     (Images_resultsByText or Images_resultsByImage)
+     * @throws Exception
+     */
+    public <INFO, RESULT> List<RESULT> searchYandex(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+        HttpHeaders header = new HttpHeaders();
+        HttpEntity<?> entity = new HttpEntity<>(header);
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+
+        List<RESULT> results = null;
+
+        if (resultMap.getStatusCodeValue() == 200) {
+            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            String jsonInString = mapper.writeValueAsString(resultMap.getBody());
+            INFO info = mapper.readValue(jsonInString, infoClass);
+
+            if (getErrorFn.apply(info) == null) {
+                results = getResultFn.apply(info);
+            }
+        }
+
+        return results != null ? results : new ArrayList<>();
+    }
+
+    /**
+     * 검색 결과 저장
+     *
+     * 2023-03-26
+     * 기존에 데이터 가져오는 부분, 저장 하는 부분 분리
+     *
+     * @param  results                  (RESULT List)
+     * @param  tsrSns                   (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
+     * @param  insertResult             (검색 이력 엔티티)
+     * @param  getOriginalFn            (original getter Function)
+     * @param  getThumbnailFn           (thumbnail getter Function)
+     * @param  getTitleFn               (title getter Function)
+     * @param  getLinkFn                (link getter Function)
+     * @param  isFacebookFn             (isFacebook Function)
+     * @param  isInstagramFn            (isInstagram Function)
+     * @return List<SearchResultEntity> (검색 결과 엔티티 List)
+     * @param  <RESULT>                 (Images_resultsByText or Images_resultsByImage)
+     * @throws Exception
+     */
+    public <RESULT> List<SearchResultEntity> saveYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
+            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
+        if (results == null) {
+            return null;
+        }
+
+        RestTemplate restTemplate = new RestTemplate();
+        List<SearchResultEntity> sreList = new ArrayList<>();
+
+        //SearchResultEntity sre = null;
+        for(RESULT result : results){
+            try {
+                //검색 결과 엔티티 추출
+                SearchResultEntity sre = getSearchResultEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+
+                //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
+                if (!tsrSns.equals(sre.getTsrSns())) {
+                    continue;
+                }
+
+                //이미지 파일 저장
+                saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
+
+                saveSearchResult(sre);
+                sreList.add(sre);
+            } catch(IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
+                log.error(e.getMessage());
+                throw new IOException(e);
+            } catch(Exception e) {
+                log.error(e.getMessage());
+            }
+        }
+
+        return sreList;
+    }
+
+    public List<SearchResultEntity> searchYandexByImage2(String url, String tsrSns, SearchInfoEntity insertResult) throws Exception {
+        String jsonInString = "";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders header = new HttpHeaders();
+        HttpEntity<?> entity = new HttpEntity<>(header);
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+        ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        List<SearchResultEntity> sreList = new ArrayList<SearchResultEntity>();
+        if(resultMap.getStatusCodeValue() == 200){
+
+            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            jsonInString = mapper.writeValueAsString(resultMap.getBody());
+            YandexByImageResult YandexByImageResult = mapper.readValue(jsonInString, YandexByImageResult.class);
+            if(YandexByImageResult.getError() == null){
+
+                SearchResultEntity sre = null;
+                for(Images_resultsByImage images_result : YandexByImageResult.getInline_images()){
+                    try {
+
+                        String imageUrl = images_result.getOriginal();
+                        sre = new SearchResultEntity();
+                        sre.setTsiUno(insertResult.getTsiUno());
+                        sre.setTsrJson(images_result.toString());
+                        sre.setTsrDownloadUrl(imageUrl);
+                        sre.setTsrTitle(images_result.getTitle());
+                        sre.setTsrSiteUrl(images_result.getLink());
+                        //sre.setTsrSns("11");
+
+                        //2023-03-20
+                        //Facebook, Instagram 도 Google 로 검색, source 값으로 Facebook, Instagram 판별
+
+                        //Facebook 검색이고, source 값이 Facebook 인 경우
+                        if ("17".equals(tsrSns) && images_result.isFacebook()) {
+                            sre.setTsrSns("17");
+                        }
+                        //Instagram 검색이고, source 값이 Instagram 인 경우
+                        else if ("15".equals(tsrSns) && images_result.isInstagram()) {
+                            sre.setTsrSns("15");
+                        }
+                        //그 외는 구글
+                        else {
+                            sre.setTsrSns("11");
+                        }
+
+
+                        //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
+                        if (!tsrSns.equals(sre.getTsrSns())) {
+                            continue;
+                        }
+
+
+                        //Resource resource = resourceLoader.getResource(imageUrl);
+                        //2023-03-21
+                        //구글은 original, Facebook, Instagram 는 thumbnail 로 값을 가져오도록 변경
+                        Resource resource = resourceLoader.getResource("11".equals(sre.getTsrSns()) ? imageUrl : images_result.getThumbnail());
+
+
+                        if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("")) {
+
+                            LocalDate now = LocalDate.now();
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+                            String folder = now.format(formatter);
+                            String restrictChars = "|\\\\?*<\":>/";
+                            String regExpr = "[" + restrictChars + "]+";
+                            String uuid = UUID.randomUUID().toString();
+                            String extension = "";
+                            String extension_ = "";
+                            if(resource.getFilename().indexOf(".") > 0){
+                                extension = resource.getFilename().substring(resource.getFilename().lastIndexOf("."));
+                                extension = extension.replaceAll(regExpr, "").substring(0, Math.min(extension.length(), 10));
+                                extension_ = extension.substring(1);
+                            }
+
+
+                            byte[] imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
+                            File destdir = new File(fileLocation2 + folder + File.separator + insertResult.getTsiUno());
+                            if (!destdir.exists()) {
+                                destdir.mkdirs();
+                            }
+
+                            Files.write(Paths.get(destdir + File.separator + uuid + extension), imageBytes);
+                            sre.setTsrImgExt(extension_);
+                            sre.setTsrImgName(uuid + extension);
+                            sre.setTsrImgPath((destdir + File.separator).replaceAll("\\\\", "/"));
+
+                            Image img = new ImageIcon(destdir + File.separator + uuid + extension).getImage();
+                            sre.setTsrImgHeight(String.valueOf(img.getHeight(null)));
+                            sre.setTsrImgWidth(String.valueOf(img.getWidth(null)));
+                            sre.setTsrImgSize(String.valueOf(destdir.length() / 1024));
+                            img.flush();
+
+                        }
+                        saveSearchResult(sre);
+                        sreList.add(sre);
+                    } catch(IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
+                        log.error(e.getMessage());
+                        e.printStackTrace();
+                        throw new IOException(e);
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                        log.error(e.getMessage());
+                    }
+                }
+            }
+        }
+
+        return sreList;
+    }
+
+    /**
+     * @Deprecated 2023-03-26 사용 중지 {@link #saveImgSearchYandex(List, SearchInfoEntity)}
+     */
+    @Deprecated
     public String saveImgSearchYandexByImage(List<SearchResultEntity> result, SearchInfoEntity insertResult) throws Exception {
         CompletableFuture.allOf().join();
 
@@ -477,7 +1230,7 @@ public class SearchService {
                         .thenApplyAsync((r) -> {
                             try {
                                 // yandex검색을 통해 결과 db에 적재.
-                                return saveImgSearchYandexByImage(r, insertResult);
+                                return saveImgSearchYandex(r, insertResult);
                             } catch (Exception e) {
                                 log.debug(e.getMessage());
                                 return null;
@@ -490,17 +1243,51 @@ public class SearchService {
     }
 
     public SearchJobEntity saveSearchJob(SearchJobEntity sje){
+        /*
         sje.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sje.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sje.setTsjStatus("00");
+         */
+        //2023-03-26
+        //위 내용 메소드로 추출
+        setSearchJobDefault(sje);
         return searchJobRepository.save(sje);
     }
 
+    /**
+     * 검색 작업 엔티티 기본값 세팅
+     *
+     * 2023-03-26 추가
+     *
+     * @param sje (검색 작업 엔티티)
+     */
+    public static void setSearchJobDefault(SearchJobEntity sje) {
+        sje.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        sje.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        sje.setTsjStatus("00");
+    }
+
     public SearchInfoEntity saveSearchInfo(SearchInfoEntity sie){
+        /*
         sie.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sie.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sie.setDataStatCd("10");
+         */
+        //2023-03-26
+        //위 내용 메소드로 추출
+        setSearchInfoDefault(sie);
         return searchInfoRepository.save(sie);
+    }
+
+    /**
+     * 검색 정보 엔티티 기본값 세팅
+     *
+     * @param sie (검색 정보 엔티티)
+     */
+    public static void setSearchInfoDefault(SearchInfoEntity sie) {
+        sie.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        sie.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        sie.setDataStatCd("10");
     }
 
     public VideoInfoEntity saveVideoInfo(VideoInfoEntity vie){
@@ -510,10 +1297,30 @@ public class SearchService {
     }
 
     public SearchResultEntity saveSearchResult(SearchResultEntity sre){
+        /*
         sre.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sre.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sre.setDataStatCd("10");
+        sre.setMonitoringCd("10");
+         */
+        //2023-03-26
+        //위 내용 메소드로 추출
+        setSearchResultDefault(sre);
         return searchResultRepository.save(sre);
+    }
+
+    /**
+     * 검색 결과 엔티티 기본값 세팅
+     *
+     * 2023-03-26 추가
+     *
+     * @param sre (검색 결과 엔티티)
+     */
+    public static void setSearchResultDefault(SearchResultEntity sre) {
+        sre.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        sre.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        sre.setDataStatCd("10");
+        sre.setMonitoringCd("10");
     }
 
     public Page<DefaultQueryDtoInterface> getSearchResultList(Integer tsiUno, String keyword, Integer page, String priority,
@@ -525,8 +1332,6 @@ public class SearchService {
 
 
         String orderByTmrSimilarityDesc = " ORDER BY tmrSimilarity desc, TMR.TSR_UNO desc";
-
-
 
         if("1".equals(order_type)){
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_1(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
@@ -686,6 +1491,12 @@ public class SearchService {
         searchResultRepository.save(searchResultEntity);
     }
 
+    public void setMonitoringCd(Integer tsrUno) {
+        SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
+        searchResultEntity.setMonitoringCd(Consts.MONITORING_CD_NONE.equals(searchResultEntity.getMonitoringCd()) ? Consts.MONITORING_CD_ING : Consts.MONITORING_CD_NONE);
+        searchResultRepository.save(searchResultEntity);
+    }
+
     public Map<String, Object> getSearchInfoList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
@@ -756,6 +1567,7 @@ public class SearchService {
     public List<SearchResultEntity> findByMonitoringCd(String monitoringCd) {
         return searchResultRepository.findByMonitoringCd(monitoringCd);
     }
+
     /**
      * 검색 결과 사이트 URL 목록 조회
      *
@@ -788,5 +1600,5 @@ public class SearchService {
                 snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
          */
     }
-}
 
+}

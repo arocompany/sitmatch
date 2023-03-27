@@ -178,6 +178,7 @@ public class SearchResultEntity {
     public void setDataStatCd(String dataStatCd) {
         this.dataStatCd = dataStatCd;
     }
+
     public String getMonitoringCd() {
         return monitoringCd;
     }
@@ -185,6 +186,7 @@ public class SearchResultEntity {
     public void setMonitoringCd(String monitoringCd) {
         this.monitoringCd = monitoringCd;
     }
+
     public String getTrkHistMemo() {
         return trkHistMemo;
     }
@@ -241,4 +243,3 @@ public class SearchResultEntity {
         this.tsrImgSize = tsrImgSize;
     }
 }
-

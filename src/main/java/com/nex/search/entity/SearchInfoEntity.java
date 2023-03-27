@@ -73,6 +73,10 @@ public class SearchInfoEntity {
     @Column(name = "TSI_IMG_SIZE")
     private String tsiImgSize;
 
+    @Basic
+    @Column(name = "TSR_UNO")
+    private Integer tsrUno;
+
     public int getTsiUno() {
         return tsiUno;
     }
@@ -252,5 +256,13 @@ public class SearchInfoEntity {
 
     public void setTsiImgSize(String tsiImgSize) {
         this.tsiImgSize = tsiImgSize;
+    }
+
+    public Integer getTsrUno() {
+        return tsrUno;
+    }
+
+    public void setTsrUno(Integer tsrUno) {
+        this.tsrUno = tsrUno;
     }
 }

@@ -160,8 +160,8 @@
               </ul>
             </div>
           </div>
-          <button class="btn-off all-time">24시간 모니터링</button>
-          <button class="btn-off double-chk">0건</button>
+          <button class="btn-off all-time" th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>
+          <button class="btn-off double-chk" th:value="${traceHistoryList.getTsrUno()}">0건</button>
         </li>
         <li th:if="${traceHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
       </ul>
@@ -346,6 +346,12 @@ trkHistMemo.forEach((memo) => {
 //    })
 // });
 /*]]>*/
+const chkBtn = document.querySelectorAll(".btn-off.double-chk")
+chkBtn.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    window.location.href = '/notice?tsrUno=' + btn.value;
+  })
+});
 
 // 0323추가 사진 클릭시 이미지 팝업
 const modal = document.querySelector("#modal");
@@ -373,7 +379,23 @@ for (let i = 0; i < searchImg.length; i++) {
 const allTime = document.querySelectorAll(".all-time");
 for (let i = 0; i < allTime.length; i++) {
   allTime[i].addEventListener('click', function () {
-    this.classList.toggle('active');
+    this.disabled = true;
+    //XMLHttpRequest 객체 생성
+    const xhr = new XMLHttpRequest();
+    //요청을 보낼 방식, 주소, 비동기여부 설정
+    xhr.open('GET', 'search/monitoring?tsrUno='+this.value, true);
+    //요청 전송
+    xhr.send(null);
+    //통신후 작업
+    xhr.onload = () => {
+      if (xhr.status === 200) {   //통신 성공
+        this.classList.toggle('active');
+      } else {  //통신 실패
+        //this.classList.toggle('active');
+      }
+
+      this.disabled = false;
+    }
   })
 }
 </script>

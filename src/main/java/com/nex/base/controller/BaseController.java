@@ -3,10 +3,9 @@ package com.nex.base.controller;
 import com.nex.common.Consts;
 import com.nex.search.entity.DefaultQueryDtoInterface;
 import com.nex.search.service.SearchService;
-import com.nex.user.entity.AutoKeywordInterface;
 import com.nex.user.entity.SessionInfoDto;
-import com.nex.user.repo.UserRepository;
 import com.nex.user.repo.AutoRepository;
+import com.nex.user.repo.UserRepository;
 import com.nex.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -103,9 +101,15 @@ public class BaseController {
     }
 
     @GetMapping("/notice")
-    public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
+    public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
+            , @RequestParam(required = false, defaultValue = "80") String tsjStatus
+            , @RequestParam Optional<Integer> tsrUno
+            , @RequestParam(required = false, defaultValue = "1") Integer page) {
         ModelAndView modelAndView = new ModelAndView("html/notice");
         modelAndView.addObject("sessionInfo", sessionInfoDto);
+
+        searchService.getNotice(tsjStatus, tsrUno, page, modelAndView);
+
         return modelAndView;
     }
 
