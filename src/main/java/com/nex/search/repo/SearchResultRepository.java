@@ -32,7 +32,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "tsi.TSI_IMG_PATH as tsiImgPath, tsi.TSI_IMG_NAME as tsiImgName, tsi.TSI_IMG_EXT as tsiImgExt, "+
             "tsi.TSI_IMG_HEIGHT as tsiImgHeight, tsi.TSI_IMG_WIDTH as tsiImgWidth, tsi.TSI_IMG_SIZE as tsiImgSize, "+
             "tsi.TSI_STAT as tsiStat, tsi.TSI_DNA_PATH as tsiDnaPath, tsi.TSI_DNA_TEXT as tsiDnaText, "+
-            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, tsr.MONITORING_CD as monitoringCd, "+
+            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, "+
             "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
             "tmr.TMR_STAT as tmrStat, tmr.TMR_MESSAGE as tmrMessage, tu.USER_ID as tuUserId, "+
             "if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', "+
@@ -174,13 +174,6 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
      */
     List<SearchResultEntity> findByMonitoringCd(String monitoringCd);
 
-    /**
-     * 검색 결과 목록 조회
-     *
-     * @param  monitoringCd             (24시간 모니터링 코드 (10 : 안함, 20 : 모니터링))
-     * @return List<SearchResultEntity> (검색 결과 엔티티 List)
-     */
-    List<SearchResultEntity> findByMonitoringCd(String monitoringCd);
 
 }
 
