@@ -29,15 +29,13 @@ public class ScheduleTasks {
     /**
      * 추적 이력
      */
-    //@Scheduled(cron = "${batch.schedule.tracking.cron}", zone = "Asia/Seoul")
-    //@Scheduled(cron = "0 */1 * * * *", zone = "Asia/Seoul")
-    @Scheduled(cron = "0 3 * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "${batch.schedule.tracking.cron}", zone = "Asia/Seoul")
+    //@Scheduled(cron = "0 12 * * * *", zone = "Asia/Seoul")
     public void trackingTask() {
         JobParameters jobParameters = new JobParametersBuilder().toJobParameters();
         //TODO : 임시
         try {
             jobLauncher.run(job, jobParameters);
-            //trackingBatchConfiguration.jobLauncher().run(trackingBatchConfiguration.run(), new JobParameters());
         } catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException |
                  JobParametersInvalidException e) {
             throw new RuntimeException(e);
