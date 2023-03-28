@@ -100,32 +100,6 @@ public class BaseController {
         return modelAndView;
     }
 
-//    @GetMapping("/notice")
-//    public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
-//            , @RequestParam(required = false, defaultValue = "80") String tsjStatus
-//            , @RequestParam (required = false, defaultValue = "0") Integer tsrUno
-//            , @RequestParam(required = false, defaultValue = "1") Integer page) {
-//        Map<String, Object> noticeListMap = new HashMap<>();
-//        noticeListMap = searchService.getNoticeList(page, tsrUno);
-//
-//        ModelAndView modelAndView = new ModelAndView("html/notice");
-//        modelAndView.addObject("sessionInfo", sessionInfoDto);
-//        modelAndView.addObject("searchResultList", defaultQueryDtoInterface);
-//        assert defaultQueryDtoInterface != null;
-//        modelAndView.addObject("searchResultListCount", defaultQueryDtoInterface.getTotalElements());
-//        modelAndView.addObject("number", defaultQueryDtoInterface.getNumber());
-//        modelAndView.addObject("maxPage", Consts.MAX_PAGE);
-//        modelAndView.addObject("totalPages", defaultQueryDtoInterface.getTotalPages());
-//        modelAndView.addObject("listType", listType);
-//        modelAndView.addObject("keyword", keyword);
-//        modelAndView.addObject("userId", searchService.getUserIdByTsiUnoMap().get(tsiUno.get()));
-//
-//
-////        searchService.getNotice(tsjStatus, tsrUno, page, modelAndView);
-//
-//        return modelAndView;
-//    }
-
     @GetMapping("/counselor-add")
     public ModelAndView counselor_add(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
         ModelAndView modelAndView = new ModelAndView("html/counselor-add");
@@ -162,7 +136,9 @@ public class BaseController {
             searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, sessionInfoDto.getUserUno());
         }
 
-        Map<String, Object> traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword);
+        int Percent = sessionInfoDto.getPercent_limit();
+
+        Map<String, Object> traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword, Percent);
 
         // 검색이력 데이터
         modelAndView.addObject("userIdMap", searchService.getUserIdMap());
@@ -345,7 +321,6 @@ public class BaseController {
                 order_type = "6"; //오디오, 텍스트 선택
             }
 
-            System.out.println("testtesttest==============="+order_type);
 
 
 
@@ -371,19 +346,30 @@ public class BaseController {
     public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
             , @RequestParam(required = false, defaultValue = "80") String tsjStatus
             , @RequestParam (required = false, defaultValue = "0") Integer tsrUno
-            , @RequestParam(required = false, defaultValue = "1") Integer page) {
+            , @RequestParam (required = false, defaultValue = "0") Integer tsiuno
+            , @RequestParam(required = false, defaultValue = "1") Integer page
+            , @RequestParam(required = false, defaultValue = "") String keyword) {
 
+        int percent = sessionInfoDto.getPercent_limit();
         Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = null;
-        defaultQueryDtoInterface = searchService.getNoticeList(page, tsrUno);
+        defaultQueryDtoInterface = searchService.getNoticeList(page, tsiuno, percent);
 
         ModelAndView modelAndView = new ModelAndView("html/notice");
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("searchResultList", defaultQueryDtoInterface);
+        modelAndView.addObject("tsrUno", tsrUno);
         assert defaultQueryDtoInterface != null;
         modelAndView.addObject("searchResultListCount", defaultQueryDtoInterface.getTotalElements());
         modelAndView.addObject("number", defaultQueryDtoInterface.getNumber());
         modelAndView.addObject("maxPage", Consts.MAX_PAGE);
         modelAndView.addObject("totalPages", defaultQueryDtoInterface.getTotalPages());
+
+        modelAndView.addObject("tsrUno", tsrUno);
+        modelAndView.addObject("tsiUno", tsiuno);
+        modelAndView.addObject("imgSrc", searchService.getSearchInfoImgUrl(tsiuno)); //tsi
+        modelAndView.addObject("tsiType", searchService.getSearchInfoTsiType(tsiuno)); //tsi
+        modelAndView.addObject("userId", searchService.getUserIdByTsiUnoMap().get(tsiuno)); //tsi
+        modelAndView.addObject("keyword", keyword);
 
 
 //        searchService.getNotice(tsjStatus, tsrUno, page, modelAndView);

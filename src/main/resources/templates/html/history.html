@@ -166,7 +166,7 @@
           <button class="btn-off all-time" th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>
 <!--          <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()!=12999}" th:value="${traceHistoryList.getTsrUno()}">0건</button>-->
 <!--          <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()==12999}" th:value="${traceHistoryList.getTsrUno()}">1건</button>-->
-                    <button class="btn-off double-chk" th:value="${traceHistoryList.getTsrUno()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
+                    <button class="btn-off double-chk" th:value="${traceHistoryList.getTsrUno()}" th:tsiuno="${traceHistoryList.getTsiUno()}" th:keyword="${traceHistoryList.getTsiKeyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
         </li>
         <li th:if="${traceHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
       </ul>
@@ -354,7 +354,7 @@ trkHistMemo.forEach((memo) => {
 const chkBtn = document.querySelectorAll(".btn-off.double-chk")
 chkBtn.forEach((btn) => {
   btn.addEventListener('click', () => {
-    window.location.href = '/notice?tsrUno=' + btn.value;
+    window.location.href = '/notice?tsrUno=' + btn.value+'&keyword='+btn.getAttribute("keyword")+'&tsiuno='+btn.getAttribute("tsiuno");
   })
 });
 

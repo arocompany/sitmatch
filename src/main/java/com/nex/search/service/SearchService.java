@@ -1364,13 +1364,13 @@ public class SearchService {
 //        }
     }
 
-    public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsrUno) {
+    public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsiuno, Integer percent) {
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
 
-        if(tsrUno == 0) {
-            return searchResultRepository.getNoticeList(pageRequest);
+        if(tsiuno == 0) {
+            return searchResultRepository.getNoticeList(pageRequest, percent);
         }else{
-            return searchResultRepository.getNoticeSelList(pageRequest,tsrUno);
+            return searchResultRepository.getNoticeSelList(pageRequest,tsiuno, percent);
         }
     }
 
@@ -1403,11 +1403,11 @@ public class SearchService {
     }
 
 
-    public Map<String, Object> getTraceHistoryList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryList(Integer page, String keyword, Integer percent) {
         Map<String,Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
 //        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryList(keyword, pageRequest, percent);
 
         outMap.put("traceHistoryList", traceHistoryListPage);
         outMap.put("totalPages", traceHistoryListPage.getTotalPages());
