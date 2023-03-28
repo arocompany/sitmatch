@@ -354,7 +354,11 @@ trkHistMemo.forEach((memo) => {
 const chkBtn = document.querySelectorAll(".btn-off.double-chk")
 chkBtn.forEach((btn) => {
   btn.addEventListener('click', () => {
-    window.location.href = '/notice?tsrUno=' + btn.value+'&keyword='+btn.getAttribute("keyword")+'&tsiuno='+btn.getAttribute("tsiuno");
+    if(btn.getAttribute("tsiuno")) {
+      window.location.href = '/notice?tsrUno=' + btn.value + '&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno");
+    }else{
+      alert('조회대상이 없습니다.');
+    }
   })
 });
 
