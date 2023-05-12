@@ -73,7 +73,7 @@
             <span class="dot"></span>
             <span class="dot-per" th:text="${getProgressPercentMap.get(searchInfoList.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(searchInfoList.getTsiUno())}"></span>
           </p>
-          <button class="btn-off review" th:onclick="|location.href='@{/result(tsiUno=${searchInfoList.getTsiUno()}, tsiKeyword=${searchInfoList.getTsiKeyword()})}'|">검색중</button>
+          <button class="btn-off review" th:onclick="|location.href='@{/result(tsiUno=${searchInfoList.getTsiUno()}, tsiKeyword=${searchInfoList.getTsiKeyword()}, keyword=${searchInfoList.getTsiKeyword()})}'|">검색중</button>
           <button class="del-btn btn-off del" th:value="${searchInfoList.getTsiUno()}">삭제</button>
         </li>
           <li th:if="${searchInfoListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
