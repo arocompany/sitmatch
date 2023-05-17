@@ -4,11 +4,25 @@ import com.nex.common.Consts;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.service.SearchService;
 import com.nex.user.entity.SessionInfoDto;
+import com.nex.user.entity.UserEntity;
+import com.nex.user.repo.UserRepository;
+import com.nex.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.manager.util.SessionUtils;
 import org.apache.tika.Tika;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration;
+import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
+import org.springframework.security.config.annotation.web.oauth2.login.OAuth2LoginSecurityMarker;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,6 +31,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.attribute.UserPrincipal;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -57,8 +73,10 @@ public class SearchController {
     private String searchImageUrl;
     private Boolean loop = true;
 
+
     @PostMapping("")
-    public ModelAndView search(@RequestParam("file") Optional<MultipartFile> file, SearchInfoEntity searchInfoEntity, HttpServletRequest request) {
+    public ModelAndView search(@RequestParam("file") Optional<MultipartFile> file, SearchInfoEntity searchInfoEntity, HttpServletRequest request
+                                ,@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
         ModelAndView modelAndView = new ModelAndView("redirect:/history");
 
         String tsiKeyword = searchInfoEntity.getTsiKeyword();
@@ -68,7 +86,11 @@ public class SearchController {
         byte tsiTwitter = searchInfoEntity.getTsiTwitter();
         byte tsiInstagram = searchInfoEntity.getTsiInstagram();
         boolean isFile = !file.get().isEmpty();
-        searchInfoEntity.setUserUno(1);
+
+        // 미현주석
+        System.out.println("유저 번호 " + sessionInfoDto.getUserUno());
+        //searchInfoEntity.setUserUno(1);
+        searchInfoEntity.setUserUno(sessionInfoDto.getUserUno());
         searchInfoEntity.setTsiStat("11");
         SearchInfoEntity insertResult =  new SearchInfoEntity();
 
@@ -189,7 +211,7 @@ public class SearchController {
     }
 
     /**
-     * @Deprecated 2023-03-26 사용 중지 SearchService 로 이동 {@link com.nex.search.service.SearchService#searchGoogle(String, SearchInfoEntity, String, String)}
+     * @Deprecated 2023-03-26 사용 중지 SearchService 로 이동 {@link SearchService#searchGoogle(String, SearchInfoEntity, String, String)}
      */
     @Deprecated
     private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns) {
@@ -229,13 +251,13 @@ public class SearchController {
     }
 
     /**
-     * @Deprecated 2023-03-26 사용 중지 SearchService 로 이동 {@link com.nex.search.service.SearchService#searchYandexByText(String, SearchInfoEntity)}}
+     * @Deprecated 2023-03-26 사용 중지 SearchService 로 이동 {@link SearchService#searchYandexByText(String, SearchInfoEntity)}}
      */
     @Deprecated
     public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult){
         int index = 0;
         String tsiKeyword = insertResult.getTsiKeyword();
-        
+
         //인스타
         if ("15".equals(tsrSns)) {
             tsiKeyword = "인스타그램 " + tsiKeyword;
@@ -244,7 +266,7 @@ public class SearchController {
         else if ("17".equals(tsrSns)) {
             tsiKeyword = "페이스북 " + tsiKeyword;
         }
-        
+
         do {
             // yandex search url
             String url = textYandexUrl

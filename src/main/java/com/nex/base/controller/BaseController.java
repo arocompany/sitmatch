@@ -2,6 +2,8 @@ package com.nex.base.controller;
 
 import com.nex.common.Consts;
 import com.nex.search.entity.DefaultQueryDtoInterface;
+import com.nex.search.entity.SearchJobEntity;
+import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.service.SearchService;
 import com.nex.user.entity.SessionInfoDto;
 import com.nex.user.repo.AutoRepository;
@@ -30,6 +32,7 @@ public class BaseController {
     private final SearchService searchService;
     private final UserService userService;
     private final AutoRepository autoRepository;
+    private final SearchJobRepository searchJobRepository;
 
     @GetMapping("/")
     public ModelAndView index(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
@@ -118,29 +121,51 @@ public class BaseController {
         return modelAndView;
     }
 
+    // 카운트
+    @PostMapping("/history_tsi_uno_count")
+    public int history_tsi_uno_count(@RequestParam(required = false) Integer tsi_uno){
+        int tsiUnoCount = searchJobRepository.countByTsiUno(tsi_uno);
+        return tsiUnoCount;
+    }
+
+    // 헤더에서 이력관리 클릭 시   미현주석
     @GetMapping("/history")
     public ModelAndView history(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                 @RequestParam(required = false, defaultValue = "1") Integer searchPage,
                                 @RequestParam(required = false, defaultValue = "") String searchKeyword,
                                 @RequestParam(required = false, defaultValue = "1") Integer tracePage,
                                 @RequestParam(required = false, defaultValue = "") String traceKeyword) {     // 검색 이력, 추적 이력
+
+        System.out.println("헤더 클릭시 진입");
         ModelAndView modelAndView = new ModelAndView("html/history");
         Map<String, Object> searchHistMap = new HashMap<>();
 
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("headerMenu", "history");
 
+        // 미현주석 0517
         if(sessionInfoDto.isAdmin()) {
+            System.out.println( "관리자일 때 sessionInfoDto.isAdmin(): "+ sessionInfoDto.isAdmin());
             searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword);
+           // searchHistMap2 = searchService.getSearchInfoCount();
+            System.out.println("관리자일 때 searchHistMap: "+searchHistMap);
         } else {
+            System.out.println( "관리자가 아닐 때 sessionInfoDto.isAdmin() 아닐 때: "+ sessionInfoDto.isAdmin());
             searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, sessionInfoDto.getUserUno());
+            System.out.println("관리자가 아닐 때 유저번호: " + sessionInfoDto.getUserUno());
         }
 
         int Percent = sessionInfoDto.getPercent_limit();
+        System.out.println( " Percent :" + sessionInfoDto.getPercent_limit().toString());
 
-        Map<String, Object> traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword, Percent);
+        // 추적이력
+        System.out.println("검색 추적이력 진입"); // 미현주석
+        Map<String, Object> traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword);
+        System.out.println("검색 추적이력 진입 완"); // 미현주석
+
 
         // 검색이력 데이터
+        modelAndView.addObject("userCount", searchService.getUserIdMap()); // 미현주석
         modelAndView.addObject("userIdMap", searchService.getUserIdMap());
         modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap());
         modelAndView.addObject("searchInfoList", searchHistMap.get("searchInfoList"));
@@ -170,6 +195,7 @@ public class BaseController {
         return modelAndView;
     }
 
+    // 검색중   미현주석
     @GetMapping("/result")
     public ModelAndView result(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                @RequestParam(value = "tsiUno") Optional<Integer> tsiUno,

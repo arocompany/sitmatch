@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.Consts;
 import com.nex.search.entity.*;
 import com.nex.search.repo.*;
+import com.nex.user.entity.UserEntity;
+import com.nex.user.repo.UserRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -109,6 +111,7 @@ public class SearchService {
     private final VideoInfoRepository videoInfoRepository;
     private final SearchJobRepository searchJobRepository;
     private final MatchResultRepository matchResultRepository;
+    private final UserRepository userRepository; // 미현
 
     @Autowired
     ResourceLoader resourceLoader;
@@ -159,6 +162,7 @@ public class SearchService {
      * @param insertResult (검색 이력 Entity)
      * @param folder       (저장 폴더)
      */
+
     public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, byte tsiTwitter, String tsiType, SearchInfoEntity insertResult, String folder) {
         if(tsiGoogle == 1){
             // Google 검색기능 구현
@@ -204,6 +208,8 @@ public class SearchService {
      * @param folder       (저장 폴더)
      * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
      */
+    
+
     private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns) {
         // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
         switch (tsiType) {// 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
@@ -272,6 +278,9 @@ public class SearchService {
                     + "&tbm=" + textYandexTbm
                     + "&ijn=" + String.valueOf(index)
                     + "&api_key=" + textYandexApikey
+                    + "&safe = off"
+                    + "&filter  = 0"
+                    + "&nfpr  = 0"
                     + "&engine=" + textYandexEngine;
 
             /*
@@ -362,6 +371,9 @@ public class SearchService {
                 + "?GL=" + textYandexGl
                 + "&no_cache=" + textYandexNocache
                 + "&api_key=" + textYandexApikey
+                + "&safe =off"
+                + "&filter  =0"
+                + "&nfpr =0"
                 + "&engine=" + imageYandexEngine
                 + "&image_url=" + searchImageUrl;
 
@@ -1215,6 +1227,9 @@ public class SearchService {
                         + "&no_cache=" + textYandexNocache
                         + "&api_key=" + textYandexApikey
                         + "&engine=" + imageYandexEngine
+                        + "&safe = off"
+                        + "&filter =0"
+                        + "&nfpr =0"
                         + "&image_url=" + serverIp+folder+"/"+location3+"/"+insertResult.getTsiUno()+files.get(i).substring(files.get(i).lastIndexOf("/"));
 
                 CompletableFuture
@@ -1403,12 +1418,14 @@ public class SearchService {
     }
 
 
-    public Map<String, Object> getTraceHistoryList(Integer page, String keyword, Integer percent) {
+    public Map<String, Object> getTraceHistoryList(Integer page, String keyword) {
         Map<String,Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
 //        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryList(keyword, pageRequest, percent);
-
+        System.out.println("검색 추적이력 쿼리 진입");
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryList(keyword, pageRequest);
+        System.out.println("검색 추적이력 쿼리 진입 완");
+        
         outMap.put("traceHistoryList", traceHistoryListPage);
         outMap.put("totalPages", traceHistoryListPage.getTotalPages());
         outMap.put("number", traceHistoryListPage.getNumber());
@@ -1515,10 +1532,18 @@ public class SearchService {
 //
 //        return outMap;
 //    }
+
+
+
+    // admin 일 때 미현주석
     public Map<String, Object> getSearchInfoList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
         Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
+
+        // int a = searchJobRepository.countByTsiUno(tsiUno);
+      //  Page<SearchInfoEntity> searchInfoListPage2 = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
+        System.out.println("쿼리: "+searchInfoListPage); // 미현 주석
 
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
@@ -1529,6 +1554,7 @@ public class SearchService {
         return outMap;
     }
 
+    // admin 아닐 때 미현주석
     public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
@@ -1553,6 +1579,20 @@ public class SearchService {
 
         return userIdMap;
     }
+
+    // 미현주석
+    public Map<Integer, String> getHistoryCount() {
+        List<UserIdDtoInterface> userIdList = searchInfoRepository.getUserIdByUserUno();
+        Map<Integer, String> userIdMap = new HashMap<>();
+
+        for(UserIdDtoInterface item : userIdList) {
+            userIdMap.put(item.getUserUno(), item.getUserId());
+        }
+
+        return userIdMap;
+    }
+
+
     public Map<Integer, String> getUserIdByTsiUnoMap() {
         List<UserIdDtoInterface> userIdList = searchInfoRepository.getUserIdByTsiUno();
         Map<Integer, String> userIdMap = new HashMap<>();

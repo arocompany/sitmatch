@@ -12,6 +12,8 @@ public interface SearchJobRepository extends JpaRepository<SearchJobEntity, Long
     @Query("select CEILING(count(TMR.tsjUno)/count(TSJ.tsjUno)*100) from SearchJobEntity AS TSJ LEFT OUTER JOIN MatchResultEntity AS TMR ON TSJ.tsjUno = TMR.tsjUno WHERE TSJ.tsiUno = :tsiUno")
     Integer progressPercent(int tsiUno);
 
+    int countByTsiUno(int tsiUno);
+
     interface ProgressPercentDtoInterface {
         Integer getTsiUno();
         Integer getProgressPercent();

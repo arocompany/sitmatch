@@ -74,7 +74,6 @@ public class UserController {
                     modelAndView.setViewName("redirect:/user/password");
                 } else {
                     modelAndView.setViewName("redirect:/");
-
                 }
                 // 로그인 성공 처리
                 // 세션이 있으면 있는 세션 반환, 없으면 신규 세션 설정
@@ -164,7 +163,7 @@ public class UserController {
 
     @PostMapping("ajax_con_limit_update")
     public void ajax_con_limit_update(@Valid UserLoginCheckDto userLoginCheckDto, BindingResult result, HttpServletRequest request) {
-System.out.println("testtest////"+userLoginCheckDto.getUserUno()+'/'+userLoginCheckDto.getCrawling_limit()+'/'+userLoginCheckDto.getPercent_limit());
+        System.out.println("testtest////"+userLoginCheckDto.getUserUno()+'/'+userLoginCheckDto.getCrawling_limit()+'/'+userLoginCheckDto.getPercent_limit());
         userRepository.ajax_con_limit_update(userLoginCheckDto.getUserUno(), userLoginCheckDto.getCrawling_limit(), userLoginCheckDto.getPercent_limit());
         UserEntity user = userRepository.findByUserUno(userLoginCheckDto.getUserUno());
         HttpSession session = request.getSession();

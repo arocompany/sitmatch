@@ -39,7 +39,7 @@
       </h2>
       <ul class="history-list history-search-list">
         <li class="btn-off bor10" th:each="searchInfoList:${searchInfoList}">
-          <p class="num" th:text="${searchInfoList.getTsiUno()}"></p>
+          <p class="num" th:text="${searchInfoList.getTsiUno()}"></p> <!-- 순번 -->
           <p class="counselor" th:text="${userIdMap.get(searchInfoList.getUserUno())}">상담사 아이디</p>
           <p class="type">
               <th:block th:switch="${searchInfoList.getTsiType()}">
@@ -70,6 +70,7 @@
           </p>
           <p class="time" th:text="${#dates.format(searchInfoList.getFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></p>
           <p class="dot-wrap progress">
+            <input type="hidden" class="dot-tsi-uon" th:value="${searchInfoList.getTsiUno()}"></input>
             <span class="dot"></span>
             <span class="dot-per" th:text="${getProgressPercentMap.get(searchInfoList.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(searchInfoList.getTsiUno())}"></span>
           </p>
@@ -88,7 +89,8 @@
         </ul>
       </nav>
     </section>
-    <!-- 추적이력 -->
+
+    <!-- 추적 이력 -->
     <section class="trace-history layout history">
       <div class="searchbox">
         <form name="history-search" class="search-box" action="/history" id="traceForm">
@@ -242,7 +244,7 @@ select.forEach(sel => {
         sel.children[0].innerHTML = val;
 
           //XMLHttpRequest 객체 생성
-          const xhr = new XMLHttpRequest();
+          var xhr = new XMLHttpRequest();
           //요청을 보낼 방식, 주소, 비동기여부 설정
           xhr.open('GET', '/search/setTrkStatCd?tsrUno='+sel.dataset.uno+'&trkStatCd='+e.target.dataset.cd, true);
           //요청 전송
@@ -289,14 +291,68 @@ const progress = document.querySelectorAll(".dot-wrap.progress");
 progress.forEach(pro => {
   const per = pro.querySelector(".dot-per");
   const loading = pro.querySelector(".dot");
-  if (per.innerText === '100%') {
+  const dotTsiUno = pro.querySelector(".dot-tsi-uon").value;
+
+  var tsi_uno_count = true;
+
+  console.info(dotTsiUno+" aaa");
+
+  //XMLHttpRequest 객체 생성
+  var req = new Req();
+  //요청을 보낼 방식, 주소, 비동기여부 설정
+  req.url = '/history_tsi_uno_count';
+  req.data = { tsi_uno: dotTsiUno }
+  const result = req.async();
+  console.info(result);
+  if(!result) {
+      tsi_uno_count = false;
+  }
+
+  if (per.innerText === '100%' || !tsi_uno_count) {
     loading.style.display = 'none';
     per.style.fontSize = '1rem';
     per.style.cssText = "font-size:1rem; color:#545759;";
     pro.nextElementSibling.innerHTML = "검색결과";
-    pro.nextElementSibling.style.color="#e87728";
+    pro.nextElementSibling.style.color = "#e87728";
+    console.info(tsi_uno_count);
+    console.info(per.innerText);
   }
+
 })
+
+function Req() {
+  this.url = undefined
+  this.data = {}
+  this.method = "POSt"
+  this.responseType = "json"
+  this.requestHeader = "application/x-www-form-urlencoded"
+  this.request = new XMLHttpRequest()
+  this.getQueryString = () => {
+    return Object.entries(this.data).map(e => e.join('=')).join('&')
+  }
+  this.async = () => {
+    if(!this.request) {
+      console.error("Can't make request.")
+      return false
+    }
+
+    this.request.open(this.method, this.url, false)
+    this.request.setRequestHeader("Content-Type", this.requestHeader)
+
+    let result = undefined
+    this.request.addEventListener("readystatechange", function (event) {
+      const { target } = event;
+      if (target.readyState === XMLHttpRequest.DONE) {
+        const { status } = target;
+        if (status === 0 || (status >= 200 && status < 400)) {
+          result = target.response
+        }
+      }
+    })
+    this.request.send(this.getQueryString())
+    return JSON.parse(result)
+  }
+}
 
 // 검색 이력 삭제
 const delBtn = document.querySelectorAll(".del");
@@ -304,7 +360,7 @@ delBtn.forEach((btn) => {
   btn.addEventListener('click', () => {
     if((confirm("삭제하시겠습니까?"))) {
       //XMLHttpRequest 객체 생성
-      const xhr = new XMLHttpRequest();
+      var xhr = new XMLHttpRequest();
       //요청을 보낼 방식, 주소, 비동기여부 설정
       xhr.open('GET', '/search/deleteSearchInfo?tsiUno='+btn.value, true);
       //요청 전송
@@ -327,7 +383,7 @@ const trkHistMemo = document.querySelectorAll(".memo");
 trkHistMemo.forEach((memo) => {
   memo.addEventListener('focusout', () => {
       //XMLHttpRequest 객체 생성
-      const xhr = new XMLHttpRequest();
+      var xhr = new XMLHttpRequest();
       //요청을 보낼 방식, 주소, 비동기여부 설정
       xhr.open('GET', '/search/setTrkHistMemo?tsrUno='+memo.dataset.uno+'&memo='+memo.value, true);
       //요청 전송
@@ -424,7 +480,7 @@ for (let i = 0; i < allTime.length; i++) {
   allTime[i].addEventListener('click', function () {
     this.disabled = true;
     //XMLHttpRequest 객체 생성
-    const xhr = new XMLHttpRequest();
+    var xhr = new XMLHttpRequest();
     //요청을 보낼 방식, 주소, 비동기여부 설정
     xhr.open('GET', 'search/monitoring?tsrUno='+this.value, true);
     //요청 전송
