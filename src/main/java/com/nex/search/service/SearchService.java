@@ -267,21 +267,23 @@ public class SearchService {
         else if ("17".equals(tsrSns)) {
             tsiKeyword = "페이스북 " + tsiKeyword;
         }
+        
 
         do {
             // yandex search url
             String url = textYandexUrl
                     + "?q=" + tsiKeyword
-                    + "&GL=" + textYandexGl
+                    + "&gl=" + textYandexGl
                     + "&no_cache=" + textYandexNocache
                     + "&location=" + textYandexLocation
                     + "&tbm=" + textYandexTbm
                     + "&ijn=" + String.valueOf(index)
                     + "&api_key=" + textYandexApikey
-                    + "&safe = off"
-                    + "&filter  = 0"
-                    + "&nfpr  = 0"
-                    + "&engine=" + textYandexEngine;
+                    + "&safe=off"
+                    + "&filter=0"
+                    + "&nfpr=0"
+                    + "&engine=" + textYandexEngine
+                    + "&hl=ko";
 
             /*
             CompletableFuture
@@ -366,16 +368,18 @@ public class SearchService {
     public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult){
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+        
 
         String url = textYandexUrl
-                + "?GL=" + textYandexGl
+                + "&gl=" + textYandexGl
                 + "&no_cache=" + textYandexNocache
                 + "&api_key=" + textYandexApikey
-                + "&safe =off"
-                + "&filter  =0"
-                + "&nfpr =0"
+                + "&safe=off"
+                + "&filter=0"
+                + "&nfpr=0"
                 + "&engine=" + imageYandexEngine
-                + "&image_url=" + searchImageUrl;
+                + "&image_url=" + searchImageUrl
+                + "&hl=ko";
 
         /*
         CompletableFuture
@@ -1223,13 +1227,14 @@ public class SearchService {
                 saveVideoInfo(videoInfo);
 
                 String url = textYandexUrl
-                        + "?GL=" + textYandexGl
+                        + "&gl=" + textYandexGl
                         + "&no_cache=" + textYandexNocache
                         + "&api_key=" + textYandexApikey
                         + "&engine=" + imageYandexEngine
-                        + "&safe = off"
-                        + "&filter =0"
-                        + "&nfpr =0"
+                        + "&safe=off"
+                        + "&filter=0"
+                        + "&nfpr=0"
+                        + "&hl=ko"
                         + "&image_url=" + serverIp+folder+"/"+location3+"/"+insertResult.getTsiUno()+files.get(i).substring(files.get(i).lastIndexOf("/"));
 
                 CompletableFuture
@@ -1535,7 +1540,7 @@ public class SearchService {
 
 
 
-    // admin 일 때 미현주석
+    // admin 일 때
     public Map<String, Object> getSearchInfoList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
@@ -1554,7 +1559,7 @@ public class SearchService {
         return outMap;
     }
 
-    // admin 아닐 때 미현주석
+    // admin 아닐 때
     public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
@@ -1580,7 +1585,6 @@ public class SearchService {
         return userIdMap;
     }
 
-    // 미현주석
     public Map<Integer, String> getHistoryCount() {
         List<UserIdDtoInterface> userIdList = searchInfoRepository.getUserIdByUserUno();
         Map<Integer, String> userIdMap = new HashMap<>();

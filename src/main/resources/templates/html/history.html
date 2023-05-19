@@ -166,9 +166,9 @@
             </div>
           </div>
           <button class="btn-off all-time" th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>
-<!--          <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()!=12999}" th:value="${traceHistoryList.getTsrUno()}">0건</button>-->
-<!--          <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()==12999}" th:value="${traceHistoryList.getTsrUno()}">1건</button>-->
-                    <button class="btn-off double-chk" th:value="${traceHistoryList.getTsrUno()}" th:tsiuno="${traceHistoryList.getTsiUno()}" th:keyword="${traceHistoryList.getTsiKeyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
+<!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()!=12999}" th:value="${traceHistoryList.getTsrUno()}">0건</button>-->
+<!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()==12999}" th:value="${traceHistoryList.getTsrUno()}">1건</button>-->
+          <button class="btn-off double-chk" th:value="${traceHistoryList.getTsrUno()}" th:tsiuno="${traceHistoryList.getTsiUno()}" th:keyword="${traceHistoryList.getTsiKeyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
         </li>
         <li th:if="${traceHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
       </ul>
@@ -295,7 +295,7 @@ progress.forEach(pro => {
 
   var tsi_uno_count = true;
 
-  console.info(dotTsiUno+" aaa");
+  console.info(dotTsiUno + " 번호");
 
   //XMLHttpRequest 객체 생성
   var req = new Req();
@@ -312,6 +312,7 @@ progress.forEach(pro => {
     loading.style.display = 'none';
     per.style.fontSize = '1rem';
     per.style.cssText = "font-size:1rem; color:#545759;";
+    per.innerText = "100%";
     pro.nextElementSibling.innerHTML = "검색결과";
     pro.nextElementSibling.style.color = "#e87728";
     console.info(tsi_uno_count);

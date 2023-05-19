@@ -87,7 +87,7 @@ public class SearchController {
         byte tsiInstagram = searchInfoEntity.getTsiInstagram();
         boolean isFile = !file.get().isEmpty();
 
-        // 미현주석
+
         System.out.println("유저 번호 " + sessionInfoDto.getUserUno());
         //searchInfoEntity.setUserUno(1);
         searchInfoEntity.setUserUno(sessionInfoDto.getUserUno());
@@ -271,12 +271,16 @@ public class SearchController {
             // yandex search url
             String url = textYandexUrl
                     + "?q=" + tsiKeyword
-                    + "&GL=" + textYandexGl
+                    + "&gl=" + textYandexGl
                     + "&no_cache=" + textYandexNocache
                     + "&location=" + textYandexLocation
                     + "&tbm=" + textYandexTbm
                     + "&ijn=" + String.valueOf(index)
                     + "&api_key=" + textYandexApikey
+                    + "&safe=off"
+                    + "&filter=0"
+                    + "&nfpr=0"
+                    + "&hl=ko"
                     + "&engine=" + textYandexEngine;
 
             CompletableFuture
@@ -313,10 +317,14 @@ public class SearchController {
     public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult){
 
         String url = textYandexUrl
-                + "?GL=" + textYandexGl
+                + "&gl=" + textYandexGl
                 + "&no_cache=" + textYandexNocache
                 + "&api_key=" + textYandexApikey
                 + "&engine=" + imageYandexEngine
+                + "&safe=off"
+                + "&filter=0"
+                + "&nfpr=0"
+                + "&hl=ko"
                 + "&image_url=" + searchImageUrl;
 
         CompletableFuture
