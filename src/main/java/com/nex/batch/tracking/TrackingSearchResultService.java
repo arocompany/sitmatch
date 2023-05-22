@@ -199,7 +199,6 @@ public class TrackingSearchResultService {
     }
 
 
-
     /**
      * 이미지 결과 목록 추출
      *
@@ -327,11 +326,15 @@ public class TrackingSearchResultService {
             // yandex search url
             url = textYandexUrl
                     + "?q=" + tsiKeyword
-                    + "&GL=" + textYandexGl
+                    + "&gl=" + textYandexGl
                     + "&no_cache=" + textYandexNocache
                     + "&location=" + textYandexLocation
                     + "&tbm=" + textYandexTbm
                     + "&ijn=" + index
+                    + "&safe=off"
+                    + "&filter=0"
+                    + "&nfpr=0"
+                    + "&hl=ko"
                     + "&api_key=" + textYandexApikey
                     + "&engine=" + textYandexEngine;
         }
@@ -341,10 +344,14 @@ public class TrackingSearchResultService {
             searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
 
             url = textYandexUrl
-                    + "?GL=" + textYandexGl
+                    + "&gl=" + textYandexGl
                     + "&no_cache=" + textYandexNocache
                     + "&api_key=" + textYandexApikey
                     + "&engine=" + imageYandexEngine
+                    + "&safe=off"
+                    + "&filter=0"
+                    + "&nfpr=0"
+                    + "&hl=ko"
                     + "&image_url=" + searchImageUrl;
         }
 

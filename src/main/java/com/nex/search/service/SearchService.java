@@ -163,13 +163,14 @@ public class SearchService {
      * @param folder       (저장 폴더)
      */
 
-    public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, byte tsiTwitter, String tsiType, SearchInfoEntity insertResult, String folder) {
+    public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, byte tsiTwitter, String tsiType, SearchInfoEntity insertResult, String folder,
+                       SearchInfoDto searchInfoDto) {
         if(tsiGoogle == 1){
             // Google 검색기능 구현
             String tsrSns = "11";
 
             // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
-            searchGoogle(tsiType, insertResult, folder, tsrSns);
+            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
         }
 
         //2023-03-20
@@ -179,7 +180,7 @@ public class SearchService {
             String tsrSns = "17";
 
             // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
-            searchGoogle(tsiType, insertResult, folder, tsrSns);
+            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
         }
 
         //2023-03-20
@@ -189,7 +190,7 @@ public class SearchService {
             String tsrSns = "15";
 
             // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
-            searchGoogle(tsiType, insertResult, folder, tsrSns);
+            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
         }
 
         if(tsiTwitter == 1){
@@ -208,22 +209,22 @@ public class SearchService {
      * @param folder       (저장 폴더)
      * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
      */
-    
 
-    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns) {
+
+    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns, SearchInfoDto searchInfoDto) {
         // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
         switch (tsiType) {// 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
             case "11":// 키워드만 검색한 경우
                 // Yandex 검색
                 log.info("키워드 검색");
-                searchYandexByText(tsrSns, insertResult);
+                searchYandexByText(tsrSns, insertResult, searchInfoDto);
                 // Google Custom Search 검색
 //                    searchGoogleCustomByText(insertResult);
                 break;
             case "13"://키워드 + 이미지 검색인 경우
                 // Yandex 검색
                 log.info("키워드/이미지 검색");
-                searchYandexByText(tsrSns, insertResult);
+                searchYandexByText(tsrSns, insertResult, searchInfoDto);
                 // Google Custom Search 검색
 //                    searchGoogleCustomByText(insertResult);
                 break;
@@ -231,7 +232,7 @@ public class SearchService {
                 // 영상처리
                 // Yandex 검색
                 log.info("키워드/영상 검색");
-                searchYandexByText(tsrSns, insertResult);
+                searchYandexByText(tsrSns, insertResult, searchInfoDto);
                 break;
             case "17"://이미지만 검색인 경우
                 // Yandex 검색
@@ -255,24 +256,30 @@ public class SearchService {
      * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
      * @param insertResult (검색 이력 Entity)
      */
-    public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult){
+    public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
+        System.out.println("SearchService searchYandexByText 진입");
+
+        String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
+        System.out.println("tsiKeywordHiddenValue: " + tsiKeywordHiddenValue);
+
         int index = 0;
         String tsiKeyword = insertResult.getTsiKeyword();
+        System.out.println("tsiKeyword: " + tsiKeyword);
 
         //인스타
         if ("15".equals(tsrSns)) {
-            tsiKeyword = "인스타그램 " + tsiKeyword;
+            tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue;
         }
         //페북
         else if ("17".equals(tsrSns)) {
-            tsiKeyword = "페이스북 " + tsiKeyword;
+            tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
         }
-        
+
 
         do {
             // yandex search url
             String url = textYandexUrl
-                    + "?q=" + tsiKeyword
+                    + "?q=" + tsiKeywordHiddenValue
                     + "&gl=" + textYandexGl
                     + "&no_cache=" + textYandexNocache
                     + "&location=" + textYandexLocation
@@ -368,7 +375,7 @@ public class SearchService {
     public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult){
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
-        
+
 
         String url = textYandexUrl
                 + "&gl=" + textYandexGl
@@ -959,17 +966,24 @@ public class SearchService {
      * @param  <RESULT>     (Images_resultsByText or Images_resultsByImage)
      * @throws Exception
      */
+    
+    // 미현
     public <INFO, RESULT> List<RESULT> searchYandex(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+        System.out.println("uri: "+uri);
+
         ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        System.out.println("resultMap: "+resultMap);
 
         List<RESULT> results = null;
 
         if (resultMap.getStatusCodeValue() == 200) {
             ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
             String jsonInString = mapper.writeValueAsString(resultMap.getBody());
+            System.out.println("jsonInString: "+jsonInString);
+
             INFO info = mapper.readValue(jsonInString, infoClass);
 
             if (getErrorFn.apply(info) == null) {
@@ -1430,7 +1444,7 @@ public class SearchService {
         System.out.println("검색 추적이력 쿼리 진입");
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryList(keyword, pageRequest);
         System.out.println("검색 추적이력 쿼리 진입 완");
-        
+
         outMap.put("traceHistoryList", traceHistoryListPage);
         outMap.put("totalPages", traceHistoryListPage.getTotalPages());
         outMap.put("number", traceHistoryListPage.getNumber());
@@ -1547,7 +1561,7 @@ public class SearchService {
         Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
 
         // int a = searchJobRepository.countByTsiUno(tsiUno);
-      //  Page<SearchInfoEntity> searchInfoListPage2 = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
+        //  Page<SearchInfoEntity> searchInfoListPage2 = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
         System.out.println("쿼리: "+searchInfoListPage); // 미현 주석
 
         outMap.put("searchInfoList", searchInfoListPage);

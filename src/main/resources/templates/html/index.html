@@ -39,6 +39,7 @@
         </div>
           <div class="search-bar bor10">
             <input type="text" placeholder="검색어를 입력하세요" id="search-text" name="tsiKeyword">
+            <input type="hidden" id="search-text-hidden" name="tsiKeywordHiddenValue">
             <button type="button" class="btn-off img-btn" tooltip="Search by image or audio/video">이미지로 검색</button>
             <div class="img-search bor10">
               <button type="button" class="esc">닫기</button>
@@ -148,6 +149,17 @@
         if (document.getElementById('search-text').value == "" && document.getElementById('file').value == "") {
           alert("검색어를 입력하세요.");
         } else {
+          var search_text = document.getElementById('search-text').value;
+
+          var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-+<>@\#$%&\\\=\(\'\"]/gi;
+
+          if(regExp.test(search_text)){
+            search_text = search_text.replace(regExp, ""); // 찾은 특수 문자를 제거
+            document.getElementById('search-text-hidden').value= search_text;
+          }else{
+            document.getElementById('search-text-hidden').value= search_text;
+          }
+
           return true;
         }
       }
@@ -161,6 +173,7 @@
       // console.log(document.getElementById('facebook').checked);
       return false;
     }
+
     // sns체크
     const snsChk = document.querySelectorAll(".sns-check input");
     snsChk.forEach(e => {

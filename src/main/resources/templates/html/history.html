@@ -59,7 +59,7 @@
               </div>
             </div>
             <p class="con1">
-              <span class="con1" th:text="${searchInfoList.getTsiKeyword()}"></span>
+              <span class="con1 text_escape" th:text="${searchInfoList.getTsiKeyword()}"></span>
             </p>
           </div>
           <p class="social">
@@ -71,6 +71,7 @@
           <p class="time" th:text="${#dates.format(searchInfoList.getFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></p>
           <p class="dot-wrap progress">
             <input type="hidden" class="dot-tsi-uon" th:value="${searchInfoList.getTsiUno()}"></input>
+            <input type="hidden" class="dot-tsi-date" th:value="${#dates.format(searchInfoList.getFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></input>
             <span class="dot"></span>
             <span class="dot-per" th:text="${getProgressPercentMap.get(searchInfoList.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(searchInfoList.getTsiUno())}"></span>
           </p>
@@ -292,8 +293,24 @@ progress.forEach(pro => {
   const per = pro.querySelector(".dot-per");
   const loading = pro.querySelector(".dot");
   const dotTsiUno = pro.querySelector(".dot-tsi-uon").value;
+  const dotTsiDate = pro.querySelector(".dot-tsi-date").value;
 
   var tsi_uno_count = true;
+
+  var today = new Date();
+
+  var year = today.getFullYear();
+  var month = ('0' + (today.getMonth() + 1)).slice(-2);
+  var day = ('0' + today.getDate()).slice(-2);
+  var hours = ('0' + today.getHours()).slice(-2);
+  var minutes = ('0' + today.getMinutes()).slice(-2);
+  var seconds = ('0' + today.getSeconds()).slice(-2);
+  var dateString = year + '-' + month  + '-' + day + ' ' + hours + ':' + minutes  + ':' + seconds;
+  const dateA = new Date(dateString);
+  const dateB = new Date(dotTsiDate);
+  const diffMSec = dateA.getTime() - dateB.getTime();
+  const diffMin = diffMSec / (60 * 1000);
+
 
   console.info(dotTsiUno + " 번호");
 
@@ -307,16 +324,18 @@ progress.forEach(pro => {
   if(!result) {
       tsi_uno_count = false;
   }
-
-  if (per.innerText === '100%' || !tsi_uno_count) {
-    loading.style.display = 'none';
-    per.style.fontSize = '1rem';
-    per.style.cssText = "font-size:1rem; color:#545759;";
-    per.innerText = "100%";
-    pro.nextElementSibling.innerHTML = "검색결과";
-    pro.nextElementSibling.style.color = "#e87728";
-    console.info(tsi_uno_count);
-    console.info(per.innerText);
+  console.info(diffMin+'/diffMin');
+  if(diffMin>=1){
+    if (per.innerText === '100%' || !tsi_uno_count) {
+      loading.style.display = 'none';
+      per.style.fontSize = '1rem';
+      per.style.cssText = "font-size:1rem; color:#545759;";
+      per.innerText = "100%";
+      pro.nextElementSibling.innerHTML = "검색결과";
+      pro.nextElementSibling.style.color = "#e87728";
+      console.info(tsi_uno_count);
+      console.info(per.innerText);
+    }
   }
 
 })
