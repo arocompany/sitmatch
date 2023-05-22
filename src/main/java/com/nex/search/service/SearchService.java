@@ -258,13 +258,14 @@ public class SearchService {
      */
     public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
         System.out.println("SearchService searchYandexByText 진입");
-
-        String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
-        System.out.println("tsiKeywordHiddenValue: " + tsiKeywordHiddenValue);
+        System.out.println("insertResult" + insertResult);
 
         int index = 0;
         String tsiKeyword = insertResult.getTsiKeyword();
         System.out.println("tsiKeyword: " + tsiKeyword);
+
+        String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
+        System.out.println("tsiKeywordHiddenValue: " + tsiKeywordHiddenValue);
 
         //인스타
         if ("15".equals(tsrSns)) {
@@ -283,7 +284,7 @@ public class SearchService {
                     + "&gl=" + textYandexGl
                     // + "&no_cache=" + textYandexNocache
                     + "&location=" + textYandexLocation
-                    // + "&tbm=" + textYandexTbm
+                    + "&tbm=" + textYandexTbm
                     + "&ijn=" + String.valueOf(index)
                     + "&api_key=" + textYandexApikey
                     + "&safe=off"
@@ -320,6 +321,7 @@ public class SearchService {
                     .supplyAsync(() -> {
                         try {
                             // text기반 yandex 검색
+                            System.out.println(".supplyAsync(() 진입");
                             return searchYandex(url, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
                         } catch (Exception e) {
                             log.debug(e.getMessage());
@@ -328,6 +330,7 @@ public class SearchService {
                     })
                     .thenApply((r) -> {
                         try {
+                            System.out.println(".thenApply((r) 진입");
                             // 결과 저장.(이미지)
                             return saveYandex(
                                     r
@@ -349,6 +352,8 @@ public class SearchService {
                         try {
                             // yandex검색을 통해 결과 db에 적재.
                             saveImgSearchYandex(r, insertResult);
+                            System.out.println("insertResult: "+insertResult);
+                            System.out.println("r값: "+r);
                         } catch (Exception e) {
                             log.debug(e.getMessage());
                         }
@@ -722,6 +727,7 @@ public class SearchService {
      * @return String       (저장 결과)
      */
     public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
+        System.out.println("saveImgSearchYandex 진입");
 
         insertResult.setTsiStat("13");
         if(insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()){
@@ -730,6 +736,8 @@ public class SearchService {
         SearchInfoEntity updateResult = saveSearchInfo(insertResult);
 
         List<SearchResultEntity> searchResultEntity = result;
+        System.out.println("searchResultEntity: "+ searchResultEntity);
+
         //SearchJobEntity sje = null;
         for (SearchResultEntity sre : searchResultEntity){
             try {
@@ -751,13 +759,17 @@ public class SearchService {
                 saveSearchJob(sje);
             } catch(JpaSystemException e){
                 log.error(e.getMessage());
+                System.out.println("JpaSystemException : "+ e.getMessage());
                 e.printStackTrace();
                 throw new JpaSystemException(e);
             } catch(Exception e){
                 log.error(e.getMessage());
+                System.out.println("Exception : "+ e.getMessage());
                 e.printStackTrace();
             }
         }
+        System.out.println("저장 완료");
+
 
         return "저장 완료";
     }
@@ -968,9 +980,9 @@ public class SearchService {
      * @param  <RESULT>     (Images_resultsByText or Images_resultsByImage)
      * @throws Exception
      */
-    
-    // 미현
+
     public <INFO, RESULT> List<RESULT> searchYandex(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
@@ -981,6 +993,7 @@ public class SearchService {
 
         List<RESULT> results = null;
 
+        System.out.println("resultMap.getStatusCodeValue()"+resultMap.getStatusCodeValue());
         if (resultMap.getStatusCodeValue() == 200) {
             ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
             String jsonInString = mapper.writeValueAsString(resultMap.getBody());
@@ -988,10 +1001,13 @@ public class SearchService {
 
             INFO info = mapper.readValue(jsonInString, infoClass);
 
+            System.out.println("getErrorFn.apply(info)"+getErrorFn.apply(info));
+
             if (getErrorFn.apply(info) == null) {
                 results = getResultFn.apply(info);
             }
         }
+        System.out.println("results값: "+results);
 
         return results != null ? results : new ArrayList<>();
     }

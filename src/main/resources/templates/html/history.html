@@ -55,7 +55,7 @@
             <div class="img-box">
               <div class="img" th:if="${searchInfoList.getTsiType() != '11'}">
                 <img th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="">
-                <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="">
+                <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="" />
               </div>
             </div>
             <p class="con1">
