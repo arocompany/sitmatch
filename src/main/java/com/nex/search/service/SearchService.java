@@ -281,9 +281,9 @@ public class SearchService {
             String url = textYandexUrl
                     + "?q=" + tsiKeywordHiddenValue
                     + "&gl=" + textYandexGl
-                    + "&no_cache=" + textYandexNocache
+                    // + "&no_cache=" + textYandexNocache
                     + "&location=" + textYandexLocation
-                    + "&tbm=" + textYandexTbm
+                    // + "&tbm=" + textYandexTbm
                     + "&ijn=" + String.valueOf(index)
                     + "&api_key=" + textYandexApikey
                     + "&safe=off"
@@ -291,6 +291,8 @@ public class SearchService {
                     + "&nfpr=0"
                     + "&engine=" + textYandexEngine
                     + "&hl=ko";
+
+            System.out.println("url: " + url);
 
             /*
             CompletableFuture
@@ -379,7 +381,7 @@ public class SearchService {
 
         String url = textYandexUrl
                 + "&gl=" + textYandexGl
-                + "&no_cache=" + textYandexNocache
+                // + "&no_cache=" + textYandexNocache
                 + "&api_key=" + textYandexApikey
                 + "&safe=off"
                 + "&filter=0"
@@ -1242,7 +1244,7 @@ public class SearchService {
 
                 String url = textYandexUrl
                         + "&gl=" + textYandexGl
-                        + "&no_cache=" + textYandexNocache
+                        // + "&no_cache=" + textYandexNocache
                         + "&api_key=" + textYandexApikey
                         + "&engine=" + imageYandexEngine
                         + "&safe=off"
