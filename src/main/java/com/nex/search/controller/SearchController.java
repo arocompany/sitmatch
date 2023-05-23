@@ -90,8 +90,6 @@ public class SearchController {
         byte tsiInstagram = searchInfoEntity.getTsiInstagram();
         boolean isFile = !file.get().isEmpty();
 
-
-        System.out.println("유저 번호 " + sessionInfoDto.getUserUno());
         //searchInfoEntity.setUserUno(1);
         searchInfoEntity.setUserUno(sessionInfoDto.getUserUno());
         searchInfoEntity.setTsiStat("11");
@@ -102,7 +100,6 @@ public class SearchController {
         String folder = now.format(formatter);
 
         if(isFile){
-
             try{
                 InputStream inputStream = file.get().getInputStream();
                 Tika tika = new Tika();
@@ -218,8 +215,6 @@ public class SearchController {
      */
     @Deprecated
     private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns) {
-        System.out.println("searchGoogle");
-        
         // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
         switch (tsiType) {// 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
             case "11":// 키워드만 검색한 경우
@@ -260,7 +255,6 @@ public class SearchController {
      */
     @Deprecated
     public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult){
-        System.out.println("searchYandexByText 컨트롤러 진입");
         int index = 0;
         String tsiKeyword = insertResult.getTsiKeyword();
 
@@ -321,7 +315,6 @@ public class SearchController {
 
     // Yandex 이미지 검색 후처리
     public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult){
-
         String url = textYandexUrl
                 + "&gl=" + textYandexGl
                 + "&no_cache=" + textYandexNocache

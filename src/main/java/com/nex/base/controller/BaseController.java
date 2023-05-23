@@ -136,36 +136,25 @@ public class BaseController {
                                 @RequestParam(required = false, defaultValue = "1") Integer tracePage,
                                 @RequestParam(required = false, defaultValue = "") String traceKeyword) {     // 검색 이력, 추적 이력
 
-        System.out.println("헤더 클릭시 진입");
         ModelAndView modelAndView = new ModelAndView("html/history");
         Map<String, Object> searchHistMap = new HashMap<>();
 
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("headerMenu", "history");
 
-        // 미현주석 0517
         if(sessionInfoDto.isAdmin()) {
-            System.out.println( "관리자일 때 sessionInfoDto.isAdmin(): "+ sessionInfoDto.isAdmin());
             searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword);
-           // searchHistMap2 = searchService.getSearchInfoCount();
-            System.out.println("관리자일 때 searchHistMap: "+searchHistMap);
         } else {
-            System.out.println( "관리자가 아닐 때 sessionInfoDto.isAdmin() 아닐 때: "+ sessionInfoDto.isAdmin());
             searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, sessionInfoDto.getUserUno());
-            System.out.println("관리자가 아닐 때 유저번호: " + sessionInfoDto.getUserUno());
         }
 
         int Percent = sessionInfoDto.getPercent_limit();
-        System.out.println( " Percent :" + sessionInfoDto.getPercent_limit().toString());
 
         // 추적이력
-        System.out.println("검색 추적이력 진입"); // 미현주석
         Map<String, Object> traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword);
-        System.out.println("검색 추적이력 진입 완"); // 미현주석
-
 
         // 검색이력 데이터
-        modelAndView.addObject("userCount", searchService.getUserIdMap()); // 미현주석
+        modelAndView.addObject("userCount", searchService.getUserIdMap());
         modelAndView.addObject("userIdMap", searchService.getUserIdMap());
         modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap());
         modelAndView.addObject("searchInfoList", searchHistMap.get("searchInfoList"));
