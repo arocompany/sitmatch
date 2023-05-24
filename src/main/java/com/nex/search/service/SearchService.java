@@ -391,7 +391,7 @@ public class SearchService {
         do {
             String url = textYandexUrl
                     + "?gl=" + textYandexGl
-                     + "&no_cache=" + textYandexNocache
+                    + "&no_cache=" + textYandexNocache
                     + "&q=" + tsiKeywordHiddenValue
                     + "&api_key=" + textYandexApikey
                     + "&safe=off"
@@ -789,9 +789,9 @@ public class SearchService {
             } catch (Exception e) {
                 //구글인 경우 IGNORE
 //                if ("11".equals(sre.getTsrSns())) {
-                    imageUrl = getThumbnailFn.apply(result);
-                    resource = resourceLoader.getResource(imageUrl);
-                    imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
+                imageUrl = getThumbnailFn.apply(result);
+                resource = resourceLoader.getResource(imageUrl);
+                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
 //                }
 //                else {
 //                    log.error(e.getMessage(), e);
@@ -1165,7 +1165,7 @@ public class SearchService {
 
                 //이미지 파일 저장
                 saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
-//                saveSearchResult(sre);
+                saveSearchResult(sre);
 
                 sreList.add(sre);
             } catch(IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
