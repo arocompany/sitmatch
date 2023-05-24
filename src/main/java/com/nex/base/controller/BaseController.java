@@ -128,7 +128,7 @@ public class BaseController {
         return tsiUnoCount;
     }
 
-    // 헤더에서 이력관리 클릭 시   미현주석
+    // 헤더에서 이력관리 클릭 시
     @GetMapping("/history")
     public ModelAndView history(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                 @RequestParam(required = false, defaultValue = "1") Integer searchPage,
@@ -184,7 +184,7 @@ public class BaseController {
         return modelAndView;
     }
 
-    // 검색중   미현주석
+    // 검색 중
     @GetMapping("/result")
     public ModelAndView result(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                @RequestParam(value = "tsiUno") Optional<Integer> tsiUno,
@@ -336,9 +336,6 @@ public class BaseController {
                 order_type = "6"; //오디오, 텍스트 선택
             }
 
-
-
-
             defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, order_type);
         }
@@ -385,7 +382,6 @@ public class BaseController {
         modelAndView.addObject("tsiType", searchService.getSearchInfoTsiType(tsiuno)); //tsi
         modelAndView.addObject("userId", searchService.getUserIdByTsiUnoMap().get(tsiuno)); //tsi
         modelAndView.addObject("keyword", keyword);
-
 
 //        searchService.getNotice(tsjStatus, tsrUno, page, modelAndView);
 

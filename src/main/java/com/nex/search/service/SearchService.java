@@ -277,7 +277,7 @@ public class SearchService {
             String url = textYandexUrl
                     + "?q=" + tsiKeywordHiddenValue
                     + "&gl=" + textYandexGl
-                    // + "&no_cache=" + textYandexNocache
+                    + "&no_cache=" + textYandexNocache
                     + "&location=" + textYandexLocation
                     + "&tbm=" + textYandexTbm
                     + "&ijn=" + String.valueOf(index)
@@ -507,7 +507,7 @@ public class SearchService {
 
         String url = textYandexUrl
                 + "?gl=" + textYandexGl
-                // + "&no_cache=" + textYandexNocache
+                + "&no_cache=" + textYandexNocache
                 + "&api_key=" + textYandexApikey
                 + "&safe=off"
                 + "&filter=0"
@@ -1371,7 +1371,7 @@ public class SearchService {
 
                 String url = textYandexUrl
                         + "?gl=" + textYandexGl
-                        // + "&no_cache=" + textYandexNocache
+                        + "&no_cache=" + textYandexNocache
                         + "&api_key=" + textYandexApikey
                         + "&engine=" + imageYandexEngine
                         + "&safe=off"
