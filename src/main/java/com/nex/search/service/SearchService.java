@@ -279,13 +279,13 @@ public class SearchService {
                     + "&gl=" + textYandexGl
                     + "&no_cache=" + textYandexNocache
                     + "&location=" + textYandexLocation
-                    + "&tbm=" + textYandexTbm
-                    + "&ijn=" + String.valueOf(index)
+//                    + "&tbm=" + textYandexTbm
+                    + "&start=" + String.valueOf(index*10)
                     + "&api_key=" + textYandexApikey
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
-                    + "&engine=" + textYandexEngine
+                    + "&engine=google"
                     + "&hl=ko";
 
             /*
@@ -314,7 +314,7 @@ public class SearchService {
                     .supplyAsync(() -> {
                         try {
                             // text기반 yandex 검색
-                            return searchYandex(url, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                            return searchTextYandex(url, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
                         } catch (Exception e) {
                             log.debug(e.getMessage());
                             return null;
@@ -347,11 +347,8 @@ public class SearchService {
                             log.debug(e.getMessage());
                         }
                     });
-            // properties에 설정된 limit 에 따라 총 데이터 저장 한계를 설정하는 부분
-            // ex)limit이 10이라면 페이지당 데이터가 100건이므로 100건*limit 10 해서
-            // 검색 결과가 limit 건수보다 많다면 총 1000건의 데이터까지만 저장,
-            // 해당 검색 결과가 limit 건수보다 낮다면 데이터 건수만큼만 저장됨
-            if(index >= Integer.parseInt(textYandexCountLimit)-1){
+            // 30페이지까지 저장
+            if(index >= 20){
                 loop = false;
             }
 
@@ -1084,6 +1081,42 @@ public class SearchService {
         }
 
         return inlineImages;
+    }
+
+    /**
+     * 텍스트 검색
+     *
+     * 2023-05-25 추가
+     * {@link #searchYandexByText(String, String, SearchInfoEntity)} {@link #searchYandexByImage(String, String, SearchInfoEntity)}}
+     *
+     * @param  url          (URL)
+     * @param  infoClass    (YandexByTextResult or YandexByImageResult Class)
+     * @param  getErrorFn   (info error getter Function)
+     * @param  getResultFn  (RESULT getter Function)
+     * @return List<RESULT> (RESULT List)
+     * @param  <INFO>       (YandexByTextResult or YandexByImageResult)
+     * @param  <RESULT>     (Images_resultsByText or Images_resultsByImage)
+     * @throws Exception
+     */
+
+    public <INFO, RESULT> List<RESULT> searchTextYandex(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+
+        HttpHeaders header = new HttpHeaders();
+        HttpEntity<?> entity = new HttpEntity<>(header);
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        List<RESULT> results = null;
+
+        if (resultMap.getStatusCodeValue() == 200) {
+            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results","images_results");
+            INFO info = mapper.readValue(jsonInString, infoClass);
+
+            if (getErrorFn.apply(info) == null) {
+                results = getResultFn.apply(info);
+            }
+        }
+        return results != null ? results : new ArrayList<>();
     }
 
     /**

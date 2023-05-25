@@ -78,8 +78,19 @@
             </div>
             <p class="url" th:text="${list.getTsrDownloadUrl()}">url이 들어갑니다</p>
             <p class="content" th:text="${list.getTsrTitle()}">내용이 들어갑니다 내용이 들어갑니다</p>
-            <p class="detail"><span th:text="${list.getTsrImgExt()}">MP4</span> / <span th:text="${list.getTsrImgSize()}+'KB'">1000KB</span> </p>
-          </a></section>
+
+            <p class="detail">
+              <span th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgExt()} != ''" th:text="${#strings.concat(list.getTsrImgExt(),' /')}" ></span>
+              <span th:if="${list.getTsrImgSize()} != null and ${list.getTsrImgSize()} != ''" th:text="${#strings.concat(list.getTsrImgSize())} +'KB'" ></span>
+              <span th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgSize()} == null" >파일 정보가 없습니다.</span>
+              <span th:if="${list.getTsrImgExt()} == '' and ${list.getTsrImgSize()} == ''" >파일 정보가 없습니다.</span>
+              <span th:if="${list.getTsrImgExt()} == '' and ${list.getTsrImgSize()} == null" >파일 정보가 없습니다.</span>
+              <span th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgSize()} == ''" >파일 정보가 없습니다.</span>
+            </p>
+
+            <!--<p class="detail"><span th:text="${list.getTsrImgExt()}">MP4</span> / <span th:text="${list.getTsrImgSize()}+'KB'">1000KB</span> </p>-->
+          </a>
+          </section>
         </div>
       </section>
       <section class="notice L-box-up bor10">

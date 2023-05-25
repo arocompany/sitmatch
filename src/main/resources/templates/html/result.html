@@ -11,6 +11,9 @@
   <script src="/js/style.js"></script>
   <script src="/js/footer.js"></script>
   <script src="/js/function.js"></script>
+  <script>
+
+  </script>
 </head>
 
 <body>
@@ -137,7 +140,32 @@
 <!--        <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span><span th:case="11"><h2 class="unity" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h2></span></th:block>-->
         <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url"><p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p></a>
         <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
+
+<!--
         <p class="detail" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),', ','파일명 : ',list.getTsrImgName())}">파일 정보가 들어갑니다</p>
+-->
+
+        <p class="detail">
+          <span th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgExt()} != ''" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),',')}" ></span>
+          <span th:if="${list.getTsrImgName()} != null and ${list.getTsrImgName()} != ''" th:text="${#strings.concat('파일명 : ',list.getTsrImgName())}" ></span>
+          <span th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == null" >파일 정보가 없습니다.</span>
+          <span th:if="${list.getTsrImgExt()} == '' and ${list.getTsrImgName()} == ''" >파일 정보가 없습니다.</span>
+          <span th:if="${list.getTsrImgExt()} == '' and ${list.getTsrImgName()} == null" >파일 정보가 없습니다.</span>
+          <span th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == ''" >파일 정보가 없습니다.</span>
+        </p>
+
+<!--
+        <p th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} != null"
+           class="detail" th:text="${#strings.concat('파일명z : ',list.getTsrImgName())}">파일 정보가 들어갑니다</p>
+
+        <p th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgName()} == null"
+           class="detail" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt())}">파일 정보가 들어갑니다</p>
+
+        <p th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == null"
+           class="detail" ></p>
+-->
+
+
         <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}">추가</button>
         <!--
         <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}" th:disabled="${list.getTrkStatCd() != null}">추가</button>
