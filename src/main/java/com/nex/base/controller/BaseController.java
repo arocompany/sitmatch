@@ -38,15 +38,17 @@ public class BaseController {
     public ModelAndView index(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
         ModelAndView modelAndView = new ModelAndView("html/index");
         modelAndView.addObject("headerMenu", "index");
-        log.debug("sessionInfoDto = {}", sessionInfoDto);
+
+        modelAndView.addObject("sessionInfo", sessionInfoDto);
+        List<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getNoticeListMain(0);
+        modelAndView.addObject("traceInfoList", defaultQueryDtoInterface);
+        /*
         if(sessionInfoDto == null) {
-            modelAndView.setViewName("redirect:/user/login");
+            modelAndView.setViewName(f"redirect:/user/login");
         } else {
             modelAndView.addObject("sessionInfo", sessionInfoDto);
         }
-
-        List<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getTraceListByHome();
-        modelAndView.addObject("traceInfoList", defaultQueryDtoInterface);
+    */
 
         return modelAndView;
     }
@@ -55,6 +57,9 @@ public class BaseController {
     public ModelAndView index2(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
         ModelAndView modelAndView = new ModelAndView("html/index");
         modelAndView.addObject("sessionInfo", sessionInfoDto);
+
+        List<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getNoticeListMain(0);
+        modelAndView.addObject("traceInfoList", defaultQueryDtoInterface);
 
         return modelAndView;
     }

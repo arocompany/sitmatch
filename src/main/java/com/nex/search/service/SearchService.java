@@ -374,6 +374,7 @@ public class SearchService {
 
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+        searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
 
         //인스타
         if ("15".equals(tsrSns)) {
@@ -501,7 +502,7 @@ public class SearchService {
 
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
-
+        searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
         String url = textYandexUrl
                 + "?gl=" + textYandexGl
                 + "&no_cache=" + textYandexNocache
@@ -514,6 +515,7 @@ public class SearchService {
                 + "&image_url=" + searchImageUrl
                 + "&hl=ko";
 
+        System.out.println("searchImageUrl : "+searchImageUrl);
         /*
         CompletableFuture
                 .supplyAsync(() -> {
@@ -1569,6 +1571,10 @@ public class SearchService {
         }else{
             return searchResultRepository.getNoticeSelList(pageRequest,tsiuno, percent);
         }
+    }
+
+    public List<DefaultQueryDtoInterface> getNoticeListMain(Integer percent) {
+        return searchResultRepository.getNoticeListMain(percent);
     }
 
     public DefaultQueryDtoInterface getResultInfo(Integer tsrUno) {

@@ -263,6 +263,9 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     @Query(value = defaultQeury_2+from_2+" WHERE TSI.TSR_UNO IS NOT null  AND TMR.TMR_STAT = '11' "+whereSimilarity_2, nativeQuery = true, countQuery = countQuery+from_2+whereNotice+" AND TSJ.TSJ_STATUS = '11'"+whereSimilarity_2)
     Page<DefaultQueryDtoInterface> getNoticeList(Pageable pageable, Integer percent);
 
+    @Query(value = defaultQeury_2+from_2+" WHERE TSI.TSR_UNO IS NOT null  AND TMR.TMR_STAT = '11' "+whereSimilarity_2+" limit 4", nativeQuery = true)
+    List<DefaultQueryDtoInterface> getNoticeListMain(Integer percent);
+
     @Query(value = defaultQeury_3+from_2+" WHERE TSI.TSI_UNO = :tsiuno  AND TMR.TMR_STAT = '11' "+whereSimilarity_2, nativeQuery = true, countQuery = countQuery+from_2+" WHERE TSI.TSI_UNO = :tsiuno  AND TSJ.TSJ_STATUS = '11'"+whereSimilarity_2)
     Page<DefaultQueryDtoInterface> getNoticeSelList(Pageable pageable, Integer tsiuno, Integer percent);
 

@@ -315,6 +315,7 @@ public class SearchController {
 
     // Yandex 이미지 검색 후처리
     public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult){
+        System.out.println("searchYandexByImage 진입 : ");
         String url = textYandexUrl
                 + "&gl=" + textYandexGl
                 + "&no_cache=" + textYandexNocache
@@ -325,6 +326,8 @@ public class SearchController {
                 + "&nfpr=0"
                 + "&hl=ko"
                 + "&image_url=" + searchImageUrl;
+
+        System.out.println("searchImageUrl : "+searchImageUrl);
 
         CompletableFuture
                 .supplyAsync(() -> {

@@ -95,10 +95,7 @@
       </section>
       <section class="notice L-box-up bor10">
         <h2 class="title">재확산 자동추적 <a href="/notice" class="btn-off" style="width: 165px;">재확산 자동추적 바로가기</a></h2>
-        <p>서울시가 제2·제3의 ‘n번방 사건’ 피해를 막기 위해 디지털 성범죄 피해자를 통합 지원하는 ‘서울 디지털성범죄 안심지원센터’를 29일 개관했다.</p>
-        <p>'서울시 디지털성범죄 안심지원센터' 개관</p>
-        <p>서울시는 29일 오후 동작구 서울여성가족재단 내 '서울 디지털성범죄 안심지원센터'에서 현판식을 열었다.</p>
-        <p>[더팩트ㅣ이새롬 기자] 오세훈 서울시장과 최관호 서울경찰청장이 29일 오후 서울 동작구 대방동 서울여성가족재단에서 열린 '서울 디지털성범죄 안심지원센터' 개관식에 참석해 기념촬영을 하고 있다.</p>
+        <p th:each="traceInfoListData : ${traceInfoList}" th:text="${traceInfoListData.tsrTitle}"></p>
       </section>
     </div>
 
