@@ -285,8 +285,7 @@ public class SearchService {
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
-                    + "&engine=google"
-                    + "&hl=ko";
+                    + "&engine=google";
 
             /*
             CompletableFuture
@@ -398,8 +397,7 @@ public class SearchService {
                     + "&start=" + String.valueOf(index*10)
                     // + "&tbm=" + textYandexTbm
                     + "&engine=" + imageYandexEngine
-                    + "&image_url=" + searchImageUrl
-                    + "&hl=ko";
+                    + "&image_url=" + searchImageUrl;
 
             //2023-03-26
             //기존 searchYandexByText 를 데이터 가져 오는 부분, 저장 하는 부분으로 분리
@@ -512,8 +510,7 @@ public class SearchService {
                 + "&nfpr=0"
                 // + "&tbm=" + textYandexTbm
                 + "&engine=" + imageYandexEngine
-                + "&image_url=" + searchImageUrl
-                + "&hl=ko";
+                + "&image_url=" + searchImageUrl;
 
         System.out.println("searchImageUrl : "+searchImageUrl);
         /*
@@ -1412,7 +1409,6 @@ public class SearchService {
                         + "&safe=off"
                         + "&filter=0"
                         + "&nfpr=0"
-                        + "&hl=ko"
                         + "&image_url=" + serverIp+folder+"/"+location3+"/"+insertResult.getTsiUno()+files.get(i).substring(files.get(i).lastIndexOf("/"));
 
                 CompletableFuture

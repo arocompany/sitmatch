@@ -280,7 +280,6 @@ public class SearchController {
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
-                    + "&hl=ko"
                     + "&engine=" + textYandexEngine;
 
             CompletableFuture
@@ -324,7 +323,6 @@ public class SearchController {
                 + "&safe=off"
                 + "&filter=0"
                 + "&nfpr=0"
-                + "&hl=ko"
                 + "&image_url=" + searchImageUrl;
 
         System.out.println("searchImageUrl : "+searchImageUrl);

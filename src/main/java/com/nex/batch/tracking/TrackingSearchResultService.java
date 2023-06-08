@@ -334,7 +334,6 @@ public class TrackingSearchResultService {
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
-                    + "&hl=ko"
                     + "&api_key=" + textYandexApikey
                     + "&engine=" + textYandexEngine;
         }
@@ -351,7 +350,6 @@ public class TrackingSearchResultService {
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
-                    + "&hl=ko"
                     + "&image_url=" + searchImageUrl;
         }
 
