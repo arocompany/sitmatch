@@ -1502,7 +1502,7 @@ public class SearchService {
     
     // 키워드+영상
     @Async
-    public void searchYandexByTextVideo(String tsrSns,SearchInfoEntity insertResult,SearchInfoDto searchInfoDto,String location3,String folder){
+    public void searchYandexByTextVideo(String tsrSns,SearchInfoEntity insertResult,SearchInfoDto searchInfoDto, String folder, String location3){
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
         //인스타
