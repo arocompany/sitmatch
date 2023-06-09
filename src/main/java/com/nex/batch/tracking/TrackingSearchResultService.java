@@ -180,6 +180,7 @@ public class TrackingSearchResultService {
             , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Boolean isText) {
         List<RESULT> results = new ArrayList<>();
 
+
         return getResults(
                 tsiKeyword
                 , searchInfoEntity
