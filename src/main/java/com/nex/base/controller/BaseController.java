@@ -44,11 +44,11 @@ public class BaseController {
         modelAndView.addObject("traceInfoList", defaultQueryDtoInterface);
         /*
         if(sessionInfoDto == null) {
-            modelAndView.setViewName(f"redirect:/user/login");
+            modelAndView.setViewName("redirect:/user/login");
         } else {
             modelAndView.addObject("sessionInfo", sessionInfoDto);
         }
-    */
+        */
 
         return modelAndView;
     }
@@ -220,15 +220,14 @@ public class BaseController {
         Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = null;
 
         log.debug("priority => {}", priority);
+        log.debug("result 페이지 진입");
 
-
-        //2023-03-22
         //검색 조건 값이 다 없을 경우
         if (!StringUtils.hasText(tsjStatusAll)
-                && !StringUtils.hasText(tsjStatus00)
-                && !StringUtils.hasText(tsjStatus01)
-                && !StringUtils.hasText(tsjStatus10)
-                && !StringUtils.hasText(tsjStatus11)) {
+                && !StringUtils.hasText(tsjStatus00) // 대기중
+                && !StringUtils.hasText(tsjStatus01) // 처리중
+                && !StringUtils.hasText(tsjStatus10) // SKIP
+                && !StringUtils.hasText(tsjStatus11)) { // 일치율
             tsjStatusAll = "1";
         }
 
@@ -247,20 +246,17 @@ public class BaseController {
             snsStatusAll = "1";
         }
 
-
-
         //2023-03-22 값이 없어서 추가
-        modelAndView.addObject("tsjStatusAll", tsjStatusAll);//전체
-        modelAndView.addObject("odStatusAll", odStatusAll);
-        modelAndView.addObject("snsStatusAll", snsStatusAll);
+        modelAndView.addObject("tsjStatusAll", tsjStatusAll); // 분류
+        modelAndView.addObject("odStatusAll", odStatusAll);   // 일치율 높은순
+        modelAndView.addObject("snsStatusAll", snsStatusAll); // SNS
+
 
         if(tsiUno.isPresent()) {
             modelAndView.addObject("tsiUno", tsiUno.get());
             modelAndView.addObject("imgSrc", searchService.getSearchInfoImgUrl(tsiUno.get()));
             modelAndView.addObject("tsiType", searchService.getSearchInfoTsiType(tsiUno.get()));
 
-
-            //2023-03-22
             //tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4 값이 안넘어와서 세팅 추가
             if ("1".equals(tsjStatus11)) {
                 tsjStatus1 = "11";

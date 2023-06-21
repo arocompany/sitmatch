@@ -57,6 +57,7 @@ public class UserController {
 
         if (userRepository.countByUserId(userLoginCheckDto.getLoginId()) > 0) {                // 아이디가 있는지 확인
             UserEntity user = userRepository.findByUserId(userLoginCheckDto.getLoginId());
+
             if (encryptUtil.matches(userLoginCheckDto.getLoginPw(), user.getUserPw())) {       // 비밀번호 확인(userInfo로 받은 평문 비밀번호와 디비에 있는 암호화된 비밀번호 비교)
                 // 마지막 로그인 시간 업데이트
                 user.setLstLoginDt(Timestamp.valueOf(LocalDateTime.now()));
@@ -75,6 +76,19 @@ public class UserController {
                 } else {
                     modelAndView.setViewName("redirect:/");
                 }
+
+                /*
+                   if (diffDay >= 90) {   //   비밀번호 변경일자가 90일이 넘을 경우 패스워드 변경 화면으로 이동
+                        if(user.getUserClfCd().equals("99")) { // 관리자면
+                            modelAndView.setViewName("redirect:/");
+                        } else {
+                            modelAndView.setViewName("redirect:/user/password");
+                        }
+                    } else {
+                        modelAndView.setViewName("redirect:/");
+                    }
+                */
+
                 // 로그인 성공 처리
                 // 세션이 있으면 있는 세션 반환, 없으면 신규 세션 설정
                 HttpSession session = request.getSession();

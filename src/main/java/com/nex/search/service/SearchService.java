@@ -5,12 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.Consts;
 import com.nex.search.entity.*;
 import com.nex.search.repo.*;
+import com.nex.user.entity.SessionInfoDto;
 import com.nex.user.entity.UserEntity;
 import com.nex.user.repo.UserRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.bag.SynchronizedSortedBag;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -165,13 +167,13 @@ public class SearchService {
      */
 
     public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, byte tsiTwitter, String tsiType, SearchInfoEntity insertResult, String folder,
-                       SearchInfoDto searchInfoDto) {
+                       SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto) {
         if(tsiGoogle == 1){
             // Google 검색기능 구현
             String tsrSns = "11";
 
             // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
-            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
+            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto, sessionInfoDto);
         }
 
         //2023-03-20
@@ -181,7 +183,7 @@ public class SearchService {
             String tsrSns = "17";
 
             // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
-            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
+            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto, sessionInfoDto);
         }
 
         //2023-03-20
@@ -191,7 +193,7 @@ public class SearchService {
             String tsrSns = "15";
 
             // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
-            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
+            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto, sessionInfoDto);
         }
 
         if(tsiTwitter == 1){
@@ -212,20 +214,20 @@ public class SearchService {
      */
 
 
-    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns, SearchInfoDto searchInfoDto) {
+    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns, SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto) {
         // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
-        switch (tsiType) {// 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
+        switch (tsiType) { // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
             case "11":// 키워드만 검색한 경우
                 // Yandex 검색
                 log.info("키워드 검색");
-                searchYandexByText(tsrSns, insertResult, searchInfoDto);
+                searchYandexByText(tsrSns, insertResult, searchInfoDto, sessionInfoDto);
                 // Google Custom Search 검색
 //                    searchGoogleCustomByText(insertResult);
                 break;
             case "13"://키워드 + 이미지 검색인 경우
                 // Yandex 검색
                 log.info("키워드/이미지 검색");
-                searchYandexByTextImage(tsrSns, insertResult, searchInfoDto);
+                searchYandexByTextImage(tsrSns, insertResult, searchInfoDto, sessionInfoDto);
                 // Google Custom Search 검색
 //                    searchGoogleCustomByText(insertResult);
                 break;
@@ -234,17 +236,17 @@ public class SearchService {
                 // Yandex 검색
                 log.info("키워드/영상 검색");
                 // searchYandexByText(tsrSns, insertResult, searchInfoDto);
-                searchYandexByTextVideo(tsrSns, insertResult, searchInfoDto, fileLocation3, folder);
+                searchYandexByTextVideo(tsrSns, insertResult, searchInfoDto, sessionInfoDto, fileLocation3, folder);
                 break;
             case "17"://이미지만 검색인 경우
                 // Yandex 검색
                 log.info("이미지 검색");
-                searchYandexByImage(tsrSns, insertResult);
+                searchYandexByImage(tsrSns, insertResult, sessionInfoDto);
                 break;
             case "19"://영상만 검색인 경우
                 // Yandex 검색
                 log.info("영상 검색");
-                searchYandexByVideo(tsrSns, insertResult, fileLocation3, folder);
+                searchYandexByVideo(tsrSns, insertResult, sessionInfoDto, fileLocation3, folder);
                 break;
         }
     }
@@ -260,7 +262,7 @@ public class SearchService {
      * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
      * @param insertResult (검색 이력 Entity)
      */
-    public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
+    public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto){
         int index = 0;
         String tsiKeyword = insertResult.getTsiKeyword();
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
@@ -273,6 +275,15 @@ public class SearchService {
         else if ("17".equals(tsrSns)) {
             tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
         }
+
+        log.debug("textYandexApikey 변경 전 : "+textYandexApikey);
+        if( sessionInfoDto.getUserId().equals("admin") ){
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
+        } else {
+            log.debug("userId: "+sessionInfoDto.getUserId());
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"28bf1e9bf479872b1419c327d44297ca140e8b350eea2e6f383ca7399ac7c218");
+        }
+        log.debug("textYandexApikey 변경 후 : "+textYandexApikey);
 
 
         do {
@@ -369,7 +380,7 @@ public class SearchService {
      * @param insertResult (검색 이력 Entity)
      */
 
-    public void searchYandexByTextImage(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
+    public void searchYandexByTextImage(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto){
         int index = 0;
         String tsiKeyword = insertResult.getTsiKeyword();
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
@@ -387,6 +398,14 @@ public class SearchService {
             tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
         }
 
+        log.debug("textYandexApikey 변경 전 : "+textYandexApikey);
+        if( sessionInfoDto.getUserId().equals("admin") ){
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
+        } else {
+            log.debug("userId: "+sessionInfoDto.getUserId());
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"28bf1e9bf479872b1419c327d44297ca140e8b350eea2e6f383ca7399ac7c218");
+        }
+        log.debug("textYandexApikey 변경 후 : "+textYandexApikey);
 
         do {
             String url = textYandexUrl
@@ -499,11 +518,20 @@ public class SearchService {
      * @param insertResult (검색 이력 Entity)
      */
 
-    public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult){
+    public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult, SessionInfoDto sessionInfoDto){
         int index = 0;
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
         searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
+
+        log.debug("textYandexApikey 변경 전 : "+textYandexApikey);
+        if( sessionInfoDto.getUserId().equals("admin") ){
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
+        } else {
+            log.debug("userId: "+sessionInfoDto.getUserId());
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"28bf1e9bf479872b1419c327d44297ca140e8b350eea2e6f383ca7399ac7c218");
+        }
+        log.debug("textYandexApikey 변경 후 : "+textYandexApikey);
 
 //        String url = textYandexUrl
 //                + "?gl=" + textYandexGl
@@ -1204,6 +1232,8 @@ public class SearchService {
         ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
         List<RESULT> results = null;
 
+        log.debug("resultMap.getStatusCodeValue(): "+resultMap.getStatusCodeValue());
+
         if (resultMap.getStatusCodeValue() == 200) {
             ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
             String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results","images_results");
@@ -1213,6 +1243,8 @@ public class SearchService {
                 results = getResultFn.apply(info);
             }
         }
+
+        log.debug("results: " + results);
         return results != null ? results : new ArrayList<>();
     }
 
@@ -1452,10 +1484,10 @@ public class SearchService {
 
     // Yandex 영상 검색 후처리
     @Async
-    public void searchYandexByVideo(String tsrSns, SearchInfoEntity insertResult, String folder, String location3){
+    public void searchYandexByVideo(String tsrSns, SearchInfoEntity insertResult, SessionInfoDto sessionInfoDto, String folder, String location3) {
         try {
             List<String> files = processVideo(insertResult);
-            for (int i = 0; i < files.size(); i++){
+            for (int i = 0; i < files.size(); i++) {
                 VideoInfoEntity videoInfo = new VideoInfoEntity();
                 videoInfo.setTsiUno(insertResult.getTsiUno());
                 videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/")+1));
@@ -1464,6 +1496,15 @@ public class SearchService {
 
                 String searchImageUrl = serverIp+folder+"/"+location3+"/"+insertResult.getTsiUno()+files.get(i).substring(files.get(i).lastIndexOf("/"));
                 searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
+
+                log.debug("textYandexApikey 변경 전: "+textYandexApikey);
+                if( sessionInfoDto.getUserId().equals("admin") ){
+                    textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
+                } else {
+                    log.debug("userId: "+sessionInfoDto.getUserId());
+                    textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"28bf1e9bf479872b1419c327d44297ca140e8b350eea2e6f383ca7399ac7c218");
+                }
+                log.debug("textYandexApikey 변경 후: "+textYandexApikey);
 
                 String url = textYandexUrl
                         + "?gl=" + textYandexGl
@@ -1502,7 +1543,7 @@ public class SearchService {
     
     // 키워드+영상
     @Async
-    public void searchYandexByTextVideo(String tsrSns,SearchInfoEntity insertResult,SearchInfoDto searchInfoDto, String folder, String location3){
+    public void searchYandexByTextVideo(String tsrSns,SearchInfoEntity insertResult,SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto, String folder, String location3){
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
         //인스타
@@ -1513,6 +1554,15 @@ public class SearchService {
         else if ("17".equals(tsrSns)) {
             tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
         }
+
+        log.debug("textYandexApikey 변경 전 : "+textYandexApikey);
+        if( sessionInfoDto.getUserId().equals("admin") ){
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
+        } else {
+            log.debug("userId: "+sessionInfoDto.getUserId());
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"28bf1e9bf479872b1419c327d44297ca140e8b350eea2e6f383ca7399ac7c218");
+        }
+        log.debug("textYandexApikey 변경 후 : "+textYandexApikey);
 
         try {
             List<String> files = processVideo(insertResult);
@@ -1651,9 +1701,9 @@ public class SearchService {
 
         log.debug("priority => {}", priority);
 
-
         String orderByTmrSimilarityDesc = " ORDER BY tmrSimilarity desc, TMR.TSR_UNO desc";
         System.out.println("getResultInfoListOrderByTmrSimilarityDesc 진입" + order_type);
+
         if("1".equals(order_type)){
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_1(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);

@@ -96,7 +96,7 @@
                             <img th:if="${(imgSrc != null && tsiType != '15' && tsiType != '19')}"
                                  th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
                             <video th:if="${(imgSrc != null && (tsiType == '15' || tsiType == '19'))}"
-                                   th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
+                                   th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="" />
                         </div>
                     </div>
                     <img th:if="${!#strings.isEmpty(keyword)}" src="/img/result/double-right.png" alt=""

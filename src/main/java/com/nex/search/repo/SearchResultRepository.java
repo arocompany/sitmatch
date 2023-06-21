@@ -47,6 +47,12 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
             "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  ";
 
+    String from_5 = " FROM TB_SEARCH_RESULT TSR " +
+            "INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO " +
+            "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
+            "LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
+            "LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO";
+
 
     String defaultQeury_2 = "SELECT TSR.TSR_UNO as tsrUno, TSI.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
@@ -92,8 +98,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
             "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity";
 
-    String defaultQeury_3 = defaultQeury_2 + ", (SELECT count(*) from  tb_search_info TSI LEFT JOIN tb_search_result TSR ON TSR.TSI_UNO = TSI.TSI_UNO WHERE TSI.TSI_UNO = :tsiuno  ) as re_monitor_cnt ";
+    String defaultQeury_5 = "SELECT TSR.TSR_UNO as tsrUno, TSI.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
+            "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
+            "tsr.TSR_IMG_EXT as tsrImgExt, tsr.TRK_STAT_CD as trkStatCd, tsi.TSI_TYPE as tsiType, tsi.TSI_KEYWORD as tsiKeyword," +
+            "tsj.TSJ_STATUS as tsjStatus, tu.USER_ID as tuUserId";
 
+
+    String defaultQeury_3 = defaultQeury_2 + ", (SELECT count(*) from  tb_search_info TSI LEFT JOIN tb_search_result TSR ON TSR.TSI_UNO = TSI.TSI_UNO WHERE TSI.TSI_UNO = :tsiuno  ) as re_monitor_cnt ";
     String defaultQeury = defaultQeury_2 + ", pp.progressPercent as progressPercent ";
     String defaultQeury2 = defaultQeury_4 + ", pp.progressPercent as progressPercent ";
 
@@ -169,8 +180,9 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > :percent";
 
-            // ORDER BY
+    // ORDER BY
     String orderByTmrSimilarityDesc = " ORDER BY tmrVScore desc, tmrAScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_7 = " ORDER BY tsrUno desc";
     String orderByTmrSimilarityDesc_1 = " ORDER BY tmrVScore desc, tmrSimilarity desc, tsrUno desc";
     String orderByTmrSimilarityDesc_2 = " ORDER BY tmrAScore desc, tmrSimilarity desc, tsrUno desc";
     String orderByTmrSimilarityDesc_3 = " ORDER BY tmrTScore desc, tmrSimilarity desc, tsrUno desc";
@@ -214,10 +226,10 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     Page<DefaultQueryDtoInterface> getTraceHistoryList(String keyword, Pageable pageable);
 
     // 검색 결과 검색 이력
-    @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn2+orderByTmrSimilarityDesc, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn2)
+    // @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn2+orderByTmrSimilarityDesc, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn2)
+    @Query(value = defaultQeury_5+from_5+whereTsiUnoTsrTitleLikeTsrStatusIn2+orderByTmrSimilarityDesc_7, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn2)
     Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
                                                                                String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
-
     @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_1, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn)
     Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_1(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
                                                                                String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
