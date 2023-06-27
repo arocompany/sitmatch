@@ -262,7 +262,7 @@ public class SearchService {
      * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
      * @param insertResult (검색 이력 Entity)
      */
-    public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto){
+    public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto) {
         int index = 0;
         String tsiKeyword = insertResult.getTsiKeyword();
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
@@ -544,7 +544,6 @@ public class SearchService {
 //                + "&engine=" + imageYandexEngine
 //                + "&image_url=" + searchImageUrl;
 
-        System.out.println("searchImageUrl : "+searchImageUrl);
         /*
         CompletableFuture
                 .supplyAsync(() -> {
