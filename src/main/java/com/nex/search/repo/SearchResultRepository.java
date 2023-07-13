@@ -47,12 +47,6 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
             "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  ";
 
-    String from_5 = " FROM TB_SEARCH_RESULT TSR " +
-            "INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO " +
-            "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
-            "LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
-            "LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO";
-
 
     String defaultQeury_2 = "SELECT TSR.TSR_UNO as tsrUno, TSI.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
@@ -98,15 +92,25 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
             "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity";
 
-    String defaultQeury_5 = "SELECT TSR.TSR_UNO as tsrUno, TSI.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
-            "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
-            "tsr.TSR_IMG_EXT as tsrImgExt, tsr.TRK_STAT_CD as trkStatCd, tsi.TSI_TYPE as tsiType, tsi.TSI_KEYWORD as tsiKeyword," +
-            "tsj.TSJ_STATUS as tsjStatus, tu.USER_ID as tuUserId";
-
-
     String defaultQeury_3 = defaultQeury_2 + ", (SELECT count(*) from  tb_search_info TSI LEFT JOIN tb_search_result TSR ON TSR.TSI_UNO = TSI.TSI_UNO WHERE TSI.TSI_UNO = :tsiuno  ) as re_monitor_cnt ";
     String defaultQeury = defaultQeury_2 + ", pp.progressPercent as progressPercent ";
+
     String defaultQeury2 = defaultQeury_4 + ", pp.progressPercent as progressPercent ";
+
+
+    String defaultQeury_5 = "SELECT TSR.TSR_UNO as tsrUno, TSI.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
+            "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, tsr.TRK_STAT_CD as trkStatCd,"+
+            "tsi.TSI_KEYWORD as tsiKeyword, tsj.TSJ_STATUS as tsjStatus, tu.USER_ID as tuUserId, tsi.TSI_TYPE as tsiType, tsr.TSR_IMG_EXT as tsrImgExt," +
+            "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
+            "if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', "+
+            "ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + "+
+            "case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + "+
+            "case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / "+
+            "(case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + "+
+//                    "(case when isnull(tmr.TMR_V_SCORE) || tmr.TMR_V_SCORE = 0 then 0 else 1 end + "+
+            "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
+//                    "case when isnull(tmr.TMR_A_SCORE) || tmr.TMR_A_SCORE = 0 then 0 else 1 end + "+
+            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity";
 
 
     String defaultQeury_0 = defaultQeury2 +
@@ -142,7 +146,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
 
     String from = " FROM TB_SEARCH_RESULT TSR INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO";
-
+    String from2 = " FROM TB_SEARCH_RESULT TSR INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO";
 
     // WHERE
     String whereTsiUnoTsrTitleLikeTsrStatusIn = " WHERE TSI.TSI_UNO = :tsiUno AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') or TSR.TSR_TITLE is null) " +
@@ -152,6 +156,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String whereTsiUnoTsrTitleLikeTsrStatusIn2 =" WHERE TSI.TSI_UNO = :tsiUno AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') or TSR.TSR_TITLE is null or 1=1) " +
             "AND (tsj.TSJ_STATUS = :tsjStatus1 OR tsj.TSJ_STATUS = :tsjStatus2 OR tsj.TSJ_STATUS = :tsjStatus3 OR tsj.TSJ_STATUS = :tsjStatus4)" +
             "AND (tsr.TSR_SNS = :snsStatus01 OR tsr.TSR_SNS = :snsStatus02 OR tsr.TSR_SNS = :snsStatus03 OR tsr.TSR_SNS = :snsStatus04)";
+
     String whereTsrUno = " WHERE TSR.TSR_UNO = :tsrUno";
 
     String whereNotice = " WHERE TSI.TSR_UNO is not null ";
@@ -182,7 +187,6 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     // ORDER BY
     String orderByTmrSimilarityDesc = " ORDER BY tmrVScore desc, tmrAScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
-    String orderByTmrSimilarityDesc_7 = " ORDER BY tsrUno desc";
     String orderByTmrSimilarityDesc_1 = " ORDER BY tmrVScore desc, tmrSimilarity desc, tsrUno desc";
     String orderByTmrSimilarityDesc_2 = " ORDER BY tmrAScore desc, tmrSimilarity desc, tsrUno desc";
     String orderByTmrSimilarityDesc_3 = " ORDER BY tmrTScore desc, tmrSimilarity desc, tsrUno desc";
@@ -217,7 +221,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String orderByResult19 = " ORDER BY tmrSimilarity ASC, TMR.TMR_V_SCORE DESC";
     String orderByResult20 = " ORDER BY tmrSimilarity ASC, TMR.TMR_A_SCORE DESC";
     String orderByResult21 = " ORDER BY tmrSimilarity ASC, TMR.TMR_T_SCORE DESC";
-    
+
     String countQuery = "SELECT COUNT(TSR.TSR_UNO)";
     String limit4 = " LIMIT 4";
 
@@ -227,9 +231,10 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     // 검색 결과 검색 이력
     // @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn2+orderByTmrSimilarityDesc, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn2)
-    @Query(value = defaultQeury_5+from_5+whereTsiUnoTsrTitleLikeTsrStatusIn2+orderByTmrSimilarityDesc_7, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn2)
+    @Query(value = defaultQeury_5+from2+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn2)
     Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
-                                                                               String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
+                                                                             String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
+
     @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_1, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn)
     Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_1(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
                                                                                String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);

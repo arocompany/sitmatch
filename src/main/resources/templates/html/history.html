@@ -147,7 +147,7 @@
               <span class="detail-time">
                   검색일 : <span th:text="${#dates.format(tsiFstDmlDt.get(traceHistoryList.getTsiUno()), 'yyyy.MM.dd')}">2022.01.12</span>
                 <!--<p th:text="${#dates.format(traceInfo.getTsrFstDmlDt(), 'yyyy-MM-dd')}">2023-01-02</p>-->
-                </span>
+              </span>
             </p>
 <!--       <p class="counselor" th:text="${userIdMap.get(searchInfoList.getUserUno())}">상담사 아이디</p>-->
             <p class="">상담사 : <span th:text="${traceHistoryList.getTuUserId()}"></span></p>
@@ -170,8 +170,8 @@
             </ul>
           </div>
         </div>
-        <!--<button class="btn-off all-time" th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>-->
-        <button type="button" class="btn-off all-time" onclick="alert('준비 중입니다.'); return false;">24시간 모니터링</button>
+        <button class="btn-off all-time" th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>
+        <!--<button type="button" class="btn-off all-time" onclick="alert('작업 중입니다.'); return false;" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>-->
         <!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()!=12999}" th:value="${traceHistoryList.getTsrUno()}">0건</button>-->
         <!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()==12999}" th:value="${traceHistoryList.getTsrUno()}">1건</button>-->
         <button class="btn-off double-chk" th:value="${traceHistoryList.getTsrUno()}" th:tsiuno="${traceHistoryList.getTsiUno()}" th:keyword="${traceHistoryList.getTsiKeyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
@@ -500,7 +500,7 @@
   });
 
   // 24시간 모니터링 버튼 활성화
-  /*
+
   const allTime = document.querySelectorAll(".all-time");
   for (let i = 0; i < allTime.length; i++) {
     allTime[i].addEventListener('click', function () {
@@ -523,7 +523,7 @@
       }
     })
   }
-  */
+
 
 </script>
 </body>

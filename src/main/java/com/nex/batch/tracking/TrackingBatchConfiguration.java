@@ -52,6 +52,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
     //************************** searchInfo 관련 START **************************
     @Bean
     public JpaPagingItemReader<SearchResultEntity> searchInfoReader() {
+        log.info("searchInfoReader 진입");
         String queryString = """
                              select sr
                              from   SearchResultEntity sr
@@ -77,6 +78,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
     @Bean
     public ItemProcessor<SearchResultEntity, SearchInfoEntity> searchInfoProcessor() {
+        log.info("searchInfoProcessor 진입");
         return findSearchResult -> {
             SearchInfoEntity findSearchInfo = searchInfoRepository.findById(findSearchResult.getTsiUno()).orElseThrow();
             return trackingSearchInfoService.getSearchInfoEntity(findSearchInfo, findSearchResult);
@@ -85,6 +87,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
     @Bean
     public JpaItemWriter<SearchInfoEntity> searchInfoWriter() {
+        log.info("searchInfoWriter 진입");
         JpaItemWriter<SearchInfoEntity> writer = new JpaItemWriter<>();
         writer.setEntityManagerFactory(em);
         return writer;
@@ -92,6 +95,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
     @Bean
     public Step searchInfoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        log.info("searchInfoStep 진입");
         return new StepBuilder("searchInfoStep", jobRepository)
                 .allowStartIfComplete(true)
                 .<SearchResultEntity, SearchInfoEntity>chunk(CHUNK_SIZE, transactionManager)
@@ -106,11 +110,13 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
     //************************** searchResult 관련 START **************************
     @Bean
     public ItemReader<List<YandexImagesResult>> searchResultReader() {
+        log.info("searchResultReader 진입");
         return new SearchResultReader(trackingSearchResultService, searchInfoRepository, searchResultRepository);
     }
 
     @Bean
     public ItemProcessor<List<YandexImagesResult>, List<SearchResultEntity>> searchResultProcessor() {
+        log.info("searchResultProcessor 진입");
         return imagesResults -> {
             if (!imagesResults.isEmpty()) {
                 //결과를 검색 결과 엔티티로 변환
@@ -132,6 +138,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
     @Bean
     public JpaItemListWriter<SearchResultEntity> searchResultWriter() {
+        log.info("searchResultWriter 진입");
         JpaItemWriter<SearchResultEntity> writer = new JpaItemWriter<>();
         writer.setEntityManagerFactory(em);
 
@@ -142,6 +149,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
     @Bean
     public Step searchResultStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        log.info("searchResultStep 진입");
         return new StepBuilder("searchResultStep", jobRepository)
                 .allowStartIfComplete(true)
                 .<List<YandexImagesResult>, List<SearchResultEntity>>chunk(CHUNK_SIZE, transactionManager)
@@ -156,6 +164,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
     //************************** searchJob 관련 START **************************
     @Bean
     public ItemReader<SearchResultEntity> searchJobReader() {
+        log.info("searchJobReader 진입");
         String queryString = """
                              select sr
                              from   SearchResultEntity sr
@@ -178,11 +187,13 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
     @Bean
     public ItemProcessor<SearchResultEntity, SearchJobEntity> searchJobProcessor() {
+        log.info("searchJobProcessor 진입");
         return trackingSearchJobService::searchResultEntityToSearchJobEntity;
     }
 
     @Bean
     public JpaItemWriter<SearchJobEntity> searchJobWriter() {
+        log.info("searchJobWriter 진입");
         JpaItemWriter<SearchJobEntity> writer = new JpaItemWriter<>();
         writer.setEntityManagerFactory(em);
         return writer;
@@ -190,6 +201,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
     @Bean
     public Step searchJobStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        log.info("searchJobStep 진입");
         return new StepBuilder("searchJobStep", jobRepository)
                 .allowStartIfComplete(true)
                 .<SearchResultEntity, SearchJobEntity >chunk(CHUNK_SIZE, transactionManager)
@@ -203,6 +215,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
     @Bean
     public Job trackingJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        log.info("trackingJob 진입");
         return new JobBuilder("trackingJob", jobRepository)
                 .start(searchInfoStep(jobRepository, transactionManager))
                 .next(searchResultStep(jobRepository, transactionManager))

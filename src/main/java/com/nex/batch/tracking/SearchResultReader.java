@@ -36,6 +36,7 @@ public class SearchResultReader implements ItemReader<List<YandexImagesResult>> 
 
     @Override
     public List<YandexImagesResult> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+        log.info("read() 진입");
         //한번만 실행
         if (page > 0) {
             return null;

@@ -21,7 +21,7 @@ import java.util.function.Function;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TrackingSearchResultService {
+public class TrackingSearchResultService{
 
     private final SearchService searchService;
 
@@ -83,6 +83,7 @@ public class TrackingSearchResultService {
     public  <INFO, RESULT> List<RESULT> getAllResults(SearchInfoEntity searchInfoEntity
             , Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getSubFn, BiConsumer<RESULT, Integer> setTsiUnoCn
             , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Boolean isText) {
+        log.info("모든 결과 List 추출 getAllResults 진입");
         List<String> siteUrls = searchService.findTsrSiteUrlDistinctByTsiUno(searchInfoEntity.getTsiUno());
 
         String tsiKeyword = searchInfoEntity.getTsiKeyword();
@@ -178,6 +179,7 @@ public class TrackingSearchResultService {
     private <INFO, RESULT> List<RESULT> getResults(String tsiKeyword, SearchInfoEntity searchInfoEntity, String dvn, List<String> siteUrls
             , Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getSubFn, BiConsumer<RESULT, Integer> setTsiUnoCn
             , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Boolean isText) {
+        log.info("결과 List 추출 getResults 진입");
         List<RESULT> results = new ArrayList<>();
 
 
@@ -224,6 +226,7 @@ public class TrackingSearchResultService {
             , List<RESULT> results, int index, Class<INFO> infoClass, Function<INFO, String> getErrorFn
             , Function<INFO, List<RESULT>> getSubFn, BiConsumer<RESULT, Integer> setTsiUnoCn
             , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Boolean isText) {
+        log.info("이미지 결과 목록 추출 getResults 진입, index : "+index);
         boolean isFirst = index == 0;
         boolean loop = true;
 
@@ -320,6 +323,7 @@ public class TrackingSearchResultService {
      * @return String           (URL)
      */
     private String getUrl(String tsiKeyword, int index, Boolean isText, SearchInfoEntity searchInfoEntity) {
+        log.info("getUrl 진입");
         String url;
 
         //텍스트 검색
@@ -353,6 +357,7 @@ public class TrackingSearchResultService {
                     + "&nfpr=0"
                     + "&image_url=" + searchImageUrl;
         }
+        log.info("url : "+url);
 
         return url;
     }
@@ -374,8 +379,6 @@ public class TrackingSearchResultService {
     public <RESULT> List<SearchResultEntity> resultsToSearchResultEntity(List<RESULT> results, Function<RESULT, Integer> getTsiUnoFn
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
-        log.info(" ### resultsToSearchResultEntity ### ");
-
         List<CompletableFuture<SearchResultEntity>> completableFutures = new ArrayList<>();
 
         for (RESULT result : results) {

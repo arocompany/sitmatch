@@ -32,6 +32,7 @@ public class ScheduleTasks {
     @Scheduled(cron = "${batch.schedule.tracking.cron}", zone = "Asia/Seoul")
     //@Scheduled(cron = "0 12 * * * *", zone = "Asia/Seoul")
     public void trackingTask() {
+        log.info("trackingTask 진입");
         JobParameters jobParameters = new JobParametersBuilder().toJobParameters();
         //TODO : 임시
         try {

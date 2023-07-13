@@ -830,6 +830,7 @@ public class SearchService {
      * @return SearchJobEntity (검색 작업 엔티티)
      */
     public static SearchJobEntity getSearchJobEntity(SearchResultEntity sre) {
+        log.info("SearchService getSearchJobEntity 진입");
         SearchJobEntity sje = new SearchJobEntity();
         sje.setTsiUno(sre.getTsiUno());
         sje.setTsrUno(sre.getTsrUno());
@@ -1654,7 +1655,6 @@ public class SearchService {
      * @param sie (검색 정보 엔티티)
      */
     public static void setSearchInfoDefault(SearchInfoEntity sie) {
-
         sie.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sie.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sie.setDataStatCd("10");
@@ -1701,37 +1701,36 @@ public class SearchService {
         log.debug("priority => {}", priority);
 
         String orderByTmrSimilarityDesc = " ORDER BY tmrSimilarity desc, TMR.TSR_UNO desc";
-        System.out.println("getResultInfoListOrderByTmrSimilarityDesc 진입" + order_type);
 
         if("1".equals(order_type)){
+            log.info("getResultInfoListOrderByTmrSimilarityDesc_1");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_1(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
         }else if("2".equals(order_type)){
+            log.info("getResultInfoListOrderByTmrSimilarityDesc_2");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_2(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
         }else if("3".equals(order_type)){
+            log.info("getResultInfoListOrderByTmrSimilarityDesc_3");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_3(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
         }else if("4".equals(order_type)){
+            log.info("getResultInfoListOrderByTmrSimilarityDesc_4");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_4(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
         }else if("5".equals(order_type)){
+            log.info("getResultInfoListOrderByTmrSimilarityDesc_5");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_5(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
         }else if("6".equals(order_type)){
+            log.info("getResultInfoListOrderByTmrSimilarityDesc_6");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_6(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
         }else{
+            log.info("getResultInfoListOrderByTmrSimilarityDesc");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
         }
-
-
-//        if(priority.equals("1")) {
-//            return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, pageRequest);
-//        } else {
-//            return searchResultRepository.getResultInfoListOrderByTmrSimilarityAsc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4, pageRequest);
-//        }
     }
 
     public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsiuno, Integer percent) {

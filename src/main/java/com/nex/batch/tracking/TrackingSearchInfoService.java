@@ -34,6 +34,7 @@ public class TrackingSearchInfoService {
      * @return SearchInfoEntity         (검색 정보 엔티티)
      */
     public SearchInfoEntity getSearchInfoEntity(SearchInfoEntity searchInfoEntityByTsiUno, SearchResultEntity searchResultEntity) {
+        log.info("getSearchInfoEntity 진입");
         SearchInfoEntity searchInfoEntity = new SearchInfoEntity();
 
         searchInfoEntity.setUserUno(1);
