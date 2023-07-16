@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -258,7 +259,7 @@ public class TrackingSearchResultService{
         } while (loop);
 
         //결과 값을 받아온다.
-        List<RESULT> searchResults = completableFutures.stream().map(CompletableFuture::join).flatMap(s -> s.stream()).toList();
+        List<RESULT> searchResults = completableFutures.stream().map(CompletableFuture::join).filter(Objects::nonNull).flatMap(s -> s.stream()).toList();
 
         int size = searchResults.size();
 
@@ -426,7 +427,7 @@ public class TrackingSearchResultService{
         }
 
         //결과 값을 받아온다.
-        List<SearchResultEntity> searchResults = completableFutures.stream().map(CompletableFuture::join).toList();
+        List<SearchResultEntity> searchResults = completableFutures.stream().map(CompletableFuture::join).filter(Objects::nonNull).toList();
 
         return searchResults;
     }

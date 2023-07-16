@@ -6,13 +6,10 @@ import com.nex.common.Consts;
 import com.nex.search.entity.*;
 import com.nex.search.repo.*;
 import com.nex.user.entity.SessionInfoDto;
-import com.nex.user.entity.UserEntity;
 import com.nex.user.repo.UserRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.bag.SynchronizedSortedBag;
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -329,7 +326,7 @@ public class SearchService {
                             // text기반 yandex 검색
                             return searchTextYandex(url, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                             return null;
                         }
                     })
@@ -348,7 +345,7 @@ public class SearchService {
                                     , Images_resultsByText::isInstagram
                             );
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                             return null;
                         }
                     })
@@ -357,7 +354,7 @@ public class SearchService {
                             // yandex검색을 통해 결과 db에 적재.
                             saveImgSearchYandex(r, insertResult);
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                         }
                     });
             // 30페이지까지 저장
@@ -429,7 +426,7 @@ public class SearchService {
                             // text기반 yandex 검색
                             return searchYandex(url, YandexByImageResult.class, YandexByImageResult::getError, YandexByImageResult::getInline_images);
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                             return null;
                         }
                     })
@@ -448,7 +445,7 @@ public class SearchService {
                                     , Images_resultsByImage::isInstagram
                             );
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                             return null;
                         }
                     })
@@ -457,7 +454,7 @@ public class SearchService {
                             // yandex검색을 통해 결과 db에 적재.
                             return saveImgSearchYandex(r, insertResult);
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                             return null;
                         }
                     });
@@ -468,7 +465,7 @@ public class SearchService {
                             // text기반 yandex 검색
                             return searchYandex(url, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                             return null;
                         }
                     })
@@ -487,7 +484,7 @@ public class SearchService {
                                     , Images_resultsByText::isInstagram
                             );
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                             return null;
                         }
                     })
@@ -496,7 +493,7 @@ public class SearchService {
                             // yandex검색을 통해 결과 db에 적재.
                             saveImgSearchYandex(r, insertResult);
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                         }
                     });
             if(index >= Integer.parseInt(textYandexCountLimit)-1){
@@ -586,7 +583,7 @@ public class SearchService {
                             // text기반 yandex 검색
                             return searchYandex(url, YandexByImageResult.class, YandexByImageResult::getError, YandexByImageResult::getInline_images);
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                             return null;
                         }
                     })
@@ -605,7 +602,7 @@ public class SearchService {
                                     , Images_resultsByImage::isInstagram
                             );
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                             return null;
                         }
                     })
@@ -614,7 +611,7 @@ public class SearchService {
                             // yandex검색을 통해 결과 db에 적재.
                             return saveImgSearchYandex(r, insertResult);
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                             return null;
                         }
                     });
@@ -625,7 +622,7 @@ public class SearchService {
                             // text기반 yandex 검색
                             return searchYandex(url, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                             return null;
                         }
                     })
@@ -644,7 +641,7 @@ public class SearchService {
                                     , Images_resultsByText::isInstagram
                             );
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                             return null;
                         }
                     })
@@ -653,7 +650,7 @@ public class SearchService {
                             // yandex검색을 통해 결과 db에 적재.
                             saveImgSearchYandex(r, insertResult);
                         } catch (Exception e) {
-                            log.debug(e.getMessage());
+                            log.error(e.getMessage(), e);
                         }
                     });
             if(index >= Integer.parseInt(textYandexCountLimit)-1){
@@ -1522,7 +1519,7 @@ public class SearchService {
                                 // text기반 yandex 검색 및 결과 저장.(이미지)
                                 return searchYandexByImage(url, tsrSns, insertResult);
                             } catch (Exception e) {
-                                log.debug(e.getMessage());
+                                log.error(e.getMessage(), e);
                                 return null;
                             }
                         })
@@ -1531,13 +1528,13 @@ public class SearchService {
                                 // yandex검색을 통해 결과 db에 적재.
                                 return saveImgSearchYandex(r, insertResult);
                             } catch (Exception e) {
-                                log.debug(e.getMessage());
+                                log.error(e.getMessage(), e);
                                 return null;
                             }
                         });
             }
         } catch (Exception e){
-            log.debug(e.getMessage());
+            log.error(e.getMessage(), e);
         }
     }
     
@@ -1593,7 +1590,7 @@ public class SearchService {
                                 // text기반 yandex 검색 및 결과 저장.(이미지)
                                 return searchYandexByImage(url, tsrSns, insertResult);
                             } catch (Exception e) {
-                                log.debug(e.getMessage());
+                                log.error(e.getMessage(), e);
                                 return null;
                             }
                         })
@@ -1602,13 +1599,13 @@ public class SearchService {
                                 // yandex검색을 통해 결과 db에 적재.
                                 return saveImgSearchYandex(r, insertResult);
                             } catch (Exception e) {
-                                log.debug(e.getMessage());
+                                log.error(e.getMessage(), e);
                                 return null;
                             }
                         });
             }
         } catch (Exception e){
-            log.debug(e.getMessage());
+            log.error(e.getMessage(), e);
         }
     }
 
