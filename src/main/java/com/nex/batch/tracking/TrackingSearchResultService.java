@@ -262,6 +262,7 @@ public class TrackingSearchResultService{
         List<RESULT> searchResults = completableFutures.stream().map(CompletableFuture::join).filter(Objects::nonNull).flatMap(s -> s.stream()).toList();
 
         int size = searchResults.size();
+        log.info("size: " + size);
 
         //페이스북
         if (Consts.FACEBOOK.equals(dvn)) {
@@ -286,6 +287,7 @@ public class TrackingSearchResultService{
         //첫 검색시 결과가 모든 페이지에 100개 씩 있을 경우 or 첫 검색이 아니고 페이지에 100개 결과가 있을 경우
         boolean isNextAble = (isFirst && size == index * 100) || (!isFirst && size == 100);
 
+        /*
         //결과 size 가 textYandexCountLimit * 100 보다 작고, 다음 페이지 조회 가능 여부가 true 이면 재검색
         if (textYandexCountLimit * textYandexCountPage > results.size() && isNextAble) {
             return getResults(
@@ -310,6 +312,7 @@ public class TrackingSearchResultService{
         if (results.size() > textYandexCountLimit * textYandexCountPage) {
             results = results.subList(0, textYandexCountLimit * textYandexCountPage);
         }
+        */
 
         return results;
     }
@@ -358,7 +361,6 @@ public class TrackingSearchResultService{
                     + "&nfpr=0"
                     + "&image_url=" + searchImageUrl;
         }
-        log.info("url : "+url);
 
         return url;
     }
