@@ -1,5 +1,6 @@
 package com.nex.batch.tracking;
 
+import com.nex.RestTemplateConfig;
 import com.nex.common.Consts;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -64,6 +65,8 @@ public class TrackingSearchResultService{
 
     @Value("${server.url}")
     private String serverIp;
+
+    private final RestTemplate restTemplate;
 
 
     /**
@@ -389,7 +392,7 @@ public class TrackingSearchResultService{
                     .supplyAsync(() -> {
                         try {
                             String tsrSns;                                      //SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북)
-                            RestTemplate restTemplate = new RestTemplate();     //RestTemplate
+                            // RestTemplate restTemplate = new RestTemplate();     //RestTemplate
 
                             //페이스북
                             if (isFacebookFn.apply(result)) {

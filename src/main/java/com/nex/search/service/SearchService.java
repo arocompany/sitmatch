@@ -53,6 +53,7 @@ public class SearchService {
 
     private final EntityManager em;
 
+
     /*
     2023-03-26 각각 class 생성
     @Data
@@ -146,6 +147,7 @@ public class SearchService {
     private String serverIp;
 
     private Boolean loop = true;
+    private final RestTemplate restTemplate;
 
 
     /**
@@ -667,7 +669,7 @@ public class SearchService {
     @Deprecated
     public List<SearchResultEntity> searchYandexByText(String url, String tsrSns, SearchInfoEntity insertResult) throws Exception {
         String jsonInString = "";
-        RestTemplate restTemplate = new RestTemplate();
+        // RestTemplate restTemplate = new RestTemplate();
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
@@ -1028,7 +1030,7 @@ public class SearchService {
     @Deprecated
     public List<SearchResultEntity> searchYandexByImage(String url, String tsrSns, SearchInfoEntity insertResult) throws Exception {
         String jsonInString = "";
-        RestTemplate restTemplate = new RestTemplate();
+        // RestTemplate restTemplate = new RestTemplate();
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
@@ -1148,7 +1150,7 @@ public class SearchService {
     public List<Images_resultsByImage> searchYandexByImage(String url) throws Exception {
 
         String jsonInString = "";
-        RestTemplate restTemplate = new RestTemplate();
+        // RestTemplate restTemplate = new RestTemplate();
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
@@ -1189,7 +1191,8 @@ public class SearchService {
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        // ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class); // 여기
         List<RESULT> results = null;
 
         if (resultMap.getStatusCodeValue() == 200) {
@@ -1226,7 +1229,8 @@ public class SearchService {
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        // ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class); //여기
         List<RESULT> results = null;
 
         log.debug("resultMap.getStatusCodeValue(): "+resultMap.getStatusCodeValue());
@@ -1271,7 +1275,7 @@ public class SearchService {
             return null;
         }
 
-        RestTemplate restTemplate = new RestTemplate();
+        // RestTemplate restTemplate = new RestTemplate();
         List<SearchResultEntity> sreList = new ArrayList<>();
 
         //SearchResultEntity sre = null;
@@ -1303,7 +1307,7 @@ public class SearchService {
 
     public List<SearchResultEntity> searchYandexByImage2(String url, String tsrSns, SearchInfoEntity insertResult) throws Exception {
         String jsonInString = "";
-        RestTemplate restTemplate = new RestTemplate();
+        // RestTemplate restTemplate = new RestTemplate();
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
