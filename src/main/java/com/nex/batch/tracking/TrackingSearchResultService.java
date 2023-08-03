@@ -245,7 +245,8 @@ public class TrackingSearchResultService{
                     .supplyAsync(() -> {
                         try {
                             // text기반 yandex 검색
-                            return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
+                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);searchBatchYandex
+                            return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
                         } catch (Exception e) {
                             log.debug(e.getMessage());
                         }
@@ -335,25 +336,44 @@ public class TrackingSearchResultService{
 
         //텍스트 검색
         if (isText) {
+            log.info("텍스트검색 getUrl 진입");
             // yandex search url
+             url = textYandexUrl
+                    + "?q=" + tsiKeyword
+                    + "&gl=" + textYandexGl
+                    + "&no_cache=" + textYandexNocache
+                    + "&location=" + textYandexLocation
+                    + "&tbm=" + textYandexTbm
+                    + "&start=" + String.valueOf(index*10)
+                    + "&safe=off"
+                    + "&filter=0"
+                    + "&nfpr=0"
+                    + "&api_key=" + textYandexApikey
+                    + "&engine=" + textYandexEngine;
+/*
             url = textYandexUrl
                     + "?q=" + tsiKeyword
                     + "&gl=" + textYandexGl
                     + "&no_cache=" + textYandexNocache
                     + "&location=" + textYandexLocation
                     + "&tbm=" + textYandexTbm
-                    + "&ijn=" + index
+                    + "&ijn=" + String.valueOf(index*10)
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
                     + "&api_key=" + textYandexApikey
                     + "&engine=" + textYandexEngine;
+*/
+
         }
         //이미지 검색
         else {
+            log.info("이미지검색 getUrl 진입");
             String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
             searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+            searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
 
+            /*
             url = textYandexUrl
                     + "&gl=" + textYandexGl
                     + "&no_cache=" + textYandexNocache
@@ -362,6 +382,17 @@ public class TrackingSearchResultService{
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
+                    + "&image_url=" + searchImageUrl;
+             */
+            url = textYandexUrl
+                    + "?gl=" + textYandexGl
+                    + "&no_cache=" + textYandexNocache
+                    + "&api_key=" + textYandexApikey
+                    + "&safe=off"
+                    + "&filter=0"
+                    + "&nfpr=0"
+                    + "&start=" + String.valueOf(index*10)
+                    + "&engine=" + imageYandexEngine
                     + "&image_url=" + searchImageUrl;
         }
 

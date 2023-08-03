@@ -88,7 +88,7 @@ public class SearchController {
                 InputStream inputStream = file.get().getInputStream();
                 Tika tika = new Tika();
                 String mimeType = tika.detect(inputStream);
-                if(mimeType.substring(0,mimeType.indexOf("/")).contentEquals("video")){// 비디오 업로드
+                if(mimeType.substring(0,mimeType.indexOf("/")).contentEquals("video")){// 비디오
                     searchInfoEntity.setTsiImgHeight("");
                     searchInfoEntity.setTsiImgWidth("");
                     searchInfoEntity.setTsiImgSize(String.valueOf(file.get().getSize() / 1024));
@@ -151,6 +151,7 @@ public class SearchController {
             tsiType = "11";
             searchInfoEntity.setTsiType(tsiType);
         }
+
         insertResult = searchService.saveSearchInfo(searchInfoEntity);
 
         //2023-03-26 위 로직 searchService 로 이동

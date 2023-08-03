@@ -112,6 +112,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 //                    "case when isnull(tmr.TMR_A_SCORE) || tmr.TMR_A_SCORE = 0 then 0 else 1 end + "+
             "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity";
 
+    String defaultQeury_6 = "SELECT tsr.TSR_SITE_URL as tsrSiteUrl";
+
 
     String defaultQeury_0 = defaultQeury2 +
             ", (SELECT COUNT(*) " +
@@ -143,6 +145,67 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt ";
 
+    String defaultQeury_10 = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
+            "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
+            "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
+            "tsr.TSR_IMG_EXT as tsrImgExt, tsr.TSR_DOWNLOAD_URL as tsrDownloadUrl, tsr.TSR_IMG_HEIGHT as tsrImgHeight, "+
+            "tsr.TSR_IMG_WIDTH as tsrImgWidth, tsr.TSR_IMG_SIZE as tsrImgSize, tsr.TRK_STAT_CD as trkStatCd, " +
+            "tsr.TRK_HIST_MEMO as trkHistMemo, tsr.DATA_STAT_CD as tsrDataStatCd, tsr.FST_DML_DT as tsrFstDmlDt, tsr.MST_DML_DT as mstDmlDt, "+
+            "tsi.TSI_TYPE as tsiType, tsi.TSI_GOOGLE as tsiGoogle, tsi.TSI_TWITTER as tsiTwitter, " +
+            "tsi.TSI_FACEBOOK as tsiFacebook, tsi.TSI_INSTAGRAM as tsiInstagram, tsi.TSI_KEYWORD as tsiKeyword, "+
+            "tsi.TSI_IMG_PATH as tsiImgPath, tsi.TSI_IMG_NAME as tsiImgName, tsi.TSI_IMG_EXT as tsiImgExt, "+
+            "tsi.TSI_IMG_HEIGHT as tsiImgHeight, tsi.TSI_IMG_WIDTH as tsiImgWidth, tsi.TSI_IMG_SIZE as tsiImgSize, "+
+            "tsi.TSI_STAT as tsiStat, tsi.TSI_DNA_PATH as tsiDnaPath, tsi.TSI_DNA_TEXT as tsiDnaText, "+
+            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, TSR.MONITORING_CD as monitoringCd, "+
+            "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
+            "tmr.TMR_STAT as tmrStat, tmr.TMR_MESSAGE as tmrMessage, tu.USER_ID as tuUserId, " +
+            "if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', "+
+            "ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + "+
+            "case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + "+
+            "case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / "+
+            "(case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + "+
+            "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
+            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity" +
+            ", pp.progressPercent as progressPercent " +
+            ", (SELECT COUNT(*) " +
+            " FROM TB_SEARCH_RESULT TSR2 " +
+            " INNER JOIN TB_SEARCH_INFO TSI_2 ON TSR2.TSI_UNO = TSI_2.TSI_UNO" +
+            " LEFT OUTER JOIN TB_SEARCH_JOB TSJ2 ON TSR2.TSR_UNO = TSJ2.TSR_UNO" +
+            " LEFT OUTER JOIN TB_MATCH_RESULT TMR2 ON TSR2.TSR_UNO = TMR2.TSR_UNO" +
+            " WHERE " +
+            " TSR2.TSI_UNO = TSI3.TSI_UNO " +
+            " AND " +
+            " if(TMR2.TMR_V_SCORE + TMR2.TMR_A_SCORE + TMR2.TMR_T_SCORE = 0, '0', ceiling(((case " +
+            "            when isnull(TMR2.TMR_V_SCORE) then 0 " +
+            "            else TMR2.TMR_V_SCORE " +
+            "        end + case " +
+            "            when isnull(TMR2.TMR_A_SCORE) then 0 " +
+            "            else TMR2.TMR_A_SCORE " +
+            "        end + case " +
+            "            when isnull(TMR2.TMR_T_SCORE) then 0 " +
+            "            else TMR2.TMR_T_SCORE " +
+            "        end) / (case " +
+            "            when isnull(TMR2.TMR_V_SCORE) then 0 " +
+            "            else 1 " +
+            "        end + case " +
+            "            when isnull(TMR2.TMR_A_SCORE) then 0 " +
+            "           else 1 " +
+            "        end + case " +
+            "            when isnull(TMR2.TMR_T_SCORE) then 0 " +
+            "            else 1 " +
+            "        end)) * 100)) > 0" +
+            "         ) as re_monitor_cnt " +
+            " FROM TB_SEARCH_RESULT TSR " +
+            "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
+            "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
+            "LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
+            "LEFT OUTER JOIN TB_SEARCH_INFO TSI ON TSI.TSI_UNO = TSR.TSI_UNO " +
+            "LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, " +
+            "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
+            "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
+            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') " +
+            "  ORDER BY mstDmlDt desc, tsrUno desc";
+
 
 
     String from = " FROM TB_SEARCH_RESULT TSR INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO";
@@ -156,6 +219,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String whereTsiUnoTsrTitleLikeTsrStatusIn2 =" WHERE TSI.TSI_UNO = :tsiUno AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') or TSR.TSR_TITLE is null or 1=1) " +
             "AND (tsj.TSJ_STATUS = :tsjStatus1 OR tsj.TSJ_STATUS = :tsjStatus2 OR tsj.TSJ_STATUS = :tsjStatus3 OR tsj.TSJ_STATUS = :tsjStatus4)" +
             "AND (tsr.TSR_SNS = :snsStatus01 OR tsr.TSR_SNS = :snsStatus02 OR tsr.TSR_SNS = :snsStatus03 OR tsr.TSR_SNS = :snsStatus04)";
+    String whereTsiUnoTsrTitleLikeTsrStatusIn3 =" WHERE TSI.TSI_UNO = :tsiUno AND TSR.TSR_IMG_PATH IS NULL ";
+
 
     String whereTsrUno = " WHERE TSR.TSR_UNO = :tsrUno";
 
@@ -185,6 +250,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > :percent";
 
+
     // ORDER BY
     String orderByTmrSimilarityDesc = " ORDER BY tmrVScore desc, tmrAScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
     String orderByTmrSimilarityDesc_1 = " ORDER BY tmrVScore desc, tmrSimilarity desc, tsrUno desc";
@@ -197,7 +263,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String orderByTmrSimilarityAsc = " ORDER BY tmrSimilarity asc, tsrUno desc";
     String orderByTsrUnoDesc = " ORDER BY tsrUno desc";
 
-    String orderByTsrUnoDesc_trace = " ORDER BY mstDmlDt desc, tsrUno desc";
+    String orderByTsrUnoDesc_trace = " ORDER BY tsiFstDmlDt desc, tsrUno desc";
+    String orderByTsrUnoDesc2_trace = " ORDER BY mstDmlDt desc, tsrUno desc";
 
     // 검색결과 관련 ORDER BY
     String orderByResult01 = " ORDER BY TMR.TSR_UNO DESC, TMR.TMR_V_SCORE DESC, TMR.TMR_A_SCORE DESC, TMR_T_SCORE DESC";
@@ -223,15 +290,19 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String orderByResult21 = " ORDER BY tmrSimilarity ASC, TMR.TMR_T_SCORE DESC";
 
     String countQuery = "SELECT COUNT(TSR.TSR_UNO)";
+    String countQuery2 = "SELECT DISTINCT(COUNT(TSR.TSR_UNO))";
     String limit4 = " LIMIT 4";
 
-    // 추적 이력
-    @Query(value = defaultQeury_0+from_4+whereTrkStatCdNotNullAndTsrTitleContaining+orderByTsrUnoDesc_trace, nativeQuery = true, countQuery = countQuery+from+whereTrkStatCdNotNullAndTsrTitleContaining)
+    // 추적 이력 여기
+    @Query(value = defaultQeury_10, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining)
     Page<DefaultQueryDtoInterface> getTraceHistoryList(String keyword, Pageable pageable);
+
+    /*@Query(value = defaultQeury_0+from_4+whereTrkStatCdNotNullAndTsrTitleContaining+orderByTsrUnoDesc_trace, nativeQuery = true, countQuery = countQuery+from+whereTrkStatCdNotNullAndTsrTitleContaining)
+    Page<DefaultQueryDtoInterface> getTraceHistoryList(String keyword, Pageable pageable);*/
 
     // 검색 결과 검색 이력
     // @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn2+orderByTmrSimilarityDesc, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn2)
-    @Query(value = defaultQeury_5+from2+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn2)
+    @Query(value = defaultQeury_5+from2+whereTsiUnoTsrTitleLikeTsrStatusIn2+orderByTmrSimilarityDesc, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn2)
     Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
                                                                              String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
 
@@ -267,8 +338,10 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     List<DefaultQueryDtoInterface> getTraceListByHome(String tsrDataStatCd, String trkStatCd, String trkStatCd2, String keyword);
 
     // 모니터링
-    @Query(value = defaultQeury+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc_trace, nativeQuery = true, countQuery = countQuery+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike)
+    @Query(value = defaultQeury+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc2_trace, nativeQuery = true, countQuery = countQuery+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike)
     Page<DefaultQueryDtoInterface> getTraceList(String tsrDataStatCd, String trkStatCd, String trkStatCd2, String keyword, Pageable pageable);
+/*   @Query(value = defaultQeury+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc_trace, nativeQuery = true, countQuery = countQuery+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike)
+    Page<DefaultQueryDtoInterface> getTraceList(String tsrDataStatCd, String trkStatCd, String trkStatCd2, String keyword, Pageable pageable); */
 
     // 모니터링 팝업
     @Query(value = defaultQeury+from+whereTsrUno, nativeQuery = true, countQuery = countQuery+from+whereTsrUno)
@@ -277,13 +350,14 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     @Query(value = "SELECT TRK_STAT_CD FROM tb_search_result WHERE TSR_UNO = :tsrUno", nativeQuery = true)
     String getTrkStatCd(Integer tsrUno);
 
-    @Query(value = defaultQeury_2+from_2+" WHERE TSI.TSR_UNO IS NOT null  AND TMR.TMR_STAT = '11' "+whereSimilarity_2, nativeQuery = true, countQuery = countQuery+from_2+whereNotice+" AND TSJ.TSJ_STATUS = '11'"+whereSimilarity_2)
+    // 여기
+    @Query(value = defaultQeury_2+from_2+" WHERE TSI.TSR_UNO IS NOT null  AND TMR.TMR_STAT = '11' "+whereSimilarity_2 , nativeQuery = true, countQuery = countQuery+from_2+whereNotice+" AND TSJ.TSJ_STATUS = '11'"+whereSimilarity_2)
     Page<DefaultQueryDtoInterface> getNoticeList(Pageable pageable, Integer percent);
 
     @Query(value = defaultQeury_2+from_2+" WHERE TSI.TSR_UNO IS NOT null  AND TMR.TMR_STAT = '11' "+whereSimilarity_2+" limit 4", nativeQuery = true)
     List<DefaultQueryDtoInterface> getNoticeListMain(Integer percent);
 
-    @Query(value = defaultQeury_3+from_2+" WHERE TSI.TSI_UNO = :tsiuno  AND TMR.TMR_STAT = '11' "+whereSimilarity_2, nativeQuery = true, countQuery = countQuery+from_2+" WHERE TSI.TSI_UNO = :tsiuno  AND TSJ.TSJ_STATUS = '11'"+whereSimilarity_2)
+    @Query(value = defaultQeury_3+from_2+" WHERE TSI.TSI_UNO = :tsiuno  AND TMR.TMR_STAT = '11' "+whereSimilarity_2 , nativeQuery = true, countQuery = countQuery+from_2+" WHERE TSI.TSI_UNO = :tsiuno  AND TSJ.TSJ_STATUS = '11'"+whereSimilarity_2)
     Page<DefaultQueryDtoInterface> getNoticeSelList(Pageable pageable, Integer tsiuno, Integer percent);
 
     //추적이력 삭제

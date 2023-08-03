@@ -2,7 +2,6 @@ package com.nex.base.controller;
 
 import com.nex.common.Consts;
 import com.nex.search.entity.DefaultQueryDtoInterface;
-import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.service.SearchService;
 import com.nex.user.entity.SessionInfoDto;
@@ -42,13 +41,13 @@ public class BaseController {
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         List<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getNoticeListMain(0);
         modelAndView.addObject("traceInfoList", defaultQueryDtoInterface);
-        /*
+
         if(sessionInfoDto == null) {
             modelAndView.setViewName("redirect:/user/login");
         } else {
             modelAndView.addObject("sessionInfo", sessionInfoDto);
         }
-        */
+
 
         return modelAndView;
     }
@@ -178,9 +177,9 @@ public class BaseController {
         modelAndView.addObject("traceTotalPages", traceHistoryMap.get("totalPages"));
         modelAndView.addObject("traceKeyword", traceKeyword);
 
-        modelAndView.addObject("countMonitoring", traceHistoryMap.get("countMonitoring"));
-        modelAndView.addObject("countDelReq", traceHistoryMap.get("countDelReq"));
-        modelAndView.addObject("countDelCmpl", traceHistoryMap.get("countDelCmpl"));
+        modelAndView.addObject("countMonitoring", traceHistoryMap.get("countMonitoring")); // 모니터링
+        modelAndView.addObject("countDelReq", traceHistoryMap.get("countDelReq"));         // 삭제요청
+        modelAndView.addObject("countDelCmpl", traceHistoryMap.get("countDelCmpl"));       // 삭제완료
 
         modelAndView.addObject("tsiTypeMap", searchService.getTsiTypeMap());
         modelAndView.addObject("tsiKeyword", searchService.getTsiKeywordMap());
@@ -363,8 +362,12 @@ public class BaseController {
             , @RequestParam(required = false, defaultValue = "1") Integer page
             , @RequestParam(required = false, defaultValue = "") String keyword) {
 
+        log.info("notice 진입");
         int percent = sessionInfoDto.getPercent_limit();
         Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = null;
+
+        log.info("percent:"+percent);
+
         defaultQueryDtoInterface = searchService.getNoticeList(page, tsiuno, percent);
 
         ModelAndView modelAndView = new ModelAndView("html/notice");

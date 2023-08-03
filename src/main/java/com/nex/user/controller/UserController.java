@@ -71,23 +71,23 @@ public class UserController {
 
                 log.debug("diffDay = {}", diffDay);
 
+                /*
                 if (diffDay >= 90) {   //   비밀번호 변경일자가 90일이 넘을 경우 패스워드 변경 화면으로 이동
                     modelAndView.setViewName("redirect:/password");
                 } else {
                     modelAndView.setViewName("redirect:/");
                 }
-
-                /*
-                   if (diffDay >= 90) {   //   비밀번호 변경일자가 90일이 넘을 경우 패스워드 변경 화면으로 이동
-                        if(user.getUserClfCd().equals("99")) { // 관리자면
-                            modelAndView.setViewName("redirect:/");
-                        } else {
-                            modelAndView.setViewName("redirect:/user/password");
-                        }
-                    } else {
-                        modelAndView.setViewName("redirect:/");
-                    }
                 */
+
+                if (diffDay >= 90) {   //   비밀번호 변경일자가 90일이 넘을 경우 패스워드 변경 화면으로 이동
+                    if(user.getUserClfCd().equals("99")) { // 관리자인 경우 redirect
+                        modelAndView.setViewName("redirect:/");
+                    } else {
+                        modelAndView.setViewName("redirect:/password");
+                    }
+                } else {
+                        modelAndView.setViewName("redirect:/");
+                }
 
                 // 로그인 성공 처리
                 // 세션이 있으면 있는 세션 반환, 없으면 신규 세션 설정

@@ -37,10 +37,15 @@ public class SearchResultReader implements ItemReader<List<YandexImagesResult>> 
     @Override
     public List<YandexImagesResult> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         log.info("read() 진입");
+        log.info("page1: "+page);
+
         //한번만 실행
         if (page > 0) {
+            page=0;
+            log.info("page2: "+page);
             return null;
         }
+        log.info("read() 진입2");
 
         List<YandexImagesResult> results = new ArrayList<>();
 
@@ -69,7 +74,6 @@ public class SearchResultReader implements ItemReader<List<YandexImagesResult>> 
         for (SearchResultEntity searchResultEntity : dtoList) {
             log.info(" ### searchResultEntity ### : {}", searchResultEntity);
 
-
             searchInfoEntityByTsiUno = searchInfoEntityMapByTsiUno.get(searchResultEntity.getTsiUno());
             searchInfoEntityByTsrUno = searchInfoEntityMapByTsrUno.get(searchResultEntity.getTsrUno());
 
@@ -88,6 +92,8 @@ public class SearchResultReader implements ItemReader<List<YandexImagesResult>> 
                     , YandexImagesResult::isInstagram
                     , isNotImage
             );
+
+            log.info("allResults: " + allResults);
 
             results.addAll(allResults);
         }

@@ -22,11 +22,11 @@
     <div class="search-contents">
       <div class="search-list">
 
-        <div class="search-tab" th:if="${tsrUno != 0}">
+        <div class="search-tab" th:if="${tsiUno != 0}">
           <div class="tab on">
             <div class="search-img">
               <img th:if="${(imgSrc != null && tsiType != '15' && tsiType != '19')}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
-              <video th:if="${(imgSrc != null && (tsiType == '15' || tsiType == '19'))}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
+              <video th:if="${(imgSrc != null && (tsiType == '15' || tsiType == '19'))}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt=""></video>
             </div>
           </div>
           <div class="tab research" th:if="${!#strings.isEmpty(keyword)}">
@@ -40,11 +40,11 @@
       </div>
       <p class="total-num">총 <span th:text="${searchResultListCount}"></span> 건</p>
       <div class="view-type">
-        <button type="button" class="list-btn btn-off">목록형</button>
+        <button type="button" class="list-btn btn-off active">목록형</button>
         <button class="img-btn btn-off">이미지형</button>
       </div>
     </div>
-    <div class="result-list  list-content">
+    <div class="result-list  list-content"> <!-- 여기 -->
       <section class="list M-box-up bor10" th:each="list:${searchResultList}">
         <div class="img-box">
           <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
@@ -193,6 +193,7 @@
   //   document.querySelector('.next').style.display = 'block';
   //   document.querySelector('.search-bar').style.display='none';
   // }
+
 
   // 검색내용 이미지 클릭시 팝업(0317추가)
   const searchImg = document.querySelector('.search-img');

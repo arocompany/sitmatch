@@ -174,7 +174,8 @@
         <!--<button type="button" class="btn-off all-time" onclick="alert('작업 중입니다.'); return false;" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>-->
         <!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()!=12999}" th:value="${traceHistoryList.getTsrUno()}">0건</button>-->
         <!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()==12999}" th:value="${traceHistoryList.getTsrUno()}">1건</button>-->
-        <button class="btn-off double-chk" th:value="${traceHistoryList.getTsrUno()}" th:tsiuno="${traceHistoryList.getTsiUno()}" th:keyword="${traceHistoryList.getTsiKeyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
+        <button class="btn-off double-chk" th:value="${traceHistoryList.getTsr5tsruno()}" th:tsiuno="${traceHistoryList.getTsi3tsiuno()}" th:keyword="${traceHistoryList.getTsi3Keyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
+        <!--<button class="btn-off double-chk" th:value="${traceHistoryList.getTsrUno()}" th:tsiuno="${traceHistoryList.getTsiUno()}" th:keyword="${traceHistoryList.getTsiKeyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>-->
       </li>
       <li th:if="${traceHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
     </ul>
@@ -500,7 +501,6 @@
   });
 
   // 24시간 모니터링 버튼 활성화
-
   const allTime = document.querySelectorAll(".all-time");
   for (let i = 0; i < allTime.length; i++) {
     allTime[i].addEventListener('click', function () {

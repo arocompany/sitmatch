@@ -47,7 +47,11 @@ public interface DefaultQueryDtoInterface {
     String getTuUserId();
 
     String getMonitoringCd();
-
     String getRe_monitor_cnt();
+
+    String getTsi3tsiuno();
+    String getTsi3Keyword();
+    String getTsr5tsruno();
+
 
 }

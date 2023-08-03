@@ -22,6 +22,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -167,36 +168,43 @@ public class SearchService {
 
     public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, byte tsiTwitter, String tsiType, SearchInfoEntity insertResult, String folder,
                        SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto) {
-        if(tsiGoogle == 1){
-            // Google 검색기능 구현
+        if(tsiType.equals("17")){
+            log.info("이미지 검색시 진입");
             String tsrSns = "11";
-
-            // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
             searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto, sessionInfoDto);
-        }
+        } else {
+            log.info("이미지 검색 제외 진입");
+            if(tsiGoogle == 1){
+                // Google 검색기능 구현
+                String tsrSns = "11";
 
-        //2023-03-20
-        //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
-        if(tsiFacebook == 1){
-            // Facebook 검색기능 구현
-            String tsrSns = "17";
+                // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
+                searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto, sessionInfoDto);
+            }
 
-            // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
-            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto, sessionInfoDto);
-        }
+            //2023-03-20
+            //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
+            if(tsiFacebook == 1){
+                // Facebook 검색기능 구현
+                String tsrSns = "17";
 
-        //2023-03-20
-        //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
-        if(tsiInstagram == 1){
-            // Instagram 검색기능 구현
-            String tsrSns = "15";
+                // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
+                searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto, sessionInfoDto);
+            }
 
-            // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
-            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto, sessionInfoDto);
-        }
+            //2023-03-20
+            //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
+            if(tsiInstagram == 1){
+                // Instagram 검색기능 구현
+                String tsrSns = "15";
 
-        if(tsiTwitter == 1){
-            // Twitter 검색기능 구현
+                // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
+                searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto, sessionInfoDto);
+            }
+
+            if(tsiTwitter == 1){
+                // Twitter 검색기능 구현
+            }
         }
     }
 
@@ -211,7 +219,6 @@ public class SearchService {
      * @param folder       (저장 폴더)
      * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
      */
-
 
     private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns, SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto) {
         // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
@@ -250,8 +257,6 @@ public class SearchService {
         }
     }
 
-
-
     /**
      * Yandex 텍스트 검색
      *
@@ -261,8 +266,11 @@ public class SearchService {
      * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
      * @param insertResult (검색 이력 Entity)
      */
+
     public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto) {
+        log.info("searchYandexByText 진입");
         int index = 0;
+        System.out.println("index1: "+index);
         String tsiKeyword = insertResult.getTsiKeyword();
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
@@ -277,10 +285,10 @@ public class SearchService {
 
         log.debug("textYandexApikey 변경 전 : "+textYandexApikey);
         if( sessionInfoDto.getUserId().equals("admin") ){
-            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"f4800d9901d7bfa1a5b944a0f220bb1dc6f2222fb9ea72bc4e16f34f346bc0e0");
         } else {
             log.debug("userId: "+sessionInfoDto.getUserId());
-            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"28bf1e9bf479872b1419c327d44297ca140e8b350eea2e6f383ca7399ac7c218");
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
         }
         log.debug("textYandexApikey 변경 후 : "+textYandexApikey);
 
@@ -299,6 +307,8 @@ public class SearchService {
                     + "&filter=0"
                     + "&nfpr=0"
                     + "&engine=google";
+
+            log.info("url: "+url);
 
             /*
             CompletableFuture
@@ -359,13 +369,20 @@ public class SearchService {
                             log.error(e.getMessage(), e);
                         }
                     });
-            // 30페이지까지 저장
+
+            if(index >= Integer.parseInt(textYandexCountLimit)-1){
+                loop = false;
+            }
+/*            // 30페이지까지 저장
             if(index >= 20){
                 loop = false;
             }
+*/
 
             index++;
+            System.out.println("index2: "+index);
         } while (loop);
+
     }
 
 
@@ -381,6 +398,7 @@ public class SearchService {
 
     public void searchYandexByTextImage(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto){
         int index = 0;
+
         String tsiKeyword = insertResult.getTsiKeyword();
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
@@ -399,10 +417,10 @@ public class SearchService {
 
         log.debug("textYandexApikey 변경 전 : "+textYandexApikey);
         if( sessionInfoDto.getUserId().equals("admin") ){
-            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"f4800d9901d7bfa1a5b944a0f220bb1dc6f2222fb9ea72bc4e16f34f346bc0e0");
         } else {
             log.debug("userId: "+sessionInfoDto.getUserId());
-            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"28bf1e9bf479872b1419c327d44297ca140e8b350eea2e6f383ca7399ac7c218");
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
         }
         log.debug("textYandexApikey 변경 후 : "+textYandexApikey);
 
@@ -498,6 +516,7 @@ public class SearchService {
                             log.error(e.getMessage(), e);
                         }
                     });
+
             if(index >= Integer.parseInt(textYandexCountLimit)-1){
                 loop = false;
             }
@@ -519,52 +538,21 @@ public class SearchService {
 
     public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult, SessionInfoDto sessionInfoDto){
         int index = 0;
+        log.info("searchYandexByImage index1: "+index);
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
         searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
 
         log.debug("textYandexApikey 변경 전 : "+textYandexApikey);
         if( sessionInfoDto.getUserId().equals("admin") ){
-            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"f4800d9901d7bfa1a5b944a0f220bb1dc6f2222fb9ea72bc4e16f34f346bc0e0");
         } else {
             log.debug("userId: "+sessionInfoDto.getUserId());
-            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"28bf1e9bf479872b1419c327d44297ca140e8b350eea2e6f383ca7399ac7c218");
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
         }
         log.debug("textYandexApikey 변경 후 : "+textYandexApikey);
-
-//        String url = textYandexUrl
-//                + "?gl=" + textYandexGl
-//                + "&no_cache=" + textYandexNocache
-//                + "&api_key=" + textYandexApikey
-//                + "&safe=off"
-//                + "&filter=0"
-//                + "&nfpr=0"
-//                // + "&tbm=" + textYandexTbm
-//                + "&engine=" + imageYandexEngine
-//                + "&image_url=" + searchImageUrl;
-
-        /*
-        CompletableFuture
-                .supplyAsync(() -> {
-                    try {
-                        // text기반 yandex 검색 및 결과 저장.(이미지)
-                        return searchYandexByImage(url, tsrSns, insertResult);
-                    } catch (Exception e) {
-                        log.debug(e.getMessage());
-                        return null;
-                    }
-                })
-                .thenApplyAsync((r) -> {
-                    try {
-                        // yandex검색을 통해 결과 db에 적재.
-                        return saveImgSearchYandexByImage(r, insertResult);
-                    } catch (Exception e) {
-                        log.debug(e.getMessage());
-                        return null;
-                    }
-                });
-         */
         do {
+            log.info("searchYandexByImage index2: "+index);
             String url = textYandexUrl
                     + "?gl=" + textYandexGl
                     + "&no_cache=" + textYandexNocache
@@ -579,6 +567,7 @@ public class SearchService {
 
             //2023-03-26
             //기존 searchYandexByText 를 데이터 가져 오는 부분, 저장 하는 부분으로 분리
+            // 이미지
             CompletableFuture
                     .supplyAsync(() -> {
                         try {
@@ -617,7 +606,7 @@ public class SearchService {
                             return null;
                         }
                     });
-
+/*
             CompletableFuture
                     .supplyAsync(() -> {
                         try {
@@ -655,7 +644,9 @@ public class SearchService {
                             log.error(e.getMessage(), e);
                         }
                     });
-            if(index >= Integer.parseInt(textYandexCountLimit)-1){
+ */
+
+            if(index >= Integer.parseInt(textYandexCountLimit)-1){ 
                 loop = false;
             }
 
@@ -829,7 +820,6 @@ public class SearchService {
      * @return SearchJobEntity (검색 작업 엔티티)
      */
     public static SearchJobEntity getSearchJobEntity(SearchResultEntity sre) {
-        log.info("SearchService getSearchJobEntity 진입");
         SearchJobEntity sje = new SearchJobEntity();
         sje.setTsiUno(sre.getTsiUno());
         sje.setTsrUno(sre.getTsrUno());
@@ -976,7 +966,7 @@ public class SearchService {
                 e.printStackTrace();
             }
         }
-        return "저장 완료";
+            return "저장 완료";
     }
 
     /**
@@ -1187,12 +1177,11 @@ public class SearchService {
      */
 
     public <INFO, RESULT> List<RESULT> searchTextYandex(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
         // ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-        ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class); // 여기
+        ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
         List<RESULT> results = null;
 
         if (resultMap.getStatusCodeValue() == 200) {
@@ -1223,14 +1212,41 @@ public class SearchService {
      * @param  <RESULT>     (Images_resultsByText or Images_resultsByImage)
      * @throws Exception
      */
-
-    public <INFO, RESULT> List<RESULT> searchYandex(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-
+    
+    // 배치시 진입
+    public <INFO, RESULT> List<RESULT> searchBatchYandex(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+        log.info("searchBatchYandex 진입");
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
         // ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-        ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class); //여기
+        ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+
+        List<RESULT> results = null;
+
+        log.debug("resultMap.getStatusCodeValue(): "+resultMap.getStatusCodeValue());
+
+        if (resultMap.getStatusCodeValue() == 200) {
+            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results","images_results");
+            INFO info = mapper.readValue(jsonInString, infoClass);
+
+            if (getErrorFn.apply(info) == null) {
+                results = getResultFn.apply(info);
+            }
+        }
+
+        log.debug("results: " + results);
+        return results != null ? results : new ArrayList<>();
+    }
+
+    public <INFO, RESULT> List<RESULT> searchYandex(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+        log.info("searchYandex 진입");
+        HttpHeaders header = new HttpHeaders();
+        HttpEntity<?> entity = new HttpEntity<>(header);
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+
         List<RESULT> results = null;
 
         log.debug("resultMap.getStatusCodeValue(): "+resultMap.getStatusCodeValue());
@@ -1498,14 +1514,14 @@ public class SearchService {
                 String searchImageUrl = serverIp+folder+"/"+location3+"/"+insertResult.getTsiUno()+files.get(i).substring(files.get(i).lastIndexOf("/"));
                 searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
 
-                log.debug("textYandexApikey 변경 전: "+textYandexApikey);
+                log.debug("textYandexApikey 변경 전 : "+textYandexApikey);
                 if( sessionInfoDto.getUserId().equals("admin") ){
-                    textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
+                    textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"f4800d9901d7bfa1a5b944a0f220bb1dc6f2222fb9ea72bc4e16f34f346bc0e0");
                 } else {
                     log.debug("userId: "+sessionInfoDto.getUserId());
-                    textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"28bf1e9bf479872b1419c327d44297ca140e8b350eea2e6f383ca7399ac7c218");
+                    textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
                 }
-                log.debug("textYandexApikey 변경 후: "+textYandexApikey);
+                log.debug("textYandexApikey 변경 후 : "+textYandexApikey);
 
                 String url = textYandexUrl
                         + "?gl=" + textYandexGl
@@ -1558,10 +1574,10 @@ public class SearchService {
 
         log.debug("textYandexApikey 변경 전 : "+textYandexApikey);
         if( sessionInfoDto.getUserId().equals("admin") ){
-            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"f4800d9901d7bfa1a5b944a0f220bb1dc6f2222fb9ea72bc4e16f34f346bc0e0");
         } else {
             log.debug("userId: "+sessionInfoDto.getUserId());
-            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"28bf1e9bf479872b1419c327d44297ca140e8b350eea2e6f383ca7399ac7c218");
+            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
         }
         log.debug("textYandexApikey 변경 후 : "+textYandexApikey);
 
@@ -1639,6 +1655,7 @@ public class SearchService {
     }
 
     public SearchInfoEntity saveSearchInfo(SearchInfoEntity sie){
+
         /*
         sie.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sie.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
@@ -1647,6 +1664,7 @@ public class SearchService {
         //2023-03-26
         //위 내용 메소드로 추출
         setSearchInfoDefault(sie);
+
         return searchInfoRepository.save(sie);
     }
 
@@ -1729,6 +1747,8 @@ public class SearchService {
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
         }else{
             log.info("getResultInfoListOrderByTmrSimilarityDesc");
+            log.info("pageRequest"+pageRequest);
+
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
         }
@@ -1738,8 +1758,10 @@ public class SearchService {
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
 
         if(tsiuno == 0) {
+            System.out.println("노틱스진입1");
             return searchResultRepository.getNoticeList(pageRequest, percent);
         }else{
+            System.out.println("노틱스진입2");
             return searchResultRepository.getNoticeSelList(pageRequest,tsiuno, percent);
         }
     }

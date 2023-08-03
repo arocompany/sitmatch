@@ -96,7 +96,7 @@
                             <img th:if="${(imgSrc != null && tsiType != '15' && tsiType != '19')}"
                                  th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
                             <video th:if="${(imgSrc != null && (tsiType == '15' || tsiType == '19'))}"
-                                   th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="" />
+                                   th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt=""></video>
                         </div>
                     </div>
                     <img th:if="${!#strings.isEmpty(keyword)}" src="/img/result/double-right.png" alt=""
@@ -294,17 +294,18 @@
     <nav>
         <ul id="pagination"
             th:with="start=${(number / maxPage * maxPage) + 1}, end=(${(totalPages == 0) ? 1 : ((start + maxPage - 1) < totalPages ? (start + maxPage - 1) : totalPages)})">
-            <li class="page-num" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${1} + ');'"
+            <li class="page-num" th:if="${start > 1}">
+                <a th:onclick="'javascript:searchEvent('+ ${1} + ');'"
                                                          class="btn-off" style="width:30px;">처음</a></li>
-            <li class="page-prev" th:if="${start > 1}"><a
-                    th:onclick="'javascript:searchEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
-            <li class="page-num" th:each="pageNum : ${#numbers.sequence(start, end)}"><a
-                    th:onclick="'javascript:searchEvent('+ ${pageNum} + ');'" class="btn-off"
+            <li class="page-prev" th:if="${start > 1}">
+                <a th:onclick="'javascript:searchEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
+            <li class="page-num" th:each="pageNum : ${#numbers.sequence(start, end)}">
+                <a th:onclick="'javascript:searchEvent('+ ${pageNum} + ');'" class="btn-off"
                     th:classappend="${number + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a></li>
-            <li class="page-next" th:if="${end < totalPages}"><a
-                    th:onclick="'javascript:searchEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
-            <li class="page-num" th:if="${end < totalPages}"><a
-                    th:onclick="'javascript:searchEvent('+ ${totalPages} + ');'" class="btn-off"
+            <li class="page-next" th:if="${end < totalPages}">
+                <a th:onclick="'javascript:searchEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
+            <li class="page-num" th:if="${end < totalPages}">
+                <a th:onclick="'javascript:searchEvent('+ ${totalPages} + ');'" class="btn-off"
                     style="width:30px;">끝</a></li>
         </ul>
     </nav>
