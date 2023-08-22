@@ -173,9 +173,11 @@
         <button class="btn-off all-time" th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>
         <!--<button type="button" class="btn-off all-time" onclick="alert('작업 중입니다.'); return false;" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>-->
         <!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()!=12999}" th:value="${traceHistoryList.getTsrUno()}">0건</button>-->
-        <!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()==12999}" th:value="${traceHistoryList.getTsrUno()}">1건</button>-->
-        <button class="btn-off double-chk" th:value="${traceHistoryList.getTsr5tsruno()}" th:tsiuno="${traceHistoryList.getTsi3tsiuno()}" th:keyword="${traceHistoryList.getTsi3Keyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
+        <!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()==12999}" th:value="${traceHistoryList.getTsrUno()}">1건</button>  th:value="${traceHistoryList.getTsr5tsruno()}"  -->
         <!--<button class="btn-off double-chk" th:value="${traceHistoryList.getTsrUno()}" th:tsiuno="${traceHistoryList.getTsiUno()}" th:keyword="${traceHistoryList.getTsiKeyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>-->
+        <button class="btn-off double-chk" th:tsiUno="${traceHistoryList.getTsi3tsiuno()}" th:tsiKeyword="${traceHistoryList.getTsi3Keyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
+        <!--<button class="btn-off double-chk" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'" th:onclick="|location.href='@{/notice(tsiUno=${traceHistoryList.getTsi3tsiuno()}, tsiKeyword=${traceHistoryList.getTsi3Keyword()} )}'|">0건</button>-->
+        <!--window.location.href = '/notice?'+'&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno"); -->
       </li>
       <li th:if="${traceHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
     </ul>
@@ -331,8 +333,7 @@
       tsi_uno_count = false;
     }
     console.info(diffMin+'/diffMin');
-    if(diffMin>=1){
-      if (per.innerText === '100%' || !tsi_uno_count) {
+      if(diffMin>=1){
         loading.style.display = 'none';
         per.style.fontSize = '1rem';
         per.style.cssText = "font-size:1rem; color:#545759;";
@@ -341,7 +342,10 @@
         pro.nextElementSibling.style.color = "#e87728";
         console.info(tsi_uno_count);
         console.info(per.innerText);
+/*      if (per.innerText === '100%' || !tsi_uno_count) {
+
       }
+*/
     }
 
   })
@@ -433,16 +437,34 @@
   //    })
   // });
   /*]]>*/
+
+
+
   const chkBtn = document.querySelectorAll(".btn-off.double-chk")
   chkBtn.forEach((btn) => {
     btn.addEventListener('click', () => {
-      if(btn.getAttribute("tsiuno")) {
-        window.location.href = '/notice?tsrUno=' + btn.value + '&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno");
+      if(btn.getAttribute("tsiUno")) {
+        // window.location.href = '/notice?tsrUno=' + btn.value + '&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno");
+        window.location.href = '/notice?'+'tsiKeyword=' + btn.getAttribute("tsiKeyword") + '&tsiUno=' + btn.getAttribute("tsiUno");
       }else{
         alert('조회대상이 없습니다.');
       }
     })
   });
+
+  /*
+  const chkBtn = document.querySelectorAll(".btn-off.double-chk")
+  chkBtn.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if(btn.getAttribute("tsiuno")) {
+        // window.location.href = '/notice?tsrUno=' + btn.value + '&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno");
+        window.location.href = '/notice?'+'&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno");
+      }else{
+        alert('조회대상이 없습니다.');
+      }
+    })
+  });
+  */
 
   // 대상 디테일
   const imgBtn = document.querySelectorAll(".img-box");

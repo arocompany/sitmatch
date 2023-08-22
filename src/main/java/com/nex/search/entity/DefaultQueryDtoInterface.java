@@ -51,7 +51,6 @@ public interface DefaultQueryDtoInterface {
 
     String getTsi3tsiuno();
     String getTsi3Keyword();
-    String getTsr5tsruno();
 
 
 }

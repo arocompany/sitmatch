@@ -74,7 +74,6 @@ public class SearchController {
         byte tsiInstagram = searchInfoEntity.getTsiInstagram();
         boolean isFile = !file.get().isEmpty();
 
-        //searchInfoEntity.setUserUno(1);
         searchInfoEntity.setUserUno(sessionInfoDto.getUserUno());
         searchInfoEntity.setTsiStat("11");
         SearchInfoEntity insertResult =  new SearchInfoEntity();
@@ -155,7 +154,7 @@ public class SearchController {
         insertResult = searchService.saveSearchInfo(searchInfoEntity);
 
         //2023-03-26 위 로직 searchService 로 이동
-        searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto, sessionInfoDto);
+        searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
 
         return modelAndView;
     }
@@ -164,7 +163,7 @@ public class SearchController {
      * @Deprecated 2023-03-26 사용 중지 SearchService 로 이동 {@link SearchService#searchGoogle(String, SearchInfoEntity, String, String)}
      */
     @Deprecated
-    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns, SessionInfoDto sessionInfoDto) {
+    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns) {
         // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
         switch (tsiType) {// 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
             case "11":// 키워드만 검색한 경우
@@ -195,7 +194,7 @@ public class SearchController {
             case "19"://영상만 검색인 경우
                 // Yandex 검색
                 log.info("영상 검색");
-                searchService.searchYandexByVideo(tsrSns, insertResult, sessionInfoDto, fileLocation3, folder);
+                searchService.searchYandexByVideo(tsrSns, insertResult, fileLocation3, folder);
                 break;
         }
     }

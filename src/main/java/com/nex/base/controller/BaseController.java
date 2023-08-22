@@ -219,7 +219,6 @@ public class BaseController {
         Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = null;
 
         log.debug("priority => {}", priority);
-        log.debug("result 페이지 진입");
 
         //검색 조건 값이 다 없을 경우
         if (!StringUtils.hasText(tsjStatusAll)
@@ -353,22 +352,62 @@ public class BaseController {
 
         return modelAndView;
     }
-
     @GetMapping("/notice")
     public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
+            , @RequestParam(required = false, defaultValue = "0", value = "tsiUno") Integer tsiUno
+            , @RequestParam(required = false,  defaultValue = "0", value = "tsiKeyword") String tsiKeyword
+            , @RequestParam(required = false, defaultValue = "80") String tsjStatus
+            , @RequestParam (required = false, defaultValue = "0") Integer tsrUno
+            , @RequestParam(required = false, defaultValue = "1") Integer page) {
+        int percent = sessionInfoDto.getPercent_limit();
+        Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = null;
+
+        // defaultQueryDtoInterface = searchService.getNoticeList(page,tsiuno, percent, keyword, tsiKeyword);
+        defaultQueryDtoInterface = searchService.getNoticeList(page, tsiUno, percent, tsiKeyword);
+
+        ModelAndView modelAndView = new ModelAndView("html/notice");
+        modelAndView.addObject("sessionInfo", sessionInfoDto);
+        modelAndView.addObject("searchResultList", defaultQueryDtoInterface);
+        modelAndView.addObject("tsrUno", tsrUno);
+        assert defaultQueryDtoInterface != null;
+        modelAndView.addObject("searchResultListCount", defaultQueryDtoInterface.getTotalElements());
+        modelAndView.addObject("number", defaultQueryDtoInterface.getNumber());
+        modelAndView.addObject("maxPage", Consts.MAX_PAGE);
+        modelAndView.addObject("totalPages", defaultQueryDtoInterface.getTotalPages());
+
+        modelAndView.addObject("tsrUno", tsrUno);
+        modelAndView.addObject("tsiUno", tsiUno);
+        modelAndView.addObject("imgSrc", searchService.getSearchInfoImgUrl(tsiUno)); //tsi
+        modelAndView.addObject("tsiType", searchService.getSearchInfoTsiType(tsiUno)); //tsi
+        modelAndView.addObject("userId", searchService.getUserIdByTsiUnoMap().get(tsiUno)); //tsi
+        modelAndView.addObject("tsiKeyword", tsiKeyword);
+
+        return modelAndView;
+    }
+
+    /*
+    @GetMapping("/notice")
+    public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
+            , @RequestParam(required = false, defaultValue = "0", value = "tsiUno") Optional<Integer> tsiUno
             , @RequestParam(required = false, defaultValue = "80") String tsjStatus
             , @RequestParam (required = false, defaultValue = "0") Integer tsrUno
             , @RequestParam (required = false, defaultValue = "0") Integer tsiuno
             , @RequestParam(required = false, defaultValue = "1") Integer page
-            , @RequestParam(required = false, defaultValue = "") String keyword) {
+            , @RequestParam(required = false, defaultValue = "") String keyword
+            , @RequestParam(required = false, defaultValue = "") String tsiKeyword) {
 
-        log.info("notice 진입");
+        log.info("tsiuno: "+tsiuno);
+        log.info("tsiUno: " + tsiUno);
+        log.info("---------------------------");
+        log.info("keyword: " + keyword);
+        log.info("tsiKeyword: "+tsiKeyword);
+
         int percent = sessionInfoDto.getPercent_limit();
         Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = null;
 
-        log.info("percent:"+percent);
-
-        defaultQueryDtoInterface = searchService.getNoticeList(page, tsiuno, percent);
+        log.info("page:"+page);
+        log.info("===========================");
+        defaultQueryDtoInterface = searchService.getNoticeList(page,tsiuno, percent, keyword, tsiKeyword);
 
         ModelAndView modelAndView = new ModelAndView("html/notice");
         modelAndView.addObject("sessionInfo", sessionInfoDto);
@@ -392,6 +431,7 @@ public class BaseController {
         return modelAndView;
     }
 
+*/
     @GetMapping("/result-detail")
     public ModelAndView result_detail(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                       @RequestParam Integer tsrUno) {

@@ -16,12 +16,17 @@
 <body>
 <article class="result-wrap wrapper">
   <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
-
   <seciton class="layout" id="result">
-      <h1 class="title">재확산 자동추적</h1>
+    <form action="/notice" id="searchForm">
+      <input type="hidden" name="page" id="searchPage">
+      <input type="hidden" name="listType" id="listType">
+      <input type="hidden" name="tsiUno" th:value="${tsiUno}">
+      <input type="hidden" name="tsiKeyword" th:value="${tsiKeyword}">
+      <input type="hidden" name="tsiType" th:value="${tsiType}">
+    </form>
+    <h1 class="title">재확산 자동추적</h1>
     <div class="search-contents">
       <div class="search-list">
-
         <div class="search-tab" th:if="${tsiUno != 0}">
           <div class="tab on">
             <div class="search-img">
@@ -29,22 +34,25 @@
               <video th:if="${(imgSrc != null && (tsiType == '15' || tsiType == '19'))}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt=""></video>
             </div>
           </div>
-          <div class="tab research" th:if="${!#strings.isEmpty(keyword)}">
-            <p>"<span th:text="${keyword}">sitting</span>"에 대한 검색 결과 입니다.</p>
+          <!--<div class="tab research" th:if="${!#strings.isEmpty(tsiKeyword)}">-->
+          <div class="tab research" th:if="${tsiType == '11' || tsiType == '13' || tsiType == '15'}">
+            <p>"<span th:text="${tsiKeyword}">sitting</span>"에 대한 검색 결과 입니다.</p>
           </div>
           <div  style="margin-left:5px;" >
             <p><span> | 상담사 : </span><span th:text="${userId}">상담사 아이디</span></p>
           </div>
         </div>
-
       </div>
+
       <p class="total-num">총 <span th:text="${searchResultListCount}"></span> 건</p>
       <div class="view-type">
         <button type="button" class="list-btn btn-off active">목록형</button>
         <button class="img-btn btn-off">이미지형</button>
       </div>
     </div>
-    <div class="result-list  list-content"> <!-- 여기 -->
+
+
+    <div class="result-list  list-content">
       <section class="list M-box-up bor10" th:each="list:${searchResultList}">
         <div class="img-box">
           <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
@@ -93,6 +101,7 @@
         -->
         <!--        <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}">추가</button>-->
       </section>
+
       <section th:if="${searchResultListCount == 0}" style="width: 100%; text-align: center;">조회 결과가 없습니다.</section>
     </div>
   </seciton>
@@ -107,6 +116,7 @@
   </nav>
   <script>footer();</script>
 </article>
+
 <script th:inline="javascript">
   /*<![CDATA[*/
   // const list = document.querySelector(".result-list");
@@ -195,24 +205,27 @@
   // }
 
 
-  // 검색내용 이미지 클릭시 팝업(0317추가)
-  const searchImg = document.querySelector('.search-img');
-  searchImg.addEventListener('click', function () {
-    document.body.style.overflow = 'hidden';
-    modal.style.display = 'block';
-    modal.innerHTML = `<div class='modal bor10 searchmodal'>
+  // 검색내용 이미지 클릭시 팝업(0317추가) 여기
+  window.onload = function(){
+    const searchImg = document.querySelector('.search-img');
+    searchImg.addEventListener('click', function () {
+      document.body.style.overflow = 'hidden';
+      modal.style.display = 'block';
+      modal.innerHTML = `<div class='modal bor10 searchmodal'>
         ${this.children[0].outerHTML}
       <button class="esc-btn">닫기</button>
         </div>`;
-    if(modal.querySelector('video')){
-      modal.querySelector('video').controls=true;
-    }
-    const esc = modal.querySelector(".esc-btn");
-    esc.onclick = () => {
-      modal.style.display = 'none';
-      document.body.style.overflow = 'unset';
-    }
-  })
+      if(modal.querySelector('video')){
+        modal.querySelector('video').controls=true;
+      }
+      const esc = modal.querySelector(".esc-btn");
+      esc.onclick = () => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'unset';
+      }
+    })
+  }
+
 
   // ----------체크박스------------ 추가----------------------------------------
   /* 검색파일이 video일경우*/
