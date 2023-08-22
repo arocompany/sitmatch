@@ -153,7 +153,7 @@ public class SearchService {
 
     /**
      * 검색
-     *
+     * <p>
      * 2023-03-26
      * SearchController 에 있던 로직 이동
      *
@@ -167,42 +167,41 @@ public class SearchService {
      */
 
     public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, byte tsiTwitter, String tsiType, SearchInfoEntity insertResult, String folder,
-                       SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto) {
-        if(tsiType.equals("17")){
-            log.info("이미지 검색시 진입");
+                       SearchInfoDto searchInfoDto) {
+        if (tsiType.equals("17")) {
+            log.info("이미지만 검색시");
             String tsrSns = "11";
-            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto, sessionInfoDto);
+            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
         } else {
-            log.info("이미지 검색 제외 진입");
-            if(tsiGoogle == 1){
+            if (tsiGoogle == 1) {
                 // Google 검색기능 구현
                 String tsrSns = "11";
 
                 // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
-                searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto, sessionInfoDto);
+                searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
             }
 
             //2023-03-20
             //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
-            if(tsiFacebook == 1){
+            if (tsiFacebook == 1) {
                 // Facebook 검색기능 구현
                 String tsrSns = "17";
 
                 // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
-                searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto, sessionInfoDto);
+                searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
             }
 
             //2023-03-20
             //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
-            if(tsiInstagram == 1){
+            if (tsiInstagram == 1) {
                 // Instagram 검색기능 구현
                 String tsrSns = "15";
 
                 // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
-                searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto, sessionInfoDto);
+                searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
             }
 
-            if(tsiTwitter == 1){
+            if (tsiTwitter == 1) {
                 // Twitter 검색기능 구현
             }
         }
@@ -210,7 +209,7 @@ public class SearchService {
 
     /**
      * 구글 검색
-     *
+     * <p>
      * 2023-03-26
      * SearchController 에 있던 로직 이동
      *
@@ -220,20 +219,20 @@ public class SearchService {
      * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
      */
 
-    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns, SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto) {
+    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns, SearchInfoDto searchInfoDto) {
         // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
         switch (tsiType) { // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
             case "11":// 키워드만 검색한 경우
                 // Yandex 검색
                 log.info("키워드 검색");
-                searchYandexByText(tsrSns, insertResult, searchInfoDto, sessionInfoDto);
+                searchYandexByText(tsrSns, insertResult, searchInfoDto);
                 // Google Custom Search 검색
 //                    searchGoogleCustomByText(insertResult);
                 break;
             case "13"://키워드 + 이미지 검색인 경우
                 // Yandex 검색
                 log.info("키워드/이미지 검색");
-                searchYandexByTextImage(tsrSns, insertResult, searchInfoDto, sessionInfoDto);
+                searchYandexByTextImage(tsrSns, insertResult, searchInfoDto);
                 // Google Custom Search 검색
 //                    searchGoogleCustomByText(insertResult);
                 break;
@@ -242,24 +241,24 @@ public class SearchService {
                 // Yandex 검색
                 log.info("키워드/영상 검색");
                 // searchYandexByText(tsrSns, insertResult, searchInfoDto);
-                searchYandexByTextVideo(tsrSns, insertResult, searchInfoDto, sessionInfoDto, fileLocation3, folder);
+                searchYandexByTextVideo(tsrSns, insertResult, searchInfoDto, fileLocation3, folder);
                 break;
             case "17"://이미지만 검색인 경우
                 // Yandex 검색
                 log.info("이미지 검색");
-                searchYandexByImage(tsrSns, insertResult, sessionInfoDto);
+                searchYandexByImage(tsrSns, insertResult);
                 break;
             case "19"://영상만 검색인 경우
                 // Yandex 검색
                 log.info("영상 검색");
-                searchYandexByVideo(tsrSns, insertResult, sessionInfoDto, fileLocation3, folder);
+                searchYandexByVideo(tsrSns, insertResult, fileLocation3, folder);
                 break;
         }
     }
 
     /**
      * Yandex 텍스트 검색
-     *
+     * <p>
      * 2023-03-26
      * SearchController 에 있던 로직 이동
      *
@@ -267,12 +266,13 @@ public class SearchService {
      * @param insertResult (검색 이력 Entity)
      */
 
-    public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto) {
+    public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) {
         log.info("searchYandexByText 진입");
         int index = 0;
-        System.out.println("index1: "+index);
+        System.out.println("index1: " + index);
         String tsiKeyword = insertResult.getTsiKeyword();
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
+        loop = true;
 
         //인스타
         if ("15".equals(tsrSns)) {
@@ -283,6 +283,7 @@ public class SearchService {
             tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
         }
 
+/*
         log.debug("textYandexApikey 변경 전 : "+textYandexApikey);
         if( sessionInfoDto.getUserId().equals("admin") ){
             textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"f4800d9901d7bfa1a5b944a0f220bb1dc6f2222fb9ea72bc4e16f34f346bc0e0");
@@ -291,7 +292,7 @@ public class SearchService {
             textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
         }
         log.debug("textYandexApikey 변경 후 : "+textYandexApikey);
-
+*/
 
         do {
             // yandex search url
@@ -301,14 +302,15 @@ public class SearchService {
                     + "&no_cache=" + textYandexNocache
                     + "&location=" + textYandexLocation
 //                    + "&tbm=" + textYandexTbm
-                    + "&start=" + String.valueOf(index*10)
+                    + "&start=" + String.valueOf(index * 10)
                     + "&api_key=" + textYandexApikey
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
                     + "&engine=google";
 
-            log.info("url: "+url);
+
+            // log.info("url: "+url);
 
             /*
             CompletableFuture
@@ -370,25 +372,27 @@ public class SearchService {
                         }
                     });
 
-            if(index >= Integer.parseInt(textYandexCountLimit)-1){
+            if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
+                log.info("index: " + index);
                 loop = false;
             }
-/*            // 30페이지까지 저장
+
+            /*
+            // 30페이지까지 저장
             if(index >= 20){
+                log.info("index: "+index);
                 loop = false;
             }
-*/
+             */
 
             index++;
-            System.out.println("index2: "+index);
         } while (loop);
 
     }
 
-
     /**
      * Yandex 이미지+키워드 검색
-     *
+     * <p>
      * 2023-05-23
      * SearchController 에 있던 로직 이동
      *
@@ -396,15 +400,16 @@ public class SearchService {
      * @param insertResult (검색 이력 Entity)
      */
 
-    public void searchYandexByTextImage(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto){
+    public void searchYandexByTextImage(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) {
         int index = 0;
+        loop = true;
 
         String tsiKeyword = insertResult.getTsiKeyword();
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
-        searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
+        searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
 
         //인스타
         if ("15".equals(tsrSns)) {
@@ -415,15 +420,6 @@ public class SearchService {
             tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
         }
 
-        log.debug("textYandexApikey 변경 전 : "+textYandexApikey);
-        if( sessionInfoDto.getUserId().equals("admin") ){
-            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"f4800d9901d7bfa1a5b944a0f220bb1dc6f2222fb9ea72bc4e16f34f346bc0e0");
-        } else {
-            log.debug("userId: "+sessionInfoDto.getUserId());
-            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
-        }
-        log.debug("textYandexApikey 변경 후 : "+textYandexApikey);
-
         do {
             String url = textYandexUrl
                     + "?gl=" + textYandexGl
@@ -433,7 +429,7 @@ public class SearchService {
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
-                    + "&start=" + String.valueOf(index*10)
+                    + "&start=" + String.valueOf(index * 10)
                     // + "&tbm=" + textYandexTbm
                     + "&engine=" + imageYandexEngine
                     + "&image_url=" + searchImageUrl;
@@ -517,7 +513,7 @@ public class SearchService {
                         }
                     });
 
-            if(index >= Integer.parseInt(textYandexCountLimit)-1){
+            if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
                 loop = false;
             }
 
@@ -528,7 +524,7 @@ public class SearchService {
 
     /**
      * Yandex 이미지 검색
-     *
+     * <p>
      * 2023-03-26
      * SearchController 에 있던 로직 이동
      *
@@ -536,23 +532,15 @@ public class SearchService {
      * @param insertResult (검색 이력 Entity)
      */
 
-    public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult, SessionInfoDto sessionInfoDto){
+    public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult) {
         int index = 0;
-        log.info("searchYandexByImage index1: "+index);
+        loop = true;
+        log.info("searchYandexByImage index1: " + index);
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
-        searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
+        searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
 
-        log.debug("textYandexApikey 변경 전 : "+textYandexApikey);
-        if( sessionInfoDto.getUserId().equals("admin") ){
-            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"f4800d9901d7bfa1a5b944a0f220bb1dc6f2222fb9ea72bc4e16f34f346bc0e0");
-        } else {
-            log.debug("userId: "+sessionInfoDto.getUserId());
-            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
-        }
-        log.debug("textYandexApikey 변경 후 : "+textYandexApikey);
         do {
-            log.info("searchYandexByImage index2: "+index);
             String url = textYandexUrl
                     + "?gl=" + textYandexGl
                     + "&no_cache=" + textYandexNocache
@@ -560,7 +548,7 @@ public class SearchService {
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
-                    + "&start=" + String.valueOf(index*10)
+                    + "&start=" + String.valueOf(index * 10)
                     // + "&tbm=" + textYandexTbm
                     + "&engine=" + imageYandexEngine
                     + "&image_url=" + searchImageUrl;
@@ -644,9 +632,9 @@ public class SearchService {
                             log.error(e.getMessage(), e);
                         }
                     });
- */
+*/
 
-            if(index >= Integer.parseInt(textYandexCountLimit)-1){ 
+            if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
                 loop = false;
             }
 
@@ -666,15 +654,15 @@ public class SearchService {
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
         ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
         List<SearchResultEntity> sreList = new ArrayList<SearchResultEntity>();
-        if(resultMap.getStatusCodeValue() == 200){
+        if (resultMap.getStatusCodeValue() == 200) {
 
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             jsonInString = mapper.writeValueAsString(resultMap.getBody());
             YandexByTextResult yandexByTextResult = mapper.readValue(jsonInString, YandexByTextResult.class);
-            if(yandexByTextResult.getError() == null){
+            if (yandexByTextResult.getError() == null) {
 
                 SearchResultEntity sre = null;
-                for(Images_resultsByText images_result : yandexByTextResult.getImages_results()){
+                for (Images_resultsByText images_result : yandexByTextResult.getImages_results()) {
                     try {
                         sre = new SearchResultEntity();
                         sre.setTsiUno(insertResult.getTsiUno());
@@ -724,7 +712,7 @@ public class SearchService {
                             String uuid = UUID.randomUUID().toString();
                             String extension = "";
                             String extension_ = "";
-                            if(resource.getFilename().indexOf(".") > 0){
+                            if (resource.getFilename().indexOf(".") > 0) {
                                 extension = resource.getFilename().substring(resource.getFilename().lastIndexOf("."));
                                 extension = extension.replaceAll(regExpr, "").substring(0, Math.min(extension.length(), 10));
                                 extension_ = extension.substring(1);
@@ -748,15 +736,15 @@ public class SearchService {
                             sre.setTsrImgSize(String.valueOf(destdir.length() / 1024));
                             img.flush();
                         }
-                        log.debug("url ::::: "+url+"    +++++++++++++++++++++++      sre ::::: "+sre);
+                        log.debug("url ::::: " + url + "    +++++++++++++++++++++++      sre ::::: " + sre);
 
                         saveSearchResult(sre);
                         sreList.add(sre);
-                    } catch(IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
+                    } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                         log.error(e.getMessage());
                         e.printStackTrace();
                         throw new IOException(e);
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         log.error(e.getMessage());
                     }
@@ -770,16 +758,16 @@ public class SearchService {
     /**
      * RESULT 로 검색 결과 엔티티 추출
      *
-     * @param  tsiUno        (검색 정보 테이블의 key)
-     * @param  tsrSns        (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
-     * @param  result        (결과)
-     * @param  getOriginalFn (original getter Function)
-     * @param  getTitleFn    (title getter Function)
-     * @param  getLinkFn     (link getter Function)
-     * @param  isFacebookFn  (isFacebook Function)
-     * @param  isInstagramFn (isInstagram Function)
+     * @param tsiUno        (검색 정보 테이블의 key)
+     * @param tsrSns        (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
+     * @param result        (결과)
+     * @param getOriginalFn (original getter Function)
+     * @param getTitleFn    (title getter Function)
+     * @param getLinkFn     (link getter Function)
+     * @param isFacebookFn  (isFacebook Function)
+     * @param isInstagramFn (isInstagram Function)
+     * @param <RESULT>      (결과)
      * @return RESULT        (결과)
-     * @param  <RESULT>      (결과)
      */
     public <RESULT> SearchResultEntity getSearchResultEntity(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
@@ -813,17 +801,17 @@ public class SearchService {
 
     /**
      * 검색 작업 엔티티 추출
-     *
+     * <p>
      * 2023-03-26 추가
      *
-     * @param  sre             (검색 결과 엔티티)
+     * @param sre (검색 결과 엔티티)
      * @return SearchJobEntity (검색 작업 엔티티)
      */
     public static SearchJobEntity getSearchJobEntity(SearchResultEntity sre) {
         SearchJobEntity sje = new SearchJobEntity();
         sje.setTsiUno(sre.getTsiUno());
         sje.setTsrUno(sre.getTsrUno());
-        if(StringUtils.hasText(sre.getTsrImgPath())) {
+        if (StringUtils.hasText(sre.getTsrImgPath())) {
             sje.setTsrImgPath(sre.getTsrImgPath().replaceAll("\\\\", "/"));
         } else {
             sje.setTsrImgPath("");
@@ -836,13 +824,13 @@ public class SearchService {
     /**
      * 이미지 파일 저장
      *
-     * @param  tsiUno         (검색 정보 테이블의 key)
-     * @param  restTemplate   (RestTemplate)
-     * @param  sre            (검색 결과 엔티티)
-     * @param  result         (결과)
-     * @param  getOriginalFn  (original getter Function)
-     * @param  getThumbnailFn (thumbnail getter Function)
-     * @param  <RESULT>       (결과)
+     * @param tsiUno         (검색 정보 테이블의 key)
+     * @param restTemplate   (RestTemplate)
+     * @param sre            (검색 결과 엔티티)
+     * @param result         (결과)
+     * @param getOriginalFn  (original getter Function)
+     * @param getThumbnailFn (thumbnail getter Function)
+     * @param <RESULT>       (결과)
      * @throws IOException
      */
     public <RESULT> void saveImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
@@ -856,7 +844,7 @@ public class SearchService {
 
         //2023-03-26 에러 나는 url 처리
         byte[] imageBytes = null;
-        if(imageUrl != null){
+        if (imageUrl != null) {
             Resource resource = resourceLoader.getResource(imageUrl);
             try {
                 imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
@@ -912,7 +900,7 @@ public class SearchService {
                 sre.setTsrImgSize(String.valueOf(destdir.length() / 1024));
                 img.flush();
             }
-        }else{
+        } else {
 
         }
 
@@ -920,53 +908,40 @@ public class SearchService {
 
     /**
      * 검색 작업 저장
-     *
+     * <p>
      * 2023-03-26 두 메소드 내용이 같아서 하나로 사용 {@link #saveImgSearchYandexByText(List, SearchInfoEntity)}, {@link #saveImgSearchYandexByImage(List, SearchInfoEntity)}
      *
-     * @param  result       (검색 결과 엔티티 List)
-     * @param  insertResult (검색 이력 엔티티)
+     * @param result       (검색 결과 엔티티 List)
+     * @param insertResult (검색 이력 엔티티)
      * @return String       (저장 결과)
      */
     public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
         insertResult.setTsiStat("13");
 
-        if(insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()){
-            insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\","/"));
+        if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
+            insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
-        SearchInfoEntity updateResult = saveSearchInfo(insertResult);
+        // SearchInfoEntity updateResult = saveSearchInfo(insertResult);
+        SearchInfoEntity updateResult = saveSearchInfo_2(insertResult);
 
         List<SearchResultEntity> searchResultEntity = result;
 
 
         //SearchJobEntity sje = null;
-        for (SearchResultEntity sre : searchResultEntity){
+        for (SearchResultEntity sre : searchResultEntity) {
             try {
-                /*
-                sje = new SearchJobEntity();
-                sje.setTsiUno(sre.getTsiUno());
-                sje.setTsrUno(sre.getTsrUno());
-                if(insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
-                    sje.setTsrImgPath(sre.getTsrImgPath().replaceAll("\\\\", "/"));
-                } else {
-                    sje.setTsrImgPath("");
-                }
-                sje.setTsrImgName(sre.getTsrImgName());
-                sje.setTsrImgExt(sre.getTsrImgExt());
-                */
-                //2023-03-26
-                //위 내용 메소드로 추출
                 SearchJobEntity sje = getSearchJobEntity(sre);
                 saveSearchJob(sje);
-            } catch(JpaSystemException e){
+            } catch (JpaSystemException e) {
                 log.error(e.getMessage());
                 e.printStackTrace();
                 throw new JpaSystemException(e);
-            } catch(Exception e){
+            } catch (Exception e) {
                 log.error(e.getMessage());
                 e.printStackTrace();
             }
         }
-            return "저장 완료";
+        return "저장 완료";
     }
 
     /**
@@ -976,14 +951,14 @@ public class SearchService {
     public String saveImgSearchYandexByText(List<SearchResultEntity> result, SearchInfoEntity insertResult) throws Exception {
 
         insertResult.setTsiStat("13");
-        if(insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()){
-            insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\","/"));
+        if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
+            insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
         SearchInfoEntity updateResult = saveSearchInfo(insertResult);
 
         List<SearchResultEntity> searchResultEntity = result;
         //SearchJobEntity sje = null;
-        for (SearchResultEntity sre : searchResultEntity){
+        for (SearchResultEntity sre : searchResultEntity) {
             try {
                 /*
                 sje = new SearchJobEntity();
@@ -1001,11 +976,11 @@ public class SearchService {
                 //위 내용 메소드로 추출
                 SearchJobEntity sje = getSearchJobEntity(sre);
                 saveSearchJob(sje);
-            } catch(JpaSystemException e){
+            } catch (JpaSystemException e) {
                 log.error(e.getMessage());
                 e.printStackTrace();
                 throw new JpaSystemException(e);
-            } catch(Exception e){
+            } catch (Exception e) {
                 log.error(e.getMessage());
                 e.printStackTrace();
             }
@@ -1026,15 +1001,15 @@ public class SearchService {
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
         ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
         List<SearchResultEntity> sreList = new ArrayList<SearchResultEntity>();
-        if(resultMap.getStatusCodeValue() == 200){
+        if (resultMap.getStatusCodeValue() == 200) {
 
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             jsonInString = mapper.writeValueAsString(resultMap.getBody());
             YandexByImageResult YandexByImageResult = mapper.readValue(jsonInString, YandexByImageResult.class);
-            if(YandexByImageResult.getError() == null){
+            if (YandexByImageResult.getError() == null) {
 
                 SearchResultEntity sre = null;
-                for(Images_resultsByImage images_result : YandexByImageResult.getInline_images()){
+                for (Images_resultsByImage images_result : YandexByImageResult.getInline_images()) {
                     try {
 
                         String imageUrl = images_result.getOriginal();
@@ -1085,7 +1060,7 @@ public class SearchService {
                             String uuid = UUID.randomUUID().toString();
                             String extension = "";
                             String extension_ = "";
-                            if(resource.getFilename().indexOf(".") > 0){
+                            if (resource.getFilename().indexOf(".") > 0) {
                                 extension = resource.getFilename().substring(resource.getFilename().lastIndexOf("."));
                                 extension = extension.replaceAll(regExpr, "").substring(0, Math.min(extension.length(), 10));
                                 extension_ = extension.substring(1);
@@ -1112,11 +1087,11 @@ public class SearchService {
                         }
                         saveSearchResult(sre);
                         sreList.add(sre);
-                    } catch(IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
+                    } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                         log.error(e.getMessage());
                         e.printStackTrace();
                         throw new IOException(e);
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         log.error(e.getMessage());
                     }
@@ -1129,11 +1104,11 @@ public class SearchService {
 
     /**
      * Images_resultsByImage 추출
-     *
+     * <p>
      * 2023-03-26
      * 기존에 데이터 가져오는 부분, 저장 하는 부분 분리
      *
-     * @param  url                         (검색 Url)
+     * @param url (검색 Url)
      * @return List<Images_resultsByImage> (Images_resultsByImage List)
      * @throws Exception
      */
@@ -1147,12 +1122,12 @@ public class SearchService {
         ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
         List<Images_resultsByImage> inlineImages = null;
 
-        if(resultMap.getStatusCodeValue() == 200){
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+        if (resultMap.getStatusCodeValue() == 200) {
+            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             jsonInString = mapper.writeValueAsString(resultMap.getBody());
             YandexByImageResult YandexByImageResult = mapper.readValue(jsonInString, YandexByImageResult.class);
 
-            if(YandexByImageResult.getError() == null){
+            if (YandexByImageResult.getError() == null) {
                 inlineImages = YandexByImageResult.getInline_images();
             }
         }
@@ -1162,17 +1137,17 @@ public class SearchService {
 
     /**
      * 텍스트 검색
-     *
+     * <p>
      * 2023-05-25 추가
      * {@link #searchYandexByText(String, String, SearchInfoEntity)} {@link #searchYandexByImage(String, String, SearchInfoEntity)}}
      *
-     * @param  url          (URL)
-     * @param  infoClass    (YandexByTextResult or YandexByImageResult Class)
-     * @param  getErrorFn   (info error getter Function)
-     * @param  getResultFn  (RESULT getter Function)
+     * @param url         (URL)
+     * @param infoClass   (YandexByTextResult or YandexByImageResult Class)
+     * @param getErrorFn  (info error getter Function)
+     * @param getResultFn (RESULT getter Function)
+     * @param <INFO>      (YandexByTextResult or YandexByImageResult)
+     * @param <RESULT>    (Images_resultsByText or Images_resultsByImage)
      * @return List<RESULT> (RESULT List)
-     * @param  <INFO>       (YandexByTextResult or YandexByImageResult)
-     * @param  <RESULT>     (Images_resultsByText or Images_resultsByImage)
      * @throws Exception
      */
 
@@ -1185,8 +1160,8 @@ public class SearchService {
         List<RESULT> results = null;
 
         if (resultMap.getStatusCodeValue() == 200) {
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results","images_results");
+            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "images_results");
             INFO info = mapper.readValue(jsonInString, infoClass);
 
             if (getErrorFn.apply(info) == null) {
@@ -1198,21 +1173,21 @@ public class SearchService {
 
     /**
      * 텍스트, 이미지 검색
-     *
+     * <p>
      * 2023-03-26 추가
      * 2개 메소드의 내용이 비슷하여 조회, 저장 메소드를 따로 분리하여 통합
      * {@link #searchYandexByText(String, String, SearchInfoEntity)} {@link #searchYandexByImage(String, String, SearchInfoEntity)}}
      *
-     * @param  url          (URL)
-     * @param  infoClass    (YandexByTextResult or YandexByImageResult Class)
-     * @param  getErrorFn   (info error getter Function)
-     * @param  getResultFn  (RESULT getter Function)
+     * @param url         (URL)
+     * @param infoClass   (YandexByTextResult or YandexByImageResult Class)
+     * @param getErrorFn  (info error getter Function)
+     * @param getResultFn (RESULT getter Function)
+     * @param <INFO>      (YandexByTextResult or YandexByImageResult)
+     * @param <RESULT>    (Images_resultsByText or Images_resultsByImage)
      * @return List<RESULT> (RESULT List)
-     * @param  <INFO>       (YandexByTextResult or YandexByImageResult)
-     * @param  <RESULT>     (Images_resultsByText or Images_resultsByImage)
      * @throws Exception
      */
-    
+
     // 배치시 진입
     public <INFO, RESULT> List<RESULT> searchBatchYandex(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
         log.info("searchBatchYandex 진입");
@@ -1224,11 +1199,11 @@ public class SearchService {
 
         List<RESULT> results = null;
 
-        log.debug("resultMap.getStatusCodeValue(): "+resultMap.getStatusCodeValue());
+        log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
 
         if (resultMap.getStatusCodeValue() == 200) {
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results","images_results");
+            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "images_results");
             INFO info = mapper.readValue(jsonInString, infoClass);
 
             if (getErrorFn.apply(info) == null) {
@@ -1249,11 +1224,11 @@ public class SearchService {
 
         List<RESULT> results = null;
 
-        log.debug("resultMap.getStatusCodeValue(): "+resultMap.getStatusCodeValue());
+        log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
 
         if (resultMap.getStatusCodeValue() == 200) {
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results","images_results");
+            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "images_results");
             INFO info = mapper.readValue(jsonInString, infoClass);
 
             if (getErrorFn.apply(info) == null) {
@@ -1267,21 +1242,21 @@ public class SearchService {
 
     /**
      * 검색 결과 저장
-     *
+     * <p>
      * 2023-03-26
      * 기존에 데이터 가져오는 부분, 저장 하는 부분 분리
      *
-     * @param  results                  (RESULT List)
-     * @param  tsrSns                   (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
-     * @param  insertResult             (검색 이력 엔티티)
-     * @param  getOriginalFn            (original getter Function)
-     * @param  getThumbnailFn           (thumbnail getter Function)
-     * @param  getTitleFn               (title getter Function)
-     * @param  getLinkFn                (link getter Function)
-     * @param  isFacebookFn             (isFacebook Function)
-     * @param  isInstagramFn            (isInstagram Function)
+     * @param results        (RESULT List)
+     * @param tsrSns         (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
+     * @param insertResult   (검색 이력 엔티티)
+     * @param getOriginalFn  (original getter Function)
+     * @param getThumbnailFn (thumbnail getter Function)
+     * @param getTitleFn     (title getter Function)
+     * @param getLinkFn      (link getter Function)
+     * @param isFacebookFn   (isFacebook Function)
+     * @param isInstagramFn  (isInstagram Function)
+     * @param <RESULT>       (Images_resultsByText or Images_resultsByImage)
      * @return List<SearchResultEntity> (검색 결과 엔티티 List)
-     * @param  <RESULT>                 (Images_resultsByText or Images_resultsByImage)
      * @throws Exception
      */
     public <RESULT> List<SearchResultEntity> saveYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
@@ -1295,7 +1270,7 @@ public class SearchService {
         List<SearchResultEntity> sreList = new ArrayList<>();
 
         //SearchResultEntity sre = null;
-        for(RESULT result : results){
+        for (RESULT result : results) {
             try {
                 //검색 결과 엔티티 추출
                 SearchResultEntity sre = getSearchResultEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
@@ -1310,10 +1285,10 @@ public class SearchService {
                 saveSearchResult(sre);
 
                 sreList.add(sre);
-            } catch(IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
+            } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());
                 throw new IOException(e);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 log.error(e.getMessage());
             }
         }
@@ -1329,15 +1304,15 @@ public class SearchService {
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
         ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
         List<SearchResultEntity> sreList = new ArrayList<SearchResultEntity>();
-        if(resultMap.getStatusCodeValue() == 200){
+        if (resultMap.getStatusCodeValue() == 200) {
 
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             jsonInString = mapper.writeValueAsString(resultMap.getBody());
             YandexByImageResult YandexByImageResult = mapper.readValue(jsonInString, YandexByImageResult.class);
-            if(YandexByImageResult.getError() == null){
+            if (YandexByImageResult.getError() == null) {
 
                 SearchResultEntity sre = null;
-                for(Images_resultsByImage images_result : YandexByImageResult.getInline_images()){
+                for (Images_resultsByImage images_result : YandexByImageResult.getInline_images()) {
                     try {
 
                         String imageUrl = images_result.getOriginal();
@@ -1388,7 +1363,7 @@ public class SearchService {
                             String uuid = UUID.randomUUID().toString();
                             String extension = "";
                             String extension_ = "";
-                            if(resource.getFilename().indexOf(".") > 0){
+                            if (resource.getFilename().indexOf(".") > 0) {
                                 extension = resource.getFilename().substring(resource.getFilename().lastIndexOf("."));
                                 extension = extension.replaceAll(regExpr, "").substring(0, Math.min(extension.length(), 10));
                                 extension_ = extension.substring(1);
@@ -1415,11 +1390,11 @@ public class SearchService {
                         }
                         saveSearchResult(sre);
                         sreList.add(sre);
-                    } catch(IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
+                    } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                         log.error(e.getMessage());
                         e.printStackTrace();
                         throw new IOException(e);
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         log.error(e.getMessage());
                     }
@@ -1438,19 +1413,19 @@ public class SearchService {
         CompletableFuture.allOf().join();
 
         insertResult.setTsiStat("13");
-        if(insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()){
-            insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\","/"));
+        if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
+            insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
         SearchInfoEntity updateResult = saveSearchInfo(insertResult);
 
         List<SearchResultEntity> searchResultEntity = result;
         SearchJobEntity sje = null;
-        for (SearchResultEntity sre : searchResultEntity){
+        for (SearchResultEntity sre : searchResultEntity) {
             try {
                 sje = new SearchJobEntity();
                 sje.setTsiUno(sre.getTsiUno());
                 sje.setTsrUno(sre.getTsrUno());
-                if(insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
+                if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
                     sje.setTsrImgPath(sre.getTsrImgPath().replaceAll("\\\\", "/"));
                 } else {
                     sje.setTsrImgPath("");
@@ -1458,11 +1433,11 @@ public class SearchService {
                 sje.setTsrImgName(sre.getTsrImgName());
                 sje.setTsrImgExt(sre.getTsrImgExt());
                 saveSearchJob(sje);
-            } catch(JpaSystemException e){
+            } catch (JpaSystemException e) {
                 log.error(e.getMessage());
                 e.printStackTrace();
                 throw new JpaSystemException(e);
-            } catch(Exception e){
+            } catch (Exception e) {
                 log.error(e.getMessage());
                 e.printStackTrace();
             }
@@ -1478,17 +1453,17 @@ public class SearchService {
         //python C:/utils/extract_keyframes.py C:/utils/input_Vid.mp4 C:/data/requests/20230312
         command[0] = "python";
         command[1] = pythonVideoModule;
-        command[2] = insertResult.getTsiImgPath()+insertResult.getTsiImgName();
-        command[3] = insertResult.getTsiImgPath()+insertResult.getTsiUno();
+        command[2] = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
+        command[3] = insertResult.getTsiImgPath() + insertResult.getTsiUno();
         try {
             execPython(command);
 
-            String DATA_DIRECTORY = insertResult.getTsiImgPath()+insertResult.getTsiUno()+"/";
+            String DATA_DIRECTORY = insertResult.getTsiImgPath() + insertResult.getTsiUno() + "/";
             File dir = new File(DATA_DIRECTORY);
 
             String[] filenames = dir.list();
             for (String filename : filenames) {
-                files.add(insertResult.getTsiImgPath()+insertResult.getTsiUno()+"/"+filename);
+                files.add(insertResult.getTsiImgPath() + insertResult.getTsiUno() + "/" + filename);
             }
 
         } catch (Exception e) {
@@ -1501,27 +1476,18 @@ public class SearchService {
 
     // Yandex 영상 검색 후처리
     @Async
-    public void searchYandexByVideo(String tsrSns, SearchInfoEntity insertResult, SessionInfoDto sessionInfoDto, String folder, String location3) {
+    public void searchYandexByVideo(String tsrSns, SearchInfoEntity insertResult, String folder, String location3) {
         try {
             List<String> files = processVideo(insertResult);
             for (int i = 0; i < files.size(); i++) {
                 VideoInfoEntity videoInfo = new VideoInfoEntity();
                 videoInfo.setTsiUno(insertResult.getTsiUno());
-                videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/")+1));
-                videoInfo.setTviImgRealPath(files.get(i).substring(0,files.get(i).lastIndexOf("/")+1));
+                videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
+                videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
                 saveVideoInfo(videoInfo);
 
-                String searchImageUrl = serverIp+folder+"/"+location3+"/"+insertResult.getTsiUno()+files.get(i).substring(files.get(i).lastIndexOf("/"));
-                searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
-
-                log.debug("textYandexApikey 변경 전 : "+textYandexApikey);
-                if( sessionInfoDto.getUserId().equals("admin") ){
-                    textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"f4800d9901d7bfa1a5b944a0f220bb1dc6f2222fb9ea72bc4e16f34f346bc0e0");
-                } else {
-                    log.debug("userId: "+sessionInfoDto.getUserId());
-                    textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
-                }
-                log.debug("textYandexApikey 변경 후 : "+textYandexApikey);
+                String searchImageUrl = serverIp + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
+                searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
 
                 String url = textYandexUrl
                         + "?gl=" + textYandexGl
@@ -1553,14 +1519,14 @@ public class SearchService {
                             }
                         });
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
-    
+
     // 키워드+영상
     @Async
-    public void searchYandexByTextVideo(String tsrSns,SearchInfoEntity insertResult,SearchInfoDto searchInfoDto, SessionInfoDto sessionInfoDto, String folder, String location3){
+    public void searchYandexByTextVideo(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String folder, String location3) {
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
         //인스타
@@ -1572,26 +1538,17 @@ public class SearchService {
             tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
         }
 
-        log.debug("textYandexApikey 변경 전 : "+textYandexApikey);
-        if( sessionInfoDto.getUserId().equals("admin") ){
-            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"f4800d9901d7bfa1a5b944a0f220bb1dc6f2222fb9ea72bc4e16f34f346bc0e0");
-        } else {
-            log.debug("userId: "+sessionInfoDto.getUserId());
-            textYandexApikey = textYandexApikey.replaceAll(textYandexApikey,"6a0389bd98878d800903739aab8d14ffa7197264ade09dad4f608f0a348b9f8f");
-        }
-        log.debug("textYandexApikey 변경 후 : "+textYandexApikey);
-
         try {
             List<String> files = processVideo(insertResult);
-            for (int i = 0; i < files.size(); i++){
+            for (int i = 0; i < files.size(); i++) {
                 VideoInfoEntity videoInfo = new VideoInfoEntity();
                 videoInfo.setTsiUno(insertResult.getTsiUno());
-                videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/")+1));
-                videoInfo.setTviImgRealPath(files.get(i).substring(0,files.get(i).lastIndexOf("/")+1));
+                videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
+                videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
                 saveVideoInfo(videoInfo);
 
-                String searchImageUrl = serverIp+folder+"/"+location3+"/"+insertResult.getTsiUno()+files.get(i).substring(files.get(i).lastIndexOf("/"));
-                searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
+                String searchImageUrl = serverIp + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
+                searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
 
                 String url = textYandexUrl
                         + "?gl=" + textYandexGl
@@ -1624,12 +1581,12 @@ public class SearchService {
                             }
                         });
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
 
-    public SearchJobEntity saveSearchJob(SearchJobEntity sje){
+    public SearchJobEntity saveSearchJob(SearchJobEntity sje) {
         /*
         sje.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sje.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
@@ -1643,7 +1600,7 @@ public class SearchService {
 
     /**
      * 검색 작업 엔티티 기본값 세팅
-     *
+     * <p>
      * 2023-03-26 추가
      *
      * @param sje (검색 작업 엔티티)
@@ -1654,20 +1611,15 @@ public class SearchService {
         sje.setTsjStatus("00");
     }
 
-    public SearchInfoEntity saveSearchInfo(SearchInfoEntity sie){
-
-        /*
-        sie.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
-        sie.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
-        sie.setDataStatCd("10");
-         */
-        //2023-03-26
-        //위 내용 메소드로 추출
+    public SearchInfoEntity saveSearchInfo(SearchInfoEntity sie) {
         setSearchInfoDefault(sie);
-
         return searchInfoRepository.save(sie);
     }
 
+    public SearchInfoEntity saveSearchInfo_2(SearchInfoEntity sie) {
+        setSearchInfoDefault_2(sie);
+        return searchInfoRepository.save(sie);
+    }
     /**
      * 검색 정보 엔티티 기본값 세팅
      *
@@ -1679,28 +1631,26 @@ public class SearchService {
         sie.setDataStatCd("10");
     }
 
-    public VideoInfoEntity saveVideoInfo(VideoInfoEntity vie){
+    public static void setSearchInfoDefault_2(SearchInfoEntity sie) {
+        // sie.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        sie.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        sie.setDataStatCd("10");
+    }
+
+    public VideoInfoEntity saveVideoInfo(VideoInfoEntity vie) {
         vie.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         vie.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         return videoInfoRepository.save(vie);
     }
 
-    public SearchResultEntity saveSearchResult(SearchResultEntity sre){
-        /*
-        sre.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
-        sre.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
-        sre.setDataStatCd("10");
-        sre.setMonitoringCd("10");
-         */
-        //2023-03-26
-        //위 내용 메소드로 추출
+    public SearchResultEntity saveSearchResult(SearchResultEntity sre) {
         setSearchResultDefault(sre);
         return searchResultRepository.save(sre);
     }
 
     /**
      * 검색 결과 엔티티 기본값 세팅
-     *
+     * <p>
      * 2023-03-26 추가
      *
      * @param sre (검색 결과 엔티티)
@@ -1715,56 +1665,69 @@ public class SearchService {
     public Page<DefaultQueryDtoInterface> getSearchResultList(Integer tsiUno, String keyword, Integer page, String priority,
                                                               String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
                                                               String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String order_type) {
-        PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
         log.debug("priority => {}", priority);
 
         String orderByTmrSimilarityDesc = " ORDER BY tmrSimilarity desc, TMR.TSR_UNO desc";
 
-        if("1".equals(order_type)){
+        if ("1".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_1");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_1(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
-        }else if("2".equals(order_type)){
+        } else if ("2".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_2");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_2(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
-        }else if("3".equals(order_type)){
+        } else if ("3".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_3");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_3(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
-        }else if("4".equals(order_type)){
+        } else if ("4".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_4");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_4(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
-        }else if("5".equals(order_type)){
+        } else if ("5".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_5");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_5(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
-        }else if("6".equals(order_type)){
+        } else if ("6".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_6");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_6(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
-        }else{
+        } else {
             log.info("getResultInfoListOrderByTmrSimilarityDesc");
-            log.info("pageRequest"+pageRequest);
+            log.info("pageRequest" + pageRequest);
 
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
         }
     }
 
-    public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsiuno, Integer percent) {
-        PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
+    public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsiUno, Integer percent, String tsiKeyword) {
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        log.info("pageRequest: " + pageRequest);
+        log.info("tsiuno: " + tsiUno);
 
-        if(tsiuno == 0) {
-            System.out.println("노틱스진입1");
+        if (tsiUno == 0) {
             return searchResultRepository.getNoticeList(pageRequest, percent);
-        }else{
-            System.out.println("노틱스진입2");
-            return searchResultRepository.getNoticeSelList(pageRequest,tsiuno, percent);
+        } else {
+            return searchResultRepository.getNoticeSelList(pageRequest, tsiUno, percent, tsiKeyword);
         }
     }
+    /*
+    public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsiuno, Integer percent, String keyword, String tsiKeyword) {
+        PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
+        log.info("pageRequest: "+ pageRequest);
+        log.info("tsiuno: "+tsiuno);
+
+        if(tsiuno == 0) {
+            return searchResultRepository.getNoticeList(pageRequest, percent);
+        }else {
+            return searchResultRepository.getNoticeSelList(pageRequest,tsiuno, percent, keyword);
+        }
+    }
+    */
 
     public List<DefaultQueryDtoInterface> getNoticeListMain(Integer percent) {
         return searchResultRepository.getNoticeListMain(percent);
@@ -1775,10 +1738,10 @@ public class SearchService {
     }
 
     public Page<DefaultQueryDtoInterface> getTraceList(Integer page, String trkStatCd, String keyword) {
-        PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
-        if(trkStatCd.equals("삭제 요청 중")) {
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        if (trkStatCd.equals("삭제 요청 중")) {
             trkStatCd = "20";
-        } else if(trkStatCd.equals("관리 중")) {
+        } else if (trkStatCd.equals("관리 중")) {
             trkStatCd = "10";
         } else {
             trkStatCd = "";
@@ -1800,8 +1763,8 @@ public class SearchService {
 
 
     public Map<String, Object> getTraceHistoryList(Integer page, String keyword) {
-        Map<String,Object> outMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 //        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
 
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryList(keyword, pageRequest);
@@ -1823,7 +1786,7 @@ public class SearchService {
         List<SearchInfoEntity> searchInfoEntityList = searchInfoRepository.findAllByOrderByTsiUnoDesc();
         Map<Integer, String> tsiTypeMap = new HashMap<>();
 
-        for(SearchInfoEntity list : searchInfoEntityList) {
+        for (SearchInfoEntity list : searchInfoEntityList) {
             tsiTypeMap.put(list.getTsiUno(), list.getTsiType());
         }
 
@@ -1834,7 +1797,7 @@ public class SearchService {
         List<SearchInfoEntity> searchInfoEntityList = searchInfoRepository.findAllByOrderByTsiUnoDesc();
         Map<Integer, String> tsiKeywordMap = new HashMap<>();
 
-        for(SearchInfoEntity list : searchInfoEntityList) {
+        for (SearchInfoEntity list : searchInfoEntityList) {
             tsiKeywordMap.put(list.getTsiUno(), list.getTsiKeyword());
         }
 
@@ -1845,7 +1808,7 @@ public class SearchService {
         List<SearchInfoEntity> searchInfoEntityList = searchInfoRepository.findAllByOrderByTsiUnoDesc();
         Map<Integer, Timestamp> tsiFstDmlDtMap = new HashMap<>();
 
-        for(SearchInfoEntity list : searchInfoEntityList) {
+        for (SearchInfoEntity list : searchInfoEntityList) {
             tsiFstDmlDtMap.put(list.getTsiUno(), list.getFstDmlDt());
         }
 
@@ -1866,9 +1829,9 @@ public class SearchService {
 //        searchResultRepository.save(searchResultEntity);
 
         String trkStatCd = searchResultRepository.getTrkStatCd(tsrUno);
-        if("10".equals(trkStatCd)) {
+        if ("10".equals(trkStatCd)) {
             searchResultRepository.subTrkStat(tsrUno);
-        }else{
+        } else {
             searchResultRepository.addTrkStat(tsrUno);
         }
     }
@@ -1914,11 +1877,10 @@ public class SearchService {
 //    }
 
 
-
     // admin 일 때
     public Map<String, Object> getSearchInfoList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
 
         // int a = searchJobRepository.countByTsiUno(tsiUno);
@@ -1936,7 +1898,7 @@ public class SearchService {
     // admin 아닐 때
     public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno) {
         Map<String, Object> outMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, userUno, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
@@ -1952,7 +1914,7 @@ public class SearchService {
         List<UserIdDtoInterface> userIdList = searchInfoRepository.getUserIdByUserUno();
         Map<Integer, String> userIdMap = new HashMap<>();
 
-        for(UserIdDtoInterface item : userIdList) {
+        for (UserIdDtoInterface item : userIdList) {
             userIdMap.put(item.getUserUno(), item.getUserId());
         }
 
@@ -1963,7 +1925,7 @@ public class SearchService {
         List<UserIdDtoInterface> userIdList = searchInfoRepository.getUserIdByUserUno();
         Map<Integer, String> userIdMap = new HashMap<>();
 
-        for(UserIdDtoInterface item : userIdList) {
+        for (UserIdDtoInterface item : userIdList) {
             userIdMap.put(item.getUserUno(), item.getUserId());
         }
 
@@ -1975,7 +1937,7 @@ public class SearchService {
         List<UserIdDtoInterface> userIdList = searchInfoRepository.getUserIdByTsiUno();
         Map<Integer, String> userIdMap = new HashMap<>();
 
-        for(UserIdDtoInterface item : userIdList) {
+        for (UserIdDtoInterface item : userIdList) {
             userIdMap.put(item.getTsiUno(), item.getUserId());
         }
 
@@ -1987,7 +1949,7 @@ public class SearchService {
         Map<Integer, String> progressPercentMap = new HashMap<>();
 
         // progressPercentList => progressPercentMap
-        for(SearchJobRepository.ProgressPercentDtoInterface item : progressPercentList) {
+        for (SearchJobRepository.ProgressPercentDtoInterface item : progressPercentList) {
             progressPercentMap.put(item.getTsiUno(), String.format("%d%%", item.getProgressPercent()));
         }
 
@@ -1997,7 +1959,7 @@ public class SearchService {
     /**
      * 검색 결과 목록 조회
      *
-     * @param  monitoringCd             (24시간 모니터링 코드 (10 : 안함, 20 : 모니터링))
+     * @param monitoringCd (24시간 모니터링 코드 (10 : 안함, 20 : 모니터링))
      * @return List<SearchResultEntity> (검색 결과 엔티티 List)
      */
     public List<SearchResultEntity> findByMonitoringCd(String monitoringCd) {
@@ -2007,7 +1969,7 @@ public class SearchService {
     /**
      * 검색 결과 사이트 URL 목록 조회
      *
-     * @param  tsiUno       (검색 정보 테이블의 key)
+     * @param tsiUno (검색 정보 테이블의 key)
      * @return List<String> (검색 결과 사이트 URL List)
      */
     public List<String> findTsrSiteUrlDistinctByTsiUno(Integer tsiUno) {
