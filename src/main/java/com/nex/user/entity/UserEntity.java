@@ -72,17 +72,18 @@ public class UserEntity {
 
     @Basic
     @Column(name = "CRAWLING_LIMIT")
-    private Integer crawling_limit;
+    private String crawling_limit;
+    // private Integer crawling_limit;
 
     @Basic
     @Column(name = "PERCENT_LIMIT")
     private Integer percent_limit;
 
-    public Integer getCrawling_limit() {
+    public String getCrawling_limit() {
         return crawling_limit;
     }
 
-    public void setCrawling_limit(Integer crawling_limit) {
+    public void setCrawling_limit(String crawling_limit) {
         this.crawling_limit = crawling_limit;
     }
 

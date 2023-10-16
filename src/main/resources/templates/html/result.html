@@ -107,6 +107,13 @@
                     <div style="margin-left:5px;">
                         <p><span> | 상담사 : </span><span th:text="${userId}">상담사 아이디</span></p>
                     </div>
+                    <form action="/resultExcelList" method="get">
+                        <input type="hidden" name="tsiKeyword" th:value="${tsiKeyword}">
+                        <input type="hidden" name="tsiUno" th:value="${tsiUno}">
+                        <button type="submit" style="margin-left: 20px;" >
+                            <img src="/img/common/excelLogo.png">
+                        </button>
+                    </form>
                 </div>
             </div>
             <p class="total-num">총 <span th:text="${searchResultListCount}"></span> 건</p>
@@ -141,13 +148,13 @@
           </th:block>
         </div>
         <div>
-          <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}">
-            <span th:case="00">대기중</span>
+          <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}"> <!-- 검색타입이 키워드가 아닌경우 -->
+            <span th:case="00">대기중</span> <!-- 00 : 대기중, 01 : 처리중, 10 : SKIP, 11 : 처리완료 -->
             <span th:case="01">처리중</span>
             <span th:case="10">SKIP</span>
             <span th:case="11">
               <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
-              <span th:if="${(tsiType == '15' || tsiType == '19')}">
+              <span th:if="${(tsiType == '15' || tsiType == '19')}"> <!-- 15: 키워드+영상 / 19: 영상 --> <!-- 이미지는 17 -->
                 <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">(V : <span
                         th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>
                 <b th:if="${list.getTmrVScore() == null || list.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>
@@ -192,7 +199,6 @@
                      class="detail" ></p>
           -->
 
-
         <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}"
                 th:value="${list.getTsrUno()}">추가</button>
           <!--
@@ -201,8 +207,10 @@
           <!--        <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}">추가</button>-->
       </section>
 
-      <section class="list M-box-up bor10" th:if="${#strings.isEmpty(list.getTsrImgPath())}"
+      <!-- style="grid-template-columns: 0 auto 32px; 여기 -->
+      <section class="list M-box-up bor10 " th:if="${#strings.isEmpty(list.getTsrImgPath())}"
                style="grid-template-columns: 0 auto 32px;">
+      <!-- <section class="list M-box-up bor10" th:if="${#strings.isEmpty(list.getTsrImgPath())}">-->
         <div class="img-box">
           <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
           <div class="img">
@@ -240,11 +248,11 @@
           <!--        <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span><span th:case="11"><h2 class="unity" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h2></span></th:block>-->
         <p style="font-size: 0;">
             <th:block th:switch="${list.getTsrSns()}">
-            <img th:case="11" src="/img/common/sns/google-round.png" alt="">
-            <img th:case="13" src="/img/common/sns/twitter-round.png" alt="">
-            <img th:case="15" src="/img/common/sns/insta-round.png" alt="">
-            <img th:case="17" src="/img/common/sns/facebook-round.png" alt="">
-          </th:block>
+                <img th:case="11" src="/img/common/sns/google-round.png" alt="">
+                <img th:case="13" src="/img/common/sns/twitter-round.png" alt="">
+                <img th:case="15" src="/img/common/sns/insta-round.png" alt="">
+                <img th:case="17" src="/img/common/sns/facebook-round.png" alt="">
+            </th:block>
         </p>
         <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url">
             <p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p>

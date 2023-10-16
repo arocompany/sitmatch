@@ -1085,4 +1085,50 @@ footer .copy {
     top: 7px
 }
 
+
+.escBtn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    border-width: 1px 0px 0px 1px;
+    border-style: solid;
+    border-color: #fff;
+    -webkit-box-shadow: 3px 3px 6px rgba(25, 72, 148, .3), -2px -2px 4px rgba(255, 255, 255, .2);
+    box-shadow: 3px 3px 6px rgba(25, 72, 148, .3), -2px -2px 4px rgba(255, 255, 255, .2);
+    background: url(../img/common/esc.png) no-repeat center;
+}
+
+.modelImg {
+    background: #F2F2F8;
+    border-width: 3px 0 0 3px;
+    border-color: #fff;
+    border-style: solid;
+    -webkit-box-shadow: 6px 6px 12px rgba(25, 72, 148, 0.5), -2px -2px 4px rgba(255, 255, 255, 0.2);
+    box-shadow: 6px 6px 12px rgba(25, 72, 148, 0.5), -2px -2px 4px rgba(255, 255, 255, 0.2);
+    border-radius: 10px 10px 10px 10px;
+    display: inline-block;
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    padding: 50px 23px 20px 20px;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -moz-box-orient: vertical;
+    -moz-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    width: 430px;
+}
+
+
 /*# sourceMappingURL=common.min.css.map */

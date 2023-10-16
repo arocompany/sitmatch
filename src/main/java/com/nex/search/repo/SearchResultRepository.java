@@ -300,6 +300,24 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String countQuery2 = "SELECT DISTINCT(COUNT(TSR.TSR_UNO))";
     String limit4 = " LIMIT 4";
 
+    String InfoImgSrc = "   select " +
+                        "        s1_0.tsi_uno AS tsiUno, " +
+                        "        s1_0.data_stat_cd AS dataStateCd, " +
+                        "        s1_0.tsi_dna_path AS tsiDnaPath, " +
+                        "        s1_0.tsi_dna_text AS tsiDanText, " +
+                        "        s1_0.tsi_img_ext AS tsiImgExt, " +
+                        "        s1_0.tsi_img_height AS tsiImgHeight, " +
+                        "        s1_0.tsi_img_name AS tsiImgName, " +
+                        "        s1_0.tsi_img_path AS tsiImgPath, " +
+                        "        s1_0.tsi_img_real_path AS tsiImgRealPath, " +
+                        "        s1_0.tsi_img_size AS tsiImgSize, " +
+                        "        s1_0.tsi_img_width AS tsiImgWidh, " +
+                        "        s1_0.tsi_type AS tsiType, " +
+                        "        s1_0.tsr_uno AS tsrUno, " +
+                        "        s1_0.user_uno AS userUno " +
+                        "    from tb_search_info s1_0 " +
+                        "    where s1_0.tsi_uno = :tsiUno ";
+
     // 추적 이력 여기
     @Query(value = defaultQeury_10, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining)
     Page<DefaultQueryDtoInterface> getTraceHistoryList(String keyword, Pageable pageable);
@@ -339,6 +357,9 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     // 검색 결과 팝업
     @Query(value = defaultQeury+from+whereTsrUno, nativeQuery = true, countQuery = countQuery+from+whereTsrUno)
     DefaultQueryDtoInterface getResultInfo(Integer tsrUno);
+
+    @Query(value = InfoImgSrc, nativeQuery = true)
+    DefaultQueryDtoInterface getInfoList(Integer tsiUno);
 
     // index 추적대상 4개
     @Query(value = defaultQeury+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc_trace+limit4, nativeQuery = true, countQuery = countQuery+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+limit4)

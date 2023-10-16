@@ -5,11 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.Consts;
 import com.nex.search.entity.*;
 import com.nex.search.repo.*;
-import com.nex.user.entity.SessionInfoDto;
-import com.nex.user.repo.UserRepository;
+import com.nex.user.entity.*;
+import com.nex.user.repo.*;
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -22,7 +29,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -34,6 +40,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
@@ -112,8 +119,11 @@ public class SearchService {
     private final SearchResultRepository searchResultRepository;
     private final VideoInfoRepository videoInfoRepository;
     private final SearchJobRepository searchJobRepository;
-    private final MatchResultRepository matchResultRepository;
-    private final UserRepository userRepository;
+
+    private final SearchInfoHistRepository searchInfoHistRepository;
+    private final TraceHistRepository traceHistRepository;
+    private final SearchResultHistRepository searchResultHistRepository;
+    private final NoticeHistRepository noticeHistRepository;
 
     @Autowired
     ResourceLoader resourceLoader;
@@ -269,7 +279,7 @@ public class SearchService {
     public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) {
         log.info("searchYandexByText 진입");
         int index = 0;
-        System.out.println("index1: " + index);
+
         String tsiKeyword = insertResult.getTsiKeyword();
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
         loop = true;
@@ -456,7 +466,7 @@ public class SearchService {
                                     , Images_resultsByImage::getOriginal
                                     , Images_resultsByImage::getThumbnail
                                     , Images_resultsByImage::getTitle
-                                    , Images_resultsByImage::getLink
+                                    , Images_resultsByImage::getSource
                                     , Images_resultsByImage::isFacebook
                                     , Images_resultsByImage::isInstagram
                             );
@@ -532,6 +542,7 @@ public class SearchService {
      * @param insertResult (검색 이력 Entity)
      */
 
+    // 여기
     public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult) {
         int index = 0;
         loop = true;
@@ -576,7 +587,7 @@ public class SearchService {
                                     , Images_resultsByImage::getOriginal
                                     , Images_resultsByImage::getThumbnail
                                     , Images_resultsByImage::getTitle
-                                    , Images_resultsByImage::getLink
+                                    , Images_resultsByImage::getSource
                                     , Images_resultsByImage::isFacebook
                                     , Images_resultsByImage::isInstagram
                             );
@@ -778,6 +789,8 @@ public class SearchService {
         sre.setTsrDownloadUrl(getOriginalFn.apply(result));
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(getLinkFn.apply(result));
+
+        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");
 
         //2023-03-20
@@ -1159,6 +1172,7 @@ public class SearchService {
         ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
         List<RESULT> results = null;
 
+        log.info("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
         if (resultMap.getStatusCodeValue() == 200) {
             ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "images_results");
@@ -1167,6 +1181,10 @@ public class SearchService {
             if (getErrorFn.apply(info) == null) {
                 results = getResultFn.apply(info);
             }
+            log.info("mapper: "+ mapper);
+            log.info("jsonInString: "+ jsonInString);
+            log.info("info: "+ info);
+
         }
         return results != null ? results : new ArrayList<>();
     }
@@ -1271,6 +1289,7 @@ public class SearchService {
 
         //SearchResultEntity sre = null;
         for (RESULT result : results) {
+            log.info("results: " + results);
             try {
                 //검색 결과 엔티티 추출
                 SearchResultEntity sre = getSearchResultEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
@@ -1586,7 +1605,7 @@ public class SearchService {
         }
     }
 
-    public SearchJobEntity saveSearchJob(SearchJobEntity sje) {
+    public SearchJobEntity saveSearchJob(SearchJobEntity sje) { // 여기
         /*
         sje.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sje.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
@@ -1737,6 +1756,11 @@ public class SearchService {
         return searchResultRepository.getResultInfo(tsrUno);
     }
 
+    public DefaultQueryDtoInterface getInfoList(Integer tsiUno) {
+        return searchResultRepository.getInfoList(tsiUno);
+    }
+
+
     public Page<DefaultQueryDtoInterface> getTraceList(Integer page, String trkStatCd, String keyword) {
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         if (trkStatCd.equals("삭제 요청 중")) {
@@ -1804,7 +1828,7 @@ public class SearchService {
         return tsiKeywordMap;
     }
 
-    public Map<Integer, Timestamp> getTsiFstDmlDtMap() {
+    public Map<Integer, Timestamp> getTsiFstDmlDtMap() { // 여기
         List<SearchInfoEntity> searchInfoEntityList = searchInfoRepository.findAllByOrderByTsiUnoDesc();
         Map<Integer, Timestamp> tsiFstDmlDtMap = new HashMap<>();
 
@@ -1834,6 +1858,17 @@ public class SearchService {
         } else {
             searchResultRepository.addTrkStat(tsrUno);
         }
+    }
+
+    public void deleteTsiUnos(List<Integer> tsiUnosValue) {
+        log.info("deleteTsiUnos 작업1");
+        // SearchInfoEntity searchInfoEntity = searchInfoRepository.updateDataStatCd(tsiUnosValue);
+        List<SearchInfoEntity> searchInfoEntity = searchInfoRepository.findByTsiUnoIn(tsiUnosValue);
+        for(int i=0; i<searchInfoEntity.size(); i++) {
+            searchInfoEntity.get(i).setDataStatCd(Consts.DATA_STAT_CD_DELETE);
+            searchInfoRepository.save(searchInfoEntity.get(i));
+        }
+        log.info("deleteTsiUnos 작업 완료");
     }
 
     public void deleteSearchInfo(Integer tsiUno) {
@@ -1882,8 +1917,6 @@ public class SearchService {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
-
-        // int a = searchJobRepository.countByTsiUno(tsiUno);
         //  Page<SearchInfoEntity> searchInfoListPage2 = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
@@ -1997,6 +2030,198 @@ public class SearchService {
         searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                 snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
          */
+    }
+
+    public void searchInfoHistInsert(int userUno, String userId, String searchKeyword, String traceKeyword) {
+        SearchInfoHistEntity she = new SearchInfoHistEntity();
+        she.setUserUno(userUno);
+        she.setUserId(userId);
+        she.setClkDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        she.setHisKeyword(searchKeyword);
+
+        if(searchKeyword.equals("")) {
+            she.setHisKeyword(traceKeyword);
+        }
+        searchInfoHistRepository.save(she);
+    }
+
+    public void traceHistInsert(int userUno,String userId, String keyword) {
+        TraceHistEntity the = new TraceHistEntity();
+        the.setUserUno(userUno);
+        the.setHistKeyword(keyword);
+        the.setUserId(userId);
+        the.setClkDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        traceHistRepository.save(the);
+    }
+
+    public void searchResultHistInsert(int userUno, String userId, int histTsiUno) {
+        SearchResultHistEntity srh = new SearchResultHistEntity();
+        srh.setUserUno(userUno);
+        srh.setUserId(userId);
+        srh.setHisTsiUno(histTsiUno);
+        srh.setClkDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        searchResultHistRepository.save(srh);
+    }
+
+    public void noticeHistInsert(int userUno, String userId) {
+        NoticeHistEntity nhe = new NoticeHistEntity();
+        nhe.setUserUno(userUno);
+        nhe.setUserId(userId);
+        nhe.setClkDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        noticeHistRepository.save(nhe);
+    }
+
+    public void searchHistoryExcel(HttpServletResponse response
+            , List<SearchHistoryExcelDto> searchHistoryExcelDtoList) throws IOException{
+        Workbook wb = new XSSFWorkbook();
+
+        Sheet sheet = wb.createSheet("검색 이력");
+        Row row;
+        Cell cell;
+        int rowNum = 0;
+
+        row=sheet.createRow(rowNum++);
+        cell=row.createCell(0);
+        cell.setCellValue("순번");
+
+        cell=row.createCell(1);
+        cell.setCellValue("사용자 아이디");
+
+        cell=row.createCell(2);
+        cell.setCellValue("검색타입");
+
+        cell=row.createCell(3);
+        cell.setCellValue("키워드");
+
+        cell=row.createCell(4);
+        cell.setCellValue("구글");
+
+        cell=row.createCell(5);
+        cell.setCellValue("페이스북");
+
+        cell=row.createCell(6);
+        cell.setCellValue("트위터");
+
+        cell=row.createCell(7);
+        cell.setCellValue("인스타그램");
+
+        cell=row.createCell(8);
+        cell.setCellValue("검색날짜");
+
+        for(int i=0; i<searchHistoryExcelDtoList.size(); i++) {
+            row=sheet.createRow(rowNum++);
+            cell = row.createCell(0);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTsiUno());
+
+            cell = row.createCell(1);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getUserId());
+
+            cell = row.createCell(2);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTsiType());
+
+            cell = row.createCell(3);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getKeyword());
+
+            cell = row.createCell(4);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getGoogle());
+
+            cell = row.createCell(5);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getFacebook());
+
+            cell = row.createCell(6);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTwitter());
+
+            cell = row.createCell(7);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getInstagram());
+
+            cell = row.createCell(8);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getFstDmlDt());
+
+        }
+
+        String fileName = "검색 이력";
+        fileName = URLEncoder.encode(fileName,"UTF-8").replaceAll("\\+", "%20");
+
+        response.setContentType("ms-vnd/excel");
+        response.setHeader("Content-Disposition", "attachment;filename="+fileName+".xlsx");
+
+        ServletOutputStream out = response.getOutputStream();
+        wb.write(out);
+        out.flush();
+
+    }
+
+    public void resultExcelList(HttpServletResponse response, List<resultListExcelDto> resultListExcelDtoList) throws IOException {
+        Workbook wb = new XSSFWorkbook();
+
+        Sheet sheet = wb.createSheet("검색 결과");
+        Row row;
+        Cell cell;
+        int rowNum = 0;
+
+        row=sheet.createRow(rowNum++);
+        cell=row.createCell(0);
+        cell.setCellValue("검색이력번호");
+
+        cell=row.createCell(1);
+        cell.setCellValue("결과번호");
+
+        cell=row.createCell(2);
+        cell.setCellValue("SNS");
+
+        cell=row.createCell(3);
+        cell.setCellValue("키워드");
+
+        cell=row.createCell(4);
+        cell.setCellValue("제목");
+
+        cell=row.createCell(5);
+        cell.setCellValue("사이트 URL");
+
+        cell=row.createCell(6);
+        cell.setCellValue("일치율");
+
+        cell=row.createCell(7);
+        cell.setCellValue("사용자 아이디");
+
+        for(int i=0; i<resultListExcelDtoList.size(); i++) {
+            row=sheet.createRow(rowNum++);
+            cell = row.createCell(0);
+            cell.setCellValue(resultListExcelDtoList.get(i).getTsiUno());
+
+            cell = row.createCell(1);
+            cell.setCellValue(resultListExcelDtoList.get(i).getTsrUno());
+
+            cell = row.createCell(2);
+            cell.setCellValue(resultListExcelDtoList.get(i).getTsrSns());
+
+            cell = row.createCell(3);
+            cell.setCellValue(resultListExcelDtoList.get(i).getTsiKeyword());
+
+            cell = row.createCell(4);
+            cell.setCellValue(resultListExcelDtoList.get(i).getTsrTitle());
+
+            cell = row.createCell(5);
+            cell.setCellValue(resultListExcelDtoList.get(i).getTsrSiteUrl());
+
+            cell = row.createCell(6);
+            cell.setCellValue(resultListExcelDtoList.get(i).getTmrSimilarity());
+
+            cell = row.createCell(7);
+            cell.setCellValue(resultListExcelDtoList.get(i).getUserId());
+
+        }
+
+        String fileName = "검색 결과";
+        fileName = URLEncoder.encode(fileName,"UTF-8").replaceAll("\\+", "%20");
+
+        response.setContentType("ms-vnd/excel");
+        response.setHeader("Content-Disposition", "attachment;filename="+fileName+".xlsx");
+
+        ServletOutputStream out = response.getOutputStream();
+        wb.write(out);
+        out.flush();
+
     }
 
 }

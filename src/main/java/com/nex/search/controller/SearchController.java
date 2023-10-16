@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,6 +21,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -65,6 +67,7 @@ public class SearchController {
                                 ,SearchInfoDto searchInfoDto) {
         ModelAndView modelAndView = new ModelAndView("redirect:/history");
 
+        log.info("search진입 tsiKeyword "+searchInfoEntity.getTsiKeyword());
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
         String tsiKeyword = searchInfoEntity.getTsiKeyword();
         String tsiType = "";
@@ -82,7 +85,7 @@ public class SearchController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String folder = now.format(formatter);
 
-        if(isFile){
+        if(isFile){  // 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19: 영상
             try{
                 InputStream inputStream = file.get().getInputStream();
                 Tika tika = new Tika();
@@ -263,7 +266,6 @@ public class SearchController {
 
     // Yandex 이미지 검색 후처리
     public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult){
-        System.out.println("searchYandexByImage 진입 : ");
         String url = textYandexUrl
                 + "&gl=" + textYandexGl
                 + "&no_cache=" + textYandexNocache
@@ -273,8 +275,6 @@ public class SearchController {
                 + "&filter=0"
                 + "&nfpr=0"
                 + "&image_url=" + searchImageUrl;
-
-        System.out.println("searchImageUrl : "+searchImageUrl);
 
         CompletableFuture
                 .supplyAsync(() -> {
@@ -296,6 +296,15 @@ public class SearchController {
                     }
                 });
     }
+
+    @GetMapping("/deleteTsiUnos")
+    public String deleteSearchInfo(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
+                                  , @RequestParam(value="tsiUnosValue", required=false) List<Integer> tsiUnosValue) {
+        log.info("tsiUnos: "+tsiUnosValue);
+        searchService.deleteTsiUnos(tsiUnosValue);
+        return "success";
+    }
+
 
     @GetMapping("deleteSearchInfo")
     public String deleteSearchInfo(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,

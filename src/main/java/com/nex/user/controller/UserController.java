@@ -91,6 +91,7 @@ public class UserController {
                         .crawling_limit(user.getCrawling_limit())
                         .percent_limit(user.getPercent_limit())
                         .build();
+
                 if( user.getUserClfCd().equals("99") ) {
                     sessionInfo.setAdmin(true);
                     session.setAttribute(Consts.SESSION_IS_ADMIN, true);
@@ -98,6 +99,12 @@ public class UserController {
                     sessionInfo.setAdmin(false);
                     session.setAttribute(Consts.SESSION_IS_ADMIN, false);
                 }
+
+                int userUno = Math.toIntExact(user.getUserUno());
+                String userId = user.getUserId();
+                log.info("userUno: "+userUno+" userId "+userId);
+                userService.loginHistInsert(userUno, userId);
+
                 session.setAttribute(Consts.SESSION_USER_UNO, user.getUserUno());
                 session.setAttribute(Consts.SESSION_USER_ID, user.getUserId());
                 session.setAttribute(Consts.SESSION_USER_NM, user.getUserNm());
@@ -169,8 +176,20 @@ public class UserController {
 
     @PostMapping("ajax_con_limit_update")
     public void ajax_con_limit_update(@Valid UserLoginCheckDto userLoginCheckDto, BindingResult result, HttpServletRequest request) {
-        System.out.println("testtest////"+userLoginCheckDto.getUserUno()+'/'+userLoginCheckDto.getCrawling_limit()+'/'+userLoginCheckDto.getPercent_limit());
-        userRepository.ajax_con_limit_update(userLoginCheckDto.getUserUno(), userLoginCheckDto.getCrawling_limit(), userLoginCheckDto.getPercent_limit());
+        log.info("testtest////"+userLoginCheckDto.getUserUno()+'/'+userLoginCheckDto.getCrawling_limit()+'/'+userLoginCheckDto.getPercent_limit());
+
+        if(userLoginCheckDto.getCrawling_limit().equals("무제한")){
+            log.info("무제한임");
+            String crawling_limit = userLoginCheckDto.getCrawling_limit();
+            crawling_limit = crawling_limit.replaceAll("무제한","0");
+            userRepository.ajax_con_limit_update(userLoginCheckDto.getUserUno(), crawling_limit, userLoginCheckDto.getPercent_limit());
+        } else {
+            userRepository.ajax_con_limit_update(userLoginCheckDto.getUserUno(), userLoginCheckDto.getCrawling_limit(), userLoginCheckDto.getPercent_limit());
+        }
+
+       // userRepository.ajax_con_limit_update(userLoginCheckDto.getUserUno(), userLoginCheckDto.getCrawling_limit(), userLoginCheckDto.getPercent_limit());
+        // userRepository.ajax_con_limit_update(userLoginCheckDto.getUserUno(), crawling_limit, userLoginCheckDto.getPercent_limit());
+
         UserEntity user = userRepository.findByUserUno(userLoginCheckDto.getUserUno());
         HttpSession session = request.getSession();
         SessionInfoDto sessionInfo = SessionInfoDto.builder()

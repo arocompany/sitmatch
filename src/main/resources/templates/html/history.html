@@ -14,6 +14,18 @@
   <script src="/js/function.js"></script>
 </head>
 
+<style>
+  .dels {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 1px;
+    font: inherit;
+    vertical-align: baseline;
+    color: inherit;
+  }
+</style>
+
 <body>
 <article class="history-wrap wrapper" id="history">
   <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
@@ -25,9 +37,15 @@
         <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${searchKeyword}" name="searchKeyword" id="searchKeyword">
         <input type="hidden" name="searchPage" id="searchPage">
       </form>
-      <p class="total-num">총 <span th:text="${searchInfoListCount}"></span>건</p>
+      <form action="/searchHistory" method="get"> <!-- style="margin-right: 865px; font-weight: bold;" -->
+        <button type="submit" style="margin-right: 865px;" >
+          <img src="/img/common/excelLogo.png">
+        </button>
+      </form>
+        <p class="total-num">총 <span th:text="${searchInfoListCount}"></span>건</p>
     </div>
-    <h2 class="list-tit">
+    <h2 class="list-tit" style="padding: 10px 20px 20px;">
+      <input type="checkbox" id="allCheckbox" onclick="allCheckboxBtn();">
       <span class="num">순번</span>
       <span class="counselor">상담사</span>
       <span class="type">검색 유형</span>
@@ -36,12 +54,20 @@
       <span class="time">검색 일시</span>
       <span class="progress">검색 진행률</span>
       <span class="dist">구분</span>
+      <button class="del-btn btn-off dels" onclick="checkTsiunos();"></button>
+      <input type="hidden" id="tsiUnosValue" name="tsiUnosValue" value="">
+      <!--<input type="button" class="del-btn btn-off dels" onclick="checkTsiunos();"></input>-->
     </h2>
+
     <ul class="history-list history-search-list">
       <li class="btn-off bor10" th:each="searchInfoList:${searchInfoList}">
+        <input type="checkbox" id="tsiUnos" name="tsiUnos" th:value="${searchInfoList.getTsiUno()}">
+<!--        <div class="tsiUnoclass">
+        <input type="hidden" id="tsiUno" name="tsiUno" th:value="${searchInfoList.getTsiUno()}">
+        </div>-->
         <p class="num" th:text="${searchInfoList.getTsiUno()}"></p> <!-- 순번 -->
         <p class="counselor" th:text="${userIdMap.get(searchInfoList.getUserUno())}">상담사 아이디</p>
-        <p class="type">
+        <p class="type" style="text-align: center">
           <th:block th:switch="${searchInfoList.getTsiType()}">
             <span th:case="${'11'}">키워드</span>
             <span th:case="${'13'}">키워드 + 사진</span>
@@ -51,11 +77,10 @@
           </th:block>
         </p>
         <div class="cont">
-
-          <div class="img-box">
+          <div class="img-box"> <!-- onclick="InfoList();" -->
             <div class="img" th:if="${searchInfoList.getTsiType() != '11'}">
-              <img th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="">
-              <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="" />
+                <button class="tsiUnoClass" id="tsiUno" name="tsiUno"  th:value="${searchInfoList.getTsiUno()}" onclick="InfoList(this);"><img th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt=""></button>
+                <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="" />
             </div>
           </div>
           <p class="con1">
@@ -91,6 +116,7 @@
     </nav>
   </section>
 
+
   <!-- 추적 이력 -->
   <section class="trace-history layout history">
     <div class="searchbox">
@@ -98,6 +124,7 @@
         <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${traceKeyword}" name="traceKeyword" id="traceKeyword">
         <input type="hidden" name="tracePage" id="tracePage">
       </form>
+      <!--  <button type="button" style="margin-right: 495px; font-weight: bold; ">엑셀</button>-->
       <ul class="currently-state">
         <li><span>전체 :</span> <span th:text="${traceHistoryListCount}">32</span></li>
         <li><span>모니터링 :</span> <span th:text="${countMonitoring}">8</span></li>
@@ -196,9 +223,140 @@
   </script>
 </article>
 <script th:inline="javascript">
-  /*<![CDATA[*/
 
-  //추적 이력
+  function InfoList(tsiUno){
+    // alert("tsiUno: "+tsiUno.value)
+    console.dir(tsiUno.value)
+
+    var xhr = new XMLHttpRequest();
+    //요청을 보낼 방식, 주소, 비동기여부 설정
+    xhr.open('GET', 'result-detail?tsiUno=' + tsiUno.value, true);
+    xhr.send(null);
+
+    xhr.onload = () => {
+      //통신 성공
+      if (xhr.status == 200) {
+        document.body.style.overflow = 'hidden';
+        modal.style.display = 'block';
+        modal.innerHTML = xhr.response;
+        const esc = document.querySelector(".trace-detail .esc-btn");
+        esc.onclick = () => {
+          modal.style.display = 'none';
+          document.body.style.overflow = 'unset';
+        }
+        const _CANVASBOX = document.querySelectorAll(`.preview-img `);
+        //비디오 태그의 메타데이터가 들어오면
+        _CANVASBOX.forEach(img => {
+          let _VIDEO = img.querySelector('video');
+          _VIDEO.addEventListener('loadedmetadata', function (e) {
+            img.children[0].width = _VIDEO.videoWidth;
+            img.children[0].height = _VIDEO.videoHeight;
+            const time = Math.random() * _VIDEO.duration;
+            _VIDEO.currentTime = time; //비디오의 영상길이 중 랜덤 타임을 뽑음
+            img.children[1].getContext("2d").drawImage(_VIDEO, 0, 0, _VIDEO.videoWidth, _VIDEO.videoHeight);
+            // 비디오 플레이
+            const video = document.querySelectorAll(".img-box .video");
+            if (video) {
+              video.forEach(vid => {
+                const btn = vid.querySelector('.play-btn');
+                btn.onclick = () => {
+                  vid.querySelector("video").play();
+                  vid.querySelector("video").controls = true;
+                  vid.querySelector(".play-wrap").style.display = 'none';
+                }
+              })
+            }
+          })
+        })
+      } else {
+        //통신 실패
+        console.log("통신 실패");
+      }
+    }
+
+/*
+    //XMLHttpRequest 객체 생성
+    var xhr = new XMLHttpRequest();
+    //요청을 보낼 방식, 주소, 비동기여부 설정
+    xhr.open('GET', 'result-detail?tsiUno='+tsiUno.value, true);
+*/
+
+/*    tsiUnoClass.forEach((btn) => {
+/!*
+      btn.addEventListener('click', () => {
+
+      }
+*!/
+
+    })*/
+
+  }
+
+  function allCheckboxBtn(){
+    if($('#allCheckbox').prop("checked")) {
+      $("input[type=checkbox]").prop("checked", true);
+    } else {
+      $("input[type=checkbox]").prop("checked", false);
+    }
+  }
+  function checkTsiunos() {
+    if(confirm("일괄 삭제하시겠습니까?")) {
+      var obj = $("[name=tsiUnos]");
+
+      var chkArray = new Array(); // 배열 선언
+
+      $('input:checkbox[name=tsiUnos]:checked').each(function() {
+        chkArray.push(this.value);
+      });
+      $('#tsiUnosValue').val(chkArray);
+
+      const tsiUnosValue = document.getElementById('tsiUnosValue').value;
+
+      if(tsiUnosValue === null || tsiUnosValue === ''){
+        alert("삭제할 데이터를 선택해주세요.");
+        return false;
+      }
+
+      // alert($('#tsiUnosValue').val());
+
+      $.ajax({
+        url: "/search/deleteTsiUnos",
+        type: "get",
+        data: {
+          tsiUnosValue: $('#tsiUnosValue').val()
+        },
+        success:function(data) {
+          alert("삭제가 완료되었습니다.");
+          window.location.href="/history";
+        }, error:function(){
+          // alert("실패")
+          console.log("통신 실패");
+        }
+      })
+    }
+  }
+
+  /*
+  // 이미지 클릭시 팝업창 여기
+  const searchImg = document.querySelector('.img');
+  searchImg.addEventListener('click', function () {
+    document.body.style.overflow = 'hidden';
+    modal.style.display = 'block';
+    modal.innerHTML = `<div class='modelImg'>
+        ${this.children[0].outerHTML}
+      <button class="escBtn">닫기</button>
+        </div>`;
+    if (modal.querySelector('video')) {
+      modal.querySelector('video').controls = true;
+    }
+    // const esc = modal.querySelector(".esc-btn");
+    const esc = modal.querySelector(".escBtn");
+    esc.onclick = () => {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'unset';
+    }
+  });
+*/
 
   // 페이징 처리 시에 탭 전환 방지
   const sTit = document.querySelector('.s-tit');
@@ -270,7 +428,6 @@
       });
     });
   })
-
 
   const searchForm = document.querySelector("#searchForm");
   const searchPage = document.querySelector("#searchPage");
@@ -384,13 +541,23 @@
     }
   }
 
+/*
+  $("input[name=delChk]:checked").each(function(){
+    var test = $(this).val();
+    console("체크된 값 : " + test);
+    alert("체크된 값 : " + test);
+  });
+*/
+
   // 검색 이력 삭제
+  // const delBtn = document.querySelectorAll(".del");
   const delBtn = document.querySelectorAll(".del");
   delBtn.forEach((btn) => {
     btn.addEventListener('click', () => {
       if((confirm("삭제하시겠습니까?"))) {
         //XMLHttpRequest 객체 생성
         var xhr = new XMLHttpRequest();
+
         //요청을 보낼 방식, 주소, 비동기여부 설정
         xhr.open('GET', '/search/deleteSearchInfo?tsiUno='+btn.value, true);
         //요청 전송
@@ -466,60 +633,76 @@
   });
   */
 
+
+
   // 대상 디테일
   const imgBtn = document.querySelectorAll(".img-box");
+ // const tsiUnoClass = document.querySelectorAll(".history-search-list");
   const modal = document.querySelector("#modal");
+/*
+
+  tsiUnoClass.forEach((btn)=> {
+    const tsiUno = btn.querySelector("#tsiUno");
+    btn.addEventListener('click', () => {
+      alert("tsiUno 임" + tsiUno)
+      xhr.open('GET', 'result-detail?tsrUno=' + tsiUno.value, true);
+    })
+
+  })
+*/
+
   imgBtn.forEach((btn) => {
     const tsrUno = btn.querySelector("#tsrUno");
-    btn.addEventListener('click', () => {
-      //XMLHttpRequest 객체 생성
-      var xhr = new XMLHttpRequest();
-      //요청을 보낼 방식, 주소, 비동기여부 설정
-      xhr.open('GET', 'trace-detail?tsrUno='+tsrUno.value, true);
-      //요청 전송
-      xhr.send(null);
-      //통신후 작업
-      xhr.onload = () => {
-        //통신 성공
-        if (xhr.status == 200) {
-          document.body.style.overflow = 'hidden';
-          modal.style.display = 'block';
-          modal.innerHTML = xhr.response;
-          const esc = document.querySelector(".trace-detail .esc-btn");
-          esc.onclick = () => {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'unset';
-          }
-          const _CANVASBOX = document.querySelectorAll(`.preview-img `);
-          //비디오 태그의 메타데이터가 들어오면
-          _CANVASBOX.forEach(img => {
-            let _VIDEO = img.querySelector('video');
-            _VIDEO.addEventListener('loadedmetadata', function (e) {
-              img.children[0].width = _VIDEO.videoWidth;
-              img.children[0].height = _VIDEO.videoHeight;
-              const time = Math.random() * _VIDEO.duration;
-              _VIDEO.currentTime = time; //비디오의 영상길이 중 랜덤 타임을 뽑음
-              img.children[1].getContext("2d").drawImage(_VIDEO, 0, 0, _VIDEO.videoWidth, _VIDEO.videoHeight);
-              // 비디오 플레이
-              const video = document.querySelectorAll(".img-box .video");
-              if (video) {
-                video.forEach(vid => {
-                  const btn = vid.querySelector('.play-btn');
-                  btn.onclick = () => {
-                    vid.querySelector("video").play();
-                    vid.querySelector("video").controls = true;
-                    vid.querySelector(".play-wrap").style.display = 'none';
+
+      btn.addEventListener('click', () => {
+          //XMLHttpRequest 객체 생성
+          var xhr = new XMLHttpRequest();
+          //요청을 보낼 방식, 주소, 비동기여부 설정
+          xhr.open('GET', 'trace-detail?tsrUno='+tsrUno.value, true);
+          //요청 전송
+          xhr.send(null);
+          //통신후 작업
+          xhr.onload = () => {
+            //통신 성공
+            if (xhr.status == 200) {
+              document.body.style.overflow = 'hidden';
+              modal.style.display = 'block';
+              modal.innerHTML = xhr.response;
+              const esc = document.querySelector(".trace-detail .esc-btn");
+              esc.onclick = () => {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'unset';
+              }
+              const _CANVASBOX = document.querySelectorAll(`.preview-img `);
+              //비디오 태그의 메타데이터가 들어오면
+              _CANVASBOX.forEach(img => {
+                let _VIDEO = img.querySelector('video');
+                _VIDEO.addEventListener('loadedmetadata', function (e) {
+                  img.children[0].width = _VIDEO.videoWidth;
+                  img.children[0].height = _VIDEO.videoHeight;
+                  const time = Math.random() * _VIDEO.duration;
+                  _VIDEO.currentTime = time; //비디오의 영상길이 중 랜덤 타임을 뽑음
+                  img.children[1].getContext("2d").drawImage(_VIDEO, 0, 0, _VIDEO.videoWidth, _VIDEO.videoHeight);
+                  // 비디오 플레이
+                  const video = document.querySelectorAll(".img-box .video");
+                  if (video) {
+                    video.forEach(vid => {
+                      const btn = vid.querySelector('.play-btn');
+                      btn.onclick = () => {
+                        vid.querySelector("video").play();
+                        vid.querySelector("video").controls = true;
+                        vid.querySelector(".play-wrap").style.display = 'none';
+                      }
+                    })
                   }
                 })
-              }
-            })
-          })
-        } else {
-          //통신 실패
-          console.log("통신 실패");
-        }
-      }
-    })
+              })
+            } else {
+              //통신 실패
+              console.log("통신 실패");
+            }
+          }
+      })
   });
 
   // 24시간 모니터링 버튼 활성화
