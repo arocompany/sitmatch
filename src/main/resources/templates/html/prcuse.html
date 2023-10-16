@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lagn="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>디지털 성범죄</title>
+    <link rel="stylesheet" href="/css/common.min.css" />
+    <link rel="stylesheet" href="/css/manage.min.css" />
+    <script src="/js/footer.js"></script>
+    <script src="/js/pagination.js"></script>
+    <script src="/js/style.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.debug.js'></script>
+    <script src="html2canvas.hertzen.com/dist/html2canvas.js"></script>
+</head>
+<style>
+    table {
+        border:1px solid;
+        text-align:center;
+        margin: auto;
+    }
+
+    table thead tr {
+        background:gray;
+        color:white;
+    }
+
+    table tbody tr:hover {
+        background-color: lightgray;
+        cursor:pointer;
+    }
+
+    td {
+        border:1px solid
+    }
+
+    th {
+        border:1px solid
+    }
+
+    p {
+        margin:auto;
+        margin-top:30px;
+        text-align:center;
+        color: red;
+    }
+</style>
+<body>
+
+<article class="manage-wrap wrapper">
+    <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
+    <section class="layout" >
+
+      <h1 class="title">사용자 활용 현황</h1>
+        <table style="display: none" id='noticeList' >
+            <thead>
+            <tr>
+                <th>날짜</th>
+                <th>카운트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="noticeHistDtoList : ${noticeHistDtoList}">
+                <td th:text="${noticeHistDtoList.noticeDate}" ></td>
+                <td th:text="${noticeHistDtoList.noticeCnt}"> </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table style="display: none" id='traceList' >
+            <thead>
+                <tr>
+                    <th>날짜</th>
+                    <th>카운트</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="traceHistEntityList : ${traceHistEntityList}">
+                    <td th:text="${traceHistEntityList.traceDate}" ></td>
+                    <td th:text="${traceHistEntityList.traceCnt}"> </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table style="display: none" id='searchInfoList'>
+            <thead>
+            <tr>
+                <th>날짜</th>
+                <th>카운트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="searchInfoHistDtoList : ${searchInfoHistDtoList}">
+                <td th:text="${searchInfoHistDtoList.infoHistDate}" ></td>
+                <td th:text="${searchInfoHistDtoList.infoHistCnt}"> </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table style="display: none" id='searchResultList'>
+            <thead>
+            <tr>
+                <th>날짜</th>
+                <th>카운트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="searchResultHistDtoList : ${searchResultHistDtoList}">
+                <td th:text="${searchResultHistDtoList.rsltDate}" ></td>
+                <td th:text="${searchResultHistDtoList.rsltCnt}"> </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <form action="/prcuse" method="post">
+            <div  style="width: 500px; height: 53px; padding-left: 25px; padding-top: 10px; float: right; margin-bottom: 45px;" >
+                <input style="margin-right: 20px; font-weight: bold;" type="date" id="fromDate" name="fromDate" th:value="${fromDate}" /> ~
+                <input style="margin-left: 20px; font-weight: bold;" type="date" id="toDate" name="toDate" th:value="${toDate}"  />
+                <button style="width: 70px; margin-left: 65px; font-size: 15px; color: #7c7c7f; height: 30px; font-weight: bold;"
+                        class="bor10 btn-off manager-add" type="submit" onclick="rowClicked();">검색</button>
+            </div>
+        </form>
+        <div id="pdfDiv" style="width: 800px; margin-left: 300px;">
+            <div id="div_myAreaChart" style="margin-top: 50px;">
+                <canvas id="myChart" ></canvas>
+            </div>
+            <div id="div_myAreaChart2" style="margin-top: 50px;">
+                    <canvas id="myChart2" width="200" height="200"></canvas>
+            </div>
+        </div>
+
+<!--
+    <form action="/prcuse/excel/download" method="get">
+            <div style="margin-top: 50px; float: right;">
+                <input style="margin-right: 20px; font-weight: bold; display: none;" type="date" name="fromDate" th:value="${fromDate}" />
+                <input style="margin-left: 20px; font-weight: bold; display: none;" type="date" name="toDate"  th:value="${toDate}"  />
+                <button class="bor10 btn-off manager-add" style="height: 60px; font-size: 17px; width: 121px; font-weight: bold; color: #e88550; margin-right: 10px;"
+                    type="submit" >Excel <br> Download</button>
+                <button class="bor10 btn-off manager-add" style="height: 60px; font-size: 17px; width: 121px; font-weight: bold; color: #e88550;"
+                        type="button" onclick="pdfDown();"> PDF <br> Download</button>
+            </div>
+        </form>
+-->
+    </section>
+    <script>footer()</script>
+  </article>
+
+<script>
+    //테이블안에 tr을 for문으로 td의 값을 뽑아서 arraypush
+    $(document).ready(function(){
+        getGraph();
+        rowClicked();
+    });
+
+    function getGraph() {
+        $('#myChart2').remove(); //그래프 그리는 영역 지움 width="100%" height="40"
+        $('#div_myAreaChart2').append('<canvas id="myChart2" ></canvas>');
+
+        const fromDate = document.getElementById("fromDate").value;
+        const toDate = document.getElementById("toDate").value;
+
+        var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
+        if(!(regex.test(fromDate) && regex.test(toDate))) return "Not Date Format";
+        var result = [];
+        var curDate = new Date(fromDate);
+        while(curDate <= new Date(toDate)) {
+            result.push(curDate.toISOString().split("T")[0]);
+            curDate.setDate(curDate.getDate() + 1);
+        }
+
+        $('#fromDate').attr('value', fromDate);
+        $('#toDate').attr('value', toDate);
+
+/*        $('#fromDateExcel').attr('value', fromDate);
+        $('#toDateExcel').attr('value', toDate);
+        */
+
+        let totalDateList = [];
+        let cntList = [];
+        let dateList = [];
+
+        $.ajax({
+            url: "/connectCnt",
+            type: "get",
+            dataType: "json",
+            data: {
+                fromDate: fromDate,
+                toDate: toDate
+            },
+            success:function(data) {
+                for(let i=0; i < data.length; i++) {
+                    cntList.push(data[i].cnt);
+                    dateList.push(data[i].date);
+                }
+
+                var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
+                if(!(regex.test(fromDate) && regex.test(toDate)))
+                    return "Not Date Format";
+                var result = [];
+                var curDate = new Date(fromDate);
+
+                while(curDate <= new Date(toDate)) {
+                    result.push(curDate.toISOString().split("T")[0]);
+                    curDate.setDate(curDate.getDate() + 1);
+                }
+
+                for(var i=0; i<result.length; i++) {
+                    result[i] = result[i].replace(/-/g, "")
+                    totalDateList.push(result[i]);
+                }
+
+                for(var i=0; i<dateList.length; i++) {
+                    if(totalDateList[i] > dateList[i] ){
+                        dateList.unshift(totalDateList[i]);
+                        cntList.unshift(0)
+                    }
+
+                    if(totalDateList[i] !== dateList[i] && totalDateList[i] < dateList[i] ){
+                        dateList.splice(i,0, totalDateList[i]);
+                        cntList.splice(i,0, 0);
+                    }
+
+                    for(var j=0; j<(totalDateList.length-dateList.length); j++) {
+                        dateList.push(totalDateList[i]);
+                        cntList.push(0);
+                    }
+
+                }
+
+                new Chart(document.getElementById('myChart2'), {
+                    type: 'bar',
+                    data: {
+                        labels: totalDateList,
+                        datasets: [{
+                            data: cntList,
+                            label: "접속자카운트",
+                            borderColor: '#FFE4B5',
+                            backgroundColor: '#FFE4B5',
+                            fill:true
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: '카운트'
+                        },
+                        scales: {
+                            responsive: false,
+                            y: {
+                                min: 0,
+                                max: 100,
+                            }
+                        }
+                    }
+                });
+            }, error:function(){
+                alert("실패")
+            }
+        })
+    }
+
+    function rowClicked() {
+       // getGraph();
+
+        $('#myChart').remove(); //그래프 그리는 영역 지움
+        $('#div_myAreaChart').append('<canvas id="myChart" ></canvas>');
+
+        const fromDate = document.getElementById("fromDate").value;
+        const toDate = document.getElementById("toDate").value;
+
+        var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
+        if(!(regex.test(fromDate) && regex.test(toDate)))
+            return "Not Date Format";
+        var result = [];
+        var curDate = new Date(fromDate);
+
+        while(curDate <= new Date(toDate)) {
+            result.push(curDate.toISOString().split("T")[0]);
+            curDate.setDate(curDate.getDate() + 1);
+        }
+
+        let totalDateList = [];
+        for(var i=0; i<result.length; i++) {
+            result[i] = result[i].replace(/-/g, "")
+            totalDateList.push(result[i]);
+        }
+
+        let traceDateList = [];
+        let traceCntList = [];
+
+        let searchInfoDateList = [];
+        let searchInfoCntList = [];
+
+        let searchResultDateList = [];
+        let searchResultCntList = [];
+
+        let noticeDateList = [];
+        let noticeCntList = [];
+
+        var traceList = document.getElementById('traceList').getElementsByTagName("tr");
+        var searchInfoList = document.getElementById('searchInfoList').getElementsByTagName("tr");
+        var searchResultList = document.getElementById('searchResultList').getElementsByTagName("tr");
+        var noticeList = document.getElementById('noticeList').getElementsByTagName("tr");
+
+        for(var i=1; i<traceList.length; i++) {
+            var cells = traceList[i].getElementsByTagName("td");
+
+            var cell_1 = cells[0].firstChild.data; // 날짜
+            var cell_2 = cells[1].firstChild.data; // 카운트
+            traceDateList.push(cell_1);
+            traceCntList.push(cell_2);
+
+            // totalDateList.push(cell_1);
+        }
+
+        for(var i=1; i<noticeList.length; i++) {
+            var cells = noticeList[i].getElementsByTagName("td");
+
+            var cell_1 = cells[0].firstChild.data; // 날짜
+            var cell_2 = cells[1].firstChild.data; // 카운트
+            noticeDateList.push(cell_1);
+            noticeCntList.push(cell_2);
+
+            // totalDateList.push(cell_1);
+        }
+
+        for(var i=1; i<searchResultList.length; i++) {
+            var resultCells = searchResultList[i].getElementsByTagName("td");
+
+            var resultCell_1 = resultCells[0].firstChild.data; // 날짜
+            var resultCell_2 = resultCells[1].firstChild.data; // 카운트
+
+            searchResultDateList.push(resultCell_1);
+            searchResultCntList.push(resultCell_2);
+
+            // totalDateList.push(resultCell_1);
+        }
+
+        for(var i=1; i<searchInfoList.length; i++) {
+            var infoCells = searchInfoList[i].getElementsByTagName("td");
+            var infoCell_1 = infoCells[0].firstChild.data; // 날짜
+            var infoCell_2 = infoCells[1].firstChild.data; // 카운트
+
+            searchInfoCntList.push(infoCell_2);
+            searchInfoDateList.push(infoCell_1);
+
+            // totalDateList.push(infoCell_1);
+
+        }
+
+        let sortTotalDateList = totalDateList.sort();
+
+        const sortTotalDateList2 = sortTotalDateList.filter((ele, idx)=>{
+            return sortTotalDateList.indexOf(ele) === idx;
+        });
+        Array.isArray(sortTotalDateList2);
+
+        for(var i=0; i<sortTotalDateList2.length; i++) {
+            if(sortTotalDateList2[i] > noticeDateList[i] ){
+                noticeDateList.unshift(sortTotalDateList2[i]);
+                noticeCntList.unshift(0)
+            }
+
+            if(sortTotalDateList2[i] !== noticeDateList[i] && sortTotalDateList2[i] < noticeDateList[i] ){
+                noticeDateList.splice(i,0, sortTotalDateList2[i]);
+                noticeCntList.splice(i,0, 0);
+            }
+
+            for(var j=0; j<(sortTotalDateList2.length-noticeDateList.length); j++) {
+                noticeDateList.push(sortTotalDateList2[i]);
+                noticeCntList.push(0);
+            }
+
+        }
+
+        for(var i=0; i<sortTotalDateList2.length; i++) {
+            if(sortTotalDateList2[i] > searchInfoDateList[i] ){
+                searchInfoDateList.unshift(sortTotalDateList2[i]);
+                searchInfoCntList.unshift(0)
+            }
+
+            if(sortTotalDateList2[i] !== searchInfoDateList[i] && sortTotalDateList2[i] < searchInfoDateList[i] ){
+                searchInfoDateList.splice(i,0, sortTotalDateList2[i]);
+                searchInfoCntList.splice(i,0, 0);
+            }
+
+            for(var j=0; j<(sortTotalDateList2.length-searchInfoDateList.length); j++) {
+                searchInfoDateList.push(sortTotalDateList2[i]);
+                searchInfoCntList.push(0);
+            }
+
+        }
+
+        for( var i=0; i<sortTotalDateList2.length; i++ ) {
+            if(sortTotalDateList2[i] !== traceDateList[i] && sortTotalDateList2[i] < traceDateList[i] ){
+                traceDateList.splice(i,0, sortTotalDateList2[i]);
+                traceCntList.splice(i,0, 0);
+            }
+
+            for(var j=0; j<(sortTotalDateList2.length-traceDateList.length); j++) {
+                traceDateList.push(sortTotalDateList2[i]);
+                traceCntList.push(0);
+            }
+        }
+
+        for( var i=0; i<sortTotalDateList2.length; i++ ) {
+            if(sortTotalDateList2[i] !== searchResultDateList[i] && sortTotalDateList2[i] < searchResultDateList[i] ){
+                searchResultDateList.splice(i,0, searchResultDateList[i]);
+                searchResultCntList.splice(i,0, 0);
+            }
+            for(var j=0; j<(sortTotalDateList2.length-searchResultDateList.length); j++) {
+                searchResultDateList.push(sortTotalDateList2[i]);
+                searchResultCntList.push(0);
+            }
+
+        }
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: sortTotalDateList2,
+                datasets: [
+                    {
+                        label: '모니터링',
+                        data: traceCntList,
+                        borderColor:'rgba(255, 99, 132, 1)',
+                        backgroundColor:'rgba(255, 99, 132, 1)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: '이력관리',
+                        data: searchInfoCntList,
+                        borderColor:'#E56D29',
+                        backgroundColor:'#E56D29',
+                        borderWidth: 2
+                    },
+                    {
+                        label: '검색결과',
+                        data: searchResultCntList,
+                        borderColor:'rgba(120, 99, 132, 1)',
+                        backgroundColor:'rgba(120, 99, 132, 1)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: '자동추적',
+                        data: noticeCntList,
+                        borderColor:'#3232FF',
+                        backgroundColor:'#3232FF',
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    responsive: false,
+                    y: {
+                        min: 0,
+                        max: 100,
+                    }
+                },
+                title: {
+                    display: true,
+                    text: '사용자 접속 현황'
+                }
+            }
+        });
+    }
+
+    function pdfDown(){
+        html2canvas(document.getElementById('pdfDiv'), {
+            allowTaint: true,
+            useCORS: true,
+            logging: false,
+            height: window.outerHeight + window.innerHeight,
+            windowHeight: window.outerHeight + window.innerHeight
+        }).then(function(canvas) {
+            var imgData = canvas.toDataURL('image/png');
+
+            var imgWidth = 210;
+            var pageHeight = imgWidth * 1.141;
+            var imgHeight = canvas.height * imgWidth / canvas.width;
+            var heightLeft = imgHeight;
+            var doc = new jsPDF('p','mm');
+            var position = 0;
+
+            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            doc.save('사용자 활용 현황.pdf');
+
+        });
+    }
+
+</script>
+
+</body>
+</html>

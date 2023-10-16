@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lagn="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>디지털 성범죄</title>
+  <link rel="stylesheet" href="/css/common.min.css" />
+  <link rel="stylesheet" href="/css/manage.min.css" />
+  <script src="/js/footer.js"></script>
+  <script src="/js/pagination.js"></script>
+  <script src="/js/style.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.debug.js'></script>
+  <script src="html2canvas.hertzen.com/dist/html2canvas.js"></script>
+</head>
+<style>
+  .lgn_history_button {
+    font-size: 15px;
+    font-weight: bold;
+    border: 1px solid;
+    width: 85px;
+    border-color: #a2a2a3;
+    height: 60px;
+    float: right;
+  }
+
+  /*
+  .search_btn {
+    font-size: 15px;
+    font-weight: bold;
+    border: 1px solid;
+    width: 85px;
+    border-color: #a2a2a3;
+    height: 30px;
+    margin-left: 30px;
+  }
+  */
+
+</style>
+<body>
+
+<article class="manage-wrap wrapper">
+  <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
+  <section class="layout" id="manage">
+    <div id="pdfDiv">
+    <h1 class="title">사용자 접속 현황</h1>
+      <div style="margin-top: 45px;"> <!-- class="bor10 btn-off " -->
+        <div  style="width: 500px; height: 53px; padding-left: 25px; padding-top: 10px; float: right; margin-bottom: 45px;" >
+          <input style="margin-right: 20px; font-weight: bold;" type="date" id="fromDate" name="fromDate" value="" /> ~
+          <input style="margin-left: 20px; font-weight: bold;" type="date" id="toDate" name="toDate" value="" />
+          <button style="width: 70px; margin-left: 65px; font-size: 15px; color: #7c7c7f; height: 30px; font-weight: bold;"
+                  class="bor10 btn-off manager-add" type="button" onclick="getGraph();">검색</button>
+        </div>
+        <div id="div_myAreaChart" style="margin-top: 50px;">
+          <canvas id="myChart" width="200" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+    <form action="/excel/download" method="get">
+      <input style="display: none" type="date" id="fromDateExcel" name="fromDate" value="" />
+      <input style="display: none" type="date" id="toDateExcel" name="toDate" value="" />
+      <div style="margin-top: 55px; float: right">
+        <button class="bor10 btn-off manager-add" style="height: 60px; font-size: 17px; width: 121px; font-weight: bold; color: #e88550;"
+                type="submit">Excel <br> Download</button>
+        <button class="bor10 btn-off manager-add" style="font-weight: bold; margin-right: 10px; height: 60px; font-size: 17px; width: 100px; margin-left: 15px; color: #e88550;"
+                type="button" onclick="pdfDown();">PDF <br> Download</button>
+<!--
+        <button class="lgn_history_button" type="submit">Excel <br> Download</button>
+        <button class="lgn_history_button" style="margin-right: 10px;" type="button" onclick="pdfDown();">PDF <br> Download</button>
+-->
+      </div>
+    </form>
+
+  </section>
+
+  <script>footer()</script>
+</article>
+<script type="text/javascript" th:inline="javascript">
+
+  $(document).ready(function(){
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + (date.getDate())).slice(-2);
+
+    const fromDate2 =  `${year}-${month}-${day-7}`;
+    const toDate2  = `${year}-${month}-${day}`;
+
+    $('#fromDate').attr('value', fromDate2);
+    $('#toDate').attr('value', toDate2);
+
+    $('#fromDateExcel').attr('value', fromDate2);
+    $('#toDateExcel').attr('value', toDate2);
+
+    getGraph();
+  });
+
+  function getGraph() {
+    const fromDate = document.getElementById("fromDate").value;
+    const toDate = document.getElementById("toDate").value;
+
+    var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
+    if(!(regex.test(fromDate) && regex.test(toDate))) return "Not Date Format";
+    var result = [];
+    var curDate = new Date(fromDate);
+    while(curDate <= new Date(toDate)) {
+      result.push(curDate.toISOString().split("T")[0]);
+      curDate.setDate(curDate.getDate() + 1);
+    }
+
+    $('#fromDate').attr('value', fromDate);
+    $('#toDate').attr('value', toDate);
+
+    $('#fromDateExcel').attr('value', fromDate);
+    $('#toDateExcel').attr('value', toDate);
+
+    let totalDateList = [];
+    let cntList = [];
+    let dateList = [];
+
+    $.ajax({
+      url: "/connectCnt",
+      type: "get",
+      dataType: "json",
+      data: {
+        fromDate: fromDate,
+        toDate: toDate
+      },
+      success:function(data) {
+
+        for(let i=0; i < data.length; i++) {
+          cntList.push(data[i].cnt);
+          dateList.push(data[i].date);
+        }
+
+
+        var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
+        if(!(regex.test(fromDate) && regex.test(toDate)))
+          return "Not Date Format";
+        var result = [];
+        var curDate = new Date(fromDate);
+
+        while(curDate <= new Date(toDate)) {
+          result.push(curDate.toISOString().split("T")[0]);
+          curDate.setDate(curDate.getDate() + 1);
+        }
+
+        for(var i=0; i<result.length; i++) {
+          result[i] = result[i].replace(/-/g, "")
+          totalDateList.push(result[i]);
+        }
+
+        for(var i=0; i<dateList.length; i++) {
+          if(totalDateList[i] > dateList[i] ){
+            dateList.unshift(totalDateList[i]);
+            cntList.unshift(0)
+          }
+
+          if(totalDateList[i] !== dateList[i] && totalDateList[i] < dateList[i] ){
+            dateList.splice(i,0, totalDateList[i]);
+            cntList.splice(i,0, 0);
+          }
+
+          for(var j=0; j<(totalDateList.length-dateList.length); j++) {
+            dateList.push(totalDateList[i]);
+            cntList.push(0);
+          }
+
+        }
+
+        // alert(dateList);
+        // alert(cntList);
+
+        $('#myChart').remove(); //그래프 그리는 영역 지움 width="100%" height="40"
+        $('#div_myAreaChart').append('<canvas id="myChart" ></canvas>');
+
+        new Chart(document.getElementById('myChart'), {
+          type: 'bar',
+          data: {
+            labels: totalDateList,
+            datasets: [{
+              data: cntList,
+              label: "접속자카운트",
+              borderColor: '#FFE4B5',
+              backgroundColor: '#FFE4B5',
+              fill:true
+            }]
+          },
+          options: {
+            title: {
+              display: true,
+              text: '카운트'
+            },
+            scales: {
+              responsive: false,
+              y: {
+                min: 0,
+                max: 200,
+              }
+            }
+          }
+        });
+      }, error:function(){
+        alert("실패")
+      }
+    })
+  }
+
+/*
+    function getDatesStartToLast(fromDate, toDate) {
+
+    return result;
+  }
+  */
+
+
+  function pdfDown(){
+    html2canvas(document.getElementById('pdfDiv'), {
+      allowTaint: true,
+      useCORS: true,
+      logging: false,
+      height: window.outerHeight + window.innerHeight,
+      windowHeight: window.outerHeight + window.innerHeight
+    }).then(function(canvas) {
+      var imgData = canvas.toDataURL('image/png');
+
+      var imgWidth = 210;
+      var pageHeight = imgWidth * 1.141;
+      var imgHeight = canvas.height * imgWidth / canvas.width;
+      var heightLeft = imgHeight;
+      var doc = new jsPDF('p','mm');
+      var position = 0;
+
+      doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      doc.save('사용자 접속 현황.pdf');
+
+    });
+  }
+
+/*
+
+  function pdfDown(){
+    // 페이지의 크기를 구한다.
+    var reportPageHeight = $('#myChart').innerHeight();
+    var reportPageWidth = $('#myChart').innerWidth();
+
+    // 캔버스 개체를 만든다.
+    var pdfCanvas = $('<canvas />').attr({
+      id: "canvaspdf",
+      width: reportPageWidth,
+      height: reportPageHeight
+    });
+
+    // 캔버스 포지션을 정한다.
+    var pdfctx = $(pdfCanvas)[0].getContext('2d');
+    var pdfctxX = 0;
+    var pdfctxY = 0;
+    var buffer = 100;
+
+    $("canvas").each(function(index) {
+      // 차트의 크기를 구한다.
+      var canvasHeight = $(this).innerHeight();
+      var canvasWidth = $(this).innerWidth();
+
+      // 새로운 캔버스 안에 넣는다.
+      pdfctx.drawImage($(this)[0], pdfctxX, pdfctxY, canvasWidth, canvasHeight);
+      pdfctxX += canvasWidth + buffer;
+
+      if (index % 2 === 1) {
+        pdfctxX = 0;
+        pdfctxY += canvasHeight + buffer;
+      }
+    });
+
+    // pdf 객체를 생성하여 넣는다.
+    var pdf = new jsPDF('l', 'pt', [reportPageWidth, reportPageHeight]);
+    pdf.addImage($(pdfCanvas)[0], 'PNG', 0, 0);
+
+
+    pdf.save('사용자 접속 현황.pdf');
+    alert('PDF파일 이름 PDF 파일 다운로드가 실행되어 다운로드 폴더에 생성됩니다.');
+  }
+*/
+
+</script>
+
+</body>
+</html>
