@@ -224,9 +224,10 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     String whereTsiUnoTsrTitleLikeTsrStatusIn2 =" WHERE TSI.TSI_UNO = :tsiUno AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') or TSR.TSR_TITLE is null or 1=1) " +
             "AND (tsj.TSJ_STATUS = :tsjStatus1 OR tsj.TSJ_STATUS = :tsjStatus2 OR tsj.TSJ_STATUS = :tsjStatus3 OR tsj.TSJ_STATUS = :tsjStatus4)" +
-            "AND (tsr.TSR_SNS = :snsStatus01 OR tsr.TSR_SNS = :snsStatus02 OR tsr.TSR_SNS = :snsStatus03 OR tsr.TSR_SNS = :snsStatus04)";
-    String whereTsiUnoTsrTitleLikeTsrStatusIn3 =" WHERE TSI.TSI_UNO = :tsiUno AND TSR.TSR_IMG_PATH IS NULL ";
+            "AND (tsr.TSR_SNS = :snsStatus01 OR tsr.TSR_SNS = :snsStatus02 OR tsr.TSR_SNS = :snsStatus03 OR tsr.TSR_SNS = :snsStatus04)" ;
 
+
+    String whereTsiUnoTsrTitleLikeTsrStatusIn3 =" WHERE TSI.TSI_UNO = :tsiUno AND TSR.TSR_IMG_PATH IS NULL ";
 
     String whereTsrUno = " WHERE TSR.TSR_UNO = :tsrUno";
 
@@ -259,7 +260,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
 
     // ORDER BY
-    String orderByTmrSimilarityDesc = " ORDER BY tmrVScore desc, tmrAScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
+    String orderByTmrSimilarityDesc = "  GROUP BY tsrSiteUrl  ORDER BY tmrVScore desc, tmrAScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
     String orderByTmrSimilarityDesc_1 = " ORDER BY tmrVScore desc, tmrSimilarity desc, tsrUno desc";
     String orderByTmrSimilarityDesc_2 = " ORDER BY tmrAScore desc, tmrSimilarity desc, tsrUno desc";
     String orderByTmrSimilarityDesc_3 = " ORDER BY tmrTScore desc, tmrSimilarity desc, tsrUno desc";
@@ -298,6 +299,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     String countQuery = "SELECT COUNT(TSR.TSR_UNO)";
     String countQuery2 = "SELECT DISTINCT(COUNT(TSR.TSR_UNO))";
+
+    String countQuery3 = "SELECT COUNT(DISTINCT TSR.tsr_site_url) ";
     String limit4 = " LIMIT 4";
 
     String InfoImgSrc = "   select " +
@@ -327,7 +330,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     // 검색 결과 검색 이력
     // @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn2+orderByTmrSimilarityDesc, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn2)
-    @Query(value = defaultQeury_5+from2+whereTsiUnoTsrTitleLikeTsrStatusIn2+orderByTmrSimilarityDesc, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn2)
+    @Query(value = defaultQeury_5+from2+whereTsiUnoTsrTitleLikeTsrStatusIn2+orderByTmrSimilarityDesc, nativeQuery = true, countQuery = countQuery3+from+whereTsiUnoTsrTitleLikeTsrStatusIn2)
     Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
                                                                              String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
 
