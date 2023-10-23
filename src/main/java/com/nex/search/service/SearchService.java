@@ -60,61 +60,6 @@ import static com.nex.common.CmnUtil.execPython;
 public class SearchService {
 
     private final EntityManager em;
-
-
-    /*
-    2023-03-26 각각 class 생성
-    @Data
-    public static class YandexByTextResult {
-        private String error;
-        private List<Images_resultsByText> images_results;
-    }
-
-    @Data
-    public static class Images_resultsByText {
-        private int position;
-        private String original;
-        private int original_width;
-        private int original_height;
-        private String source;
-        private String title;
-        private String link;
-        private String thumbnail;
-
-        public boolean isInstagram() {
-            return "Instagram".equals(source);
-        }
-
-        public boolean isFacebook() {
-            return "Facebook".equals(source);
-        }
-    }
-
-    @Data
-    public static class YandexByImageResult {
-        private String error;
-        private List<Images_resultsByImage> inline_images;
-    }
-
-    @Data
-    public static class Images_resultsByImage {
-        private String original;
-        private String source;
-        private String title;
-        private String link;
-        private String thumbnail;
-        private String source_name;
-
-        public boolean isInstagram() {
-            return "Instagram".equals(source);
-        }
-
-        public boolean isFacebook() {
-            return "Facebook".equals(source);
-        }
-    }
-     */
-
     private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
     private final VideoInfoRepository videoInfoRepository;
@@ -308,30 +253,6 @@ public class SearchService {
                     + "&nfpr=0"
                     + "&engine=google";
 
-
-            // log.info("url: "+url);
-
-            /*
-            CompletableFuture
-                    .supplyAsync(() -> {
-                        try {
-                            // text기반 yandex 검색 및 결과 저장.(이미지)
-                            return searchYandexByText(url, tsrSns, insertResult);
-                        } catch (Exception e) {
-                            log.debug(e.getMessage());
-                            return null;
-                        }
-                    })
-                    .thenAccept((r) -> {
-                        try {
-                            // yandex검색을 통해 결과 db에 적재.
-                            saveImgSearchYandexByText(r, insertResult);
-                        } catch (Exception e) {
-                            log.debug(e.getMessage());
-                        }
-                    });
-             */
-            //2023-03-26
             //기존 searchYandexByText 를 데이터 가져 오는 부분, 저장 하는 부분으로 분리
             CompletableFuture
                     .supplyAsync(() -> {
@@ -375,14 +296,6 @@ public class SearchService {
                 log.info("index: " + index);
                 loop = false;
             }
-
-            /*
-            // 30페이지까지 저장
-            if(index >= 20){
-                log.info("index: "+index);
-                loop = false;
-            }
-             */
 
             index++;
         } while (loop);
@@ -391,13 +304,11 @@ public class SearchService {
         loop=true;
 
         do {
-            // yandex search url // cn
             String url = textYandexUrl
                     + "?q=" + tsiKeywordHiddenValue
                     + "&gl=cn"
                     + "&no_cache=" + textYandexNocache
                     + "&location=" + textYandexLocation
-//                    + "&tbm=" + textYandexTbm
                     + "&start=" + String.valueOf(index * 10)
                     + "&api_key=" + textYandexApikey
                     + "&safe=off"
@@ -405,31 +316,6 @@ public class SearchService {
                     + "&nfpr=0"
                     + "&engine=google";
 
-
-            // log.info("url: "+url);
-
-            /*
-            CompletableFuture
-                    .supplyAsync(() -> {
-                        try {
-                            // text기반 yandex 검색 및 결과 저장.(이미지)
-                            return searchYandexByText(url, tsrSns, insertResult);
-                        } catch (Exception e) {
-                            log.debug(e.getMessage());
-                            return null;
-                        }
-                    })
-                    .thenAccept((r) -> {
-                        try {
-                            // yandex검색을 통해 결과 db에 적재.
-                            saveImgSearchYandexByText(r, insertResult);
-                        } catch (Exception e) {
-                            log.debug(e.getMessage());
-                        }
-                    });
-             */
-            //2023-03-26
-            //기존 searchYandexByText 를 데이터 가져 오는 부분, 저장 하는 부분으로 분리
             CompletableFuture
                     .supplyAsync(() -> {
                         try {
@@ -473,13 +359,68 @@ public class SearchService {
                 loop = false;
             }
 
-            /*
-            // 30페이지까지 저장
-            if(index >= 20){
-                log.info("index: "+index);
+            index++;
+        } while (loop);
+
+
+        index=0;
+        loop=true;
+
+        do {
+            String url = textYandexUrl
+                    + "?q=" + tsiKeywordHiddenValue
+                    + "&gl=kr"
+                    + "&no_cache=" + textYandexNocache
+                    + "&location=" + textYandexLocation
+                    + "&start=" + String.valueOf(index * 10)
+                    + "&api_key=" + textYandexApikey
+                    + "&safe=off"
+                    + "&filter=0"
+                    + "&nfpr=0"
+                    + "&engine=google";
+
+            CompletableFuture
+                    .supplyAsync(() -> {
+                        try {
+                            // text기반 yandex 검색
+                            return searchTextYandex(url, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                        } catch (Exception e) {
+                            log.error(e.getMessage(), e);
+                            return null;
+                        }
+                    })
+                    .thenApply((r) -> {
+                        try {
+                            // 결과 저장.(이미지)
+                            return saveYandex(
+                                    r
+                                    , tsrSns
+                                    , insertResult
+                                    , Images_resultsByText::getOriginal
+                                    , Images_resultsByText::getThumbnail
+                                    , Images_resultsByText::getTitle
+                                    , Images_resultsByText::getLink
+                                    , Images_resultsByText::isFacebook
+                                    , Images_resultsByText::isInstagram
+                            );
+                        } catch (Exception e) {
+                            log.error(e.getMessage(), e);
+                            return null;
+                        }
+                    })
+                    .thenAccept((r) -> {
+                        try {
+                            // yandex검색을 통해 결과 db에 적재.
+                            saveImgSearchYandex(r, insertResult);
+                        } catch (Exception e) {
+                            log.error(e.getMessage(), e);
+                        }
+                    });
+
+            if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
+                log.info("index: " + index);
                 loop = false;
             }
-             */
 
             index++;
         } while (loop);
@@ -621,10 +562,115 @@ public class SearchService {
         } while (loop);
 
         index=0;
+        loop=true;
 
         do {
             String url = textYandexUrl
                     + "?gl=cn"
+                    + "&no_cache=" + textYandexNocache
+                    + "&q=" + tsiKeywordHiddenValue
+                    + "&api_key=" + textYandexApikey
+                    + "&safe=off"
+                    + "&filter=0"
+                    + "&nfpr=0"
+                    + "&start=" + String.valueOf(index * 10)
+                    // + "&tbm=" + textYandexTbm
+                    + "&engine=" + imageYandexEngine
+                    + "&image_url=" + searchImageUrl;
+
+            //2023-03-26
+            //기존 searchYandexByText 를 데이터 가져 오는 부분, 저장 하는 부분으로 분리
+            CompletableFuture
+                    .supplyAsync(() -> {
+                        try {
+                            // text기반 yandex 검색
+                            return searchYandex(url, YandexByImageResult.class, YandexByImageResult::getError, YandexByImageResult::getInline_images);
+                        } catch (Exception e) {
+                            log.error(e.getMessage(), e);
+                            return null;
+                        }
+                    })
+                    .thenApply((r) -> {
+                        try {
+                            // 결과 저장.(이미지)
+                            return saveYandex(
+                                    r
+                                    , tsrSns
+                                    , insertResult
+                                    , Images_resultsByImage::getOriginal
+                                    , Images_resultsByImage::getThumbnail
+                                    , Images_resultsByImage::getTitle
+                                    , Images_resultsByImage::getSource
+                                    , Images_resultsByImage::isFacebook
+                                    , Images_resultsByImage::isInstagram
+                            );
+                        } catch (Exception e) {
+                            log.error(e.getMessage(), e);
+                            return null;
+                        }
+                    })
+                    .thenApplyAsync((r) -> {
+                        try {
+                            // yandex검색을 통해 결과 db에 적재.
+                            return saveImgSearchYandex(r, insertResult);
+                        } catch (Exception e) {
+                            log.error(e.getMessage(), e);
+                            return null;
+                        }
+                    });
+
+            CompletableFuture
+                    .supplyAsync(() -> {
+                        try {
+                            // text기반 yandex 검색
+                            return searchYandex(url, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                        } catch (Exception e) {
+                            log.error(e.getMessage(), e);
+                            return null;
+                        }
+                    })
+                    .thenApply((r) -> {
+                        try {
+                            // 결과 저장.(이미지)
+                            return saveYandex(
+                                    r
+                                    , tsrSns
+                                    , insertResult
+                                    , Images_resultsByText::getOriginal
+                                    , Images_resultsByText::getThumbnail
+                                    , Images_resultsByText::getTitle
+                                    , Images_resultsByText::getLink
+                                    , Images_resultsByText::isFacebook
+                                    , Images_resultsByText::isInstagram
+                            );
+                        } catch (Exception e) {
+                            log.error(e.getMessage(), e);
+                            return null;
+                        }
+                    })
+                    .thenAccept((r) -> {
+                        try {
+                            // yandex검색을 통해 결과 db에 적재.
+                            saveImgSearchYandex(r, insertResult);
+                        } catch (Exception e) {
+                            log.error(e.getMessage(), e);
+                        }
+                    });
+
+            if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
+                loop = false;
+            }
+
+            index++;
+        } while (loop);
+
+
+        index=0;
+        loop=true;
+
+        do {
+            String url = textYandexUrl
+                    + "?gl=kr"
                     + "&no_cache=" + textYandexNocache
                     + "&q=" + tsiKeywordHiddenValue
                     + "&api_key=" + textYandexApikey
@@ -739,7 +785,7 @@ public class SearchService {
     public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult) {
         int index = 0;
         loop = true;
-        log.info("searchYandexByImage index1: " + index);
+
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
         // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
@@ -758,8 +804,6 @@ public class SearchService {
                     + "&engine=" + imageYandexEngine
                     + "&image_url=" + searchImageUrl;
 
-            //2023-03-26
-            //기존 searchYandexByText 를 데이터 가져 오는 부분, 저장 하는 부분으로 분리
             // 이미지
             CompletableFuture
                     .supplyAsync(() -> {
@@ -799,45 +843,6 @@ public class SearchService {
                             return null;
                         }
                     });
-/*
-            CompletableFuture
-                    .supplyAsync(() -> {
-                        try {
-                            // text기반 yandex 검색
-                            return searchYandex(url, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
-                        } catch (Exception e) {
-                            log.error(e.getMessage(), e);
-                            return null;
-                        }
-                    })
-                    .thenApply((r) -> {
-                        try {
-                            // 결과 저장.(이미지)
-                            return saveYandex(
-                                    r
-                                    , tsrSns
-                                    , insertResult
-                                    , Images_resultsByText::getOriginal
-                                    , Images_resultsByText::getThumbnail
-                                    , Images_resultsByText::getTitle
-                                    , Images_resultsByText::getLink
-                                    , Images_resultsByText::isFacebook
-                                    , Images_resultsByText::isInstagram
-                            );
-                        } catch (Exception e) {
-                            log.error(e.getMessage(), e);
-                            return null;
-                        }
-                    })
-                    .thenAccept((r) -> {
-                        try {
-                            // yandex검색을 통해 결과 db에 적재.
-                            saveImgSearchYandex(r, insertResult);
-                        } catch (Exception e) {
-                            log.error(e.getMessage(), e);
-                        }
-                    });
-*/
 
             if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
                 loop = false;
@@ -847,6 +852,7 @@ public class SearchService {
         } while (loop);
 
         index = 0;
+        loop=true;
 
         do {
             String url = textYandexUrl
@@ -861,8 +867,6 @@ public class SearchService {
                     + "&engine=" + imageYandexEngine
                     + "&image_url=" + searchImageUrl;
 
-            //2023-03-26
-            //기존 searchYandexByText 를 데이터 가져 오는 부분, 저장 하는 부분으로 분리
             // 이미지
             CompletableFuture
                     .supplyAsync(() -> {
@@ -902,12 +906,37 @@ public class SearchService {
                             return null;
                         }
                     });
-/*
+
+            if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
+                loop = false;
+            }
+
+            index++;
+        } while (loop);
+
+
+        index = 0;
+        loop=true;
+
+        do {
+            String url = textYandexUrl
+                    + "?gl=kr"
+                    + "&no_cache=" + textYandexNocache
+                    + "&api_key=" + textYandexApikey
+                    + "&safe=off"
+                    + "&filter=0"
+                    + "&nfpr=0"
+                    + "&start=" + String.valueOf(index * 10)
+                    // + "&tbm=" + textYandexTbm
+                    + "&engine=" + imageYandexEngine
+                    + "&image_url=" + searchImageUrl;
+
+            // 이미지
             CompletableFuture
                     .supplyAsync(() -> {
                         try {
                             // text기반 yandex 검색
-                            return searchYandex(url, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                            return searchYandex(url, YandexByImageResult.class, YandexByImageResult::getError, YandexByImageResult::getInline_images);
                         } catch (Exception e) {
                             log.error(e.getMessage(), e);
                             return null;
@@ -920,27 +949,27 @@ public class SearchService {
                                     r
                                     , tsrSns
                                     , insertResult
-                                    , Images_resultsByText::getOriginal
-                                    , Images_resultsByText::getThumbnail
-                                    , Images_resultsByText::getTitle
-                                    , Images_resultsByText::getLink
-                                    , Images_resultsByText::isFacebook
-                                    , Images_resultsByText::isInstagram
+                                    , Images_resultsByImage::getOriginal
+                                    , Images_resultsByImage::getThumbnail
+                                    , Images_resultsByImage::getTitle
+                                    , Images_resultsByImage::getSource
+                                    , Images_resultsByImage::isFacebook
+                                    , Images_resultsByImage::isInstagram
                             );
                         } catch (Exception e) {
                             log.error(e.getMessage(), e);
                             return null;
                         }
                     })
-                    .thenAccept((r) -> {
+                    .thenApplyAsync((r) -> {
                         try {
                             // yandex검색을 통해 결과 db에 적재.
-                            saveImgSearchYandex(r, insertResult);
+                            return saveImgSearchYandex(r, insertResult);
                         } catch (Exception e) {
                             log.error(e.getMessage(), e);
+                            return null;
                         }
                     });
-*/
 
             if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
                 loop = false;
@@ -1890,6 +1919,55 @@ public class SearchService {
             log.error(e.getMessage(), e);
         }
 
+        try {
+            List<String> files = processVideo(insertResult);
+            log.info("kr 검색 진입");
+
+            for (int i = 0; i < files.size(); i++) {
+                VideoInfoEntity videoInfo = new VideoInfoEntity();
+                videoInfo.setTsiUno(insertResult.getTsiUno());
+                videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
+                videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
+                saveVideoInfo(videoInfo);
+
+                String searchImageUrl = serverIp + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
+                // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
+                searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
+
+                String url = textYandexUrl
+                        + "?gl=kr"
+                        + "&no_cache=" + textYandexNocache
+                        + "&api_key=" + textYandexApikey
+                        + "&engine=" + imageYandexEngine
+                        + "&safe=off"
+                        + "&filter=0"
+                        + "&nfpr=0"
+                        + "&image_url=" + searchImageUrl;
+
+                CompletableFuture
+                        .supplyAsync(() -> {
+                            try {
+                                // text기반 yandex 검색 및 결과 저장.(이미지)
+                                return searchYandexByImage(url, tsrSns, insertResult);
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
+                                return null;
+                            }
+                        })
+                        .thenApplyAsync((r) -> {
+                            try {
+                                // yandex검색을 통해 결과 db에 적재.
+                                return saveImgSearchYandex(r, insertResult);
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
+                                return null;
+                            }
+                        });
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
     }
 
     // 키워드+영상
@@ -2002,6 +2080,58 @@ public class SearchService {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+
+
+        try {
+            List<String> files = processVideo(insertResult);
+            for (int i = 0; i < files.size(); i++) {
+                VideoInfoEntity videoInfo = new VideoInfoEntity();
+                videoInfo.setTsiUno(insertResult.getTsiUno());
+                videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
+                videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
+                saveVideoInfo(videoInfo);
+
+                String searchImageUrl = serverIp + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
+                // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
+                searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
+
+                String url = textYandexUrl
+                        + "?gl=kr"
+                        + "&q=" + tsiKeywordHiddenValue
+                        + "&no_cache=" + textYandexNocache
+                        + "&api_key=" + textYandexApikey
+                        + "&engine=" + imageYandexEngine
+                        + "&safe=off"
+                        + "&filter=0"
+                        + "&nfpr=0"
+                        + "&image_url=" + searchImageUrl;
+
+                CompletableFuture
+                        .supplyAsync(() -> {
+                            try {
+                                // text기반 yandex 검색 및 결과 저장.(이미지)
+                                return searchYandexByImage(url, tsrSns, insertResult);
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
+                                return null;
+                            }
+                        })
+                        .thenApplyAsync((r) -> {
+                            try {
+                                // yandex검색을 통해 결과 db에 적재.
+                                return saveImgSearchYandex(r, insertResult);
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
+                                return null;
+                            }
+                        });
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+
+
 
     }
 
