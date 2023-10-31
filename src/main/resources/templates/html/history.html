@@ -24,6 +24,17 @@
     vertical-align: baseline;
     color: inherit;
   }
+
+  .dels2 {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 1px;
+    font: inherit;
+    vertical-align: baseline;
+    color: inherit;
+  }
+
 </style>
 
 <body>
@@ -101,6 +112,7 @@
           <span class="dot-per" th:text="${getProgressPercentMap.get(searchInfoList.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(searchInfoList.getTsiUno())}"></span>
         </p>
         <button class="btn-off review" th:onclick="|location.href='@{/result(tsiUno=${searchInfoList.getTsiUno()}, tsiKeyword=${searchInfoList.getTsiKeyword()}, keyword=${searchInfoList.getTsiKeyword()})}'|">검색중</button>
+        <!--총 <p>건</p>, 유사도: <p>건</p>-->
         <button class="del-btn btn-off del" th:value="${searchInfoList.getTsiUno()}">삭제</button>
       </li>
       <li th:if="${searchInfoListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
@@ -133,15 +145,19 @@
       </ul>
     </div>
     <h2 class="list-tit">
+      <input type="checkbox" id="traceAllCheckbox" onclick="allCheckboxBtnTrace();" >
       <span class="num">순번</span>
       <span class="cont">내용 및 검색 정보</span>
       <span class="memo">메모</span>
       <span class="state">상태</span>
       <span class="all-time">구분</span>
-      <span class="double-chk">재유포</span>
+      <span class="double-chk" >재유포</span>
+      <button class="del-btn btn-off dels2" style="border-radius: 50%; height: 22px; margin-left: 18px; " onclick="deleteTsrunos();"></button>
+      <input type="hidden" id="tsrUnoValues" name="tsrUnoValues" value="">
     </h2>
     <ul class="history-list history-trace-list">
       <li class="btn-off bor10" th:each="traceHistoryList : ${traceHistoryList}">
+        <input type="checkbox" id="tsrUnos" name="tsrUnos" th:value="${traceHistoryList.getTsrUno()}">
         <p class="num" th:text="${traceHistoryList.getTsrUno()}">${i}</p>
         <div class="cont">
           <div class="img-box">
@@ -184,25 +200,26 @@
         <textarea placeholder="내용 입력" class="btn-on memo" th:data-uno="${traceHistoryList.getTsrUno()}" th:text="${traceHistoryList.getTrkHistMemo()}"></textarea>
         <div class="state">
           <input type="hidden" class="bor10 M-box-in" name="trace-state">
-          <div class="selection setTraceHistory" th:data-uno="${traceHistoryList.getTsrUno()}">
+          <div style="margin-left: 5px;" class="selection setTraceHistory" th:data-uno="${traceHistoryList.getTsrUno()}">
             <th:block th:switch="${traceHistoryList.getTrkStatCd()}">
               <button th:case="10" style="color: #194894;">모니터링</button>
               <button th:case="20" style="color: #e87728;">삭제 요청</button>
               <button th:case="30">삭제 완료</button>
             </th:block>
-            <ul class="option">
+            <ul class="option" >
               <li data-cd="30">삭제 완료</li>
               <li data-cd="20" style="color: #e87728;">삭제 요청</li>
-              <li data-cd="10" style="color: #194894;">모니터링</li>
+              <li data-cd="10" style="color: #194894; ">모니터링</li>
             </ul>
           </div>
         </div>
-        <button class="btn-off all-time" th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>
+        <button class="btn-off all-time" style="margin-left: 5px;" th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>
         <!--<button type="button" class="btn-off all-time" onclick="alert('작업 중입니다.'); return false;" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>-->
         <!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()!=12999}" th:value="${traceHistoryList.getTsrUno()}">0건</button>-->
         <!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()==12999}" th:value="${traceHistoryList.getTsrUno()}">1건</button>  th:value="${traceHistoryList.getTsr5tsruno()}"  -->
         <!--<button class="btn-off double-chk" th:value="${traceHistoryList.getTsrUno()}" th:tsiuno="${traceHistoryList.getTsiUno()}" th:keyword="${traceHistoryList.getTsiKeyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>-->
-        <button class="btn-off double-chk" th:tsiUno="${traceHistoryList.getTsi3tsiuno()}" th:tsiKeyword="${traceHistoryList.getTsi3Keyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
+        <button class="btn-off double-chk" style="margin-left: 5px;" th:tsiUno="${traceHistoryList.getTsi3tsiuno()}" th:tsiKeyword="${traceHistoryList.getTsi3Keyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
+        <button style="border-radius: 50%; height: 22px; margin-left: 15px; " class="del-btn btn-off del2" id="traceTsrUno" onclick="traceDelete();" th:value="${traceHistoryList.getTsrUno()}">삭제</button>
         <!--<button class="btn-off double-chk" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'" th:onclick="|location.href='@{/notice(tsiUno=${traceHistoryList.getTsi3tsiuno()}, tsiKeyword=${traceHistoryList.getTsi3Keyword()} )}'|">0건</button>-->
         <!--window.location.href = '/notice?'+'&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno"); -->
       </li>
@@ -274,22 +291,6 @@
       }
     }
 
-/*
-    //XMLHttpRequest 객체 생성
-    var xhr = new XMLHttpRequest();
-    //요청을 보낼 방식, 주소, 비동기여부 설정
-    xhr.open('GET', 'result-detail?tsiUno='+tsiUno.value, true);
-*/
-
-/*    tsiUnoClass.forEach((btn) => {
-/!*
-      btn.addEventListener('click', () => {
-
-      }
-*!/
-
-    })*/
-
   }
 
   function allCheckboxBtn(){
@@ -299,6 +300,15 @@
       $("input[type=checkbox]").prop("checked", false);
     }
   }
+
+  function allCheckboxBtnTrace() {
+    if($('#traceAllCheckbox').prop("checked")) {
+      $("input[type=checkbox]").prop("checked", true);
+    } else {
+      $("input[type=checkbox]").prop("checked", false);
+    }
+  }
+
   function checkTsiunos() {
     if(confirm("일괄 삭제하시겠습니까?")) {
       var obj = $("[name=tsiUnos]");
@@ -337,7 +347,7 @@
   }
 
   /*
-  // 이미지 클릭시 팝업창 여기
+  // 이미지 클릭시 팝업창
   const searchImg = document.querySelector('.img');
   searchImg.addEventListener('click', function () {
     document.body.style.overflow = 'hidden';
@@ -541,16 +551,7 @@
     }
   }
 
-/*
-  $("input[name=delChk]:checked").each(function(){
-    var test = $(this).val();
-    console("체크된 값 : " + test);
-    alert("체크된 값 : " + test);
-  });
-*/
-
   // 검색 이력 삭제
-  // const delBtn = document.querySelectorAll(".del");
   const delBtn = document.querySelectorAll(".del");
   delBtn.forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -605,8 +606,6 @@
   // });
   /*]]>*/
 
-
-
   const chkBtn = document.querySelectorAll(".btn-off.double-chk")
   chkBtn.forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -633,14 +632,12 @@
   });
   */
 
-
-
   // 대상 디테일
   const imgBtn = document.querySelectorAll(".img-box");
  // const tsiUnoClass = document.querySelectorAll(".history-search-list");
   const modal = document.querySelector("#modal");
-/*
 
+  /*
   tsiUnoClass.forEach((btn)=> {
     const tsiUno = btn.querySelector("#tsiUno");
     btn.addEventListener('click', () => {
@@ -649,7 +646,7 @@
     })
 
   })
-*/
+  */
 
   imgBtn.forEach((btn) => {
     const tsrUno = btn.querySelector("#tsrUno");
@@ -729,6 +726,67 @@
     })
   }
 
+  // 추적이력 삭제 단건
+  function traceDelete(){
+    const delBtn = document.getElementById('traceTsrUno');
+    // alert(delBtn.value);
+    if((confirm("삭제하시겠습니까?"))) {
+      $.ajax({
+        url: "/deleteTsrUno",
+        type: "post",
+        data: {
+          tsrUno: delBtn.value
+        },
+        success:function(data) {
+          alert("삭제가 완료되었습니다.");
+          window.location.href="/history";
+        }, error:function(){
+          // alert("실패")
+          console.log("통신 실패");
+        }
+      })
+    }
+  }
+
+  // 추적이력 삭제 다건
+  function deleteTsrunos(){
+    if((confirm("일괄 삭제 하시겠습니까?"))){
+      var obj = $("[name=tsrUnos]");
+
+      var chkArray = new Array(); // 배열 선언
+
+      $('input:checkbox[name=tsrUnos]:checked').each(function() {
+        chkArray.push(this.value);
+      });
+
+      $('#tsrUnoValues').val(chkArray);
+      // alert( $('#tsrUnosValue').val(chkArray) )
+
+      const tsrUnoValues = document.getElementById('tsrUnoValues').value;
+
+      if(tsrUnoValues === null || tsrUnoValues === "") {
+        alert("삭제할 데이터를 선택해주세요.");
+        return false;
+      }
+
+      $.ajax({
+        url: "/deleteTsrUnos",
+        type: "get",
+        data: {
+          tsrUnoValues: $('#tsrUnoValues').val()
+        },
+        success:function(data) {
+          alert("삭제가 완료되었습니다.");
+          window.location.href="/history";
+        }, error:function(){
+          // alert("실패")
+          console.log("통신 실패");
+        }
+      })
+
+    }
+
+  }
 
 </script>
 </body>

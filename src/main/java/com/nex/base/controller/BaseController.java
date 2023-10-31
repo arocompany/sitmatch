@@ -1,7 +1,11 @@
 package com.nex.base.controller;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.nex.common.Consts;
 import com.nex.search.entity.DefaultQueryDtoInterface;
+import com.nex.search.entity.NewKeywordEntity;
+import com.nex.search.repo.NewKeywordRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.service.SearchService;
 
@@ -12,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.json.simple.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.util.StringUtils;
@@ -37,6 +42,7 @@ public class BaseController {
     private final SearchInfoHistRepository searchInfoHistRepository;
     private final SearchResultHistRepository searchResultHistRepository;
     private final NoticeHistRepository noticeHistRepository;
+    private final NewKeywordRepository newKeywordRepository;
 
 
     @GetMapping("/")
@@ -353,9 +359,10 @@ public class BaseController {
                 order_type = "4"; //이미지, 오디오 선택
             }else if("1".equals(odStatus01) && !"1".equals(odStatus02) && "1".equals(odStatus03)){
                 order_type = "5"; //이미지, 텍스트 선택
-            }else if(!"1".equals(odStatus01) && "1".equals(odStatus02) && !"1".equals(odStatus03)){
-                order_type = "6"; //오디오, 텍스트 선택
             }
+            /*else if(!"1".equals(odStatus01) && "1".equals(odStatus02) && !"1".equals(odStatus03)){
+                order_type = "6"; //오디오, 텍스트 선택
+            }*/
 
             defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, order_type);
@@ -532,16 +539,58 @@ public class BaseController {
         return modelAndView;
     }
 
-    @GetMapping("/keyword")
+    @GetMapping("/keyword") // 여기
     public ModelAndView trace_detail(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
         ModelAndView modelAndView = new ModelAndView("html/keyword");
-        Map<String, Object> autoKeyword_list = userService.getAutoKeyword(sessionInfoDto.getUserId());
+        log.info("========= keyword 페이지 진입 ========");
+        // Map<String, Object> autoKeyword_list = userService.getAutoKeyword(sessionInfoDto.getUserId());
+        // List<NewKeywordEntity> newKeywordList = searchService.getNewKeywordList();
+        List<NewKeywordDto> newKeywordList = newKeywordRepository.keywordList();
 
-        modelAndView.addObject("autoKeyword_list", autoKeyword_list.get("autoKeyword_list"));
+
+        // modelAndView.addObject("autoKeyword_list", autoKeyword_list.get("autoKeyword_list"));
+        modelAndView.addObject("newKeywordList", newKeywordList);
         modelAndView.addObject("sessionInfo", sessionInfoDto);
 
         return modelAndView;
     }
+
+    @GetMapping("/newKeyword") // 여기
+    public ModelAndView newKeyword(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
+        ModelAndView modelAndView = new ModelAndView("html/newKeyword");
+        log.info("========= keyword 페이지 진입 ========");
+        // Map<String, Object> autoKeyword_list = userService.getAutoKeyword(sessionInfoDto.getUserId());
+        // List<NewKeywordEntity> newKeywordList = searchService.getNewKeywordList();
+        List<NewKeywordDto> newKeywordList = newKeywordRepository.keywordList();
+
+
+        // modelAndView.addObject("autoKeyword_list", autoKeyword_list.get("autoKeyword_list"));
+        modelAndView.addObject("newKeywordList", newKeywordList);
+        modelAndView.addObject("sessionInfo", sessionInfoDto);
+
+        return modelAndView;
+    }
+
+    @PostMapping("/add_keyword")
+    public List<NewKeywordDto> add_keyword(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
+            , String keyword)  {
+        log.info("keyword: "+keyword);
+
+        searchService.addNewKeyword(keyword);
+        return newKeywordRepository.keywordList();
+    }
+
+    @GetMapping("/del_keyword")
+    @ResponseBody
+    public List<NewKeywordDto> del_keyword(Integer idx) {
+        log.info("idx: " + idx);
+
+        NewKeywordEntity nke = newKeywordRepository.findByIdx(idx);
+        nke.setKeywordStus("1");
+        newKeywordRepository.save(nke);
+        return newKeywordRepository.keywordList();
+    }
+
 
     @PostMapping("/ajax_auto_Insert")
     public int ajax_auto_Insert(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
@@ -679,6 +728,25 @@ public class BaseController {
 
         searchService.resultExcelList(response, resultListExcelDtoList);
 
+    }
+
+    // 추적이력 단건 삭제
+    @PostMapping("/deleteTsrUno")
+    public String deleteTsrUno(HttpServletResponse response, Integer tsrUno) {
+        log.info("tsrUno: " + tsrUno);
+
+        searchService.deleteTsrUno(tsrUno);
+
+        return "success";
+    }
+
+    @GetMapping("/deleteTsrUnos")
+    public String deleteTsrUnos(HttpServletResponse response,
+                                @RequestParam(value="tsrUnoValues", required=false) List<Integer> tsrUnoValues) {
+        log.info("tsrUnoValues: "+tsrUnoValues);
+        searchService.deleteTsrUnos(tsrUnoValues);
+
+        return "success";
     }
 
 }

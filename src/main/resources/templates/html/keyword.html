@@ -1,20 +1,41 @@
+
 <section class="keyword counselor-add bor10">
   <h3 class="title">신조어 키워드 분석</h3>
-  <form action="javascript://" name="keyword" onsubmit="autoTrace(this);">
-    <input type="text" class="keyword-add bor10 btn-off" placeholder="키워드를 입력해 주세요">
-    <button class="bor10 btn-off">추가</button>
+
+  <form name="keyword">
+    <input type="text" id="newKeyword" class="keyword-add bor10 btn-off" placeholder="키워드를 입력해 주세요">
+    <button type="button" class="bor10 btn-off keyword-add-btn">추가</button>
   </form>
+
   <div class="keyword-box btn-on bor10">
     <div>
-      <p class="word-list" th:each="autoKeyword_list : ${autoKeyword_list}">
+
+      <p th:each="list:${newKeywordList}" class="word-list">
+        <input style="background-color: #dfe0e9;" th:value="${list.getKeyword()}" readonly >
+        <button th:value="${list.getIdx()}" class="del-btn btn-off keyword_del" ></button>
+      </p>
+
+<!--
+<p class="word-list" th:each="autoKeyword_list : ${autoKeyword_list}">
         <b th:text="${autoKeyword_list.getAuto_keyword()}"></b>
         <span type="button" class="delete" th:field="*{autoKeyword_list.getAuto_keyword()}" onclick='aTDelete(this)'>삭제</span>
-      </p>
-<!--      <p class="word-list">여고생<span type="button" class="delete" onclick='aTDelete(this)'>삭제</span></p>-->
-<!--      <p class="word-list">ㄱㄷ<span type="button" class="delete" onclick='aTDelete(this)'>삭제</span></p>-->
-<!--      <p class="word-list">성인사이트<span type="button" class="delete" onclick='aTDelete(this)'>삭제</span></p>-->
+      </p>-->
+<!-- 임시작업본 ***********
+      <ul>
+        <li th:each="list:${newKeywordList}" class="word-list">
+            <input th:value="${list.getKeyword()}" >
+            <input type="text" id="deleteKeyword" th:value="${list.getIdx()}" >
+            <button th:value="${list.getIdx()}" id="deleteKeywordValue"  class="delete keyword_del" >삭제</button>
+        </li>
+      </ul>
+      -->
+      <!--
+      <p class="word-list">ㄱㄷ<span type="button" class="delete" onclick='aTDelete(this)'>삭제</span></p>
+      <p class="word-list">성인사이트<span type="button" class="delete" onclick='aTDelete(this)'>삭제</span></p>
+      -->
     </div>
   </div>
+
   <h3 class="title neologism-title">키워드 검색순위</h3>
   <section class="neologism bor10 btn-off">
     <h4 class="tit">
@@ -178,4 +199,6 @@
     </div>
   </section>
   <button type="button" class="esc-btn">닫기</button>
+
 </section>
+

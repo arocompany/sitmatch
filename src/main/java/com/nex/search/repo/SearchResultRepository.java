@@ -1,6 +1,7 @@
 package com.nex.search.repo;
 
 import com.nex.search.entity.DefaultQueryDtoInterface;
+import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     List<String> findTsrSiteUrlDistinctByTsiUno(Integer tsiUno);
 
     SearchResultEntity findByTsrUno(Integer TsrUno);
+
+    List<SearchResultEntity> findByTsrUnoIn(List<Integer> tsrUnoValues);
     /*----------------------------------------------------------------------------------------------------------------*/
     String from_5 = " from  tb_search_info TSI " +
             " INNER JOIN tb_search_result TSR ON TSR.TSI_UNO = TSI.TSI_UNO " +
@@ -259,8 +262,9 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "       ORDER BY tsr.MST_DML_DT, tsr.tsr_uno desc";
 
 
-    // ORDER BY
-    String orderByTmrSimilarityDesc = "  GROUP BY tsrSiteUrl  ORDER BY tmrVScore desc, tmrAScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
+    // ORDER BY 여기
+    // String orderByTmrSimilarityDesc = "  GROUP BY tsrSiteUrl  ORDER BY tmrVScore desc, tmrAScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
+    String orderByTmrSimilarityDesc = "  GROUP BY tsrSiteUrl  ORDER BY tsrUno asc";
     String orderByTmrSimilarityDesc_1 = " ORDER BY tmrVScore desc, tmrSimilarity desc, tsrUno desc";
     String orderByTmrSimilarityDesc_2 = " ORDER BY tmrAScore desc, tmrSimilarity desc, tsrUno desc";
     String orderByTmrSimilarityDesc_3 = " ORDER BY tmrTScore desc, tmrSimilarity desc, tsrUno desc";

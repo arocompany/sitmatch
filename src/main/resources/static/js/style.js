@@ -123,6 +123,186 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.style.display = 'flex';
         modal.innerHTML = xhr.response;
 
+        $(".keyword-add-btn").click(function(){
+          if((confirm("추가 하시겠습니까?"))){
+            var re_list = '';
+            $.ajax({
+              url: "/add_keyword",
+              type: "POST",
+              dataType: "json",
+              data : {
+                keyword : $(".keyword-add").val()
+              },
+              success: function(data) {
+                document.getElementById('newKeyword').value='';
+                console.info(data);
+
+                let idxList = [];
+                let keywordList = [];
+                for(var i=0; i<data.length; i++) {
+                  idxList.push(data[i].idx);
+                  keywordList.push(data[i].keyword);
+                }
+
+                re_list = '<div>';
+                for(let i=0; i<data.length; i++){
+                  re_list += '<p class="word-list">'
+                      +'<input style="background-color: #dfe0e9;" readonly value="'+ data[i].keyword + '"> '
+                      +'<button  type="button" class="del-btn btn-off keyword_del"  value="'+data[i].idx+'">' +
+                      // +'<button  type="button" onclick="delKeywordBtn2(this.value)" class="del-btn btn-off keyword_del"  value="'+data[i].idx+'">' +
+                      '</button></p>';
+                  /*re_list += '<p class="word-list">'+data[i].ke+'<span type="button" class="delete keyword_del" value="'+data[i].IDX+'">삭제</span></p>';*/
+                }
+                re_list += '</div>';
+                $(".keyword-box").html(re_list);
+
+                $(".keyword_del").click(function(e){
+                  if(confirm("삭제 하시겠습니까?")){
+
+                    let idx = $(this).val();
+                    console.log(idx)
+
+                    $(this).parent().remove();
+
+                    $.ajax({
+                      url: "/del_keyword",
+                      type: "get",
+                      data: {
+                        idx: idx
+                      },
+                      dataType: "json",
+                      success: function(data) {
+                      }
+                    });
+                  }
+
+                });
+
+              }, error: function (e){
+                console.log("error", e)
+              }
+            });
+          }
+
+        });
+
+
+        $(".keyword_del").click(function(e){
+          if((confirm("삭제 하시겠습니까?"))) {
+            let idx = $(this).val();
+            console.log(idx)
+            $(this).parent().remove();
+
+            $.ajax({
+              url: "/del_keyword",
+              type: "get",
+              data: {
+                idx: idx
+              },
+              dataType: "json",
+              success: function(data) {
+              }
+            });
+          }
+        })
+
+          //  alert("deleteKeyword: "+deleteKeyword+" deleteKeywordValue: "+deleteKeywordValue)
+          // $.ajax({
+          //   url: "/del_keyword",
+          //   type: "get",
+          //   data: {
+          //     idx: idx
+          //   },
+          //   dataType: "json",
+          //   success: function(data) {
+          //
+          //     console.info(data);
+          //
+          //     let idxList = [];
+          //     let keywordList = [];
+          //     for(var i=0; i<data.length; i++) {
+          //       idxList.push(data[i].idx);
+          //       keywordList.push(data[i].keyword);
+          //     }
+          //
+          //     /*
+          //      re_list += '<p class="word-list">'+ data[i].keyword
+          //           +'<span id="deleteKeyword2" type="button" class="delete keyword_del" value="'+data[i].idx+'">' +
+          //           '삭제</span></p>';
+          //     * */
+          //     re_list = '<div>';
+          //     setTimeout(function() {
+          //       console.log('Works!');
+          //     }, 3000);
+          //
+          //     for(let i=0; i<data.length; i++){
+          //       re_list += '<p class="word-list">'
+          //           +'<input style="background-color: #dfe0e9;" readonly value="'+ data[i].keyword + '"> '
+          //           +'<button  type="button" onclick="delKeywordBtn2(this.value)" class="del-btn btn-off keyword_del" value="'+data[i].idx+'">' +
+          //           '</button></p>';
+          //       /*re_list += '<p class="word-list">'+data[i].ke+'<span type="button" class="delete keyword_del" value="'+data[i].IDX+'">삭제</span></p>';*/
+          //     }
+          //     re_list += '</div>';
+          //     $(".keyword-box").html(re_list);
+          //
+          //
+          //   },
+          //   error: function (e){
+          //     console.log(e)
+          //   }
+          // });
+          //
+          // })
+
+        // function delKeywordBtn2(idx) {
+        //   alert("삭제버튼 클릭1")
+        //
+        //   $.ajax({
+        //     url: "/del_keyword",
+        //     type: "get",
+        //     data: {
+        //       idx: idx
+        //     },
+        //     dataType: "json",
+        //     success: function(data) {
+        //
+        //       console.info(data);
+        //
+        //
+        //       let idxList = [];
+        //       let keywordList = [];
+        //       for(var i=0; i<data.length; i++) {
+        //         idxList.push(data[i].idx);
+        //         keywordList.push(data[i].keyword);
+        //       }
+        //
+        //       /*
+        //        re_list += '<p class="word-list">'+ data[i].keyword
+        //             +'<span id="deleteKeyword2" type="button" class="delete keyword_del" value="'+data[i].idx+'">' +
+        //             '삭제</span></p>';
+        //       * */
+        //       re_list = '<div>';
+        //
+        //       for(let i=0; i<data.length; i++){
+        //         re_list += '<p class="word-list">'
+        //             +'<input style="background-color: #dfe0e9;"  readonly value="'+ data[i].keyword + '"> '
+        //             +'<button type="button" onclick="delKeywordBtn(this.value)" class="del-btn btn-off keyword_del"  value="'+data[i].idx+'">' +
+        //             '</button></p>';
+        //       }
+        //       re_list += '</div>';
+        //       $(".keyword-box").html(re_list);
+        //
+        //
+        //     },
+        //     error: function (e){
+        //       console.log(e)
+        //     }
+        //   });
+        //
+        // }
+
+
+
         const esc = document.querySelector(".esc-btn");
         esc.onclick = () => {
           modal.style.display = 'none';
@@ -134,6 +314,8 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   });
+
+
 
 });
 
