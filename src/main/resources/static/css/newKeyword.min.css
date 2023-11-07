@@ -1,0 +1,535 @@
+#newKeyword .trace-history .history-list .all-time.active, #newKeyword .trace-history button:active, #newKeyword .search-history .review:active {
+    -webkit-box-shadow: -3px -3px 7px rgba(255, 255, 255, .6), inset -3px -3px 5px #fff, inset 3px 3px 5px rgba(25, 72, 148, .32);
+    box-shadow: -3px -3px 7px rgba(255, 255, 255, .6), inset -3px -3px 5px #fff, inset 3px 3px 5px rgba(25, 72, 148, .32)
+}
+
+#newKeyword .trace-history .currently-state, #newKeyword .list-tit, #newKeyword .history-list li, #newKeyword .searchbox {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -moz-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center
+}
+
+#newKeyword .trace-history button, #newKeyword .search-history .review, #newKeyword .title span {
+    border-radius: 4px 4px 4px 4px
+}
+
+.dot-wrap {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -moz-box-orient: vertical;
+    -moz-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: 100%
+}
+
+.dot, .dot::after, .dot::before {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #b0b2b4;
+    position: absolute
+}
+
+.dot {
+    position: relative;
+    -webkit-animation: dotBf 1500ms steps(1) infinite alternate;
+    animation: dotBf 1500ms steps(1) infinite alternate;
+    margin-bottom: 4px
+}
+
+.dot::after, .dot::before {
+    content: "";
+    position: absolute;
+    top: 0
+}
+
+.dot::before {
+    right: -12px
+}
+
+.dot::after {
+    right: 12px;
+    background-color: #194894;
+    animation: dotAf 1500ms ease-in-out 0s infinite alternate-reverse
+}
+
+.dot-per {
+    font-size: .875rem;
+    line-height: 1;
+    color: #8a8a95
+}
+
+@-webkit-keyframes dotAf {
+    0% {
+        right: -12px
+    }
+    50% {
+        right: 0px
+    }
+    100% {
+        right: 12px
+    }
+}
+
+@keyframes dotAf {
+    0% {
+        right: -12px
+    }
+    50% {
+        right: 0px
+    }
+    100% {
+        right: 12px
+    }
+}
+
+@-webkit-keyframes dotBf {
+    0% {
+        background-color: #b0b2b4
+    }
+    50% {
+        background-color: rgba(0, 0, 0, 0)
+    }
+    100% {
+        background-color: rgba(0, 0, 0, 0)
+    }
+}
+
+@keyframes dotBf {
+    0% {
+        background-color: #b0b2b4
+    }
+    50% {
+        background-color: rgba(0, 0, 0, 0)
+    }
+    100% {
+        background-color: rgba(0, 0, 0, 0)
+    }
+}
+
+#newKeyword .title {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -moz-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    margin: 60px auto 0;
+    color: #b0b2b4;
+    padding: 10px;
+    width: 340px;
+    font-weight: 400;
+    font-size: 1.125rem
+}
+
+#newKeyword .title span {
+    padding: 10px 0;
+    width: 50%;
+    cursor: pointer
+}
+
+#newKeyword .title span.active {
+    background-color: #e87728;
+    color: #fff;
+    font-weight: 700
+}
+
+#newKeyword .history {
+    display: none
+}
+
+#newKeyword .history.active {
+    display: block
+}
+
+#newKeyword .searchbox {
+    margin-top: 60px;
+    -webkit-box-align: end;
+    -moz-box-align: end;
+    -ms-flex-align: end;
+    align-items: end;
+    margin-bottom: 20px
+}
+
+#newKeyword .list-tit {
+    color: #194894;
+    font-size: .9375rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px 20px
+}
+
+#newKeyword .list-tit .dist {
+    width: 11.52%
+}
+
+#newKeyword .search-history {
+    text-align: center
+}
+
+#newKeyword .search-history .history-list li {
+    margin-bottom: 10px;
+    padding: 16px 20px
+}
+
+#newKeyword .search-history .history-list .type, #newKeyword .search-history .history-list .cont {
+    text-align: left
+}
+
+#newKeyword .search-history .history-list .cont {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: start;
+    -moz-box-pack: start;
+    -ms-flex-pack: start;
+    justify-content: start;
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center
+}
+
+#newKeyword .search-history .history-list .cont .img {
+    width: 50px;
+    height: 50px
+}
+
+#newKeyword .search-history .history-list .cont .con1 {
+    margin-left: 10px;
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis
+}
+
+#newKeyword .search-history .history-list .progress {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex
+}
+
+#newKeyword .search-history .num {
+    width: 4%
+}
+
+#newKeyword .search-history .counselor {
+    width: 10%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 0 8px
+}
+
+#newKeyword .search-history .type, #newKeyword .search-history .social {
+    width: 12%
+}
+
+#newKeyword .search-history .type .reply, #newKeyword .search-history .social .reply {
+    margin: 0 6px 0 0
+}
+
+#newKeyword .search-history .cont {
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    overflow: hidden
+}
+
+#newKeyword .search-history .social {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -moz-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center
+}
+
+#newKeyword .search-history .social img {
+    width: 20px;
+    margin-right: 4px
+}
+
+#newKeyword .search-history .social img:last-of-type {
+    margin-right: 0
+}
+
+#newKeyword .search-history .time {
+    width: 14.4%
+}
+
+#newKeyword .search-history .progress {
+    width: 8.8%
+}
+
+#newKeyword .search-history .review {
+    font-size: .875rem;
+    color: #8a8a95;
+    margin-right: 30px;
+    padding: 4px 0;
+    width: 90px
+}
+
+#newKeyword .search-history .review:active {
+    font-weight: 500
+}
+
+#newKeyword .trace-history .search-box {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex
+}
+
+#newKeyword .trace-history .search-box .traceDist {
+    width: 200px
+}
+
+#newKeyword .trace-history .search-box .traceDist button {
+    border-radius: 10px
+}
+
+#newKeyword .trace-history .search-box .list-search {
+    margin-left: 10px
+}
+
+#newKeyword .trace-history .selection .option li {
+    font-size: 1rem
+}
+
+#newKeyword .trace-history .currently-state {
+    font-size: 14px
+}
+
+#newKeyword .trace-history .currently-state span {
+    margin-left: 20px;
+    color: #545759
+}
+
+#newKeyword .trace-history .cont {
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    max-width: 620px
+}
+
+#newKeyword .trace-history .memo {
+    border-radius: 4px 4px 4px 4px;
+    width: 16%;
+    font-size: .875rem
+}
+
+#newKeyword .trace-history .num {
+    width: 4%;
+    text-align: center
+}
+
+#newKeyword .trace-history .url {
+    color: #545759;
+    font-weight: 400
+}
+
+#newKeyword .trace-history button {
+    height: 40px
+}
+
+#newKeyword .trace-history .state {
+    width: 8.5%
+}
+
+#newKeyword .trace-history .state .selection button {
+    background-size: 14px;
+    padding-left: 10px
+}
+
+#newKeyword .trace-history .all-time {
+    width: 10%
+}
+
+#newKeyword .trace-history .double-chk {
+    width: 6%
+}
+
+#newKeyword .trace-history .history-list > li {
+    padding: 10px 20px;
+    margin-bottom: 10px
+}
+
+#newKeyword .trace-history .history-list .cont {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: stretch;
+    -moz-box-pack: stretch;
+    -ms-flex-pack: stretch;
+    justify-content: stretch;
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    margin-left: 10px
+}
+
+#newKeyword .trace-history .history-list .cont .img {
+    width: 78px;
+    height: 78px
+}
+
+#newKeyword .trace-history .history-list .cont .sns {
+    right: 4px;
+    bottom: 4px;
+    width: 22px
+}
+
+#newKeyword .trace-history .history-list .cont .text {
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    max-width: calc(100% - 78px);
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: stretch;
+    -moz-box-pack: stretch;
+    -ms-flex-pack: stretch;
+    justify-content: stretch;
+    -webkit-box-align: start;
+    -moz-box-align: start;
+    -ms-flex-align: start;
+    align-items: start;
+    padding: 0 10px;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -moz-box-orient: vertical;
+    -moz-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column
+}
+
+#newKeyword .trace-history .history-list .cont .text > * {
+    width: 100%
+}
+
+#newKeyword .trace-history .history-list .cont .text .detail {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -moz-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between
+}
+
+#newKeyword .trace-history .history-list .cont .text .detail .detail-info {
+    width: 50%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis
+}
+
+#newKeyword .trace-history .history-list .cont .text .detail .detail-time {
+    margin-right: 30px
+}
+
+#newKeyword .trace-history .history-list .memo {
+    height: 78px;
+    padding: 5px 10px
+}
+
+#newKeyword .trace-history .history-list .all-time, #newKeyword .trace-history .history-list .double-chk {
+    font-size: .875rem
+}
+
+#newKeyword .trace-history .history-list .all-time.active {
+    color: #e87728;
+    font-weight: 500
+}
+
+#newKeyword .trace-history .history-list .double-chk {
+    height: 40px;
+    text-align: center;
+    line-height: 40px
+}
+
+#newKeyword .keyword .title {
+    color: #194894;
+    margin-top: 0;
+    font-size: 1.5rem;
+    font-weight: 700
+}
+
+#newKeyword .keyword .neologism-title {
+    color: #e87728;
+    margin-bottom: 20px
+}
+
+.imgmodal {
+    display: inline-block;
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    padding: 50px 23px 20px 20px;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -moz-box-orient: vertical;
+    -moz-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column
+}
+
+.imgmodal img {
+    max-width: 300px
+}
+
+.imgmodal video {
+    max-width: 500px
+}
+
+.imgmodal .esc-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px
+}
+
+/*# sourceMappingURL=histroy.min.css.map */
