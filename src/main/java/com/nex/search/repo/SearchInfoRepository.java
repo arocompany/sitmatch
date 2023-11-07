@@ -1,6 +1,7 @@
 package com.nex.search.repo;
 
 import com.nex.search.entity.SearchInfoEntity;
+import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.UserIdDtoInterface;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,9 @@ import java.util.Optional;
 public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, Integer> {
     List<SearchInfoEntity> findAllByOrderByTsiUnoDesc();
     Page<SearchInfoEntity> findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd, String keyword, Pageable pageable);
+    Page<SearchInfoEntity> findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd,String searchValue, String keyword, Pageable pageable);
     Page<SearchInfoEntity> findAllByDataStatCdAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd, String keyword, Integer userUno, Pageable pageable);
+    Page<SearchInfoEntity> findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd, String searchValue, String keyword, Integer userUno, Pageable pageable);
 
     @Query(value = "SELECT TU.USER_UNO as userUno, TU.USER_ID as userId FROM TB_USER TU", nativeQuery = true)
     List<UserIdDtoInterface> getUserIdByUserUno();

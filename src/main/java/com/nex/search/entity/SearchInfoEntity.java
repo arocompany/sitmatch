@@ -77,6 +77,10 @@ public class SearchInfoEntity {
     @Column(name = "TSR_UNO")
     private Integer tsrUno;
 
+    @Basic
+    @Column(name = "SEARCH_VALUE")
+    private String searchValue;
+
     public int getTsiUno() {
         return tsiUno;
     }
@@ -203,6 +207,14 @@ public class SearchInfoEntity {
 
     public void setLstDmlDt(Timestamp lstDmlDt) {
         this.lstDmlDt = lstDmlDt;
+    }
+
+    public String getSearchValue() {
+        return searchValue;
+    }
+
+    public void setSearchValue(String searchValue) {
+        this.searchValue = searchValue;
     }
 
     @Override

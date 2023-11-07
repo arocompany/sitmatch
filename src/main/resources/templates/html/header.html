@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lagn="ko" xmlns:th="http://www.thymeleaf.org">
-<!--headerFragment 선언-->
+
 <nav th:fragment="headerFragment">
   <header>
     <nav>
@@ -10,8 +10,10 @@
         <li th:class="${headerMenu == 'trace' ? 'menu-on' : 'M-box-up'}"><a href="/trace">모니터링</a></li>
 <!--        <li th:class="${headerMenu == 'history' ? 'menu-on' : 'M-box-up'}"><a href="/result">검색결과</a></li>-->
         <li th:class="${headerMenu == 'manage' ? 'menu-on' : 'M-box-up'}" th:if="${sessionInfo.isAdmin}"><a href="/manage">계정관리</a></li>
+        <li th:class="${headerMenu == 'newKeyword' ? 'menu-on' : 'M-box-up'}"><a href="/keyword/newKeyword">신조어 이력관리</a></li>
         <li th:class="${headerMenu == 'prcuse' ? 'menu-on' : 'M-box-up'}" th:if="${sessionInfo.isAdmin}"><a href="/prcuse">사용자 현황</a></li>
-        <!-- <li th:class="${headerMenu == 'connect' ? 'menu-on' : 'M-box-up'}" th:if="${sessionInfo.isAdmin}"><a href="/connect">사용자 접속 현황</a></li> -->
+        <!--<li th:class="${headerMenu == 'connect' ? 'menu-on' : 'M-box-up'}" th:if="${sessionInfo.isAdmin}"><a href="/newKeyword">자동추적 키워드</a></li>-->
+        <!--<li th:class="${headerMenu == 'connect' ? 'menu-on' : 'M-box-up'}" th:if="${sessionInfo.isAdmin}"><a href="/connect">사용자 접속 현황</a></li>-->
       </ul>
       <ul class="login">
         <li class="M-box-up bor10 login-btn setting-btn detail-btn">설정

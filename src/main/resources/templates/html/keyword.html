@@ -1,4 +1,3 @@
-
 <section class="keyword counselor-add bor10">
   <h3 class="title">신조어 키워드 분석</h3>
 
@@ -11,7 +10,7 @@
     <div>
 
       <p th:each="list:${newKeywordList}" class="word-list">
-        <input style="background-color: #dfe0e9;" th:value="${list.getKeyword()}" readonly >
+        <input class="keyword-value" name="newKeyword" style="background-color: #dfe0e9;" th:value="${list.getKeyword()}" readonly >
         <button th:value="${list.getIdx()}" class="del-btn btn-off keyword_del" ></button>
       </p>
 
@@ -34,6 +33,14 @@
       <p class="word-list">성인사이트<span type="button" class="delete" onclick='aTDelete(this)'>삭제</span></p>
       -->
     </div>
+
+  </div>
+
+  <div>
+    <form name="">
+      <input class="keywordHidden" type="text" id="newKeywordValue" name="newKeywordValue" value="">
+      <button style="float: right; margin-top: -30px; border-radius: 10px;" class="new-keyword search" type="button">검색</button>
+    </form>
   </div>
 
   <h3 class="title neologism-title">키워드 검색순위</h3>
@@ -46,154 +53,154 @@
     <div class="bor10 M-box-in list-con">
       <div>
         <p>
-          <span class="num">1</span>
-          <span class="word">(여)초딩(년)</span>
-          <span class="count">1,310,210건</span>
+          <span class="num" style="color: black;">1</span>
+          <span class="word" style="color: black;">(여)초딩(년)</span>
+          <span class="count" style="color: black;">1,310,210건</span>
         </p>
         <p>
-          <span class="num">2</span>
-          <span class="word">(여)중딩(년)</span>
-          <span class="count">1,113,510건</span>
+          <span class="num" style="color: black;">2</span>
+          <span class="word" style="color: black;">(여)중딩(년)</span>
+          <span class="count" style="color: black;">1,113,510건</span>
         </p>
         <p>
-          <span class="num">3</span>
-          <span class="word">(여)고딩(년)</span>
-          <span class="count">1,100,787건</span>
+          <span class="num" style="color: black;">3</span>
+          <span class="word" style="color: black;">(여)고딩(년)</span>
+          <span class="count" style="color: black;">1,100,787건</span>
         </p>
         <p>
-          <span class="num">4</span>
-          <span class="word">밝기조절</span>
-          <span class="count">987,765건</span>
+          <span class="num" style="color: black;">4</span>
+          <span class="word" style="color: black;">밝기조절</span>
+          <span class="count" style="color: black;">987,765건</span>
         </p>
         <p>
-          <span class="num">5</span>
-          <span class="word">은꼴</span>
-          <span class="count">955,175건</span>
+          <span class="num" style="color: black;">5</span>
+          <span class="word" style="color: black;">은꼴</span>
+          <span class="count" style="color: black;">955,175건</span>
         </p>
         <p>
-          <span class="num">6</span>
-          <span class="word">여친공유</span>
-          <span class="count">940,312건</span>
+          <span class="num" style="color: black;">6</span>
+          <span class="word" style="color: black;">여친공유</span>
+          <span class="count" style="color: black;">940,312건</span>
         </p>
         <p>
-          <span class="num">7</span>
-          <span class="word">로리</span>
-          <span class="count">850,157건</span>
+          <span class="num" style="color: black;">7</span>
+          <span class="word" style="color: black;">로리</span>
+          <span class="count" style="color: black;">850,157건</span>
         </p>
         <p>
-          <span class="num">8</span>
-          <span class="word">노예(년)</span>
-          <span class="count">840,647건</span>
+          <span class="num" style="color: black;">8</span>
+          <span class="word" style="color: black;">노예(년)</span>
+          <span class="count" style="color: black;">840,647건</span>
         </p>
         <p>
-          <span class="num">9</span>
-          <span class="word">나이(10+n)</span>
-          <span class="count">703,232건</span>
+          <span class="num" style="color: black;">9</span>
+          <span class="word" style="color: black;">나이(10+n)</span>
+          <span class="count" style="color: black;">703,232건</span>
         </p>
         <p>
-          <span class="num">10</span>
-          <span class="word">(지인)제보</span>
-          <span class="count">654,433건</span>
+          <span class="num" style="color: black;">10</span>
+          <span class="word" style="color: black;">(지인)제보</span>
+          <span class="count" style="color: black;">654,433건</span>
         </p>
         <p>
-          <span class="num">11</span>
-          <span class="word">몸싸</span>
-          <span class="count">610,475건</span>
+          <span class="num" style="color: black;">11</span>
+          <span class="word" style="color: black;">몸싸</span>
+          <span class="count" style="color: black;">610,475건</span>
         </p>
         <p>
-          <span class="num">12</span>
-          <span class="word">문상</span>
-          <span class="count">590,754건</span>
+          <span class="num" style="color: black;">12</span>
+          <span class="word" style="color: black;">문상</span>
+          <span class="count"style="color: black;">590,754건</span>
         </p>
         <p>
-          <span class="num">13</span>
-          <span class="word">미자(미성년자)</span>
-          <span class="count">554,476건</span>
+          <span class="num" style="color: black;">13</span>
+          <span class="word" style="color: black;">미자(미성년자)</span>
+          <span class="count" style="color: black;">554,476건</span>
         </p>
         <p>
-          <span class="num">14</span>
-          <span class="word">딸감</span>
-          <span class="count">511,654건</span>
+          <span class="num" style="color: black;">14</span>
+          <span class="word" style="color: black;">딸감</span>
+          <span class="count" style="color: black;">511,654건</span>
         </p>
         <p>
-          <span class="num">15</span>
-          <span class="word">걸레</span>
-          <span class="count">498,744건</span>
+          <span class="num" style="color: black;">15</span>
+          <span class="word" style="color: black;">걸레</span>
+          <span class="count" style="color: black;">498,744건</span>
         </p>
         <p>
-          <span class="num">16</span>
-          <span class="word">(지인)합성</span>
-          <span class="count">490,997건</span>
+          <span class="num" style="color: black;">16</span>
+          <span class="word" style="color: black;">(지인)합성</span>
+          <span class="count" style="color: black;">490,997건</span>
         </p>
         <p>
-          <span class="num">17</span>
-          <span class="word">정액받이</span>
-          <span class="count">450,475건</span>
+          <span class="num" style="color: black;">17</span>
+          <span class="word" style="color: black;">정액받이</span>
+          <span class="count" style="color: black;">450,475건</span>
         </p>
         <p>
-          <span class="num">18</span>
-          <span class="word">자영</span>
-          <span class="count">442,247건</span>
+          <span class="num" style="color: black;">18</span>
+          <span class="word" style="color: black;">자영</span>
+          <span class="count" style="color: black;">442,247건</span>
         </p>
         <p>
-          <span class="num">19</span>
-          <span class="word">고등어(ㄱㄷ)</span>
-          <span class="count">405,423건</span>
+          <span class="num" style="color: black;">19</span>
+          <span class="word" style="color: black;">고등어(ㄱㄷ)</span>
+          <span class="count" style="color: black;">405,423건</span>
         </p>
         <p>
-          <span class="num">20</span>
-          <span class="word">아자르</span>
-          <span class="count">378,787건</span>
+          <span class="num" style="color: black;">20</span>
+          <span class="word" style="color: black;">아자르</span>
+          <span class="count" style="color: black;">378,787건</span>
         </p>
         <p>
-          <span class="num">21</span>
-          <span class="word">개보지</span>
-          <span class="count">355,447건</span>
+          <span class="num" style="color: black;">21</span>
+          <span class="word" style="color: black;">개보지</span>
+          <span class="count" style="color: black;">355,447건</span>
         </p>
         <p>
-          <span class="num">22</span>
-          <span class="word">(지인)능욕</span>
-          <span class="count">304,765건</span>
+          <span class="num" style="color: black;">22</span>
+          <span class="word" style="color: black;">(지인)능욕</span>
+          <span class="count" style="color: black;">304,765건</span>
         </p>
         <p>
-          <span class="num">23</span>
-          <span class="word">암캐</span>
-          <span class="count">295,554건</span>
+          <span class="num" style="color: black;">23</span>
+          <span class="word" style="color: black;">암캐</span>
+          <span class="count" style="color: black;">295,554건</span>
         </p>
         <p>
-          <span class="num">24</span>
-          <span class="word">돌림빵</span>
-          <span class="count">254,432건</span>
+          <span class="num" style="color: black;">24</span>
+          <span class="word" style="color: black;">돌림빵</span>
+          <span class="count" style="color: black;">254,432건</span>
         </p>
         <p>
-          <span class="num">25</span>
-          <span class="word">변녀</span>
-          <span class="count">197,447건</span>
+          <span class="num" style="color: black;">25</span>
+          <span class="word" style="color: black;">변녀</span>
+          <span class="count" style="color: black;">197,447건</span>
         </p>
         <p>
-          <span class="num">26</span>
-          <span class="word">아헤가오</span>
-          <span class="count">150,465건</span>
+          <span class="num" style="color: black;">26</span>
+          <span class="word" style="color: black;">아헤가오</span>
+          <span class="count" style="color: black;">150,465건</span>
         </p>
         <p>
-          <span class="num">27</span>
-          <span class="word">창녀</span>
-          <span class="count">181,654건</span>
+          <span class="num" style="color: black;">27</span>
+          <span class="word" style="color: black;">창녀</span>
+          <span class="count" style="color: black;">181,654건</span>
         </p>
         <p>
-          <span class="num">28</span>
-          <span class="word">아다</span>
-          <span class="count">150,114건</span>
+          <span class="num" style="color: black;">28</span>
+          <span class="word" style="color: black;">아다</span>
+          <span class="count" style="color: black;">150,114건</span>
         </p>
         <p>
-          <span class="num">29</span>
-          <span class="word">발정</span>
-          <span class="count">120,413건</span>
+          <span class="num" style="color: black;">29</span>
+          <span class="word" style="color: black;">발정</span>
+          <span class="count" style="color: black;">120,413건</span>
         </p>
         <p>
-          <span class="num">30</span>
-          <span class="word">딥페</span>
-          <span class="count">98,471건</span>
+          <span class="num" style="color: black;">30</span>
+          <span class="word" style="color: black;">딥페</span>
+          <span class="count" style="color: black;">98,471건</span>
         </p>
       </div>
     </div>
@@ -201,4 +208,3 @@
   <button type="button" class="esc-btn">닫기</button>
 
 </section>
-

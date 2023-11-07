@@ -6,7 +6,10 @@ import com.nex.common.Consts;
 import com.nex.search.entity.*;
 import com.nex.search.repo.*;
 import com.nex.user.entity.*;
-import com.nex.user.repo.*;
+import com.nex.user.repo.NoticeHistRepository;
+import com.nex.user.repo.SearchInfoHistRepository;
+import com.nex.user.repo.SearchResultHistRepository;
+import com.nex.user.repo.TraceHistRepository;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -1713,10 +1716,11 @@ public class SearchService {
 
             try {
                 String imageUrl = getOriginalFn.apply(result) ;
-                if(imageUrl == null) {
-                    getThumbnailFn.apply(result);
-                }
                 log.info("imageUrl1: "+imageUrl);
+                if(imageUrl == null) {
+                    imageUrl = getThumbnailFn.apply(result);
+                }
+                log.info("imageUrl2: "+imageUrl);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
                     SearchResultEntity sre = getSearchResultEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
@@ -1744,7 +1748,7 @@ public class SearchService {
 
         return sreList;
     }
-// ,Function<RESULT, String> getThumnailFn
+    // ,Function<RESULT, String> getThumnailFn
     public <RESULT> List<SearchResultEntity> saveYoutube(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getPositionFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn ,Function<RESULT, Map<String,String>> getThumnailFn) throws Exception {
         log.info("========= saveYandex 진입 =========");
@@ -1772,7 +1776,7 @@ public class SearchService {
                 }
 
                 //이미지 파일 저장
-               saveYoutubeImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getPositionFn, getThumnailFn);
+                saveYoutubeImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getPositionFn, getThumnailFn);
                 saveSearchResult(sre);
 
                 sreList.add(sre);
@@ -2987,9 +2991,9 @@ public class SearchService {
     public Map<String, Object> getSearchInfoList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        // Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
         Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
         //  Page<SearchInfoEntity> searchInfoListPage2 = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
-
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
         outMap.put("number", searchInfoListPage.getNumber());
@@ -3003,6 +3007,7 @@ public class SearchService {
     public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        // Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, userUno, pageRequest);
         Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, userUno, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
@@ -3467,16 +3472,6 @@ public class SearchService {
         loop = true;
 
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
-/*
-        //인스타
-        if ("15".equals(tsrSns)) {
-            tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue;
-        }
-        //페북
-        else if ("17".equals(tsrSns)) {
-            tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
-        }
-*/
 
         do {
             String url = textYandexUrl
@@ -3625,15 +3620,5 @@ public class SearchService {
         return nke;
     }
 
-    public NewKeywordEntity addNewKeyword(String addNewKeyword) {
-        NewKeywordEntity nke = new NewKeywordEntity();
-        nke.setUserId("admin");
-        nke.setKeyword(addNewKeyword);
-        nke.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
-        nke.setKeywordStus("0");
-
-        return newKeywordRepository.save(nke);
-
-    }
 
 }

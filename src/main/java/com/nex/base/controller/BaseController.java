@@ -3,8 +3,10 @@ package com.nex.base.controller;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.nex.common.Consts;
+import com.nex.newKeyword.service.NewKeywordService;
 import com.nex.search.entity.DefaultQueryDtoInterface;
 import com.nex.search.entity.NewKeywordEntity;
+import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.repo.NewKeywordRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.service.SearchService;
@@ -37,6 +39,8 @@ public class BaseController {
     private final UserService userService;
     private final AutoRepository autoRepository;
     private final SearchJobRepository searchJobRepository;
+    // private final SearchTextUsService searchTextUsService;
+    private final NewKeywordService newKeywordService;
 
     private final TraceHistRepository traceHistRepository;
     private final SearchInfoHistRepository searchInfoHistRepository;
@@ -144,6 +148,13 @@ public class BaseController {
     // 카운트
     @PostMapping("/history_tsi_uno_count")
     public int history_tsi_uno_count(@RequestParam(required = false) Integer tsi_uno){
+        int tsiUnoCount = searchJobRepository.countByTsiUno(tsi_uno);
+        return tsiUnoCount;
+    }
+
+    // 신조어 카운트
+    @PostMapping("/newKeyword_tsi_uno_count")
+    public int newKeyword_tsi_uno_count(@RequestParam(required = false) Integer tsi_uno){
         int tsiUnoCount = searchJobRepository.countByTsiUno(tsi_uno);
         return tsiUnoCount;
     }
@@ -555,42 +566,6 @@ public class BaseController {
         return modelAndView;
     }
 
-    @GetMapping("/newKeyword") // 여기
-    public ModelAndView newKeyword(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
-        ModelAndView modelAndView = new ModelAndView("html/newKeyword");
-        log.info("========= keyword 페이지 진입 ========");
-        // Map<String, Object> autoKeyword_list = userService.getAutoKeyword(sessionInfoDto.getUserId());
-        // List<NewKeywordEntity> newKeywordList = searchService.getNewKeywordList();
-        List<NewKeywordDto> newKeywordList = newKeywordRepository.keywordList();
-
-
-        // modelAndView.addObject("autoKeyword_list", autoKeyword_list.get("autoKeyword_list"));
-        modelAndView.addObject("newKeywordList", newKeywordList);
-        modelAndView.addObject("sessionInfo", sessionInfoDto);
-
-        return modelAndView;
-    }
-
-    @PostMapping("/add_keyword")
-    public List<NewKeywordDto> add_keyword(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
-            , String keyword)  {
-        log.info("keyword: "+keyword);
-
-        searchService.addNewKeyword(keyword);
-        return newKeywordRepository.keywordList();
-    }
-
-    @GetMapping("/del_keyword")
-    @ResponseBody
-    public List<NewKeywordDto> del_keyword(Integer idx) {
-        log.info("idx: " + idx);
-
-        NewKeywordEntity nke = newKeywordRepository.findByIdx(idx);
-        nke.setKeywordStus("1");
-        newKeywordRepository.save(nke);
-        return newKeywordRepository.keywordList();
-    }
-
 
     @PostMapping("/ajax_auto_Insert")
     public int ajax_auto_Insert(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
@@ -730,6 +705,7 @@ public class BaseController {
 
     }
 
+/*
     // 추적이력 단건 삭제
     @PostMapping("/deleteTsrUno")
     public String deleteTsrUno(HttpServletResponse response, Integer tsrUno) {
@@ -739,6 +715,8 @@ public class BaseController {
 
         return "success";
     }
+*/
+/*
 
     @GetMapping("/deleteTsrUnos")
     public String deleteTsrUnos(HttpServletResponse response,
@@ -748,5 +726,6 @@ public class BaseController {
 
         return "success";
     }
+*/
 
 }

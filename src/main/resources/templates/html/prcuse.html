@@ -46,6 +46,51 @@
         text-align:center;
         color: red;
     }
+    .parent{
+        margin: 10px auto;
+    }
+
+    .first {
+        display: inline-block;
+        width: 580px;
+        float: left;
+        margin-top: 90px;
+    }
+
+    .second{
+        display: inline-block;
+        float: right;
+        width: 580px;
+    }
+
+    .three {
+        display: inline-block;
+        width: 580px;
+        float: left;
+        margin-top: 90px;
+        margin-right: 152px;
+    }
+
+    .four{
+        display: inline-block;
+        float: right;
+        width: 580px;
+        margin-top: -290px;
+    }
+
+    .five {
+        display: inline-block;
+        width: 580px;
+        float: left;
+        margin-top: 90px;
+    }
+
+    .six{
+        display: inline-block;
+        float: right;
+        width: 580px;
+        margin-top: 90px;
+    }
 </style>
 <body>
 
@@ -122,27 +167,34 @@
                         class="bor10 btn-off manager-add" type="submit" onclick="rowClicked();">검색</button>
             </div>
         </form>
-        <div id="pdfDiv" style="width: 800px; margin-left: 300px;">
-            <div id="div_myAreaChart" style="margin-top: 50px;">
-                <canvas id="myChart" ></canvas>
+        <div class="parent" id="pdfDiv" ><!-- style="width: 600px; float: left;" -->
+            <!--<div id="div_myAreaChart" style="margin-top: 50px;">-->
+                <div class="first" id="div_myAreaChart" >
+                    <canvas id="myChart" ></canvas>
+                </div>
+                <div class="second" id="div_myAreaChart2">
+                    <canvas id="myChart2" ></canvas>
+                </div>
+        </div>
+        <div>
+            <div>
+                <div class="three">
+                    <canvas id="myChart3" ></canvas>
+                </div>
+                <div class="four">
+                    <canvas id="myChart4"></canvas>
+                </div>
             </div>
-            <div id="div_myAreaChart2" style="margin-top: 50px;">
-                    <canvas id="myChart2" width="200" height="200"></canvas>
+        </div>
+        <div>
+            <div class="five">
+                <canvas id="myChart5"></canvas>
+            </div>
+            <div class="six">
+                <canvas id="myChart6"></canvas>
             </div>
         </div>
 
-<!--
-    <form action="/prcuse/excel/download" method="get">
-            <div style="margin-top: 50px; float: right;">
-                <input style="margin-right: 20px; font-weight: bold; display: none;" type="date" name="fromDate" th:value="${fromDate}" />
-                <input style="margin-left: 20px; font-weight: bold; display: none;" type="date" name="toDate"  th:value="${toDate}"  />
-                <button class="bor10 btn-off manager-add" style="height: 60px; font-size: 17px; width: 121px; font-weight: bold; color: #e88550; margin-right: 10px;"
-                    type="submit" >Excel <br> Download</button>
-                <button class="bor10 btn-off manager-add" style="height: 60px; font-size: 17px; width: 121px; font-weight: bold; color: #e88550;"
-                        type="button" onclick="pdfDown();"> PDF <br> Download</button>
-            </div>
-        </form>
--->
     </section>
     <script>footer()</script>
   </article>
@@ -152,6 +204,10 @@
     $(document).ready(function(){
         getGraph();
         rowClicked();
+        getUserKeywordCnt();
+        getMonitoringList();
+        getMonitoring();
+        getBubble();
     });
 
     function getGraph() {
@@ -172,10 +228,6 @@
 
         $('#fromDate').attr('value', fromDate);
         $('#toDate').attr('value', toDate);
-
-/*        $('#fromDateExcel').attr('value', fromDate);
-        $('#toDateExcel').attr('value', toDate);
-        */
 
         let totalDateList = [];
         let cntList = [];
@@ -262,8 +314,6 @@
     }
 
     function rowClicked() {
-       // getGraph();
-
         $('#myChart').remove(); //그래프 그리는 영역 지움
         $('#div_myAreaChart').append('<canvas id="myChart" ></canvas>');
 
@@ -466,7 +516,7 @@
                     responsive: false,
                     y: {
                         min: 0,
-                        max: 100,
+                        max: 200,
                     }
                 },
                 title: {
@@ -474,6 +524,170 @@
                     text: '사용자 접속 현황'
                 }
             }
+        });
+    }
+
+    function getUserKeywordCnt() {
+
+        const exampleMonitoring = document.querySelector('#myChart3').getContext('2d');
+
+        const userKeywordCnt = new Chart(exampleMonitoring,{
+            type: 'bar',
+            data: {
+                labels:['admin','user','user2','user3'],
+                datasets: [
+                    {
+                        label: '키워드',
+                        data: [50,80,90,100],
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgb(255, 99, 132)',
+                    },
+                    {
+                        label: '키워드 결과 갯수',
+                        data: [140,180,170,190],
+                        backgroundColor: 'rgba(35, 192, 192, 0.6)',
+                        borderColor: 'rgb(35, 192, 192)',
+                        type: 'line',
+                    }
+                ]
+            }, options: {
+                responsive: true,
+                y: {
+                    min: 0,
+                    max: 200,
+                },plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: '사용자별 검색 키워드 현황'
+                    }
+                }
+            }
+        });
+    }
+
+    function getMonitoring() {
+        const exampleMonitoring = document.querySelector('#myChart5').getContext('2d');
+
+        const monitoringChart = new Chart(exampleMonitoring,{
+            type: 'line',
+            data: {
+                labels:['admin','user','user2','user3'],
+                datasets: [
+                    {
+                        label: '모니터링 한 갯수',
+                        data: [10,20,30,20],
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        stack: 'combined',
+                        type: 'bar'
+                    },
+                    {
+                        label: '모니터링 결과 갯수',
+                        data: [50,80,90,100],
+                        backgroundColor: 'rgba(35, 192, 192, 0.6)',
+                        borderColor: 'rgb(35, 192, 192)',
+                        stack: 'combined'
+                    }
+                ]
+            }, options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '24시 모니터링 그래프'
+                    }
+                },y: {
+                    min: 0,
+                    max: 200,
+                },
+                scales: {
+                    y: {
+                        stacked: true
+                    }
+                }
+            },
+        });
+    }
+
+    function getBubble() {
+        const exampleCtx = document.querySelector('#myChart6').getContext('2d');
+
+        const bubbleChartExample = new Chart(exampleCtx, {
+                type: 'bubble',
+                data: {
+                  datasets: [{
+                      label: '여고딩',
+                      data: [
+                          {x:2,y:12,r:15}
+                      ],
+                      backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                      borderColor: 'rgb(255, 99, 132)',
+                  },{
+                      label: '여중딩',
+                      data: [
+                          {x:1,y:3,r:15}
+                      ],
+                      backgroundColor: 'rgba(155, 99, 145, 0.6)',
+                      borderColor: 'rgb(155, 99, 145)',
+                  }]
+                },options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Chart.js Bubble Chart'
+                        }
+                    }
+                },
+            });
+    }
+
+    function getMonitoringList() {
+        const exampleCtx = document.querySelector('#myChart4').getContext('2d');
+        const bubbleChartExample = new Chart(exampleCtx, {
+            type: 'line',
+            data: {
+                labels:['admin','user','user2'],
+                datasets: [{
+                    label: '모니터링 한 갯수',
+                    data: [10,20,30],
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    borderWidth: 2
+                },{
+                    label: '삭제 요청한 갯수',
+                    data: [40,80,20],
+                    backgroundColor: 'rgba(35, 192, 192, 0.6)',
+                    borderColor: 'rgb(35, 192, 192)',
+                    borderWidth: 2
+                },{
+                    label: '삭제 완료된 갯수',
+                    data: [30,70,50],
+                    backgroundColor: 'rgba(55, 19, 192, 0.6)',
+                    borderColor: 'rgb(65, 19, 192)',
+                    borderWidth: 2
+                }]
+            },options: {
+                responsive: true,
+                y: {
+                    min: 0,
+                    max: 100,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: '사용자별 모니터링 현황'
+                    }
+                }
+            },
         });
     }
 

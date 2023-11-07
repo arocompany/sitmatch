@@ -1,9 +1,8 @@
 package com.nex.search.controller;
 
 import com.nex.common.Consts;
-import com.nex.search.entity.SearchInfoDto;
-import com.nex.search.entity.SearchInfoEntity;
-import com.nex.search.service.SearchService;
+import com.nex.search.entity.*;
+import com.nex.search.service.*;
 import com.nex.user.entity.SessionInfoDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @RestController // JSON 형태 결과값을 반환해줌 (@ResponseBody가 필요없음)
@@ -32,6 +32,10 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping("/search")
 public class SearchController {
     private final SearchService searchService;
+    private final SearchTextUsService searchTextUsService;
+    private final SearchTextKrService searchTextKrService;
+    private final SearchTextCnService searchTextCnService;
+    private final SearchImageUsService searchImageUsService;
 
     @Value("${search.yandex.text.url}")
     private String textYandexUrl;
@@ -64,7 +68,7 @@ public class SearchController {
     @PostMapping("")
     public ModelAndView search(@RequestParam("file") Optional<MultipartFile> file, SearchInfoEntity searchInfoEntity, HttpServletRequest request
                                 ,@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
-                                ,SearchInfoDto searchInfoDto) {
+                                ,SearchInfoDto searchInfoDto) throws ExecutionException, InterruptedException {
         ModelAndView modelAndView = new ModelAndView("redirect:/history");
 
         log.info("search진입 tsiKeyword "+searchInfoEntity.getTsiKeyword());
@@ -94,6 +98,7 @@ public class SearchController {
                     searchInfoEntity.setTsiImgHeight("");
                     searchInfoEntity.setTsiImgWidth("");
                     searchInfoEntity.setTsiImgSize(String.valueOf(file.get().getSize() / 1024));
+                    searchInfoEntity.setSearchValue("0");
                     if(tsiKeyword.isEmpty()){
                         tsiType = "19";
                         searchInfoEntity.setTsiType(tsiType);
@@ -156,15 +161,11 @@ public class SearchController {
 
         insertResult = searchService.saveSearchInfo(searchInfoEntity);
 
-        //2023-03-26 위 로직 searchService 로 이동
-        searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
-
+       searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
         return modelAndView;
     }
 
-    /**
-     * @Deprecated 2023-03-26 사용 중지 SearchService 로 이동 {@link SearchService#searchGoogle(String, SearchInfoEntity, String, String)}
-     */
+
     @Deprecated
     private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns) {
         // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
@@ -202,9 +203,6 @@ public class SearchController {
         }
     }
 
-    /**
-     * @Deprecated 2023-03-26 사용 중지 SearchService 로 이동 {@link SearchService#searchYandexByText(String, SearchInfoEntity)}}
-     */
     @Deprecated
     public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult){
         int index = 0;
@@ -349,6 +347,47 @@ public class SearchController {
         tsrUno.ifPresent(searchService::setMonitoringCd);
         return "success";
     }
+/*
+    @PostMapping("/newKeyword")
+    public Boolean newKeyword(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
+                              @RequestParam(value="newKeywordValues", required=false) List<String> newKeywordValues) throws ExecutionException, InterruptedException {
+        log.info("newKeywordValues3: " + newKeywordValues);
+        // ModelAndView modelAndView = new ModelAndView("redirect:/search/newKeyword");
+
+        List<String> nrd = newKeywordValues;
+
+
+        for(int i=0; i< nrd.size(); i++) {
+            SearchInfoEntity searchInfoEntity = new SearchInfoEntity();
+            log.info("newKeyword: "+nrd.get(i).toString());
+            String newKeyword = nrd.get(i).toString();
+
+            String tsiType="11";
+
+            LocalDate now = LocalDate.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            String folder = now.format(formatter);
+            searchInfoEntity.setTsiType("11");
+            searchInfoEntity.setTsiGoogle((byte) 1);
+            searchInfoEntity.setTsiTwitter((byte) 1);
+            searchInfoEntity.setTsiFacebook((byte) 1);
+            searchInfoEntity.setTsiInstagram((byte) 1);
+            searchInfoEntity.setUserUno(sessionInfoDto.getUserUno());
+            searchInfoEntity.setTsiStat("11");
+            searchInfoEntity.setTsiKeyword(newKeyword);
+
+            SearchInfoEntity insertResult = searchService.saveNewKeywordSearchInfo(searchInfoEntity);
+            searchService.searchByText(newKeyword, insertResult, folder);
+
+        }
+
+        log.info("========= newKeyword 검색 완료 =========");
+
+        return true;
+
+    }
+
+ */
 
 }
 
