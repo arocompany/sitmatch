@@ -2992,7 +2992,7 @@ public class SearchService {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         // Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
-        Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
+        Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10","0", keyword, pageRequest);
         //  Page<SearchInfoEntity> searchInfoListPage2 = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
@@ -3008,7 +3008,7 @@ public class SearchService {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         // Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, userUno, pageRequest);
-        Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, userUno, pageRequest);
+        Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc("10","0", keyword, userUno, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
