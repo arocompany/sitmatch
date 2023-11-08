@@ -705,7 +705,7 @@ public class BaseController {
 
     }
 
-/*
+
     // 추적이력 단건 삭제
     @PostMapping("/deleteTsrUno")
     public String deleteTsrUno(HttpServletResponse response, Integer tsrUno) {
@@ -715,8 +715,7 @@ public class BaseController {
 
         return "success";
     }
-*/
-/*
+
 
     @GetMapping("/deleteTsrUnos")
     public String deleteTsrUnos(HttpServletResponse response,
@@ -726,6 +725,6 @@ public class BaseController {
 
         return "success";
     }
-*/
+
 
 }
