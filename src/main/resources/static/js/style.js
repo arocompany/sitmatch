@@ -222,7 +222,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const newKeywordValues = document.getElementById('newKeywordValue').value;
             // alert("newKeywordValues: "+newKeywordValues);
-            window.location.href="/keyword/newKeyword";
+            // window.location.href="/keyword/newKeyword";
+            location.href = '/keyword/newKeyword';
 
             // url: "/search/newKeyword",
             $.ajax({

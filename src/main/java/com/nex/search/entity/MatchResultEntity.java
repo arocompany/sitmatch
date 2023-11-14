@@ -22,15 +22,6 @@ public class MatchResultEntity {
     @Column(name = "TSJ_UNO", nullable = true)
     private int tsjUno;
     @Basic
-    @Column(name = "TMR_IMG_PATH")
-    private String tmrImgPath;
-    @Basic
-    @Column(name = "TMR_IMG_NAME")
-    private String tmrImgName;
-    @Basic
-    @Column(name = "TMR_IMG_EXT")
-    private String tmrImgExt;
-    @Basic
     @Column(name = "TMR_SIMILARITY", nullable = true, precision = 0)
     private Object tmrSimilarity;
     @Basic
@@ -54,6 +45,7 @@ public class MatchResultEntity {
     @Basic
     @Column(name = "TMR_T_SCORE", nullable = true, precision = 0)
     private Object tmrTScore;
+
 
     public int getTmrUno() {
         return tmrUno;
@@ -99,29 +91,6 @@ public class MatchResultEntity {
         this.tsjUno = tsjUno;
     }
 
-    public String getTmrImgPath() {
-        return tmrImgPath;
-    }
-
-    public void setTmrImgPath(String tmrImgPath) {
-        this.tmrImgPath = tmrImgPath;
-    }
-
-    public String getTmrImgName() {
-        return tmrImgName;
-    }
-
-    public void setTmrImgName(String tmrImgName) {
-        this.tmrImgName = tmrImgName;
-    }
-
-    public String getTmrImgExt() {
-        return tmrImgExt;
-    }
-
-    public void setTmrImgExt(String tmrImgExt) {
-        this.tmrImgExt = tmrImgExt;
-    }
 
     public void setTmrSimilarity(Object tmrSimilarity) {
         this.tmrSimilarity = tmrSimilarity;
@@ -168,12 +137,12 @@ public class MatchResultEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MatchResultEntity that = (MatchResultEntity) o;
-        return tmrUno == that.tmrUno && tsiUno == that.tsiUno && tsrUno == that.tsrUno && tsjUno == that.tsjUno && Objects.equals(tmrImgPath, that.tmrImgPath) && Objects.equals(tmrImgName, that.tmrImgName) && Objects.equals(tmrImgExt, that.tmrImgExt) && Objects.equals(tmrSimilarity, that.tmrSimilarity) && Objects.equals(tmrStat, that.tmrStat) && Objects.equals(tmrMessage, that.tmrMessage) && Objects.equals(fstDmlDt, that.fstDmlDt) && Objects.equals(lstDmlDt, that.lstDmlDt);
+        return tmrUno == that.tmrUno && tsiUno == that.tsiUno && tsrUno == that.tsrUno && tsjUno == that.tsjUno && Objects.equals(tmrSimilarity, that.tmrSimilarity) && Objects.equals(tmrStat, that.tmrStat) && Objects.equals(tmrMessage, that.tmrMessage) && Objects.equals(fstDmlDt, that.fstDmlDt) && Objects.equals(lstDmlDt, that.lstDmlDt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tmrUno, tsiUno, tsrUno, tsjUno, tmrImgPath, tmrImgName, tmrImgExt, tmrSimilarity, tmrStat, tmrMessage, fstDmlDt, lstDmlDt);
+        return Objects.hash(tmrUno, tsiUno, tsrUno, tsjUno, tmrSimilarity, tmrStat, tmrMessage, fstDmlDt, lstDmlDt);
     }
 
     public Object getTmrVScore() {

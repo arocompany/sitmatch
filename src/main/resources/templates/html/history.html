@@ -42,7 +42,7 @@
   <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
   <h1 class="title bor10 btn-off"><span class="s-tit active">검색 이력</span><span class="t-tit">추적 이력</span> </h1>
   <!-- 검색 이력 -->
-  <section class="search-history layout history active">
+  <section class="search-history layout history active" style="width: 1445px;">
     <div class="searchbox">
       <form name="history-search" class="search-box" action="/history" id="searchForm">
         <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${searchKeyword}" name="searchKeyword" id="searchKeyword">
@@ -53,9 +53,9 @@
           <img src="/img/common/excelLogo.png">
         </button>
       </form>
-        <p class="total-num">총 <span th:text="${searchInfoListCount}"></span>건</p>
+      <p class="total-num">총 <span th:text="${searchInfoListCount}"></span>건</p>
     </div>
-    <h2 class="list-tit" style="padding: 10px 20px 20px;">
+    <h2 class="list-tit" style="padding: 10px 20px 20px; width: 1460px;">
       <input type="checkbox" id="allCheckbox" onclick="allCheckboxBtn();">
       <span class="num">순번</span>
       <span class="counselor">상담사</span>
@@ -65,19 +65,20 @@
       <span class="time">검색 일시</span>
       <span class="progress">검색 진행률</span>
       <span class="dist">구분</span>
+      <span class="dist"> 검색 결과 / 유사도</span>
       <button class="del-btn btn-off dels" onclick="checkTsiunos();"></button>
       <input type="hidden" id="tsiUnosValue" name="tsiUnosValue" value="">
       <!--<input type="button" class="del-btn btn-off dels" onclick="checkTsiunos();"></input>-->
     </h2>
 
     <ul class="history-list history-search-list">
-      <li class="btn-off bor10" th:each="searchInfoList:${searchInfoList}">
+      <li style="width: 1460px;" class="btn-off bor10" th:each="searchInfoList:${searchInfoList}">
         <input type="checkbox" id="tsiUnos" name="tsiUnos" th:value="${searchInfoList.getTsiUno()}">
-<!--        <div class="tsiUnoclass">
-        <input type="hidden" id="tsiUno" name="tsiUno" th:value="${searchInfoList.getTsiUno()}">
-        </div>-->
+        <!--        <div class="tsiUnoclass">
+                <input type="hidden" id="tsiUno" name="tsiUno" th:value="${searchInfoList.getTsiUno()}">
+                </div>-->
         <p class="num" th:text="${searchInfoList.getTsiUno()}"></p> <!-- 순번 -->
-        <p class="counselor" th:text="${userIdMap.get(searchInfoList.getUserUno())}">상담사 아이디</p>
+        <p class="counselor" th:text="${userIdMap.get(searchInfoList.getTsiUserUno())}">상담사 아이디</p>
         <p class="type" style="text-align: center">
           <th:block th:switch="${searchInfoList.getTsiType()}">
             <span th:case="${'11'}">키워드</span>
@@ -90,8 +91,8 @@
         <div class="cont">
           <div class="img-box"> <!-- onclick="InfoList();" -->
             <div class="img" th:if="${searchInfoList.getTsiType() != '11'}">
-                <button class="tsiUnoClass" id="tsiUno" name="tsiUno"  th:value="${searchInfoList.getTsiUno()}" onclick="InfoList(this);"><img th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt=""></button>
-                <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="" />
+              <button class="tsiUnoClass" id="tsiUno" name="tsiUno"  th:value="${searchInfoList.getTsiUno()}" onclick="InfoList(this);"><img th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt=""></button>
+              <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="" />
             </div>
           </div>
           <p class="con1">
@@ -99,20 +100,22 @@
           </p>
         </div>
         <p class="social">
-          <img th:if="${searchInfoList.getTsiGoogle() == 1}" src="/img/common/sns/google.png" alt="">
-          <img th:if="${searchInfoList.getTsiFacebook() == 1}" src="/img/common/sns/face.png" alt="">
-          <img th:if="${searchInfoList.getTsiTwitter() == 1}" src="/img/common/sns/twitter.png" alt="">
-          <img th:if="${searchInfoList.getTsiInstagram() == 1}" src="/img/common/sns/insta.png" alt="">
+          <img th:if="${searchInfoList.getTsiGoogle()}" src="/img/common/sns/google.png" alt="">
+          <img th:if="${searchInfoList.getTsiFacebook()}" src="/img/common/sns/face.png" alt="">
+          <img th:if="${searchInfoList.getTsiTwitter()}" src="/img/common/sns/twitter.png" alt="">
+          <img th:if="${searchInfoList.getTsiInstagram()}" src="/img/common/sns/insta.png" alt="">
         </p>
-        <p class="time" th:text="${#dates.format(searchInfoList.getFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></p>
+        <p class="time" th:text="${#dates.format(searchInfoList.getTsiFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></p>
         <p class="dot-wrap progress">
           <input type="hidden" class="dot-tsi-uon" th:value="${searchInfoList.getTsiUno()}"></input>
-          <input type="hidden" class="dot-tsi-date" th:value="${#dates.format(searchInfoList.getFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></input>
+          <input type="hidden" class="dot-tsi-date" th:value="${#dates.format(searchInfoList.getTsiFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></input>
           <span class="dot"></span>
           <span class="dot-per" th:text="${getProgressPercentMap.get(searchInfoList.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(searchInfoList.getTsiUno())}"></span>
         </p>
         <button class="btn-off review" th:onclick="|location.href='@{/result(tsiUno=${searchInfoList.getTsiUno()}, tsiKeyword=${searchInfoList.getTsiKeyword()}, keyword=${searchInfoList.getTsiKeyword()})}'|">검색중</button>
-        <!--총 <p>건</p>, 유사도: <p>건</p>-->
+        <p style="margin-right: 17px;"> 총 <span th:text="${searchInfoList.getResultCnt()}" />건,
+          &nbsp; 유사도: <span th:text="${searchInfoList.getTmrSimilarityCnt()}" />건
+        </p>
         <button class="del-btn btn-off del" th:value="${searchInfoList.getTsiUno()}">삭제</button>
       </li>
       <li th:if="${searchInfoListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
@@ -164,7 +167,7 @@
             <input type="hidden" th:value="${traceHistoryList.getTsrUno()}" id="tsrUno">
             <div class="img" >
               <img th:if="${traceHistoryList.getTsrImgPath()} != null "
-                      th:src="${'/imagePath'+#strings.substring(traceHistoryList.getTsrImgPath(),7)+traceHistoryList.getTsrImgName()}" alt="">
+                   th:src="${'/imagePath'+#strings.substring(traceHistoryList.getTsrImgPath(),7)+traceHistoryList.getTsrImgName()}" alt="">
             </div>
             <th:block th:switch="${traceHistoryList.getTsrSns()}">
               <img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">
@@ -192,7 +195,7 @@
                 <!--<p th:text="${#dates.format(traceInfo.getTsrFstDmlDt(), 'yyyy-MM-dd')}">2023-01-02</p>-->
               </span>
             </p>
-<!--       <p class="counselor" th:text="${userIdMap.get(searchInfoList.getUserUno())}">상담사 아이디</p>-->
+            <!--       <p class="counselor" th:text="${userIdMap.get(searchInfoList.getUserUno())}">상담사 아이디</p>-->
             <p class="">상담사 : <span th:text="${traceHistoryList.getTuUserId()}"></span></p>
             <!--<p class="">상담사 : <span th:text="${traceHistoryList.getTuUserId()}"></span></p> 원본 -->
           </div>
@@ -500,19 +503,19 @@
       tsi_uno_count = false;
     }
     console.info(diffMin+'/diffMin');
-      if(diffMin>=1){
-        loading.style.display = 'none';
-        per.style.fontSize = '1rem';
-        per.style.cssText = "font-size:1rem; color:#545759;";
-        per.innerText = "100%";
-        pro.nextElementSibling.innerHTML = "검색결과";
-        pro.nextElementSibling.style.color = "#e87728";
-        console.info(tsi_uno_count);
-        console.info(per.innerText);
-/*      if (per.innerText === '100%' || !tsi_uno_count) {
+    if(diffMin>=1){
+      loading.style.display = 'none';
+      per.style.fontSize = '1rem';
+      per.style.cssText = "font-size:1rem; color:#545759;";
+      per.innerText = "100%";
+      pro.nextElementSibling.innerHTML = "검색결과";
+      pro.nextElementSibling.style.color = "#e87728";
+      console.info(tsi_uno_count);
+      console.info(per.innerText);
+      /*      if (per.innerText === '100%' || !tsi_uno_count) {
 
-      }
-*/
+            }
+      */
     }
 
   })
@@ -634,7 +637,7 @@
 
   // 대상 디테일
   const imgBtn = document.querySelectorAll(".img-box");
- // const tsiUnoClass = document.querySelectorAll(".history-search-list");
+  // const tsiUnoClass = document.querySelectorAll(".history-search-list");
   const modal = document.querySelector("#modal");
 
   /*
@@ -651,55 +654,55 @@
   imgBtn.forEach((btn) => {
     const tsrUno = btn.querySelector("#tsrUno");
 
-      btn.addEventListener('click', () => {
-          //XMLHttpRequest 객체 생성
-          var xhr = new XMLHttpRequest();
-          //요청을 보낼 방식, 주소, 비동기여부 설정
-          xhr.open('GET', 'trace-detail?tsrUno='+tsrUno.value, true);
-          //요청 전송
-          xhr.send(null);
-          //통신후 작업
-          xhr.onload = () => {
-            //통신 성공
-            if (xhr.status == 200) {
-              document.body.style.overflow = 'hidden';
-              modal.style.display = 'block';
-              modal.innerHTML = xhr.response;
-              const esc = document.querySelector(".trace-detail .esc-btn");
-              esc.onclick = () => {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'unset';
-              }
-              const _CANVASBOX = document.querySelectorAll(`.preview-img `);
-              //비디오 태그의 메타데이터가 들어오면
-              _CANVASBOX.forEach(img => {
-                let _VIDEO = img.querySelector('video');
-                _VIDEO.addEventListener('loadedmetadata', function (e) {
-                  img.children[0].width = _VIDEO.videoWidth;
-                  img.children[0].height = _VIDEO.videoHeight;
-                  const time = Math.random() * _VIDEO.duration;
-                  _VIDEO.currentTime = time; //비디오의 영상길이 중 랜덤 타임을 뽑음
-                  img.children[1].getContext("2d").drawImage(_VIDEO, 0, 0, _VIDEO.videoWidth, _VIDEO.videoHeight);
-                  // 비디오 플레이
-                  const video = document.querySelectorAll(".img-box .video");
-                  if (video) {
-                    video.forEach(vid => {
-                      const btn = vid.querySelector('.play-btn');
-                      btn.onclick = () => {
-                        vid.querySelector("video").play();
-                        vid.querySelector("video").controls = true;
-                        vid.querySelector(".play-wrap").style.display = 'none';
-                      }
-                    })
+    btn.addEventListener('click', () => {
+      //XMLHttpRequest 객체 생성
+      var xhr = new XMLHttpRequest();
+      //요청을 보낼 방식, 주소, 비동기여부 설정
+      xhr.open('GET', 'trace-detail?tsrUno='+tsrUno.value, true);
+      //요청 전송
+      xhr.send(null);
+      //통신후 작업
+      xhr.onload = () => {
+        //통신 성공
+        if (xhr.status == 200) {
+          document.body.style.overflow = 'hidden';
+          modal.style.display = 'block';
+          modal.innerHTML = xhr.response;
+          const esc = document.querySelector(".trace-detail .esc-btn");
+          esc.onclick = () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'unset';
+          }
+          const _CANVASBOX = document.querySelectorAll(`.preview-img `);
+          //비디오 태그의 메타데이터가 들어오면
+          _CANVASBOX.forEach(img => {
+            let _VIDEO = img.querySelector('video');
+            _VIDEO.addEventListener('loadedmetadata', function (e) {
+              img.children[0].width = _VIDEO.videoWidth;
+              img.children[0].height = _VIDEO.videoHeight;
+              const time = Math.random() * _VIDEO.duration;
+              _VIDEO.currentTime = time; //비디오의 영상길이 중 랜덤 타임을 뽑음
+              img.children[1].getContext("2d").drawImage(_VIDEO, 0, 0, _VIDEO.videoWidth, _VIDEO.videoHeight);
+              // 비디오 플레이
+              const video = document.querySelectorAll(".img-box .video");
+              if (video) {
+                video.forEach(vid => {
+                  const btn = vid.querySelector('.play-btn');
+                  btn.onclick = () => {
+                    vid.querySelector("video").play();
+                    vid.querySelector("video").controls = true;
+                    vid.querySelector(".play-wrap").style.display = 'none';
                   }
                 })
-              })
-            } else {
-              //통신 실패
-              console.log("통신 실패");
-            }
-          }
-      })
+              }
+            })
+          })
+        } else {
+          //통신 실패
+          console.log("통신 실패");
+        }
+      }
+    })
   });
 
   // 24시간 모니터링 버튼 활성화

@@ -47,6 +47,8 @@ public interface DefaultQueryDtoInterface {
     String getTuUserId();
 
     String getMonitoringCd();
+
+    String getMaxSimilarity();
     String getRe_monitor_cnt();
 
     String getTsi3tsiuno();

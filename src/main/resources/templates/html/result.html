@@ -151,9 +151,15 @@
           <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}"> <!-- 검색타입이 키워드가 아닌경우 -->
             <span th:case="00">대기중</span> <!-- 00 : 대기중, 01 : 처리중, 10 : SKIP, 11 : 처리완료 -->
             <span th:case="01">처리중</span>
-            <span th:case="10">SKIP</span>
+            <span th:case="10"> <!-- SKIP -->
+                <span th:if="${list.getMaxSimilarity()!= null}">
+                 <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getMaxSimilarity2(), '%')}">99%</h2>
+                </span>
+            </span>
             <span th:case="11">
-              <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
+              <span  th:if="${list.getMaxSimilarity()== null}">
+                <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
+              </span>
               <span th:if="${(tsiType == '15' || tsiType == '19')}"> <!-- 15: 키워드+영상 / 19: 영상 --> <!-- 이미지는 17 -->
                 <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">(V : <span
                         th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>

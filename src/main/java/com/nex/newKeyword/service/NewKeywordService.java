@@ -288,7 +288,7 @@ public class NewKeywordService {
         }
         return "저장 완료";
     }
-    
+
     // admin 일때
     public Map<String, Object> getNewKeywordInfoList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();

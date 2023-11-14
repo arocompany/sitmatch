@@ -162,12 +162,13 @@ public class SearchController {
         insertResult = searchService.saveSearchInfo(searchInfoEntity);
 
        searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+       log.info("====== search 끝 ======");
         return modelAndView;
     }
 
 
     @Deprecated
-    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns) {
+    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns) throws Exception {
         // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
         switch (tsiType) {// 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
             case "11":// 키워드만 검색한 경우

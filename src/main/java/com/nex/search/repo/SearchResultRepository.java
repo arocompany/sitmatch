@@ -119,10 +119,28 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 //                    "(case when isnull(tmr.TMR_V_SCORE) || tmr.TMR_V_SCORE = 0 then 0 else 1 end + "+
             "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
 //                    "case when isnull(tmr.TMR_A_SCORE) || tmr.TMR_A_SCORE = 0 then 0 else 1 end + "+
-            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity";
+            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity" +
+            ",MAX(if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', ceiling(((case " +
+            "when isnull(tmr.TMR_V_SCORE) then 0 " +
+            "            else tmr.TMR_V_SCORE " +
+            "        end + case " +
+            "            when isnull(tmr.TMR_A_SCORE) then 0 " +
+            "            else tmr.TMR_A_SCORE " +
+            "        end + case " +
+            "            when isnull(tmr.TMR_T_SCORE) then 0 " +
+            "            else tmr.TMR_T_SCORE " +
+            "        end) / (case " +
+            "            when isnull(tmr.TMR_V_SCORE) then 0 " +
+            "            else 1 " +
+            "        end + case " +
+            "            when isnull(tmr.TMR_A_SCORE) then 0 " +
+            "            else 1 " +
+            "        end + case " +
+            "            when isnull(tmr.TMR_T_SCORE) then 0 " +
+            "            else 1 " +
+            "        end)) * 100))) AS maxSimilarity ";
 
     String defaultQeury_6 = "SELECT tsr.TSR_SITE_URL as tsrSiteUrl";
-
 
     String defaultQeury_0 = defaultQeury2 +
             ", (SELECT COUNT(*) " +
@@ -396,7 +414,6 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     /*@Query(value = defaultQeury_3+from_5+" WHERE TSI.TSI_UNO = :tsiuno AND TSI.TSI_KEYWORD like :keyword AND TMR.TMR_STAT = '11' "+whereSimilarity_2 , nativeQuery = true, countQuery = countQuery+from_2+" WHERE TSI.TSI_UNO = :tsiuno AND TSI.TSI_KEYWORD=:keyword AND TMR.TMR_STAT = '11'"+whereSimilarity_2)*/
     @Query(value = defaultQeury_3+from_5+"AND TMR.TMR_STAT = '11' "+whereSimilarity_2 , nativeQuery = true, countQuery = countQuery+from_5+" AND TMR.TMR_STAT = '11'"+whereSimilarity_2)
     Page<DefaultQueryDtoInterface> getNoticeSelList(Pageable pageable, Integer tsiUno, Integer percent, String tsiKeyword);
-
     //추적이력 삭제
     @Transactional
     @Modifying
