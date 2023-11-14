@@ -64,6 +64,7 @@ public class SearchService {
     private final SearchResultRepository searchResultRepository;
     private final VideoInfoRepository videoInfoRepository;
     private final SearchJobRepository searchJobRepository;
+    private final MatchResultRepository matchResultRepository;
 
     private final SearchInfoHistRepository searchInfoHistRepository;
     private final TraceHistRepository traceHistRepository;
@@ -102,7 +103,8 @@ public class SearchService {
     private String fileLocation3;
     @Value("${server.url}")
     private String serverIp;
-
+    @Value("${search.server.url}")
+    private String serverIp2;
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
@@ -122,13 +124,16 @@ public class SearchService {
      * @param folder       (저장 폴더)
      */
 
+    //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
     public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, byte tsiTwitter, String tsiType, SearchInfoEntity insertResult, String folder,
-                       SearchInfoDto searchInfoDto) {
+                       SearchInfoDto searchInfoDto) throws Exception {
         if (tsiType.equals("17")) {
             log.info("이미지만 검색시");
             String tsrSns = "11";
             searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
-
+        } else if(tsiType.equals("19")){
+            String tsrSns = "11";
+            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
         } else {
             if (tsiType.equals("11")) {
                 String tsrSns = "11";
@@ -137,29 +142,17 @@ public class SearchService {
             }
 
             if (tsiGoogle == 1) {
-                // Google 검색기능 구현
                 String tsrSns = "11";
-                // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
                 searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
             }
 
-            //2023-03-20
-            //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
             if (tsiFacebook == 1) {
-                // Facebook 검색기능 구현
                 String tsrSns = "17";
-
-                // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
                 searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
             }
 
-            //2023-03-20
-            //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
             if (tsiInstagram == 1) {
-                // Instagram 검색기능 구현
                 String tsrSns = "15";
-
-                // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
                 searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
             }
 
@@ -181,37 +174,25 @@ public class SearchService {
      * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
      */
 
-    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns, SearchInfoDto searchInfoDto) {
-        // Google 검색기능 구현 (yandex 검색 (텍스트, 텍스트+사진, 이미지검색-구글 렌즈), 구글 검색(텍스트))
+    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns, SearchInfoDto searchInfoDto) throws Exception {
         switch (tsiType) { // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
-            case "11":// 키워드만 검색한 경우
-                // Yandex 검색
+            case "11":
                 log.info("키워드 검색");
                 searchYandexByText(tsrSns, insertResult, searchInfoDto);
-                // Google Custom Search 검색
-                // searchGoogleCustomByText(insertResult);
                 break;
-            case "13"://키워드 + 이미지 검색인 경우
-                // Yandex 검색
+            case "13":
                 log.info("키워드/이미지 검색");
                 searchYandexByTextImage(tsrSns, insertResult, searchInfoDto);
-                // Google Custom Search 검색
-//                    searchGoogleCustomByText(insertResult);
                 break;
-            case "15"://키워드 + 영상 검색인 경우
-                // 영상처리
-                // Yandex 검색
+            case "15":
                 log.info("키워드/영상 검색");
-                // searchYandexByText(tsrSns, insertResult, searchInfoDto);
                 searchYandexByTextVideo(tsrSns, insertResult, searchInfoDto, fileLocation3, folder);
                 break;
-            case "17"://이미지만 검색인 경우
-                // Yandex 검색
+            case "17":
                 log.info("이미지 검색");
                 searchYandexByImage(tsrSns, insertResult);
                 break;
-            case "19"://영상만 검색인 경우
-                // Yandex 검색
+            case "19":
                 log.info("영상 검색");
                 searchYandexByVideo(tsrSns, insertResult, fileLocation3, folder);
                 break;
@@ -234,12 +215,9 @@ public class SearchService {
 
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
-        //인스타
         if ("15".equals(tsrSns)) {
             tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue;
-        }
-        //페북
-        else if ("17".equals(tsrSns)) {
+        } else if ("17".equals(tsrSns)) {
             tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
         }
 
@@ -346,7 +324,6 @@ public class SearchService {
             index++;
         } while (loop);
 
-
         index=0;
         loop=true;
 
@@ -447,9 +424,9 @@ public class SearchService {
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
-        searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+        searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
         // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
-        searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
+        // searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
 
         //인스타
         if ("15".equals(tsrSns)) {
@@ -666,9 +643,9 @@ public class SearchService {
 
     public void searchYandexByImage(String tsrSns, SearchInfoEntity insertResult) {
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
-        searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+        searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
         // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
-        searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
+        // searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
 
         int index = 0;
         loop = true;
@@ -686,7 +663,6 @@ public class SearchService {
                     + "&image_url=" + searchImageUrl;
 
             CompletableFutureYandexByImage(url, tsrSns, insertResult);
-
 
             if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
                 loop = false;
@@ -995,13 +971,9 @@ public class SearchService {
         //Facebook 검색이고, source 값이 Facebook 인 경우
         if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
             sre.setTsrSns("17");
-        }
-        //Instagram 검색이고, source 값이 Instagram 인 경우
-        else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
+        } else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
             sre.setTsrSns("15");
-        }
-        //그 외는 구글
-        else {
+        } else {
             sre.setTsrSns("11");
         }
 
@@ -1151,12 +1123,8 @@ public class SearchService {
     public <RESULT> void saveImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
             , RESULT result, Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn) throws IOException {
         //Resource resource = resourceLoader.getResource(imageUrl);
-/*
-
-        String imageUrl = "11".equals(sre.getTsrSns()) ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
-        imageUrl = imageUrl != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
-*/
-
+        // String imageUrl = "11".equals(sre.getTsrSns()) ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
+        // imageUrl = imageUrl != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
 
         String imageUrl = getOriginalFn.apply(result);
         imageUrl = imageUrl != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
@@ -1328,8 +1296,6 @@ public class SearchService {
 
         List<SearchResultEntity> searchResultEntity = result;
 
-
-        //SearchJobEntity sje = null;
         for (SearchResultEntity sre : searchResultEntity) {
             try {
                 SearchJobEntity sje = getSearchJobEntity(sre);
@@ -1359,23 +1325,9 @@ public class SearchService {
         SearchInfoEntity updateResult = saveSearchInfo(insertResult);
 
         List<SearchResultEntity> searchResultEntity = result;
-        //SearchJobEntity sje = null;
+
         for (SearchResultEntity sre : searchResultEntity) {
             try {
-                /*
-                sje = new SearchJobEntity();
-                sje.setTsiUno(sre.getTsiUno());
-                sje.setTsrUno(sre.getTsrUno());
-                if(insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
-                    sje.setTsrImgPath(sre.getTsrImgPath().replaceAll("\\\\", "/"));
-                } else {
-                    sje.setTsrImgPath("");
-                }
-                sje.setTsrImgName(sre.getTsrImgName());
-                sje.setTsrImgExt(sre.getTsrImgExt());
-                */
-                //2023-03-26
-                //위 내용 메소드로 추출
                 SearchJobEntity sje = getSearchJobEntity(sre);
                 saveSearchJob(sje);
             } catch (JpaSystemException e) {
@@ -1423,9 +1375,6 @@ public class SearchService {
                         sre.setTsrSiteUrl(images_result.getLink());
                         //sre.setTsrSns("11");
 
-                        //2023-03-20
-                        //Facebook, Instagram 도 Google 로 검색, source 값으로 Facebook, Instagram 판별
-
                         //Facebook 검색이고, source 값이 Facebook 인 경우
                         if ("17".equals(tsrSns) && images_result.isFacebook()) {
                             sre.setTsrSns("17");
@@ -1439,19 +1388,15 @@ public class SearchService {
                             sre.setTsrSns("11");
                         }
 
-
                         //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                         if (!tsrSns.equals(sre.getTsrSns())) {
                             continue;
                         }
 
-
                         //Resource resource = resourceLoader.getResource(imageUrl);
                         //2023-03-21
                         //구글은 original, Facebook, Instagram 는 thumbnail 로 값을 가져오도록 변경
                         Resource resource = resourceLoader.getResource("11".equals(sre.getTsrSns()) ? imageUrl : images_result.getThumbnail());
-
-
                         if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("")) {
 
                             LocalDate now = LocalDate.now();
@@ -1649,7 +1594,7 @@ public class SearchService {
         return results != null ? results : new ArrayList<>();
     }
 
-    // 유튜브 여기
+    // 유튜브
     public <INFO, RESULT> List<RESULT> searchByYoutube(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
         log.info("searchByYoutube 진입");
         HttpHeaders header = new HttpHeaders();
@@ -1971,8 +1916,8 @@ public class SearchService {
         return files;
     }
 
-    // Yandex 영상 검색 후처리
-    @Async
+    // Yandex 영상 검색 후처리 1107 원본
+    /*@Async
     public void searchYandexByVideo(String tsrSns, SearchInfoEntity insertResult, String folder, String location3) {
         try {
             List<String> files = processVideo(insertResult);
@@ -2314,373 +2259,556 @@ public class SearchService {
             log.error(e.getMessage(), e);
         }
 
+    }*/
+
+    @Async
+    public void searchYandexByVideo(String tsrSns, SearchInfoEntity insertResult, String folder, String location3) throws Exception {
+        List<String> files = processVideo(insertResult);
+
+        for(int i=0; i<files.size(); i++) {
+            VideoInfoEntity videoInfo = new VideoInfoEntity();
+            videoInfo.setTsiUno(insertResult.getTsiUno());
+            videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
+            videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
+            saveVideoInfo(videoInfo);
+        }
+
+        try {
+            for (int i = 0; i < files.size(); i++) {
+                String searchImageUrl = serverIp2 + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
+                // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
+                // searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
+
+                try {
+                    String url = textYandexUrl
+                            + "?gl=cn"
+                            + "&no_cache=" + textYandexNocache
+                            + "&api_key=" + textYandexApikey
+                            + "&engine=" + imageYandexEngine
+                            + "&safe=off"
+                            + "&filter=0"
+                            + "&nfpr=0"
+                            + "&image_url=" + searchImageUrl;
+
+                    CompletableFuture
+                            .supplyAsync(() -> {
+                                try {
+                                    // text기반 yandex 검색 및 결과 저장.(이미지)
+                                    return searchYandexByImage(url, tsrSns, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            })
+                            .thenApplyAsync((r) -> {
+                                try {
+                                    // yandex검색을 통해 결과 db에 적재.
+                                    return saveImgSearchYandex(r, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            });
+                } catch (Exception e){
+                    log.error(e.getMessage(), e);
+                }
+
+                try {
+                    String url = textYandexUrl
+                            + "?gl=" + textYandexGl
+                            + "&no_cache=" + textYandexNocache
+                            + "&api_key=" + textYandexApikey
+                            + "&engine=" + imageYandexEngine
+                            + "&safe=off"
+                            + "&filter=0"
+                            + "&nfpr=0"
+                            + "&image_url=" + searchImageUrl;
+
+                    CompletableFuture
+                            .supplyAsync(() -> {
+                                try {
+                                    // text기반 yandex 검색 및 결과 저장.(이미지)
+                                    return searchYandexByImage(url, tsrSns, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            })
+                            .thenApplyAsync((r) -> {
+                                try {
+                                    // yandex검색을 통해 결과 db에 적재.
+                                    return saveImgSearchYandex(r, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            });
+                } catch (Exception e){
+                    log.error(e.getMessage(), e);
+                }
+
+                try {
+                    String url = textYandexUrl
+                            + "?gl=kr"
+                            + "&no_cache=" + textYandexNocache
+                            + "&api_key=" + textYandexApikey
+                            + "&engine=" + imageYandexEngine
+                            + "&safe=off"
+                            + "&filter=0"
+                            + "&nfpr=0"
+                            + "&image_url=" + searchImageUrl;
+
+                    CompletableFuture
+                            .supplyAsync(() -> {
+                                try {
+                                    // text기반 yandex 검색 및 결과 저장.(이미지)
+                                    return searchYandexByImage(url, tsrSns, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            })
+                            .thenApplyAsync((r) -> {
+                                try {
+                                    // yandex검색을 통해 결과 db에 적재.
+                                    return saveImgSearchYandex(r, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            });
+
+                } catch (Exception e){
+                    log.error(e.getMessage(), e);
+                }
+
+                try {
+                    String url = textYandexUrl
+                            + "?gl=th"
+                            + "&no_cache=" + textYandexNocache
+                            + "&api_key=" + textYandexApikey
+                            + "&engine=" + imageYandexEngine
+                            + "&safe=off"
+                            + "&filter=0"
+                            + "&nfpr=0"
+                            + "&image_url=" + searchImageUrl;
+
+                    CompletableFuture
+                            .supplyAsync(() -> {
+                                try {
+                                    // text기반 yandex 검색 및 결과 저장.(이미지)
+                                    return searchYandexByImage(url, tsrSns, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            })
+                            .thenApplyAsync((r) -> {
+                                try {
+                                    // yandex검색을 통해 결과 db에 적재.
+                                    return saveImgSearchYandex(r, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            });
+
+                } catch (Exception e){
+                    log.error(e.getMessage(), e);
+                }
+
+                try {
+                    String url = textYandexUrl
+                            + "?gl=ru"
+                            + "&no_cache=" + textYandexNocache
+                            + "&api_key=" + textYandexApikey
+                            + "&engine=" + imageYandexEngine
+                            + "&safe=off"
+                            + "&filter=0"
+                            + "&nfpr=0"
+                            + "&image_url=" + searchImageUrl;
+
+                    CompletableFuture
+                            .supplyAsync(() -> {
+                                try {
+                                    // text기반 yandex 검색 및 결과 저장.(이미지)
+                                    return searchYandexByImage(url, tsrSns, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            })
+                            .thenApplyAsync((r) -> {
+                                try {
+                                    // yandex검색을 통해 결과 db에 적재.
+                                    return saveImgSearchYandex(r, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            });
+                } catch (Exception e){
+                    log.error(e.getMessage(), e);
+                }
+
+                try {
+                    String url = textYandexUrl
+                            + "?gl=vn"
+                            + "&no_cache=" + textYandexNocache
+                            + "&api_key=" + textYandexApikey
+                            + "&engine=" + imageYandexEngine
+                            + "&safe=off"
+                            + "&filter=0"
+                            + "&nfpr=0"
+                            + "&image_url=" + searchImageUrl;
+
+                    CompletableFuture
+                            .supplyAsync(() -> {
+                                try {
+                                    // text기반 yandex 검색 및 결과 저장.(이미지)
+                                    return searchYandexByImage(url, tsrSns, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            })
+                            .thenApplyAsync((r) -> {
+                                try {
+                                    // yandex검색을 통해 결과 db에 적재.
+                                    return saveImgSearchYandex(r, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            });
+                } catch (Exception e){
+                    log.error(e.getMessage(), e);
+                }
+
+                try {
+                    String url = textYandexUrl
+                            + "?gl=nl"
+                            + "&no_cache=" + textYandexNocache
+                            + "&api_key=" + textYandexApikey
+                            + "&engine=" + imageYandexEngine
+                            + "&safe=off"
+                            + "&filter=0"
+                            + "&nfpr=0"
+                            + "&image_url=" + searchImageUrl;
+
+                    CompletableFuture
+                            .supplyAsync(() -> {
+                                try {
+                                    // text기반 yandex 검색 및 결과 저장.(이미지)
+                                    return searchYandexByImage(url, tsrSns, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            })
+                            .thenApplyAsync((r) -> {
+                                try {
+                                    // yandex검색을 통해 결과 db에 적재.
+                                    return saveImgSearchYandex(r, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            });
+                } catch (Exception e){
+                    log.error(e.getMessage(), e);
+                }
+
+
+            }
+
+        } catch (Exception e){
+            log.error(e.getMessage(), e);
+        }
+
     }
 
     // 키워드+영상
     @Async
-    public void searchYandexByTextVideo(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String folder, String location3) {
+    public void searchYandexByTextVideo(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String folder, String location3) throws Exception {
+        List<String> files = processVideo(insertResult);
+
+        for(int i=0; i<files.size(); i++) {
+            VideoInfoEntity videoInfo = new VideoInfoEntity();
+            videoInfo.setTsiUno(insertResult.getTsiUno());
+            videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
+            videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
+            saveVideoInfo(videoInfo);
+        }
+
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
-        //인스타
         if ("15".equals(tsrSns)) {
             tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue;
-        }
-        //페북
-        else if ("17".equals(tsrSns)) {
+        } else if ("17".equals(tsrSns)) {
             tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
         }
 
         try {
-            List<String> files = processVideo(insertResult);
             for (int i = 0; i < files.size(); i++) {
-                VideoInfoEntity videoInfo = new VideoInfoEntity();
-                videoInfo.setTsiUno(insertResult.getTsiUno());
-                videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
-                videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
-                saveVideoInfo(videoInfo);
-
-                String searchImageUrl = serverIp + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
+                String searchImageUrl = serverIp2 + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
                 // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
-                searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
+                // searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
 
-                String url = textYandexUrl
-                        + "?gl=" + textYandexGl
-                        + "&q=" + tsiKeywordHiddenValue
-                        + "&no_cache=" + textYandexNocache
-                        + "&api_key=" + textYandexApikey
-                        + "&engine=" + imageYandexEngine
-                        + "&safe=off"
-                        + "&filter=0"
-                        + "&nfpr=0"
-                        + "&image_url=" + searchImageUrl;
+                try {
+                    String url = textYandexUrl
+                            + "?gl=" + textYandexGl
+                            + "&q=" + tsiKeywordHiddenValue
+                            + "&no_cache=" + textYandexNocache
+                            + "&api_key=" + textYandexApikey
+                            + "&engine=" + imageYandexEngine
+                            + "&safe=off"
+                            + "&filter=0"
+                            + "&nfpr=0"
+                            + "&image_url=" + searchImageUrl;
 
-                CompletableFuture
-                        .supplyAsync(() -> {
-                            try {
-                                // text기반 yandex 검색 및 결과 저장.(이미지)
-                                return searchYandexByImage(url, tsrSns, insertResult);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        })
-                        .thenApplyAsync((r) -> {
-                            try {
-                                // yandex검색을 통해 결과 db에 적재.
-                                return saveImgSearchYandex(r, insertResult);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        });
+                    CompletableFuture
+                            .supplyAsync(() -> {
+                                try {
+                                    // text기반 yandex 검색 및 결과 저장.(이미지)
+                                    return searchYandexByImage(url, tsrSns, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            })
+                            .thenApplyAsync((r) -> {
+                                try {
+                                    // yandex검색을 통해 결과 db에 적재.
+                                    return saveImgSearchYandex(r, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            });
+
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+
+                try {
+                    String url = textYandexUrl
+                            + "?gl=cn"
+                            + "&q=" + tsiKeywordHiddenValue
+                            + "&no_cache=" + textYandexNocache
+                            + "&api_key=" + textYandexApikey
+                            + "&engine=" + imageYandexEngine
+                            + "&safe=off"
+                            + "&filter=0"
+                            + "&nfpr=0"
+                            + "&image_url=" + searchImageUrl;
+
+                    CompletableFuture
+                            .supplyAsync(() -> {
+                                try {
+                                    // text기반 yandex 검색 및 결과 저장.(이미지)
+                                    return searchYandexByImage(url, tsrSns, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            })
+                            .thenApplyAsync((r) -> {
+                                try {
+                                    // yandex검색을 통해 결과 db에 적재.
+                                    return saveImgSearchYandex(r, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            });
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+
+                try {
+                    String url = textYandexUrl
+                            + "?gl=kr"
+                            + "&q=" + tsiKeywordHiddenValue
+                            + "&no_cache=" + textYandexNocache
+                            + "&api_key=" + textYandexApikey
+                            + "&engine=" + imageYandexEngine
+                            + "&safe=off"
+                            + "&filter=0"
+                            + "&nfpr=0"
+                            + "&image_url=" + searchImageUrl;
+
+                    CompletableFuture
+                            .supplyAsync(() -> {
+                                try {
+                                    // text기반 yandex 검색 및 결과 저장.(이미지)
+                                    return searchYandexByImage(url, tsrSns, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            })
+                            .thenApplyAsync((r) -> {
+                                try {
+                                    // yandex검색을 통해 결과 db에 적재.
+                                    return saveImgSearchYandex(r, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            });
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+
+                try {
+                    String url = textYandexUrl
+                            + "?gl=th"
+                            + "&q=" + tsiKeywordHiddenValue
+                            + "&no_cache=" + textYandexNocache
+                            + "&api_key=" + textYandexApikey
+                            + "&engine=" + imageYandexEngine
+                            + "&safe=off"
+                            + "&filter=0"
+                            + "&nfpr=0"
+                            + "&image_url=" + searchImageUrl;
+
+                    CompletableFuture
+                            .supplyAsync(() -> {
+                                try {
+                                    // text기반 yandex 검색 및 결과 저장.(이미지)
+                                    return searchYandexByImage(url, tsrSns, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            })
+                            .thenApplyAsync((r) -> {
+                                try {
+                                    // yandex검색을 통해 결과 db에 적재.
+                                    return saveImgSearchYandex(r, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            });
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+
+                try {
+                    String url = textYandexUrl
+                            + "?gl=ru"
+                            + "&q=" + tsiKeywordHiddenValue
+                            + "&no_cache=" + textYandexNocache
+                            + "&api_key=" + textYandexApikey
+                            + "&engine=" + imageYandexEngine
+                            + "&safe=off"
+                            + "&filter=0"
+                            + "&nfpr=0"
+                            + "&image_url=" + searchImageUrl;
+
+                    CompletableFuture
+                            .supplyAsync(() -> {
+                                try {
+                                    // text기반 yandex 검색 및 결과 저장.(이미지)
+                                    return searchYandexByImage(url, tsrSns, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            })
+                            .thenApplyAsync((r) -> {
+                                try {
+                                    // yandex검색을 통해 결과 db에 적재.
+                                    return saveImgSearchYandex(r, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            });
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+
+                try {
+                    String url = textYandexUrl
+                            + "?gl=vn"
+                            + "&q=" + tsiKeywordHiddenValue
+                            + "&no_cache=" + textYandexNocache
+                            + "&api_key=" + textYandexApikey
+                            + "&engine=" + imageYandexEngine
+                            + "&safe=off"
+                            + "&filter=0"
+                            + "&nfpr=0"
+                            + "&image_url=" + searchImageUrl;
+
+                    CompletableFuture
+                            .supplyAsync(() -> {
+                                try {
+                                    // text기반 yandex 검색 및 결과 저장.(이미지)
+                                    return searchYandexByImage(url, tsrSns, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            })
+                            .thenApplyAsync((r) -> {
+                                try {
+                                    // yandex검색을 통해 결과 db에 적재.
+                                    return saveImgSearchYandex(r, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            });
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+
+                try {
+                    String url = textYandexUrl
+                            + "?gl=nl"
+                            + "&q=" + tsiKeywordHiddenValue
+                            + "&no_cache=" + textYandexNocache
+                            + "&api_key=" + textYandexApikey
+                            + "&engine=" + imageYandexEngine
+                            + "&safe=off"
+                            + "&filter=0"
+                            + "&nfpr=0"
+                            + "&image_url=" + searchImageUrl;
+
+                    CompletableFuture
+                            .supplyAsync(() -> {
+                                try {
+                                    // text기반 yandex 검색 및 결과 저장.(이미지)
+                                    return searchYandexByImage(url, tsrSns, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            })
+                            .thenApplyAsync((r) -> {
+                                try {
+                                    // yandex검색을 통해 결과 db에 적재.
+                                    return saveImgSearchYandex(r, insertResult);
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                    return null;
+                                }
+                            });
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-
-
-        try {
-            List<String> files = processVideo(insertResult);
-            for (int i = 0; i < files.size(); i++) {
-                VideoInfoEntity videoInfo = new VideoInfoEntity();
-                videoInfo.setTsiUno(insertResult.getTsiUno());
-                videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
-                videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
-                saveVideoInfo(videoInfo);
-
-                String searchImageUrl = serverIp + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
-                // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
-                searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
-
-                String url = textYandexUrl
-                        + "?gl=cn"
-                        + "&q=" + tsiKeywordHiddenValue
-                        + "&no_cache=" + textYandexNocache
-                        + "&api_key=" + textYandexApikey
-                        + "&engine=" + imageYandexEngine
-                        + "&safe=off"
-                        + "&filter=0"
-                        + "&nfpr=0"
-                        + "&image_url=" + searchImageUrl;
-
-                CompletableFuture
-                        .supplyAsync(() -> {
-                            try {
-                                // text기반 yandex 검색 및 결과 저장.(이미지)
-                                return searchYandexByImage(url, tsrSns, insertResult);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        })
-                        .thenApplyAsync((r) -> {
-                            try {
-                                // yandex검색을 통해 결과 db에 적재.
-                                return saveImgSearchYandex(r, insertResult);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        });
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-
-
-        try {
-            List<String> files = processVideo(insertResult);
-            for (int i = 0; i < files.size(); i++) {
-                VideoInfoEntity videoInfo = new VideoInfoEntity();
-                videoInfo.setTsiUno(insertResult.getTsiUno());
-                videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
-                videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
-                saveVideoInfo(videoInfo);
-
-                String searchImageUrl = serverIp + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
-                // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
-                searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
-
-                String url = textYandexUrl
-                        + "?gl=kr"
-                        + "&q=" + tsiKeywordHiddenValue
-                        + "&no_cache=" + textYandexNocache
-                        + "&api_key=" + textYandexApikey
-                        + "&engine=" + imageYandexEngine
-                        + "&safe=off"
-                        + "&filter=0"
-                        + "&nfpr=0"
-                        + "&image_url=" + searchImageUrl;
-
-                CompletableFuture
-                        .supplyAsync(() -> {
-                            try {
-                                // text기반 yandex 검색 및 결과 저장.(이미지)
-                                return searchYandexByImage(url, tsrSns, insertResult);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        })
-                        .thenApplyAsync((r) -> {
-                            try {
-                                // yandex검색을 통해 결과 db에 적재.
-                                return saveImgSearchYandex(r, insertResult);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        });
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-
-        try {
-            List<String> files = processVideo(insertResult);
-            for (int i = 0; i < files.size(); i++) {
-                VideoInfoEntity videoInfo = new VideoInfoEntity();
-                videoInfo.setTsiUno(insertResult.getTsiUno());
-                videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
-                videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
-                saveVideoInfo(videoInfo);
-
-                String searchImageUrl = serverIp + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
-                // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
-                searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
-
-                String url = textYandexUrl
-                        + "?gl=th"
-                        + "&q=" + tsiKeywordHiddenValue
-                        + "&no_cache=" + textYandexNocache
-                        + "&api_key=" + textYandexApikey
-                        + "&engine=" + imageYandexEngine
-                        + "&safe=off"
-                        + "&filter=0"
-                        + "&nfpr=0"
-                        + "&image_url=" + searchImageUrl;
-
-                CompletableFuture
-                        .supplyAsync(() -> {
-                            try {
-                                // text기반 yandex 검색 및 결과 저장.(이미지)
-                                return searchYandexByImage(url, tsrSns, insertResult);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        })
-                        .thenApplyAsync((r) -> {
-                            try {
-                                // yandex검색을 통해 결과 db에 적재.
-                                return saveImgSearchYandex(r, insertResult);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        });
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-
-
-        try {
-            List<String> files = processVideo(insertResult);
-            for (int i = 0; i < files.size(); i++) {
-                VideoInfoEntity videoInfo = new VideoInfoEntity();
-                videoInfo.setTsiUno(insertResult.getTsiUno());
-                videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
-                videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
-                saveVideoInfo(videoInfo);
-
-                String searchImageUrl = serverIp + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
-                // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
-                searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
-
-                String url = textYandexUrl
-                        + "?gl=ru"
-                        + "&q=" + tsiKeywordHiddenValue
-                        + "&no_cache=" + textYandexNocache
-                        + "&api_key=" + textYandexApikey
-                        + "&engine=" + imageYandexEngine
-                        + "&safe=off"
-                        + "&filter=0"
-                        + "&nfpr=0"
-                        + "&image_url=" + searchImageUrl;
-
-                CompletableFuture
-                        .supplyAsync(() -> {
-                            try {
-                                // text기반 yandex 검색 및 결과 저장.(이미지)
-                                return searchYandexByImage(url, tsrSns, insertResult);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        })
-                        .thenApplyAsync((r) -> {
-                            try {
-                                // yandex검색을 통해 결과 db에 적재.
-                                return saveImgSearchYandex(r, insertResult);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        });
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-
-
-        try {
-            List<String> files = processVideo(insertResult);
-            for (int i = 0; i < files.size(); i++) {
-                VideoInfoEntity videoInfo = new VideoInfoEntity();
-                videoInfo.setTsiUno(insertResult.getTsiUno());
-                videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
-                videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
-                saveVideoInfo(videoInfo);
-
-                String searchImageUrl = serverIp + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
-                // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
-                searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
-
-                String url = textYandexUrl
-                        + "?gl=vn"
-                        + "&q=" + tsiKeywordHiddenValue
-                        + "&no_cache=" + textYandexNocache
-                        + "&api_key=" + textYandexApikey
-                        + "&engine=" + imageYandexEngine
-                        + "&safe=off"
-                        + "&filter=0"
-                        + "&nfpr=0"
-                        + "&image_url=" + searchImageUrl;
-
-                CompletableFuture
-                        .supplyAsync(() -> {
-                            try {
-                                // text기반 yandex 검색 및 결과 저장.(이미지)
-                                return searchYandexByImage(url, tsrSns, insertResult);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        })
-                        .thenApplyAsync((r) -> {
-                            try {
-                                // yandex검색을 통해 결과 db에 적재.
-                                return saveImgSearchYandex(r, insertResult);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        });
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-
-        try {
-            List<String> files = processVideo(insertResult);
-            for (int i = 0; i < files.size(); i++) {
-                VideoInfoEntity videoInfo = new VideoInfoEntity();
-                videoInfo.setTsiUno(insertResult.getTsiUno());
-                videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
-                videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
-                saveVideoInfo(videoInfo);
-
-                String searchImageUrl = serverIp + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
-                // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
-                searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
-
-                String url = textYandexUrl
-                        + "?gl=nl"
-                        + "&q=" + tsiKeywordHiddenValue
-                        + "&no_cache=" + textYandexNocache
-                        + "&api_key=" + textYandexApikey
-                        + "&engine=" + imageYandexEngine
-                        + "&safe=off"
-                        + "&filter=0"
-                        + "&nfpr=0"
-                        + "&image_url=" + searchImageUrl;
-
-                CompletableFuture
-                        .supplyAsync(() -> {
-                            try {
-                                // text기반 yandex 검색 및 결과 저장.(이미지)
-                                return searchYandexByImage(url, tsrSns, insertResult);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        })
-                        .thenApplyAsync((r) -> {
-                            try {
-                                // yandex검색을 통해 결과 db에 적재.
-                                return saveImgSearchYandex(r, insertResult);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        });
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-
 
     }
 
-    public SearchJobEntity saveSearchJob(SearchJobEntity sje) { // 여기
-        /*
-        sje.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
-        sje.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
-        sje.setTsjStatus("00");
-         */
-        //2023-03-26
-        //위 내용 메소드로 추출
+    public SearchJobEntity saveSearchJob(SearchJobEntity sje) {
         setSearchJobDefault(sje);
         return searchJobRepository.save(sje);
     }
@@ -2716,6 +2844,7 @@ public class SearchService {
         sie.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sie.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sie.setDataStatCd("10");
+        sie.setSearchValue("0");
     }
 
     public static void setSearchInfoDefault_2(SearchInfoEntity sie) {
@@ -2738,7 +2867,6 @@ public class SearchService {
     /**
      * 검색 결과 엔티티 기본값 세팅
      * <p>
-     * 2023-03-26 추가
      *
      * @param sre (검색 결과 엔티티)
      */
@@ -2802,6 +2930,7 @@ public class SearchService {
             return searchResultRepository.getNoticeSelList(pageRequest, tsiUno, percent, tsiKeyword);
         }
     }
+
     /*
     public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsiuno, Integer percent, String keyword, String tsiKeyword) {
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
@@ -2827,7 +2956,6 @@ public class SearchService {
     public DefaultQueryDtoInterface getInfoList(Integer tsiUno) {
         return searchResultRepository.getInfoList(tsiUno);
     }
-
 
     public Page<DefaultQueryDtoInterface> getTraceList(Integer page, String trkStatCd, String keyword) {
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
@@ -2896,7 +3024,7 @@ public class SearchService {
         return tsiKeywordMap;
     }
 
-    public Map<Integer, Timestamp> getTsiFstDmlDtMap() { // 여기
+    public Map<Integer, Timestamp> getTsiFstDmlDtMap() {
         List<SearchInfoEntity> searchInfoEntityList = searchInfoRepository.findAllByOrderByTsiUnoDesc();
         Map<Integer, Timestamp> tsiFstDmlDtMap = new HashMap<>();
 
@@ -2938,12 +3066,19 @@ public class SearchService {
     }
 
     public void deleteTsrUnos(List<Integer> tsrUnoValues) {
+        log.info("추적이력 일괄삭제 진입");
         List<SearchResultEntity> sre = searchResultRepository.findByTsrUnoIn(tsrUnoValues);
+        List<MatchResultEntity> mre = matchResultRepository.findByTsrUnoIn(tsrUnoValues);
         for(int i=0; i < sre.size(); i++) {
             sre.get(i).setTrkStatCd(null);
             sre.get(i).setDataStatCd("20");
             searchResultRepository.save(sre.get(i));
+
+
+            // log.info("matchResultRepository.findById((long) sre.get(i).getTsrUno(): "+matchResultRepository.findById((long) sre.get(i).getTsrUno()));
+
         }
+
     }
 
     public void deleteSearchInfo(Integer tsiUno) {
@@ -2986,14 +3121,58 @@ public class SearchService {
 //        return outMap;
 //    }
 
-
+/*
     // admin 일 때
-    public Map<String, Object> getSearchInfoList(Integer page, String keyword) {
+    public List<ResultCntQueryDtoInterface> getSearchInfoList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         // Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
         Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10","0", keyword, pageRequest);
-        //  Page<SearchInfoEntity> searchInfoListPage2 = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
+
+        // Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.getSearchInfoResultCnt("10","0", keyword, pageRequest);
+
+        outMap.put("searchInfoList", searchInfoListPage);
+
+        outMap.put("totalPages", searchInfoListPage.getTotalPages());
+        outMap.put("number", searchInfoListPage.getNumber());
+        outMap.put("totalElements", searchInfoListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        return outMap;
+    }
+*/
+
+    public Map<String, Object> getSearchInfoList(Integer page, String keyword) {
+        log.info("getSearchInfoList page: " + page);
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        // Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
+      //  Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10","0", keyword, pageRequest);
+
+        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getSearchInfoResultCnt("10","0", keyword, pageRequest);
+        outMap.put("searchInfoList", searchInfoListPage);
+        outMap.put("totalPages", searchInfoListPage.getTotalPages());
+        outMap.put("number", searchInfoListPage.getNumber());
+        outMap.put("totalElements", searchInfoListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+
+        return outMap;
+    }
+
+/*
+    public Page<List<ResultCntQueryDtoInterface>> getSearchInfoResultCnt(String dataType, String searchValue, String keyword) {
+        return searchInfoRepository.getSearchInfoResultCnt("10","0", keyword);
+    }
+*/
+/*
+    // admin 아닐 때
+    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        // Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, userUno, pageRequest);
+        Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc("10","0", keyword, userUno, pageRequest);
+
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
         outMap.put("number", searchInfoListPage.getNumber());
@@ -3002,14 +3181,15 @@ public class SearchService {
 
         return outMap;
     }
+*/
 
     // admin 아닐 때
     public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         // Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, userUno, pageRequest);
-        Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc("10","0", keyword, userUno, pageRequest);
-
+        // Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc("10","0", keyword, userUno, pageRequest);
+        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getUserSearchInfoList("10","0", keyword, userUno, pageRequest);
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
         outMap.put("number", searchInfoListPage.getNumber());
