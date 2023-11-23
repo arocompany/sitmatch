@@ -450,6 +450,10 @@ public class UserService {
             cell=row.createCell(3);
             cell.setCellValue("키워드 결과 갯수");
 
+            cell=row.createCell(4);
+            cell.setCellValue("검색 날짜");
+
+
             for(int i=0; i<dateSearchInfoResultExcelList.size(); i++){
                 row = keywordHistory.createRow(rowNum++);
 
@@ -464,6 +468,9 @@ public class UserService {
 
                 cell = row.createCell(3);
                 cell.setCellValue(dateSearchInfoResultExcelList.get(i).getResultCnt());
+
+                cell = row.createCell(4);
+                cell.setCellValue(dateSearchInfoResultExcelList.get(i).getResultDate());
 
             }
 

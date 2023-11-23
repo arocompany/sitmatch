@@ -5,4 +5,5 @@ public interface DateKeywordExcelDto {
     String getUserId();
     String getKeywordCnt();
     String getResultCnt();
+    String getResultDate();
 }
