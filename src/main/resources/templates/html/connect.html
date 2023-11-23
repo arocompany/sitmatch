@@ -16,170 +16,305 @@
   <script src="html2canvas.hertzen.com/dist/html2canvas.js"></script>
 </head>
 <style>
-  .lgn_history_button {
-    font-size: 15px;
-    font-weight: bold;
-    border: 1px solid;
-    width: 85px;
-    border-color: #a2a2a3;
-    height: 60px;
+  table {
+    border:1px solid;
+    text-align:center;
+    margin: auto;
+  }
+
+  table thead tr {
+    background:gray;
+    color:white;
+  }
+
+  table tbody tr:hover {
+    background-color: lightgray;
+    cursor:pointer;
+  }
+
+  td {
+    border:1px solid
+  }
+
+  th {
+    border:1px solid
+  }
+
+  p {
+    margin:auto;
+    margin-top:30px;
+    text-align:center;
+    color: red;
+  }
+  .parent{
+    margin: 10px auto;
+  }
+
+  .first {
+    display: inline-block;
+    width: 580px;
+    float: left;
+    margin-top: 90px;
+  }
+
+  .second{
+    display: inline-block;
     float: right;
+    width: 580px;
   }
 
-  /*
-  .search_btn {
-    font-size: 15px;
-    font-weight: bold;
-    border: 1px solid;
-    width: 85px;
-    border-color: #a2a2a3;
-    height: 30px;
-    margin-left: 30px;
+  .three {
+    display: inline-block;
+    width: 580px;
+    float: left;
+    margin-top: 90px;
+    margin-right: 152px;
   }
-  */
 
+  .four{
+    display: inline-block;
+    float: right;
+    width: 580px;
+    margin-top: -290px;
+  }
+
+  .five {
+    display: inline-block;
+    width: 580px;
+    float: left;
+    margin-top: 90px;
+  }
+
+  .six{
+    display: inline-block;
+    float: right;
+    width: 580px;
+    margin-top: 90px;
+  }
 </style>
-<body>
 
+<body>
 <article class="manage-wrap wrapper">
   <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
-  <section class="layout" id="manage">
-    <div id="pdfDiv">
-    <h1 class="title">사용자 접속 현황</h1>
-      <div style="margin-top: 45px;"> <!-- class="bor10 btn-off " -->
-        <div  style="width: 500px; height: 53px; padding-left: 25px; padding-top: 10px; float: right; margin-bottom: 45px;" >
-          <input style="margin-right: 20px; font-weight: bold;" type="date" id="fromDate" name="fromDate" value="" /> ~
-          <input style="margin-left: 20px; font-weight: bold;" type="date" id="toDate" name="toDate" value="" />
-          <button style="width: 70px; margin-left: 65px; font-size: 15px; color: #7c7c7f; height: 30px; font-weight: bold;"
-                  class="bor10 btn-off manager-add" type="button" onclick="getGraph();">검색</button>
-        </div>
-        <div id="div_myAreaChart" style="margin-top: 50px;">
-          <canvas id="myChart" width="200" height="200"></canvas>
-        </div>
+  <section class="layout" >
+
+    <h1 class="title">사용자별 활용 현황</h1>
+    <table style="display: none" id='noticeList' >
+      <thead>
+        <tr>
+          <th>날짜</th>
+          <th>카운트</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="noticeHistDtoList : ${noticeHistDtoList}">
+          <td th:text="${noticeHistDtoList.noticeDate}"></td>
+          <td th:text="${noticeHistDtoList.noticeCnt}"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table style="display: none"  id='userTraceHistList' >
+      <thead>
+        <tr>
+          <th>날짜</th>
+          <th>카운트</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="userTraceHistList : ${userTraceHistList}">
+          <td th:text="${userTraceHistList.userId}"></td>
+          <td th:text="${userTraceHistList.traceCnt}"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table style="display: none" id='userSearchInfoHistList'>
+      <thead>
+          <tr>
+            <th>날짜</th>
+            <th>카운트</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr th:each="userSearchInfoHistList : ${userSearchInfoHistList}">
+            <td th:text="${userSearchInfoHistList.userId}"></td>
+            <td th:text="${userSearchInfoHistList.infoHistCnt}"></td>
+          </tr>
+      </tbody>
+    </table>
+
+    <table style="display: none" id='userSearchResultHistList'>
+      <thead>
+        <tr>
+          <th>날짜</th>
+          <th>카운트</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="userSearchResultHistList : ${userSearchResultHistList}">
+          <td th:text="${userSearchResultHistList.userId}"></td>
+          <td th:text="${userSearchResultHistList.rsltCnt}"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table style="display: none" id='userNoticeHistList'>
+      <thead>
+        <tr>
+          <th>날짜</th>
+          <th>카운트</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="userNoticeHistList : ${userNoticeHistList}">
+          <td th:text="${userNoticeHistList.userId}"></td>
+          <td th:text="${userNoticeHistList.noticeCnt}"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 사용자별 모니터링 현황 -->
+    <table style="display: none" id='userMonitoringHistList'>
+      <thead>
+        <tr>
+          <th>날짜</th>
+          <th>카운트</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="userMonitoringHistList : ${userMonitoringHistList}">
+          <td th:text="${userMonitoringHistList.userId}"></td>
+          <td th:text="${userMonitoringHistList.monitoringCnt}"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table style="display: none" id='userDeleteReqHistList'>
+      <thead>
+        <tr>
+          <th>날짜</th>
+          <th>카운트</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="userDeleteReqHistList : ${userDeleteReqHistList}">
+          <td th:text="${userDeleteReqHistList.userId}"></td>
+          <td th:text="${userDeleteReqHistList.deleteRequestCnt}"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table style="display: none" id='userDeleteComptHistList'>
+      <thead>
+        <tr>
+          <th>날짜</th>
+          <th>카운트</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="userDeleteComptHistList : ${userDeleteComptHistList}">
+          <td th:text="${userDeleteComptHistList.userId}"></td>
+          <td th:text="${userDeleteComptHistList.deleteComptCnt}"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <form class="connectForm" action="/connect" method="post">
+      <div style="width: 320px; height: 53px; padding-left: 25px; padding-top: 10px; float: right; margin-bottom: 45px;" >
+        <!--<input style="margin-right: 20px; font-weight: bold;" type="date" id="fromDate" name="fromDate" th:value="${fromDate}" />-->
+        <input style="margin-left: 20px; font-weight: bold;" type="date" id="toDate" name="toDate" th:value="${toDate}" />
+        <button style="width: 70px; margin-left: 65px; font-size: 15px; color: #7c7c7f; height: 30px; font-weight: bold;"
+                class="bor10 btn-off manager-add" type="submit" onclick="rowClicked();">검색</button>
       </div>
+    </form>
+
+    <div class="parent" id="pdfDiv" ><!-- style="width: 600px; float: left;" -->
+      <!--<div id="div_myAreaChart" style="margin-top: 50px;">-->
+      <ul class="pdfArea">
+        <li class="first" id="div_myAreaChart" >
+          <canvas id="myChart" ></canvas>
+        </li>
+        <li class="second" id="div_myAreaChart2">
+          <canvas id="myChart2" ></canvas>
+        </li>
+
+        <li class="three" id="div_myAreaChart3">
+          <canvas id="myChart3" ></canvas>
+        </li>
+        <li class="four">
+          <canvas id="myChart4"></canvas>
+        </li>
+
+        <li class="five" id="div_myAreaChart5">
+          <canvas id="myChart5"></canvas>
+        </li>
+        <li class="six">
+          <canvas id="myChart6"></canvas>
+        </li>
+      </ul>
     </div>
-    <form action="/excel/download" method="get">
-      <input style="display: none" type="date" id="fromDateExcel" name="fromDate" value="" />
-      <input style="display: none" type="date" id="toDateExcel" name="toDate" value="" />
-      <div style="margin-top: 55px; float: right">
-        <button class="bor10 btn-off manager-add" style="height: 60px; font-size: 17px; width: 121px; font-weight: bold; color: #e88550;"
+
+    <form action="/connect/excel/download" method="get">
+      <div class="downBtn" style="margin-top: 50px; float: right;">
+        <!--<input style="margin-right: 20px; font-weight: bold; display: none;" type="date" name="fromDate" th:value="${fromDate}" />-->
+        <input style="margin-left: 20px; font-weight: bold; display: none;" type="date" name="toDate"  th:value="${toDate}"  />
+        <button class="bor10 btn-off manager-add" style="margin-right: 10px; height: 60px; font-size: 17px; width: 121px; font-weight: bold; color: #e88550;"
                 type="submit">Excel <br> Download</button>
-        <button class="bor10 btn-off manager-add" style="font-weight: bold; margin-right: 10px; height: 60px; font-size: 17px; width: 100px; margin-left: 15px; color: #e88550;"
-                type="button" onclick="pdfDown();">PDF <br> Download</button>
 <!--
-        <button class="lgn_history_button" type="submit">Excel <br> Download</button>
-        <button class="lgn_history_button" style="margin-right: 10px;" type="button" onclick="pdfDown();">PDF <br> Download</button>
+        <button class="bor10 btn-off manager-add" style="height: 60px; font-size: 17px; width: 121px; font-weight: bold; color: #e88550;"
+                type="button" onclick="pdfDown();"> PDF <br> Download</button>
 -->
       </div>
     </form>
 
   </section>
-
   <script>footer()</script>
 </article>
-<script type="text/javascript" th:inline="javascript">
 
+<script>
+  //테이블안에 tr을 for문으로 td의 값을 뽑아서 arraypush
   $(document).ready(function(){
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = ('0' + (date.getMonth() + 1)).slice(-2);
-    const day = ('0' + (date.getDate())).slice(-2);
-
-    const fromDate2 =  `${year}-${month}-${day-7}`;
-    const toDate2  = `${year}-${month}-${day}`;
-
-    $('#fromDate').attr('value', fromDate2);
-    $('#toDate').attr('value', toDate2);
-
-    $('#fromDateExcel').attr('value', fromDate2);
-    $('#toDateExcel').attr('value', toDate2);
-
     getGraph();
+    rowClicked();
+    getUserKeywordCnt();
+    getMonitoringList();
+    getMonitoring();
+    // getBubble();
   });
 
   function getGraph() {
-    const fromDate = document.getElementById("fromDate").value;
+    $('#myChart2').remove(); //그래프 그리는 영역 지움 width="100%" height="40"
+    $('#div_myAreaChart2').append('<canvas id="myChart2" ></canvas>');
+
+    // const fromDate = document.getElementById("fromDate").value;
     const toDate = document.getElementById("toDate").value;
 
     var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
-    if(!(regex.test(fromDate) && regex.test(toDate))) return "Not Date Format";
-    var result = [];
-    var curDate = new Date(fromDate);
-    while(curDate <= new Date(toDate)) {
-      result.push(curDate.toISOString().split("T")[0]);
-      curDate.setDate(curDate.getDate() + 1);
-    }
 
-    $('#fromDate').attr('value', fromDate);
     $('#toDate').attr('value', toDate);
-
-    $('#fromDateExcel').attr('value', fromDate);
-    $('#toDateExcel').attr('value', toDate);
 
     let totalDateList = [];
     let cntList = [];
-    let dateList = [];
+    let userList = [];
 
     $.ajax({
-      url: "/connectCnt",
+      url: "/userLoginCnt",
       type: "get",
       dataType: "json",
       data: {
-        fromDate: fromDate,
+      //  fromDate: fromDate,
         toDate: toDate
       },
       success:function(data) {
-
         for(let i=0; i < data.length; i++) {
           cntList.push(data[i].cnt);
-          dateList.push(data[i].date);
+          userList.push(data[i].userId);
         }
-
-
-        var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
-        if(!(regex.test(fromDate) && regex.test(toDate)))
-          return "Not Date Format";
-        var result = [];
-        var curDate = new Date(fromDate);
-
-        while(curDate <= new Date(toDate)) {
-          result.push(curDate.toISOString().split("T")[0]);
-          curDate.setDate(curDate.getDate() + 1);
-        }
-
-        for(var i=0; i<result.length; i++) {
-          result[i] = result[i].replace(/-/g, "")
-          totalDateList.push(result[i]);
-        }
-
-        for(var i=0; i<dateList.length; i++) {
-          if(totalDateList[i] > dateList[i] ){
-            dateList.unshift(totalDateList[i]);
-            cntList.unshift(0)
-          }
-
-          if(totalDateList[i] !== dateList[i] && totalDateList[i] < dateList[i] ){
-            dateList.splice(i,0, totalDateList[i]);
-            cntList.splice(i,0, 0);
-          }
-
-          for(var j=0; j<(totalDateList.length-dateList.length); j++) {
-            dateList.push(totalDateList[i]);
-            cntList.push(0);
-          }
-
-        }
-
-        // alert(dateList);
-        // alert(cntList);
-
-        $('#myChart').remove(); //그래프 그리는 영역 지움 width="100%" height="40"
-        $('#div_myAreaChart').append('<canvas id="myChart" ></canvas>');
-
-        new Chart(document.getElementById('myChart'), {
+        new Chart(document.getElementById('myChart2'), {
           type: 'bar',
           data: {
-            labels: totalDateList,
+            labels: userList,
             datasets: [{
               data: cntList,
               label: "접속자카운트",
@@ -197,7 +332,7 @@
               responsive: false,
               y: {
                 min: 0,
-                max: 200,
+                max: 100,
               }
             }
           }
@@ -208,83 +343,473 @@
     })
   }
 
-/*
-    function getDatesStartToLast(fromDate, toDate) {
+  function rowClicked() {
+    $('#myChart').remove(); //그래프 그리는 영역 지움
+    $('#div_myAreaChart').append('<canvas id="myChart" ></canvas>');
 
-    return result;
+    // const fromDate = document.getElementById("fromDate").value;
+    const toDate = document.getElementById("toDate").value;
+/*
+    var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
+    if(!(regex.test(fromDate) && regex.test(toDate)))
+      return "Not Date Format";
+    var result = [];
+    var curDate = new Date(fromDate);
+
+    while(curDate <= new Date(toDate)) {
+      result.push(curDate.toISOString().split("T")[0]);
+      curDate.setDate(curDate.getDate() + 1);
+    }
+
+    let totalDateList = [];
+    for(var i=0; i<result.length; i++) {
+      result[i] = result[i].replace(/-/g, "")
+      totalDateList.push(result[i]);
+    }
+*/
+
+    let traceUserList = [];
+    let traceCntList = [];
+
+    let searchInfoUserList = [];
+    let searchInfoCntList = [];
+
+    let userSearchResultUserList = [];
+    let userSearchResultCntList = [];
+
+    let userNoticeUserList = [];
+    let userNoticeCntList = [];
+
+    var userTraceHistList = document.getElementById('userTraceHistList').getElementsByTagName("tr");
+    var userSearchInfoHistList = document.getElementById('userSearchInfoHistList').getElementsByTagName("tr");
+    var userSearchResultHistList = document.getElementById('userSearchResultHistList').getElementsByTagName("tr");
+    var userNoticeHistList = document.getElementById('userNoticeHistList').getElementsByTagName("tr");
+
+    for(var i=1; i<userTraceHistList.length; i++) {
+      var cells = userTraceHistList[i].getElementsByTagName("td");
+
+      var cell_1 = cells[0].firstChild.data; // 사용자
+      var cell_2 = cells[1].firstChild.data; // 카운트
+      traceUserList.push(cell_1);
+      traceCntList.push(cell_2);
+
+    }
+
+    for(var i=1; i<userSearchInfoHistList.length; i++) {
+      var cells = userSearchInfoHistList[i].getElementsByTagName("td");
+
+      var cell_1 = cells[0].firstChild.data; // 사용자
+      var cell_2 = cells[1].firstChild.data; // 카운트
+      searchInfoUserList.push(cell_1);
+      searchInfoCntList.push(cell_2);
+
+    }
+
+    for(var i=1; i<userSearchResultHistList.length; i++) {
+      var cells = userSearchResultHistList[i].getElementsByTagName("td");
+
+      var cell_1 = cells[0].firstChild.data; // 사용자
+      var cell_2 = cells[1].firstChild.data; // 카운트
+      userSearchResultUserList.push(cell_1);
+      userSearchResultCntList.push(cell_2);
+
+    }
+
+    for(var i=1; i<userNoticeHistList.length; i++) {
+      var cells = userNoticeHistList[i].getElementsByTagName("td");
+
+      var cell_1 = cells[0].firstChild.data; // 사용자
+      var cell_2 = cells[1].firstChild.data; // 카운트
+      userNoticeUserList.push(cell_1);
+      userNoticeCntList.push(cell_2);
+
+    }
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+
+    const myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: userSearchResultUserList,
+        datasets: [
+          {
+            label: '모니터링',
+            data: traceCntList,
+            borderColor:'rgba(255, 99, 132, 1)',
+            backgroundColor:'rgba(255, 99, 132, 1)',
+            borderWidth: 2
+          },
+          {
+            label: '이력관리',
+            data: searchInfoCntList,
+            borderColor:'#E56D29',
+            backgroundColor:'#E56D29',
+            borderWidth: 2
+          },
+          {
+            label: '검색결과',
+            data: userSearchResultCntList,
+            borderColor:'rgba(120, 99, 132, 1)',
+            backgroundColor:'rgba(120, 99, 132, 1)',
+            borderWidth: 2
+          },
+          {
+            label: '자동추적',
+            data: userNoticeHistList,
+            borderColor:'#3232FF',
+            backgroundColor:'#3232FF',
+            borderWidth: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+          }
+        },
+        scales: {
+          responsive: false,
+          y: {
+            min: 0,
+            max: 200,
+          }
+        },
+        title: {
+          display: true,
+          text: '사용자 접속 현황'
+        }
+      }
+    });
   }
-  */
+
+  function getUserKeywordCnt() {
+    // const fromDate = document.getElementById("fromDate").value;
+    const toDate = document.getElementById("toDate").value;
+
+    // $('#fromDate').attr('value', fromDate);
+    $('#toDate').attr('value', toDate);
+
+    let keywordCnt = [];
+    let userIdList = [];
+    let resultCnt = [];
+
+    $.ajax({
+      url: "/userKeywordCntList",
+      type: "get",
+      dataType: "json",
+      data: {
+      //  fromDate: fromDate,
+        toDate: toDate
+      },
+      success:function(data) {
+        $('#myChart3').remove();
+        $('#div_myAreaChart3').append('<canvas id="myChart3" ></canvas>');
+
+        for(let i=0; i<data.length; i++) {
+          keywordCnt.push(data[i].keywordCnt);
+          userIdList.push(data[i].userId)
+          resultCnt.push(data[i].resultCnt);
+        }
+
+        new Chart(document.getElementById('myChart3'),{
+          type: 'bar',
+          data: {
+            labels:userIdList,
+            datasets: [
+              {
+                label: '키워드',
+                data: keywordCnt,
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                borderColor: 'rgb(255, 99, 132)',
+              },
+              {
+                label: '키워드 결과 갯수',
+                data: resultCnt,
+                backgroundColor: 'rgba(35, 192, 192, 0.6)',
+                borderColor: 'rgb(35, 192, 192)',
+                type: 'line',
+              }
+            ]
+          }, options: {
+            responsive: true,
+            y: {
+              min: 0,
+              max: 100,
+            },plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: '사용자별 검색 키워드 현황'
+              }
+            }
+          }
+        });
+
+      }, error:function(){
+        alert("실패")
+      }
+
+    })
+
+  }
+
+  function getMonitoring() {
+    const exampleMonitoring = document.querySelector('#myChart5').getContext('2d');
+
+    // const fromDate = document.getElementById("fromDate").value;
+    const toDate = document.getElementById("toDate").value;
+
+    // $('#fromDate').attr('value', fromDate);
+    $('#toDate').attr('value', toDate);
+
+    let monitoringCnt = [];
+    let userIdList = [];
+    let resultCnt = [];
+
+    $.ajax({
+      url: "/allTimeCntList",
+      type: "get",
+      dataType: "json",
+      data: {
+      //  fromDate: fromDate,
+        toDate: toDate
+      },
+      success:function(data) {
+        $('#myChart5').remove();
+        $('#div_myAreaChart5').append('<canvas id="myChart5" ></canvas>');
+
+        for(let i=0; i<data.length; i++) {
+          monitoringCnt.push(data[i].monitoringCnt);
+          userIdList.push(data[i].userId)
+          resultCnt.push(data[i].resultCnt);
+        }
+
+        new Chart(document.getElementById('myChart5'),{
+          type: 'bar',
+          data: {
+            labels:userIdList,
+            datasets: [
+              {
+                label: '24시 모니터링 한 갯수',
+                data: monitoringCnt,
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                borderColor: 'rgb(255, 99, 132)',
+              },
+              {
+                label: '24시 모니터링 결과 갯수',
+                data: resultCnt,
+                backgroundColor: 'rgba(35, 192, 192, 0.6)',
+                borderColor: 'rgb(35, 192, 192)',
+                type: 'line',
+              }
+            ]
+          }, options: {
+            responsive: true,
+            y: {
+              min: 0,
+              max: 100,
+            },plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: '24시 모니터링 그래프'
+              }
+            }
+          }
+        });
+
+      }, error:function(){
+        alert("실패")
+      }
+
+    })
+  }
+
+  /*
+  function getBubble() {
+    const exampleCtx = document.querySelector('#myChart6').getContext('2d');
+
+    const bubbleChartExample = new Chart(exampleCtx, {
+      type: 'bubble',
+      data: {
+        datasets: [{
+          label: '여고딩',
+          data: [
+            {x:2,y:12,r:15}
+          ],
+          backgroundColor: 'rgba(255, 99, 132, 0.6)',
+          borderColor: 'rgb(255, 99, 132)',
+        },{
+          label: '여중딩',
+          data: [
+            {x:1,y:3,r:15}
+          ],
+          backgroundColor: 'rgba(155, 99, 145, 0.6)',
+          borderColor: 'rgb(155, 99, 145)',
+        }]
+      },options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: 'Chart.js Bubble Chart'
+          }
+        }
+      },
+    });
+  }
+   */
+
+  function getMonitoringList() {
+    let monitoringStatusUserList = [];
+    let monitoringStatusCntList = [];
+
+    let deleteReqHistUserList = [];
+    let deleteReqHistCntList = [];
+
+    let deleteComptHistUserList = [];
+    let deleteComptHistCntList = [];
+
+    var userMonitoringHistList = document.getElementById('userMonitoringHistList').getElementsByTagName("tr");
+    var userDeleteReqHistList = document.getElementById("userDeleteReqHistList").getElementsByTagName("tr");
+    var userDeleteComptHistList = document.getElementById("userDeleteComptHistList").getElementsByTagName("tr");
+
+
+    for(var i=1; i<userMonitoringHistList.length; i++) {
+      var cells = userMonitoringHistList[i].getElementsByTagName("td");
+
+      var cell_1 = cells[0].firstChild.data; // 날짜
+      var cell_2 = cells[1].firstChild.data; // 카운트
+      monitoringStatusUserList.push(cell_1);
+      monitoringStatusCntList.push(cell_2);
+
+      // totalDateList.push(cell_1);
+    }
+
+    for(var i=1; i<userDeleteReqHistList.length; i++) {
+      var cells = userDeleteReqHistList[i].getElementsByTagName("td");
+
+      var cell_1 = cells[0].firstChild.data;
+      var cell_2 = cells[1].firstChild.data;
+      deleteReqHistUserList.push(cell_1);
+      deleteReqHistCntList.push(cell_2);
+    }
+
+    for(var i=1; i<userDeleteComptHistList.length; i++) {
+      var cells = userDeleteComptHistList[i].getElementsByTagName("td");
+
+      var cell_1 = cells[0].firstChild.data;
+      var cell_2 = cells[1].firstChild.data;
+      deleteComptHistUserList.push(cell_1);
+      deleteComptHistCntList.push(cell_2);
+    }
+
+    const exampleCtx = document.querySelector('#myChart4').getContext('2d');
+    const bubbleChartExample = new Chart(exampleCtx, {
+      type: 'line',
+      data: {
+        labels: monitoringStatusUserList,
+        datasets: [{
+          label: '모니터링 한 갯수',
+          data: monitoringStatusCntList,
+          backgroundColor: 'rgba(255, 99, 132, 0.6)',
+          borderColor: 'rgb(255, 99, 132)',
+          borderWidth: 2
+        },{
+          label: '삭제 요청한 갯수',
+          data: deleteReqHistCntList,
+          backgroundColor: 'rgba(35, 192, 192, 0.6)',
+          borderColor: 'rgb(35, 192, 192)',
+          borderWidth: 2
+        },{
+          label: '삭제 완료된 갯수',
+          data: deleteComptHistCntList,
+          backgroundColor: 'rgba(55, 19, 192, 0.6)',
+          borderColor: 'rgb(65, 19, 192)',
+          borderWidth: 2
+        }]
+      },options: {
+        responsive: true,
+        y: {
+          min: 0,
+          max: 100,
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: '사용자별 모니터링 현황'
+          }
+        }
+      },
+    });
+  }
 
 
   function pdfDown(){
-    html2canvas(document.getElementById('pdfDiv'), {
-      allowTaint: true,
-      useCORS: true,
-      logging: false,
-      height: window.outerHeight + window.innerHeight,
-      windowHeight: window.outerHeight + window.innerHeight
+    // document.getElementById('pdfDiv')
+    // window.print();
+
+/*
+    $('.downBtn').hide();
+    $('.title').hide();
+    $('.connectForm').hide();
+*/
+
+    html2canvas($('body')[0], {
+      allowTaint : true,	// cross-origin allow
+      useCORS: true,		// CORS 사용한 서버로부터 이미지 로드할 것인지 여부
+      scale : 2			// 기본 96dpi에서 해상도를 두 배로 증가
+
     }).then(function(canvas) {
       var imgData = canvas.toDataURL('image/png');
 
-      var imgWidth = 210;
-      var pageHeight = imgWidth * 1.141;
+      var imgWidth = 190; // 이미지 가로 길이(mm) / A4 기준 210mm
+      var pageHeight = imgWidth * 1.414;  // 출력 페이지 세로 길이 계산 A4 기준
       var imgHeight = canvas.height * imgWidth / canvas.width;
       var heightLeft = imgHeight;
-      var doc = new jsPDF('p','mm');
+      var margin = 10; // 출력 페이지 여백설정
+      var doc = new jsPDF('p', 'mm');
       var position = 0;
 
-      doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      // 첫 페이지 출력
+      doc.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
 
-      doc.save('사용자 접속 현황.pdf');
+      // 한 페이지 이상일 경우 루프 돌면서 출력
+      while (heightLeft >= 20) {			// 35
+        position = heightLeft - imgHeight;
+        position = position - 20 ;		// -25
 
-    });
-  }
-
-/*
-
-  function pdfDown(){
-    // 페이지의 크기를 구한다.
-    var reportPageHeight = $('#myChart').innerHeight();
-    var reportPageWidth = $('#myChart').innerWidth();
-
-    // 캔버스 개체를 만든다.
-    var pdfCanvas = $('<canvas />').attr({
-      id: "canvaspdf",
-      width: reportPageWidth,
-      height: reportPageHeight
-    });
-
-    // 캔버스 포지션을 정한다.
-    var pdfctx = $(pdfCanvas)[0].getContext('2d');
-    var pdfctxX = 0;
-    var pdfctxY = 0;
-    var buffer = 100;
-
-    $("canvas").each(function(index) {
-      // 차트의 크기를 구한다.
-      var canvasHeight = $(this).innerHeight();
-      var canvasWidth = $(this).innerWidth();
-
-      // 새로운 캔버스 안에 넣는다.
-      pdfctx.drawImage($(this)[0], pdfctxX, pdfctxY, canvasWidth, canvasHeight);
-      pdfctxX += canvasWidth + buffer;
-
-      if (index % 2 === 1) {
-        pdfctxX = 0;
-        pdfctxY += canvasHeight + buffer;
+        doc.addPage();
+        doc.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
       }
+
+      // 파일 저장
+      doc.save('사용자별 현황.pdf');
+/*
+      $('.downBtn').show();
+      $('.title').show();
+      $('.connectForm').show();
+*/
+
     });
 
-    // pdf 객체를 생성하여 넣는다.
-    var pdf = new jsPDF('l', 'pt', [reportPageWidth, reportPageHeight]);
-    pdf.addImage($(pdfCanvas)[0], 'PNG', 0, 0);
-
-
-    pdf.save('사용자 접속 현황.pdf');
-    alert('PDF파일 이름 PDF 파일 다운로드가 실행되어 다운로드 폴더에 생성됩니다.');
   }
-*/
+
 
 </script>
 

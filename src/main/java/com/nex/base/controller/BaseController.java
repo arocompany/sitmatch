@@ -1,13 +1,8 @@
 package com.nex.base.controller;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.nex.common.Consts;
 import com.nex.newKeyword.service.NewKeywordService;
 import com.nex.search.entity.DefaultQueryDtoInterface;
-import com.nex.search.entity.NewKeywordEntity;
-import com.nex.search.entity.ResultCntQueryDtoInterface;
-import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.repo.NewKeywordRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.service.SearchService;
@@ -19,7 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.json.simple.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.util.StringUtils;
@@ -42,11 +36,6 @@ public class BaseController {
     private final SearchJobRepository searchJobRepository;
     // private final SearchTextUsService searchTextUsService;
     private final NewKeywordService newKeywordService;
-
-    private final TraceHistRepository traceHistRepository;
-    private final SearchInfoHistRepository searchInfoHistRepository;
-    private final SearchResultHistRepository searchResultHistRepository;
-    private final NoticeHistRepository noticeHistRepository;
     private final NewKeywordRepository newKeywordRepository;
 
 
@@ -236,7 +225,6 @@ public class BaseController {
                                 @RequestParam(required = false, defaultValue = "") String searchKeyword,
                                 @RequestParam(required = false, defaultValue = "1") Integer tracePage,
                                 @RequestParam(required = false, defaultValue = "") String traceKeyword) {     // 검색 이력, 추적 이력
-
         ModelAndView modelAndView = new ModelAndView("html/history");
         Map<String, Object> searchHistMap = null;
         // Page<List<ResultCntQueryDtoInterface>> searchHistMapCnt = null;
@@ -643,7 +631,6 @@ public class BaseController {
         return modelAndView;
     }
 
-
     @PostMapping("/ajax_auto_Insert")
     public int ajax_auto_Insert(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                          @RequestParam String auto_keyword) {
@@ -655,133 +642,6 @@ public class BaseController {
                                 @RequestParam String auto_keyword) {
         return autoRepository.auto_Delete(auto_keyword,sessionInfoDto.getUserId());
     }
-
-    @GetMapping("/prcuse")
-    public ModelAndView user_prcuse(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
-        ModelAndView modelAndView = new ModelAndView("html/prcuse");
-        log.info("prcuse 진입");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date now = new Date();
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(calendar.DATE, -6);
-
-        String fromDate = format.format(calendar.getTime());
-        String toDate = format.format(now);
-        String toDate2 = toDate+" 23:59:59";
-
-        log.info("toDate " + toDate);
-        log.info("fromDate " + fromDate);
-
-        List<SearchInfoHistDto> searchInfoHistDtoList = searchInfoHistRepository.countByClkSearchInfo(fromDate, toDate2);
-        List<TraceHistDto> traceHistEntityList = traceHistRepository.countByClkTrace(fromDate, toDate2);
-        List<SearchResultHistDto> searchResultHistDtoList = searchResultHistRepository.countByClkSearchResult(fromDate, toDate2);
-        List<NoticeHistDto> noticeHistDtoList = noticeHistRepository.countByClkNotice(fromDate, toDate2);
-
-        modelAndView.addObject("searchInfoHistDtoList",searchInfoHistDtoList);
-        modelAndView.addObject("traceHistEntityList",traceHistEntityList);
-        modelAndView.addObject("searchResultHistDtoList",searchResultHistDtoList);
-        modelAndView.addObject("noticeHistDtoList", noticeHistDtoList);
-
-        modelAndView.addObject("fromDate", fromDate);
-        modelAndView.addObject("toDate", toDate);
-
-        modelAndView.addObject("sessionInfo", sessionInfoDto);
-        modelAndView.addObject("headerMenu", "prcuse");
-
-        return modelAndView;
-    }
-
-    @PostMapping("/prcuse")
-    public ModelAndView user_prcuse_post(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
-                                        , String fromDate, String toDate) {
-        ModelAndView modelAndView = new ModelAndView("html/prcuse");
-
-        String toDate2 = toDate + " 23:59:59";
-
-        List<SearchInfoHistDto> searchInfoHistDtoList2 = searchInfoHistRepository.countByClkSearchInfo(fromDate, toDate2);
-        List<TraceHistDto> traceHistEntityList2 = traceHistRepository.countByClkTrace(fromDate, toDate2);
-        List<SearchResultHistDto> searchResultHistDtoList = searchResultHistRepository.countByClkSearchResult(fromDate, toDate2);
-        List<NoticeHistDto> noticeHistDtoList = noticeHistRepository.countByClkNotice(fromDate, toDate2);
-
-        modelAndView.addObject("searchInfoHistDtoList",searchInfoHistDtoList2);
-        modelAndView.addObject("traceHistEntityList",traceHistEntityList2);
-        modelAndView.addObject("searchResultHistDtoList",searchResultHistDtoList);
-        modelAndView.addObject("noticeHistDtoList", noticeHistDtoList);
-
-        modelAndView.addObject("fromDate", fromDate);
-        modelAndView.addObject("toDate", toDate);
-
-        modelAndView.addObject("sessionInfo", sessionInfoDto);
-        modelAndView.addObject("headerMenu", "prcuse");
-
-        return modelAndView;
-    }
-
-    @GetMapping("/connect")
-    public ModelAndView connect_user(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
-        ModelAndView modelAndView = new ModelAndView("html/connect");
-        log.info("connect 진입");
-
-        modelAndView.addObject("sessionInfo", sessionInfoDto);
-        modelAndView.addObject("headerMenu", "connect");
-
-        return modelAndView;
-    }
-
-    @GetMapping("/connectCnt")
-    public List<LoginHistDto> connectCnt(@RequestParam("fromDate") String fromDate
-                                        , @RequestParam("toDate") String toDate) {
-        String toDate2 = toDate + " 23:59:59";
-       // List<LoginHistDto> userHistoryCountList2 = userService.getUserHistory2(fromDate, toDate2);
-
-        return userService.getUserHistory2(fromDate, toDate2);
-    }
-
-    @GetMapping("/excel/download")
-    public void excelUserHistoryDownload(HttpServletResponse response, String fromDate, String toDate) throws IOException {
-        log.info("excelUserHistoryDownload 진입");
-        String toDate2 = toDate + " 23:59:59";
-
-        List<LoginExcelDto> loginExcelDtoList = userService.userHistExcel(fromDate, toDate2);
-        userService.excelUserHistory(response,loginExcelDtoList);
-    }
-
-    @GetMapping("/prcuse/excel/download")
-    public void prcuseExcelDownload(HttpServletResponse response, String fromDate, String toDate) throws IOException {
-        String toDate2 = toDate + " 23:59:59";
-
-        log.info("excelUserHistory");
-        List<LoginExcelDto> loginExcelDtoList = userService.userHistExcel(fromDate, toDate2);
-
-        List<SearchInfoExcelDto> searchInfoExcelDtoList = searchInfoHistRepository.searchInfoExcelList(fromDate, toDate2);
-        List<TraceHistExcelDto> traceHistExcelDtoList = traceHistRepository.traceExcelList(fromDate, toDate2);
-        List<SearchResultExcelDto> searchResultExcelDtoList = searchResultHistRepository.searchResultExcelList(fromDate, toDate2);
-        List<noticeListExcelDto> noticeListExcelDtoList = noticeHistRepository.noticeExcelList(fromDate, toDate2);
-//        userService.prcuseExcel(response, searchInfoExcelDtoList, traceHistExcelDtoList, searchResultExcelDtoList, noticeListExcelDtoList);
-        userService.prcuseExcel(response, searchInfoExcelDtoList, traceHistExcelDtoList, searchResultExcelDtoList, noticeListExcelDtoList, loginExcelDtoList);
-
-        log.info("prcuseExcel");
-    }
-
-    @GetMapping("/searchHistory")
-    public void searchHistoryExcel(HttpServletResponse response) throws IOException {
-        List<SearchHistoryExcelDto> searchHistoryExcelDtoList = searchInfoHistRepository.searchHistoryExcelList();
-        searchService.searchHistoryExcel(response, searchHistoryExcelDtoList);
-    }
-
-    @GetMapping("/resultExcelList")
-    public void resultExcelList(HttpServletResponse response, String tsiUno, String tsiKeyword) throws IOException {
-        log.info("========== resultExcelList 진입 ============");
-        log.info("tsiUno " + tsiUno);
-        log.info("tsiKeyword " + tsiKeyword);
-
-        List<resultListExcelDto> resultListExcelDtoList = searchInfoHistRepository.resultExcelList(tsiUno, tsiKeyword);
-
-        searchService.resultExcelList(response, resultListExcelDtoList);
-
-    }
-
 
     // 추적이력 단건 삭제
     @PostMapping("/deleteTsrUno")
