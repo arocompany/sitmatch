@@ -1,6 +1,6 @@
 package com.nex.user.entity;
 
-public interface resultListExcelDto {
+public interface ResultListExcelDto {
     String getTsiUno();
     String getTsrUno();
     String getTsrSns();
