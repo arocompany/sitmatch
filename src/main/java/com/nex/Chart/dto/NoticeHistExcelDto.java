@@ -1,4 +1,4 @@
-package com.nex.user.entity;
+package com.nex.Chart.dto;
 
 public interface NoticeHistExcelDto {
     String getUserNm();

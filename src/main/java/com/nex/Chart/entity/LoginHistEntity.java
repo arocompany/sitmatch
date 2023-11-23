@@ -1,4 +1,4 @@
-package com.nex.user.entity;
+package com.nex.Chart.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,16 +11,12 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "TB_SEARCH_INFO_HISTORY", schema = "sittest", catalog = "")
-public class SearchInfoHistEntity {
+@Table(name = "TB_LOGIN_HISTORY", schema = "sittest", catalog = "")
+public class LoginHistEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "HIS_TSI_UNO")
-    private Long hisTsiUno;
-
-    @Basic
-    @Column(name = "HIS_KEYWORD")
-    private String hisKeyword;
+    @Column(name = "HIS_LOG_UNO")
+    private Long HIS_LOG_UNO;
 
     @Basic
     @Column(name = "CLK_DML_DT")
@@ -33,4 +29,5 @@ public class SearchInfoHistEntity {
     @Basic
     @Column(name = "USER_ID")
     private String userId;
+
 }

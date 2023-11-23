@@ -98,7 +98,7 @@
     <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
     <section class="layout" >
 
-      <h1 class="title">사용자 활용 현황</h1>
+        <h1 class="title">기간별 활용 현황</h1>
         <table style="display: none" id='noticeList' >
             <thead>
             <tr>
@@ -108,27 +108,26 @@
             </thead>
             <tbody>
             <tr th:each="noticeHistDtoList : ${noticeHistDtoList}">
-                <td th:text="${noticeHistDtoList.noticeDate}" ></td>
-                <td th:text="${noticeHistDtoList.noticeCnt}"> </td>
+                <td th:text="${noticeHistDtoList.noticeDate}"></td>
+                <td th:text="${noticeHistDtoList.noticeCnt}"></td>
             </tr>
             </tbody>
         </table>
 
         <table style="display: none" id='traceList' >
             <thead>
-                <tr>
-                    <th>날짜</th>
-                    <th>카운트</th>
-                </tr>
+            <tr>
+                <th>날짜</th>
+                <th>카운트</th>
+            </tr>
             </thead>
             <tbody>
-                <tr th:each="traceHistEntityList : ${traceHistEntityList}">
-                    <td th:text="${traceHistEntityList.traceDate}" ></td>
-                    <td th:text="${traceHistEntityList.traceCnt}"> </td>
-                </tr>
+            <tr th:each="traceHistEntityList : ${traceHistEntityList}">
+                <td th:text="${traceHistEntityList.traceDate}"></td>
+                <td th:text="${traceHistEntityList.traceCnt}"></td>
+            </tr>
             </tbody>
         </table>
-
         <table style="display: none" id='searchInfoList'>
             <thead>
             <tr>
@@ -138,8 +137,8 @@
             </thead>
             <tbody>
             <tr th:each="searchInfoHistDtoList : ${searchInfoHistDtoList}">
-                <td th:text="${searchInfoHistDtoList.infoHistDate}" ></td>
-                <td th:text="${searchInfoHistDtoList.infoHistCnt}"> </td>
+                <td th:text="${searchInfoHistDtoList.infoHistDate}"></td>
+                <td th:text="${searchInfoHistDtoList.infoHistCnt}"></td>
             </tr>
             </tbody>
         </table>
@@ -153,51 +152,108 @@
             </thead>
             <tbody>
             <tr th:each="searchResultHistDtoList : ${searchResultHistDtoList}">
-                <td th:text="${searchResultHistDtoList.rsltDate}" ></td>
-                <td th:text="${searchResultHistDtoList.rsltCnt}"> </td>
+                <td th:text="${searchResultHistDtoList.rsltDate}"></td>
+                <td th:text="${searchResultHistDtoList.rsltCnt}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table style="display: none" id='monitoringHistList'>
+            <thead>
+            <tr>
+                <th>날짜</th>
+                <th>카운트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="monitoringHistDtoList : ${monitoringHistDtoList}">
+                <td th:text="${monitoringHistDtoList.monitoringDate}"></td>
+                <td th:text="${monitoringHistDtoList.monitoringCnt}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table style="display: none" id='deleteReqHistList'>
+            <thead>
+            <tr>
+                <th>날짜</th>
+                <th>카운트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="deleteReqHistList : ${deleteReqHistDtoList}">
+                <td th:text="${deleteReqHistList.deleteRequestDate}"></td>
+                <td th:text="${deleteReqHistList.deleteRequestCnt}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table style="display: none" id='deleteComptHistList'>
+            <thead>
+            <tr>
+                <th>날짜</th>
+                <th>카운트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="deleteComptHistDtoList : ${deleteComptHistDtoList}">
+                <td th:text="${deleteComptHistDtoList.deleteComptDate}"></td>
+                <td th:text="${deleteComptHistDtoList.deleteComptCnt}"></td>
             </tr>
             </tbody>
         </table>
 
         <form action="/prcuse" method="post">
-            <div  style="width: 500px; height: 53px; padding-left: 25px; padding-top: 10px; float: right; margin-bottom: 45px;" >
+            <div style="width: 500px; height: 53px; padding-left: 25px; padding-top: 10px; float: right; margin-bottom: 45px;" >
                 <input style="margin-right: 20px; font-weight: bold;" type="date" id="fromDate" name="fromDate" th:value="${fromDate}" /> ~
-                <input style="margin-left: 20px; font-weight: bold;" type="date" id="toDate" name="toDate" th:value="${toDate}"  />
+                <input style="margin-left: 20px; font-weight: bold;" type="date" id="toDate" name="toDate" th:value="${toDate}" />
                 <button style="width: 70px; margin-left: 65px; font-size: 15px; color: #7c7c7f; height: 30px; font-weight: bold;"
                         class="bor10 btn-off manager-add" type="submit" onclick="rowClicked();">검색</button>
             </div>
         </form>
-        <div class="parent" id="pdfDiv" ><!-- style="width: 600px; float: left;" -->
+
+        <div style="margin: 10px auto;" id="pdfDiv" ><!-- style="width: 600px; float: left;" -->
             <!--<div id="div_myAreaChart" style="margin-top: 50px;">-->
-                <div class="first" id="div_myAreaChart" >
-                    <canvas id="myChart" ></canvas>
-                </div>
-                <div class="second" id="div_myAreaChart2">
-                    <canvas id="myChart2" ></canvas>
-                </div>
-        </div>
-        <div>
+            <div class="first parent" id="div_myAreaChart" >
+                <canvas id="myChart" ></canvas>
+            </div>
+            <div class="second parent" id="div_myAreaChart2">
+                <canvas id="myChart2" ></canvas>
+            </div>
+
             <div>
-                <div class="three">
+                <div class="three parent" id="div_myAreaChart3">
                     <canvas id="myChart3" ></canvas>
                 </div>
-                <div class="four">
+                <div class="four parent" id="div_myAreaChart4">
                     <canvas id="myChart4"></canvas>
                 </div>
             </div>
-        </div>
-        <div>
-            <div class="five">
+
+            <div class="five parent"  id="div_myAreaChart5">
                 <canvas id="myChart5"></canvas>
             </div>
-            <div class="six">
+            <div class="six parent">
                 <canvas id="myChart6"></canvas>
             </div>
         </div>
 
+        <form action="/prcuse/excel/download" method="get">
+            <div style="margin-top: 50px; float: right;">
+                <input style="margin-right: 20px; font-weight: bold; display: none;" type="date" name="fromDate" th:value="${fromDate}" />
+                <input style="margin-left: 20px; font-weight: bold; display: none;" type="date" name="toDate"  th:value="${toDate}"  />
+                <button class="bor10 btn-off manager-add" style="margin-right: 10px; height: 60px; font-size: 17px; width: 121px; font-weight: bold; color: #e88550;"
+                        type="submit">Excel <br> Download</button>
+                <!--
+                <button  class="bor10 btn-off manager-add" style="height: 60px; font-size: 17px; width: 121px; font-weight: bold; color: #e88550;"
+                         type="button" onclick="createPdf();" > PDF <br> Download</button> &lt;!&ndash; id="pdfDown" &ndash;&gt;
+                -->
+            </div>
+        </form>
+
     </section>
     <script>footer()</script>
-  </article>
+</article>
 
 <script>
     //테이블안에 tr을 for문으로 td의 값을 뽑아서 arraypush
@@ -207,11 +263,86 @@
         getUserKeywordCnt();
         getMonitoringList();
         getMonitoring();
-        getBubble();
+        // getBubble();
     });
 
+    $("#pdfDown").click(function() {
+        alert('피디에프 버튼 클릭')
+        setTimeout(function(){
+            createPdf();
+        }, 100);
+    });
+
+    var renderedImg = new Array;
+
+    var contWidth=200;
+    var padding = 5;
+
+    function createPdf(){
+        var lists = document.querySelectorAll('div.pdfDiv > div'),
+            deferreds = [],
+            doc = new jsPDF("p", "mm", "a4"),
+            listsLeng = lists.length;
+
+        for (var i = 0; i < listsLeng; i++) { // li 개수만큼 이미지 생성
+            alert('zz')
+            var deferred = $.Deferred();
+            deferreds.push(deferred.promise());
+            generateCanvas(i, doc, deferred, lists[i]);
+        }
+
+        $.when.apply($, deferreds).then(function() {
+            alert('when.apply 진입')
+            var sorted = renderedImg.sort(function(a,b){return a.num < b.num ? -1 : 1}),
+                curHeight = padding,
+                sortedLeng = sorted.length;
+
+            for(var i=0; i<sortedLeng; i++) {
+                var sortedHeight = sorted[i].height;
+                var sortedImage = sorted[i].image;
+
+                alert('sortedHeight '+sortedHeight+' sortedImage '+sortedImage);
+
+                if(curHeight + sortedHeight > 297 - padding*2) {
+                    doc.addPage();
+                    curHeight = padding;
+                    doc.addImage(sortedHeight, 'image/png', padding, curHeight, contWidth, sortedHeight);
+                    curHeight += sortedHeight;
+                } else {
+                    doc.addImage(sortedImage, 'image/png', padding, curHeight, contWidth, sortedHeight);
+                    curHeight += sortedHeight;
+                }
+            }
+
+            doc.save('aa.pdf');
+            alert('when.apply 끝')
+            curHeight = padding;
+            renderedImg = new Array;
+
+        });
+
+    }
+
+    function generateCanvas(i, doc, deferred, curList){
+        alert('generateCanvas 진입')
+        var pdfWidth = $(curList).outerWidth() * 0.2645;
+        var pdfHeight = $(curList).outerHeight() * 0.2645;
+        var heightCalc = contWidth * pdfHeight / pdfWidth;
+
+        html2canvas(curList).then(
+            function(canvas) {
+                alert('canvas 진입')
+                var img = canvas.toDataURL('image/png', 1.0);
+                renderedImg.push({num:i, image:img, height:heightCalc});
+                deferred.resolve();
+            }
+        )
+
+        alert('generateCanvas 끝')
+    }
+
     function getGraph() {
-        $('#myChart2').remove(); //그래프 그리는 영역 지움 width="100%" height="40"
+        $('#myChart2').remove();
         $('#div_myAreaChart2').append('<canvas id="myChart2" ></canvas>');
 
         const fromDate = document.getElementById("fromDate").value;
@@ -294,11 +425,16 @@
                         }]
                     },
                     options: {
-                        title: {
-                            display: true,
-                            text: '카운트'
-                        },
-                        scales: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: '사용자 접속 현황'
+                            }
+                        }, scales: {
                             responsive: false,
                             y: {
                                 min: 0,
@@ -361,8 +497,6 @@
             var cell_2 = cells[1].firstChild.data; // 카운트
             traceDateList.push(cell_1);
             traceCntList.push(cell_2);
-
-            // totalDateList.push(cell_1);
         }
 
         for(var i=1; i<noticeList.length; i++) {
@@ -372,8 +506,6 @@
             var cell_2 = cells[1].firstChild.data; // 카운트
             noticeDateList.push(cell_1);
             noticeCntList.push(cell_2);
-
-            // totalDateList.push(cell_1);
         }
 
         for(var i=1; i<searchResultList.length; i++) {
@@ -384,8 +516,6 @@
 
             searchResultDateList.push(resultCell_1);
             searchResultCntList.push(resultCell_2);
-
-            // totalDateList.push(resultCell_1);
         }
 
         for(var i=1; i<searchInfoList.length; i++) {
@@ -395,9 +525,6 @@
 
             searchInfoCntList.push(infoCell_2);
             searchInfoDateList.push(infoCell_1);
-
-            // totalDateList.push(infoCell_1);
-
         }
 
         let sortTotalDateList = totalDateList.sort();
@@ -510,6 +637,10 @@
                     legend: {
                         display: true,
                         position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: '화면별 사용자 접속 현황'
                     }
                 },
                 scales: {
@@ -518,58 +649,359 @@
                         min: 0,
                         max: 200,
                     }
-                },
-                title: {
-                    display: true,
-                    text: '사용자 접속 현황'
                 }
             }
         });
     }
+    /*
+
+        function getUserKeywordCnt() {
+            const fromDate = document.getElementById("fromDate").value;
+            const toDate = document.getElementById("toDate").value;
+
+            $('#fromDate').attr('value', fromDate);
+            $('#toDate').attr('value', toDate);
+
+            let totalDateList = [];
+            let resultDateCntList = [];
+            let keywordCntList = [];
+            let resultCntList = [];
+
+            $.ajax({
+                url: "/keywordCntList",
+                type: "get",
+                dataType: "json",
+                data: {
+                    fromDate: fromDate,
+                    toDate: toDate
+                },
+                success:function(data) {
+                    $('#myChart3').remove();
+                    $('#div_myAreaChart3').append('<canvas id="myChart3" ></canvas>');
+
+                    for(let i=0; i<data.data["dateList"].length; i++) {
+                        resultDateCntList.push(data.data["dateList"][i])
+                    }
+
+                    for(let i=0; i<data.data["cntList"].length; i++) {
+                        keywordCntList.push(data.data["cntList"][i])
+                    }
+
+                    for(let i=0; i<data.data["resultList"].length; i++) {
+                        resultCntList.push(data.data["resultList"][i])
+                    }
+
+                    var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
+                    if(!(regex.test(fromDate) && regex.test(toDate)))
+                        return "Not Date Format";
+                    var result = [];
+                    var curDate = new Date(fromDate);
+
+                    while(curDate <= new Date(toDate)) {
+                        result.push(curDate.toISOString().split("T")[0]);
+                        curDate.setDate(curDate.getDate() + 1);
+                    }
+
+                    for(var i=0; i<result.length; i++) {
+                        result[i] = result[i].replace(/-/g, "")
+                        totalDateList.push(result[i]);
+                    }
+
+                    for(var i=0; i<resultDateCntList.length; i++) {
+                        if (totalDateList[i] > resultDateCntList[i]) {
+                            resultDateCntList.unshift(totalDateList[i]);
+                            keywordCntList.unshift(0)
+                            resultCntList.unshift(0)
+                        }
+
+                        if (totalDateList[i] !== resultDateCntList[i] && totalDateList[i] < resultDateCntList[i]) {
+                            resultDateCntList.splice(i, 0, totalDateList[i]);
+                            keywordCntList.splice(i, 0, 0);
+                            resultCntList.splice(i, 0, 0);
+                        }
+
+                        for (var j = 0; j < (totalDateList.length - resultDateCntList.length); j++) {
+                            resultDateCntList.push(totalDateList[i]);
+                            keywordCntList.push(0);
+                            resultCntList.push(0);
+                        }
+
+                        alert(resultDateCntList);
+                        alert(keywordCntList);
+                        alert(resultCntList);
+
+                        new Chart(document.getElementById('myChart3'), {
+                            type: 'bar',
+                            data: {
+                                labels: totalDateList,
+                                datasets: [
+                                    {
+                                        label: '키워드',
+                                        data: keywordCntList,
+                                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                                        borderColor: 'rgb(255, 99, 132)',
+                                    },
+                                    {
+                                        label: '키워드 결과 갯수',
+                                        data: resultCntList,
+                                        backgroundColor: 'rgba(35, 192, 192, 0.6)',
+                                        borderColor: 'rgb(35, 192, 192)',
+                                        type: 'line',
+                                    }
+                                ]
+                            }, options: {
+                                responsive: true,
+                                y: {
+                                    min: 0,
+                                    max: 1000,
+                                }, plugins: {
+                                    legend: {
+                                        position: 'top',
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: '사용자별 검색 키워드 현황'
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }, error: function(){
+                    alert('실패')
+                }
+
+            });
+        }
+    */
+
 
     function getUserKeywordCnt() {
+        const fromDate = document.getElementById("fromDate").value;
+        const toDate = document.getElementById("toDate").value;
 
-        const exampleMonitoring = document.querySelector('#myChart3').getContext('2d');
+        $('#fromDate').attr('value', fromDate);
+        $('#toDate').attr('value', toDate);
 
-        const userKeywordCnt = new Chart(exampleMonitoring,{
-            type: 'bar',
+        let totalDateList = [];
+        let resultDateCntList = [];
+        let keywordCntList = [];
+        let resultCntList = [];
+
+        $.ajax({
+            url: "/keywordCntList",
+            type: "get",
+            dataType: "json",
             data: {
-                labels:['admin','user','user2','user3'],
-                datasets: [
-                    {
-                        label: '키워드',
-                        data: [50,80,90,100],
-                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                        borderColor: 'rgb(255, 99, 132)',
-                    },
-                    {
-                        label: '키워드 결과 갯수',
-                        data: [140,180,170,190],
-                        backgroundColor: 'rgba(35, 192, 192, 0.6)',
-                        borderColor: 'rgb(35, 192, 192)',
-                        type: 'line',
-                    }
-                ]
-            }, options: {
-                responsive: true,
-                y: {
-                    min: 0,
-                    max: 200,
-                },plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: '사용자별 검색 키워드 현황'
-                    }
+                fromDate: fromDate,
+                toDate: toDate
+            },
+            success:function(data) {
+                $('#myChart3').remove();
+                $('#div_myAreaChart3').append('<canvas id="myChart3" ></canvas>');
+
+                for(let i=0; i < data.length; i++) {
+                    resultDateCntList.push(data[i].date);
+                    keywordCntList.push(data[i].keywordCnt);
+                    resultCntList.push(data[i].resultCnt);
                 }
+
+                const fromDate = document.getElementById("fromDate").value;
+                const toDate = document.getElementById("toDate").value;
+
+                var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
+                if(!(regex.test(fromDate) && regex.test(toDate)))
+                    return "Not Date Format";
+                var result = [];
+                var curDate = new Date(fromDate);
+
+                while(curDate <= new Date(toDate)) {
+                    result.push(curDate.toISOString().split("T")[0]);
+                    curDate.setDate(curDate.getDate() + 1);
+                }
+
+                let totalDateList = [];
+
+                for(var i=0; i<result.length; i++) {
+                    result[i] = result[i].replace(/-/g, "")
+                    totalDateList.push(result[i]);
+                }
+
+                for(var i=0; i<resultDateCntList.length; i++) {
+                    if(totalDateList[i] > resultDateCntList[i] ){
+                        resultDateCntList.unshift(totalDateList[i]);
+                        keywordCntList.unshift(0);
+                        resultCntList.unshift(0)
+                    }
+
+                    if(totalDateList[i] !== resultDateCntList[i] && totalDateList[i] < resultDateCntList[i] ){
+                        resultDateCntList.splice(i,0, totalDateList[i]);
+                        keywordCntList.splice(i,0, 0);
+                        resultCntList.splice(i,0, 0);
+                    }
+
+                    for(var j=0; j<(totalDateList.length-resultDateCntList.length); j++) {
+                        resultDateCntList.push(totalDateList[i]);
+                        keywordCntList.push(0);
+                        resultCntList.push(0);
+                    }
+
+                }
+
+                new Chart(document.getElementById('myChart3'), {
+                    type: 'bar',
+                    data: {
+                        labels: totalDateList,
+                        datasets: [
+                            {
+                                label: '키워드',
+                                data: keywordCntList,
+                                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                                borderColor: 'rgb(255, 99, 132)',
+                            },
+                            {
+                                label: '키워드 결과 갯수',
+                                data: resultCntList,
+                                backgroundColor: 'rgba(35, 192, 192, 0.6)',
+                                borderColor: 'rgb(35, 192, 192)',
+                                type: 'line',
+                            }
+                        ]
+                    }, options: {
+                        responsive: true,
+                        y: {
+                            min: 0,
+                            max: 1000,
+                        }, plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: '기간별 검색 키워드 현황'
+                            }
+                        }
+                    }
+                });
+
+            }, error: function(){
+                alert('실패')
             }
+
         });
     }
 
     function getMonitoring() {
-        const exampleMonitoring = document.querySelector('#myChart5').getContext('2d');
+        // const exampleMonitoring = document.querySelector('#myChart5').getContext('2d');
+        const fromDate = document.getElementById("fromDate").value;
+        const toDate = document.getElementById("toDate").value;
+
+        $('#fromDate').attr('value', fromDate);
+        $('#toDate').attr('value', toDate);
+
+        let totalDateList = [];
+        let monitoringDateList = [];
+        let monitoringCntList = [];
+        let resultCntList = [];
+
+        $.ajax({
+            url: "/monitoringDateCntList",
+            type: "get",
+            dataType: "json",
+            data: {
+                fromDate: fromDate,
+                toDate: toDate
+            },
+            success:function(data) {
+                for(let i=0; i<data.length; i++) {
+                    monitoringDateList.push(data[i].monitoringDate);
+                    monitoringCntList.push(data[i].monitoringCnt)
+                    resultCntList.push(data[i].resultCnt);
+                }
+
+                $('#myChart5').remove();
+                $('#div_myAreaChart5').append('<canvas id="myChart5" ></canvas>');
+
+                var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
+                if(!(regex.test(fromDate) && regex.test(toDate)))
+                    return "Not Date Format";
+                var result = [];
+                var curDate = new Date(fromDate);
+
+                while(curDate <= new Date(toDate)) {
+                    result.push(curDate.toISOString().split("T")[0]);
+                    curDate.setDate(curDate.getDate() + 1);
+                }
+
+                for(var i=0; i<result.length; i++) {
+                    result[i] = result[i].replace(/-/g, "")
+                    totalDateList.push(result[i]);
+                }
+
+
+                for(var i=0; i<monitoringDateList.length; i++) {
+                    if(totalDateList[i] > monitoringDateList[i] ){
+                        monitoringDateList.unshift(totalDateList[i]);
+                        monitoringCntList.unshift(0)
+                        resultCntList.unshift(0)
+                    }
+
+                    if(totalDateList[i] !== monitoringDateList[i] && totalDateList[i] < monitoringDateList[i] ){
+                        monitoringDateList.splice(i,0, totalDateList[i]);
+                        monitoringCntList.splice(i,0, 0);
+                        resultCntList.splice(i,0, 0);
+                    }
+
+                    for(var j=0; j<(totalDateList.length-monitoringDateList.length); j++) {
+                        monitoringDateList.push(totalDateList[i]);
+                        monitoringCntList.push(0);
+                        resultCntList.push(0);
+                    }
+
+                }
+
+                new Chart(document.getElementById('myChart5'),{
+                    type: 'bar',
+                    data: {
+                        labels:totalDateList,
+                        datasets: [
+                            {
+                                label: '모니터링 한 갯수',
+                                data: monitoringCntList,
+                                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                                borderColor: 'rgb(255, 99, 132)',
+                            },
+                            {
+                                label: '모니터링 결과 갯수',
+                                data: resultCntList,
+                                backgroundColor: 'rgba(35, 192, 192, 0.6)',
+                                borderColor: 'rgb(35, 192, 192)',
+                                type: 'line',
+                            }
+                        ]
+                    }, options: {
+                        responsive: true,
+                        y: {
+                            min: 0,
+                            max: 100,
+                        },plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: '24시 모니터링 현황'
+                            }
+                        }
+                    }
+                });
+
+            }, error:function(){
+                alert("실패zz")
+            }
+
+        })
+
+
 
         const monitoringChart = new Chart(exampleMonitoring,{
             type: 'line',
@@ -610,28 +1042,29 @@
             },
         });
     }
+    /*
 
-    function getBubble() {
-        const exampleCtx = document.querySelector('#myChart6').getContext('2d');
+        function getBubble() {
+            const exampleCtx = document.querySelector('#myChart6').getContext('2d');
 
-        const bubbleChartExample = new Chart(exampleCtx, {
+            const bubbleChartExample = new Chart(exampleCtx, {
                 type: 'bubble',
                 data: {
-                  datasets: [{
-                      label: '여고딩',
-                      data: [
-                          {x:2,y:12,r:15}
-                      ],
-                      backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                      borderColor: 'rgb(255, 99, 132)',
-                  },{
-                      label: '여중딩',
-                      data: [
-                          {x:1,y:3,r:15}
-                      ],
-                      backgroundColor: 'rgba(155, 99, 145, 0.6)',
-                      borderColor: 'rgb(155, 99, 145)',
-                  }]
+                    datasets: [{
+                        label: '여고딩',
+                        data: [
+                            {x:2,y:12,r:15}
+                        ],
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgb(255, 99, 132)',
+                    },{
+                        label: '여중딩',
+                        data: [
+                            {x:1,y:3,r:15}
+                        ],
+                        backgroundColor: 'rgba(155, 99, 145, 0.6)',
+                        borderColor: 'rgb(155, 99, 145)',
+                    }]
                 },options: {
                     responsive: true,
                     plugins: {
@@ -645,29 +1078,156 @@
                     }
                 },
             });
-    }
+        }
+    */
 
     function getMonitoringList() {
-        const exampleCtx = document.querySelector('#myChart4').getContext('2d');
-        const bubbleChartExample = new Chart(exampleCtx, {
+        $('#myChart4').remove(); //그래프 그리는 영역 지움
+        $('#div_myAreaChart4').append('<canvas id="myChart4" ></canvas>');
+
+        const fromDate = document.getElementById("fromDate").value;
+        const toDate = document.getElementById("toDate").value;
+
+        var regex = RegExp(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/);
+        if(!(regex.test(fromDate) && regex.test(toDate)))
+            return "Not Date Format";
+        var result = [];
+        var curDate = new Date(fromDate);
+
+        while(curDate <= new Date(toDate)) {
+            result.push(curDate.toISOString().split("T")[0]);
+            curDate.setDate(curDate.getDate() + 1);
+        }
+
+        let totalDateList = [];
+        for(var i=0; i<result.length; i++) {
+            result[i] = result[i].replace(/-/g, "")
+            totalDateList.push(result[i]);
+        }
+
+        let monitoringStatusDateList = [];
+        let monitoringStatusCntList = [];
+
+        let deleteReqHistDateList = [];
+        let deleteReqHistCntList = [];
+
+        let deleteComptHistDateList = [];
+        let deleteComptHistCntList = [];
+
+        var monitoringHistList = document.getElementById('monitoringHistList').getElementsByTagName("tr");
+        var deleteReqHistList = document.getElementById("deleteReqHistList").getElementsByTagName("tr");
+        var deleteComptHistList = document.getElementById("deleteComptHistList").getElementsByTagName("tr");
+
+
+        for(var i=1; i<monitoringHistList.length; i++) {
+            var cells = monitoringHistList[i].getElementsByTagName("td");
+
+            var cell_1 = cells[0].firstChild.data; // 날짜
+            var cell_2 = cells[1].firstChild.data; // 카운트
+            monitoringStatusDateList.push(cell_1);
+            monitoringStatusCntList.push(cell_2);
+
+        }
+
+        for(var i=1; i<deleteReqHistList.length; i++) {
+            var cells = deleteReqHistList[i].getElementsByTagName("td");
+
+            var cell_1 = cells[0].firstChild.data;
+            var cell_2 = cells[1].firstChild.data;
+            deleteReqHistDateList.push(cell_1);
+            deleteReqHistCntList.push(cell_2);
+        }
+
+        for(var i=1; i<deleteComptHistList.length; i++) {
+            var cells = deleteComptHistList[i].getElementsByTagName("td");
+
+            var cell_1 = cells[0].firstChild.data;
+            var cell_2 = cells[1].firstChild.data;
+            deleteComptHistDateList.push(cell_1);
+            deleteComptHistCntList.push(cell_2);
+        }
+
+        let sortTotalDateList = totalDateList.sort();
+
+        const sortTotalDateList2 = sortTotalDateList.filter((ele, idx)=>{
+            return sortTotalDateList.indexOf(ele) === idx;
+        });
+        Array.isArray(sortTotalDateList2);
+
+
+        for(var i=0; i<sortTotalDateList2.length; i++) {
+            if(sortTotalDateList2[i] > monitoringStatusDateList[i] ){
+                monitoringStatusDateList.unshift(sortTotalDateList2[i]);
+                monitoringStatusCntList.unshift(0)
+            }
+
+            if(sortTotalDateList2[i] !== monitoringStatusDateList[i] && sortTotalDateList2[i] < monitoringStatusDateList[i] ){
+                monitoringStatusDateList.splice(i,0, sortTotalDateList2[i]);
+                monitoringStatusCntList.splice(i,0, 0);
+            }
+
+            for(var j=0; j<(sortTotalDateList2.length-monitoringStatusDateList.length); j++) {
+                monitoringStatusDateList.push(sortTotalDateList2[i]);
+                monitoringStatusCntList.push(0);
+            }
+        }
+
+        for(var i=0; i<deleteReqHistDateList.length; i++) {
+            if(sortTotalDateList2[i] > deleteReqHistDateList[i] ){
+                deleteReqHistDateList.unshift(sortTotalDateList2[i]);
+                deleteReqHistCntList.unshift(0)
+            }
+
+            if(sortTotalDateList2[i] !== deleteReqHistDateList[i] && sortTotalDateList2[i] < deleteReqHistDateList[i] ){
+                deleteReqHistDateList.splice(i,0, sortTotalDateList2[i]);
+                deleteReqHistCntList.splice(i,0, 0);
+            }
+
+            for(var j=0; j<(sortTotalDateList2.length-deleteReqHistDateList.length); j++) {
+                deleteReqHistDateList.push(sortTotalDateList2[i]);
+                deleteReqHistCntList.push(0);
+            }
+        }
+
+        for(var i=0; i<deleteComptHistDateList.length; i++) {
+            if(sortTotalDateList2[i] > deleteComptHistDateList[i] ){
+                deleteComptHistDateList.unshift(sortTotalDateList2[i]);
+                deleteComptHistCntList.unshift(0)
+            }
+
+            if(sortTotalDateList2[i] !== deleteReqHistDateList[i] && sortTotalDateList2[i] < deleteReqHistDateList[i] ){
+                deleteComptHistDateList.splice(i,0, sortTotalDateList2[i]);
+                deleteComptHistCntList.splice(i,0, 0);
+            }
+
+            for(var j=0; j<(sortTotalDateList2.length-deleteComptHistDateList.length); j++) {
+                deleteComptHistDateList.push(sortTotalDateList2[i]);
+                deleteComptHistCntList.push(0);
+            }
+        }
+
+
+        const ctx = document.querySelector('#myChart4').getContext('2d');
+
+        const myChart4 = new Chart(ctx, {
             type: 'line',
             data: {
-                labels:['admin','user','user2'],
+                labels: sortTotalDateList2,
                 datasets: [{
                     label: '모니터링 한 갯수',
-                    data: [10,20,30],
+                    data: monitoringStatusCntList,
                     backgroundColor: 'rgba(255, 99, 132, 0.6)',
                     borderColor: 'rgb(255, 99, 132)',
                     borderWidth: 2
                 },{
                     label: '삭제 요청한 갯수',
-                    data: [40,80,20],
+                    data: deleteReqHistCntList,
                     backgroundColor: 'rgba(35, 192, 192, 0.6)',
                     borderColor: 'rgb(35, 192, 192)',
                     borderWidth: 2
                 },{
                     label: '삭제 완료된 갯수',
-                    data: [30,70,50],
+                    data: deleteComptHistCntList,
                     backgroundColor: 'rgba(55, 19, 192, 0.6)',
                     borderColor: 'rgb(65, 19, 192)',
                     borderWidth: 2
@@ -684,38 +1244,42 @@
                     },
                     title: {
                         display: true,
-                        text: '사용자별 모니터링 현황'
+                        text: '모니터링 현황'
                     }
                 }
             },
         });
     }
 
-    function pdfDown(){
-        html2canvas(document.getElementById('pdfDiv'), {
-            allowTaint: true,
-            useCORS: true,
-            logging: false,
-            height: window.outerHeight + window.innerHeight,
-            windowHeight: window.outerHeight + window.innerHeight
-        }).then(function(canvas) {
-            var imgData = canvas.toDataURL('image/png');
 
-            var imgWidth = 210;
-            var pageHeight = imgWidth * 1.141;
-            var imgHeight = canvas.height * imgWidth / canvas.width;
-            var heightLeft = imgHeight;
-            var doc = new jsPDF('p','mm');
-            var position = 0;
 
-            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
 
-            doc.save('사용자 활용 현황.pdf');
+    /*
+        function pdfDown(){
+            html2canvas(document.getElementById('pdfDiv'), {
+                allowTaint: true,
+                useCORS: true,
+                logging: false,
+                height: window.outerHeight + window.innerHeight,
+                windowHeight: window.outerHeight + window.innerHeight
+            }).then(function(canvas) {
+                var imgData = canvas.toDataURL('image/png', 1.0);
 
-        });
-    }
+                var imgWidth = 210;
+                var pageHeight = imgWidth * 0.0545; // 1.141
+                var imgHeight = canvas.height * imgWidth / canvas.width;
+                var heightLeft = imgHeight;
+                var doc = new jsPDF('p','mm');
+                var position = 0;
 
+                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                doc.save('기간별 활용 현황.pdf');
+
+            });
+        }
+     */
 </script>
 
 </body>

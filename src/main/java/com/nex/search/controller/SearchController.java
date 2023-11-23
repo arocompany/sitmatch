@@ -68,7 +68,7 @@ public class SearchController {
     @PostMapping("")
     public ModelAndView search(@RequestParam("file") Optional<MultipartFile> file, SearchInfoEntity searchInfoEntity, HttpServletRequest request
                                 ,@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
-                                ,SearchInfoDto searchInfoDto) throws ExecutionException, InterruptedException {
+                                ,SearchInfoDto searchInfoDto) throws Exception {
         ModelAndView modelAndView = new ModelAndView("redirect:/history");
 
         log.info("search진입 tsiKeyword "+searchInfoEntity.getTsiKeyword());
@@ -322,7 +322,11 @@ public class SearchController {
     @GetMapping("addTrkStat")
     public String addTrkStat(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                              @RequestParam Optional<Integer> tsrUno) {
-        tsrUno.ifPresent(searchService::addTrkStat);
+        int userUno = sessionInfoDto.getUserUno();
+        Integer tsrUno2 = tsrUno.get();
+        String userId = sessionInfoDto.getUserId();
+        searchService.addTrkStat(userUno,userId, tsrUno2);
+        // tsrUno.ifPresent(searchService::addTrkStat);
         return "success";
     }
 
@@ -338,16 +342,35 @@ public class SearchController {
     public String setTrkStatCd(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                @RequestParam Optional<Integer> tsrUno,
                                @RequestParam String trkStatCd) {
-        tsrUno.ifPresent(integer -> searchService.setTrkStatCd(integer, trkStatCd));
+        int userUno = sessionInfoDto.getUserUno();
+        String userId = sessionInfoDto.getUserId();
+        log.info(" setTrkStatCd 진입: "+trkStatCd);
+
+        if(trkStatCd.equals("20")) { // 삭제요청
+            tsrUno.ifPresent(integer -> searchService.setTrkStatCd(userUno, userId, integer, "20"));
+        } else if(trkStatCd.equals("30")) { // 삭제완료
+            tsrUno.ifPresent(integer -> searchService.setTrkStatCd(userUno, userId, integer, "30"));
+        } else {
+            tsrUno.ifPresent(integer -> searchService.setTrkStatCd(userUno, userId, integer, trkStatCd));
+        }
+
         return "success";
     }
 
     @GetMapping("/monitoring")
     public String setMonitoringCd(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                   @RequestParam Optional<Integer> tsrUno) {
-        tsrUno.ifPresent(searchService::setMonitoringCd);
+
+        log.info(" === setMonitoringCd 진입 여기 === ");
+        int userUno = sessionInfoDto.getUserUno();
+        String userId = sessionInfoDto.getUserId();
+        // log.info("tsrUno: "+ tsrUno.get() + " traceTsiUno: "+traceTsiUno.get());
+        // monitoring_cd= 10 비활성화  // 20 활성화
+        searchService.setMonitoringCd(userUno, userId, tsrUno.get());
+        // tsrUno.ifPresent(searchService::setMonitoringCd);
         return "success";
     }
+
 /*
     @PostMapping("/newKeyword")
     public Boolean newKeyword(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,

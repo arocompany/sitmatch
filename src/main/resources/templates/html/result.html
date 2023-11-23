@@ -5,9 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>디지털 성범죄</title>
-    <link rel="stylesheet" href="/css/common.min.css"/>
-    <link rel="stylesheet" href="/css/result.min.css"/>
-    <link rel="stylesheet" href="/css/detail.min.css"/>
+    <link rel="stylesheet" href="/css/common.min.css?v=2023111301"/>
+    <link rel="stylesheet" href="/css/result.min.css?v=2023111301"/>
+    <link rel="stylesheet" href="/css/detail.min.css?v=2023111301"/>
     <script src="/js/style.js"></script>
     <script src="/js/footer.js"></script>
     <script src="/js/function.js"></script>
@@ -153,7 +153,7 @@
             <span th:case="01">처리중</span>
             <span th:case="10"> <!-- SKIP -->
                 <span th:if="${list.getMaxSimilarity()!= null}">
-                 <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getMaxSimilarity2(), '%')}">99%</h2>
+                 <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getMaxSimilarity(), '%')}">99%</h2>
                 </span>
             </span>
             <span th:case="11">

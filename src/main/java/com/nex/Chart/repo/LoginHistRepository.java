@@ -1,6 +1,6 @@
-package com.nex.user.repo;
+package com.nex.Chart.repo;
 
-import com.nex.user.entity.LoginHistEntity;
+import com.nex.Chart.entity.LoginHistEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

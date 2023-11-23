@@ -25,6 +25,14 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     List<SearchResultEntity> findByTsrUnoIn(List<Integer> tsrUnoValues);
     /*----------------------------------------------------------------------------------------------------------------*/
+    String keywordResultCntList = " SELECT COUNT(*) AS resultCnt " +
+                                  " FROM tb_search_result tsr " +
+                                  " LEFT OUTER JOIN tb_search_info tsi " +
+                                  " ON tsr.tsi_uno = tsi.tsi_uno " +
+                                  " WHERE tsr.fst_dml_dt BETWEEN :fromDate AND :toDate " +
+                                  " GROUP BY DATE_FORMAT(tsr.fst_dml_dt,'%Y%m%d') " +
+                                  " ORDER BY tsr.fst_dml_dt asc";
+
     String from_5 = " from  tb_search_info TSI " +
             " INNER JOIN tb_search_result TSR ON TSR.TSI_UNO = TSI.TSI_UNO " +
             " LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
@@ -96,7 +104,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + "+
             "case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + "+
             "case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / "+
-            "(case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + "+
+            "(case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end nn+ "+
             "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
             "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity";
 
@@ -453,6 +461,9 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             """
     )
     SearchResultEntity findAllBy();
+
+    @Query(value = keywordResultCntList, nativeQuery = true)
+    List<String> keywordResultCntList(String fromDate, String toDate);
 
 }
 

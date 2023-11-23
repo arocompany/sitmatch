@@ -1,11 +1,16 @@
-package com.nex.user.repo;
+package com.nex.Chart.repo;
 
+import com.nex.Chart.dto.NoticeHistDto;
+import com.nex.Chart.dto.NoticeListExcelDto;
+import com.nex.Chart.entity.NoticeHistEntity;
 import com.nex.user.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface NoticeHistRepository extends JpaRepository<NoticeHistEntity, Long> {
     String countByClkNotice = " SELECT DATE_FORMAT(CLK_DML_DT,'%Y%m%d') AS noticeDate, COUNT(*) AS noticeCnt " +
             " FROM TB_NOTICE_HISTORY " +
@@ -23,10 +28,20 @@ public interface NoticeHistRepository extends JpaRepository<NoticeHistEntity, Lo
             " GROUP BY DATE_FORMAT(TNH.CLK_DML_DT,'%Y%m%d'), TNH.USER_ID, user.user_nm  " +
             " ORDER BY DATE ";
 
+    String userNoticeHistList = " SELECT USER_ID AS userId, " +
+                                " COUNT(*) AS  noticeCnt " +
+                                " FROM tb_notice_history " +
+                                " WHERE clk_dml_dt LIKE CONCAT(:toDate,'%') " +
+                                " GROUP BY userId ";
+
     @Query(value = countByClkNotice, nativeQuery = true)
     List<NoticeHistDto> countByClkNotice(String fromDate, String toDate2);
 
     @Query(value = noticeExcelList, nativeQuery = true)
-    List<noticeListExcelDto> noticeExcelList(String fromDate, String toDate2);
+    List<NoticeListExcelDto> noticeExcelList(String fromDate, String toDate2);
+
+    @Query(value = userNoticeHistList, nativeQuery = true)
+    List<NoticeHistDto> userNoticeHistList(String toDate);
+
 
 }

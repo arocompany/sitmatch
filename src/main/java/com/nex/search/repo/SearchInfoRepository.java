@@ -1,5 +1,9 @@
 package com.nex.search.repo;
 
+import com.nex.Chart.dto.DateKeywordExcelDto;
+import com.nex.Chart.dto.KeywordCntDto;
+import com.nex.Chart.dto.SearchKeywordCntDto;
+import com.nex.Chart.dto.userKeywordCntDto;
 import com.nex.search.entity.*;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -16,6 +20,43 @@ import java.util.Optional;
 @Transactional
 public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, Integer> {
 
+    String dateKeywordResultCntList=" SELECT COUNT(*) AS keywordCnt " +
+                                    " ,SUM((SELECT COUNT(*) " +
+                                    " from tb_search_result tsr " +
+                                    " LEFT OUTER JOIN tb_search_info tsi3 " +
+                                    " ON tsr.tsi_uno = tsi3.tsi_uno " +
+                                    " WHERE  tsr.tsi_uno = tsi.tsi_uno )) AS resultCnt " +
+                                    " ,DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') AS date " +
+                                    " FROM tb_search_info tsi " +
+                                    " WHERE tsi.fst_dml_dt BETWEEN :fromDate AND :toDate " +
+                                    " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') ";
+    String dateSearchInfoResultExcelList =  " SELECT tu.user_nm AS userNm " +
+                                            " ,tu.user_id AS userId " +
+                                            " ,COUNT(tsi.tsi_keyword) keywordCnt " +
+                                            " ,SUM((SELECT COUNT(DISTINCT tsr.tsr_site_url) " +
+                                            " from tb_search_result tsr " +
+                                            " LEFT OUTER JOIN tb_search_info tsi2 " +
+                                            " ON tsr.tsi_uno = tsi2.tsi_uno " +
+                                            " WHERE tsr.tsi_uno = tsi.tsi_uno)) AS resultCnt " +
+                                            " ,tsi.fst_dml_dt AS resultDate " +
+                                            " FROM tb_search_info tsi " +
+                                            " LEFT OUTER JOIN tb_user tu " +
+                                            " ON tsi.user_uno = tu.user_uno " +
+                                            " WHERE tsi.fst_dml_dt BETWEEN :fromDate AND :toDate " +
+                                            " GROUP BY tsi.fst_dml_dt " +
+                                            " ORDER BY tsi.fst_dml_dt ASC";
+
+    String userKeywordCntList = " SELECT COUNT(tsi.tsi_keyword) AS keywordCnt " +
+                                " ,user_id AS userId ,SUM((SELECT COUNT(DISTINCT tsr.tsr_site_url) " +
+                                " from tb_search_result tsr LEFT OUTER JOIN tb_search_info tsi2 " +
+                                " ON tsr.tsi_uno = tsi2.tsi_uno " +
+                                " WHERE tsr.tsi_uno = tsi.tsi_uno)) AS resultCnt " +
+                                " FROM tb_search_info tsi " +
+                                " LEFT OUTER JOIN tb_user tu " +
+                                " ON tsi.user_uno = tu.user_uno " +
+                                " WHERE tsi.fst_dml_dt LIKE CONCAT(:toDate,'%') " +
+                                " GROUP BY tu.user_id " +
+                                " ORDER BY tu.user_uno ASC";
     String searchInfoResultCnt =    " SELECT tsi.tsi_uno AS tsiUno, " +
                                     " tsi.data_stat_cd AS tsiDataStatCd, " +
                                     " tsi.fst_dml_dt AS tsiFstDmlDt, " +
@@ -151,6 +192,21 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             " AND s1_0.USER_UNO = :userUno " +
             " and s1_0.TSR_UNO is NULL";
 
+    String searchKeywordDateCnt = "SELECT DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') AS searchDate " +
+                                  " FROM tb_search_info tsi " +
+                                  " WHERE tsi.tsr_uno IS null " +
+                                  " AND fst_dml_dt BETWEEN :fromDate AND :toDate" +
+                                  " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') " +
+                                  " ORDER BY tsi.fst_dml_dt asc ";
+    String searchKeywordCnt =   " SELECT COUNT(tsi.tsi_keyword) AS searchCnt " +
+                                " FROM tb_search_info tsi " +
+                                " WHERE tsi.tsr_uno IS null " +
+                                " AND fst_dml_dt BETWEEN :fromDate AND :toDate" +
+                                " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') " +
+                                " ORDER BY tsi.fst_dml_dt asc ";
+
+    // String searchKeywordUserCnt = "";
+
     List<SearchInfoEntity> findAllByOrderByTsiUnoDesc();
     Page<SearchInfoEntity> findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd, String keyword, Pageable pageable);
     Page<SearchInfoEntity> findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd,String searchValue, String keyword, Pageable pageable);
@@ -182,4 +238,19 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
     List<SearchInfoEntity> findByTsrUnoIn(List<Integer> tsrUnos);
 
     Optional<SearchInfoEntity> findByTsrUno(Integer tsrUno);
+
+    @Query(value = searchKeywordDateCnt, nativeQuery = true)
+    List<String> searchKeywordDateCnt(String fromDate, String toDate);
+
+    @Query(value = searchKeywordCnt, nativeQuery = true)
+    List<String> searchKeywordCnt(String fromDate, String toDate);
+
+    @Query(value = userKeywordCntList, nativeQuery = true)
+    List<userKeywordCntDto> userKeywordCntList(String toDate);
+
+    @Query(value = dateSearchInfoResultExcelList, nativeQuery = true)
+    List<DateKeywordExcelDto> dateSearchInfoResultExcelList(String fromDate, String toDate);
+
+    @Query(value = dateKeywordResultCntList, nativeQuery = true)
+    List<KeywordCntDto> dateKeywordResultCntList(String fromDate, String toDate);
 }

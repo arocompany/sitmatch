@@ -1,6 +1,6 @@
-package com.nex.user.entity;
+package com.nex.Chart.dto;
 
-public interface SearchResultExcelDto {
+public interface TraceHistExcelDto {
     String getUserNm();
     String getUserId();
     String getDate();

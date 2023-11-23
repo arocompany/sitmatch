@@ -1,10 +1,11 @@
 package com.nex.user.service;
 
+import com.nex.Chart.dto.*;
+import com.nex.Chart.entity.LoginHistEntity;
 import com.nex.common.EncryptUtil;
-import com.nex.search.entity.SearchInfoEntity;
 import com.nex.user.entity.*;
 import com.nex.user.repo.AutoRepository;
-import com.nex.user.repo.LoginHistRepository;
+import com.nex.Chart.repo.LoginHistRepository;
 import com.nex.user.repo.UserRepository;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.ServletOutputStream;
@@ -16,10 +17,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -150,6 +151,10 @@ public class UserService {
         return userRepository.userHistCntList(fromDate, toDate2);
     }
 
+    public List<LoginHistDto> getUserHistory(String toDate) {
+        return userRepository.userHistList(toDate);
+    }
+
     public List<LoginExcelDto> userHistExcel(String fromDate, String toDate2) throws IOException {
         return userRepository.userHistExcel(fromDate, toDate2);
     }
@@ -196,7 +201,9 @@ public class UserService {
 
         }
 
-        String fileName = "사용자 접속 현황";
+
+
+        String fileName = "기간별 사용자 현황";
         fileName = URLEncoder.encode(fileName,"UTF-8").replaceAll("\\+", "%20");
 
         response.setContentType("ms-vnd/excel");
@@ -210,17 +217,430 @@ public class UserService {
     }
 
     public void prcuseExcel(HttpServletResponse response
-                            , List<SearchInfoExcelDto> searchInfoExcelDtoList
-                            , List<TraceHistExcelDto> traceHistExcelDtoList
-                            , List<SearchResultExcelDto> searchResultExcelDtoList
-                            , List<noticeListExcelDto> noticeListExcelDtoList
-                            , List<LoginExcelDto> loginExcelDtoList) throws IOException {
-        
-        log.info("prcuseExcel 진입");
+                , List<SearchInfoExcelDto> searchInfoExcelDtoList
+                , List<TraceHistExcelDto> traceHistExcelDtoList
+                , List<SearchResultExcelDto> searchResultExcelDtoList
+                , List<NoticeListExcelDto> noticeListExcelDtoList
+                , List<LoginExcelDto> loginExcelDtoList
+                , List<DateKeywordExcelDto> dateSearchInfoResultExcelList
+                , List<MonitoringHistExcelDto> dateMonitoringExcelList
+                , List<DeleteReqHistExcelDto> dateMonitoringReqExcelList
+                , List<DeleteComptHistExcelDto> dateMonitoringComptExcelList
+                , List<AllTimeCntExcelDto> dateAlltimeMonitoringExcelList) throws IOException {
+
+            log.info("prcuseExcel 진입");
+
+            Workbook wb = new XSSFWorkbook();
+            Sheet infoSheet = wb.createSheet("화면별 접속 현황");
+
+            Row row;
+            Cell cell;
+            int rowNum = 0;
+
+            row = infoSheet.createRow(rowNum++);
+            cell=row.createCell(0);
+            cell.setCellValue("화면명");
+
+            cell=row.createCell(1);
+            cell.setCellValue("사용자 이름");
+
+            cell=row.createCell(2);
+            cell.setCellValue("사용자 아이디");
+
+            cell=row.createCell(3);
+            cell.setCellValue("방문 날짜");
+
+            cell=row.createCell(4);
+            cell.setCellValue("방문 횟수");
+
+            for(int i=0; i<searchInfoExcelDtoList.size(); i++) {
+                row = infoSheet.createRow(rowNum++);
+
+                if(searchInfoExcelDtoList.get(i).equals(searchInfoExcelDtoList.get(0))) {
+                    cell = row.createCell(0);
+                    cell.setCellValue("이력관리");
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(searchInfoExcelDtoList.get(i).getUserNm());
+
+                    cell = row.createCell(2);
+                    cell.setCellValue(searchInfoExcelDtoList.get(i).getUserId());
+
+                    cell = row.createCell(3);
+                    cell.setCellValue(searchInfoExcelDtoList.get(i).getDate());
+
+                    cell = row.createCell(4);
+                    cell.setCellValue(searchInfoExcelDtoList.get(i).getCnt());
+                } else {
+                    cell = row.createCell(0);
+                    cell.setCellValue("");
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(searchInfoExcelDtoList.get(i).getUserNm());
+
+                    cell = row.createCell(2);
+                    cell.setCellValue(searchInfoExcelDtoList.get(i).getUserId());
+
+                    cell = row.createCell(3);
+                    cell.setCellValue(searchInfoExcelDtoList.get(i).getDate());
+
+                    cell = row.createCell(4);
+                    cell.setCellValue(searchInfoExcelDtoList.get(i).getCnt());
+                }
+            }
+
+            for(int i=0; i<traceHistExcelDtoList.size(); i++) {
+                row=infoSheet.createRow(rowNum++);
+
+                if(traceHistExcelDtoList.get(i).equals(traceHistExcelDtoList.get(0))) {
+                    cell = row.createCell(0);
+                    cell.setCellValue("모니터링");
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(traceHistExcelDtoList.get(i).getUserNm());
+
+                    cell = row.createCell(2);
+                    cell.setCellValue(traceHistExcelDtoList.get(i).getUserId());
+
+                    cell = row.createCell(3);
+                    cell.setCellValue(traceHistExcelDtoList.get(i).getDate());
+
+                    cell = row.createCell(4);
+                    cell.setCellValue(traceHistExcelDtoList.get(i).getCnt());
+                } else {
+                    cell = row.createCell(0);
+                    cell.setCellValue("");
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(traceHistExcelDtoList.get(i).getUserNm());
+
+                    cell = row.createCell(2);
+                    cell.setCellValue(traceHistExcelDtoList.get(i).getUserId());
+
+                    cell = row.createCell(3);
+                    cell.setCellValue(traceHistExcelDtoList.get(i).getDate());
+
+                    cell = row.createCell(4);
+                    cell.setCellValue(traceHistExcelDtoList.get(i).getCnt());
+                }
+            }
+
+            for(int i=0; i<searchResultExcelDtoList.size(); i++) {
+                row=infoSheet.createRow(rowNum++);
+
+                if(searchResultExcelDtoList.get(i).equals(searchResultExcelDtoList.get(0))) {
+                    cell = row.createCell(0);
+                    cell.setCellValue("검색결과");
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(searchResultExcelDtoList.get(i).getUserNm());
+
+                    cell = row.createCell(2);
+                    cell.setCellValue(searchResultExcelDtoList.get(i).getUserId());
+
+                    cell = row.createCell(3);
+                    cell.setCellValue(searchResultExcelDtoList.get(i).getDate());
+
+                    cell = row.createCell(4);
+                    cell.setCellValue(searchResultExcelDtoList.get(i).getCnt());
+                } else {
+                    cell = row.createCell(0);
+                    cell.setCellValue("");
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(searchResultExcelDtoList.get(i).getUserNm());
+
+                    cell = row.createCell(2);
+                    cell.setCellValue(searchResultExcelDtoList.get(i).getUserId());
+
+                    cell = row.createCell(3);
+                    cell.setCellValue(searchResultExcelDtoList.get(i).getDate());
+
+                    cell = row.createCell(4);
+                    cell.setCellValue(searchResultExcelDtoList.get(i).getCnt());
+                }
+            }
+
+            for(int i=0; i<noticeListExcelDtoList.size(); i++) {
+                row = infoSheet.createRow(rowNum++);
+
+                if(noticeListExcelDtoList.get(i).equals(noticeListExcelDtoList.get(0))) {
+                    cell = row.createCell(0);
+                    cell.setCellValue("재확산 자동추적");
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(noticeListExcelDtoList.get(i).getUserNm());
+
+                    cell = row.createCell(2);
+                    cell.setCellValue(noticeListExcelDtoList.get(i).getUserId());
+
+                    cell = row.createCell(3);
+                    cell.setCellValue(noticeListExcelDtoList.get(i).getDate());
+
+                    cell = row.createCell(4);
+                    cell.setCellValue(noticeListExcelDtoList.get(i).getCnt());
+                } else {
+                    cell = row.createCell(0);
+                    cell.setCellValue("");
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(noticeListExcelDtoList.get(i).getUserNm());
+
+                    cell = row.createCell(2);
+                    cell.setCellValue(noticeListExcelDtoList.get(i).getUserId());
+
+                    cell = row.createCell(3);
+                    cell.setCellValue(noticeListExcelDtoList.get(i).getDate());
+
+                    cell = row.createCell(4);
+                    cell.setCellValue(noticeListExcelDtoList.get(i).getCnt());
+                }
+            }
+
+            rowNum = 0;
+            Sheet loginHistory = wb.createSheet("사용자 접속 이력");
+            row = loginHistory.createRow(rowNum++);
+
+            cell=row.createCell(0);
+            cell.setCellValue("사용자 아이디");
+
+            cell=row.createCell(1);
+            cell.setCellValue("사용자 이름");
+
+            cell=row.createCell(2);
+            cell.setCellValue("방문날짜");
+
+            cell=row.createCell(3);
+            cell.setCellValue("방문횟수");
+
+            for(int i=0; i<loginExcelDtoList.size(); i++) {
+                row=loginHistory.createRow(rowNum++);
+
+                cell = row.createCell(0);
+                cell.setCellValue(loginExcelDtoList.get(i).getUserId());
+                log.info("getUserId"+loginExcelDtoList.get(i).getUserId());
+
+                cell = row.createCell(1);
+                cell.setCellValue(loginExcelDtoList.get(i).getUserNm());
+                log.info("getUserNm "+loginExcelDtoList.get(i).getUserNm());
+
+                cell = row.createCell(2);
+                cell.setCellValue(loginExcelDtoList.get(i).getDate());
+                log.info("getDate"+loginExcelDtoList.get(i).getDate());
+
+                cell = row.createCell(3);
+                cell.setCellValue(loginExcelDtoList.get(i).getCnt());
+                log.info("getCnt"+loginExcelDtoList.get(i).getCnt());
+
+            }
+
+            rowNum = 0;
+            Sheet keywordHistory = wb.createSheet("기간별 검색 키워드 현황");
+            row = keywordHistory.createRow(rowNum++);
+
+            cell=row.createCell(0);
+            cell.setCellValue("사용자 이름");
+
+            cell=row.createCell(1);
+            cell.setCellValue("사용자 아이디");
+
+            cell=row.createCell(2);
+            cell.setCellValue("검색 횟수");
+
+            cell=row.createCell(3);
+            cell.setCellValue("키워드 결과 갯수");
+
+            for(int i=0; i<dateSearchInfoResultExcelList.size(); i++){
+                row = keywordHistory.createRow(rowNum++);
+
+                cell = row.createCell(0);
+                cell.setCellValue(dateSearchInfoResultExcelList.get(i).getUserNm());
+
+                cell = row.createCell(1);
+                cell.setCellValue(dateSearchInfoResultExcelList.get(i).getUserId());
+
+                cell = row.createCell(2);
+                cell.setCellValue(dateSearchInfoResultExcelList.get(i).getKeywordCnt());
+
+                cell = row.createCell(3);
+                cell.setCellValue(dateSearchInfoResultExcelList.get(i).getResultCnt());
+
+            }
+
+            rowNum = 0;
+            Sheet monitoringCnt = wb.createSheet("기간별 모니터링 현황");
+            row = monitoringCnt.createRow(rowNum++);
+
+            cell=row.createCell(0);
+            cell.setCellValue("화면명");
+
+            cell=row.createCell(1);
+            cell.setCellValue("사용자 이름");
+
+            cell=row.createCell(2);
+            cell.setCellValue("사용자 아이디");
+
+            cell=row.createCell(3);
+            cell.setCellValue("요청 갯수");
+
+            cell=row.createCell(4);
+            cell.setCellValue("요청 날짜");
+
+            for(int i=0; i<dateMonitoringExcelList.size(); i++) {
+                row = monitoringCnt.createRow(rowNum++);
+
+                if(dateMonitoringExcelList.get(i).equals(dateMonitoringExcelList.get(0))) {
+                    cell = row.createCell(0);
+                    cell.setCellValue("모니터링한 갯수");
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(dateMonitoringExcelList.get(i).getUserNm());
+                    cell = row.createCell(2);
+                    cell.setCellValue(dateMonitoringExcelList.get(i).getUserId());
+                    cell = row.createCell(3);
+                    cell.setCellValue(dateMonitoringExcelList.get(i).getMonitoringCnt());
+                    cell = row.createCell(4);
+                    cell.setCellValue(dateMonitoringExcelList.get(i).getMonitoringDate());
+                } else {
+                    cell = row.createCell(0);
+                    cell.setCellValue("");
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(dateMonitoringExcelList.get(i).getUserNm());
+                    cell = row.createCell(2);
+                    cell.setCellValue(dateMonitoringExcelList.get(i).getUserId());
+                    cell = row.createCell(3);
+                    cell.setCellValue(dateMonitoringExcelList.get(i).getMonitoringCnt());
+                    cell = row.createCell(4);
+                    cell.setCellValue(dateMonitoringExcelList.get(i).getMonitoringDate());
+                }
+            }
+
+            for(int i=0; i<dateMonitoringReqExcelList.size(); i++) {
+                row = monitoringCnt.createRow(rowNum++);
+                if(dateMonitoringReqExcelList.get(i).equals(dateMonitoringReqExcelList.get(0))){
+                    cell = row.createCell(0);
+                    cell.setCellValue("삭제 요청한 갯수");
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(dateMonitoringReqExcelList.get(i).getUserNm());
+                    cell = row.createCell(2);
+                    cell.setCellValue(dateMonitoringReqExcelList.get(i).getUserId());
+                    cell = row.createCell(3);
+                    cell.setCellValue(dateMonitoringReqExcelList.get(i).getDeleteRequestCnt());
+                    cell = row.createCell(4);
+                    cell.setCellValue(dateMonitoringReqExcelList.get(i).getDeleteRequestDate());
+                } else {
+                    cell = row.createCell(0);
+                    cell.setCellValue("");
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(dateMonitoringReqExcelList.get(i).getUserNm());
+                    cell = row.createCell(2);
+                    cell.setCellValue(dateMonitoringReqExcelList.get(i).getUserId());
+                    cell = row.createCell(3);
+                    cell.setCellValue(dateMonitoringReqExcelList.get(i).getDeleteRequestCnt());
+                    cell = row.createCell(4);
+                    cell.setCellValue(dateMonitoringReqExcelList.get(i).getDeleteRequestDate());
+                }
+            }
+
+            for(int i=0; i<dateMonitoringComptExcelList.size(); i++){
+                row = monitoringCnt.createRow(rowNum++);
+                if(dateMonitoringComptExcelList.get(i).equals(dateMonitoringComptExcelList.get(0))) {
+                    cell = row.createCell(0);
+                    cell.setCellValue("삭제 완료된 갯수");
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(dateMonitoringComptExcelList.get(i).getUserNm());
+                    cell = row.createCell(2);
+                    cell.setCellValue(dateMonitoringComptExcelList.get(i).getUserId());
+                    cell = row.createCell(3);
+                    cell.setCellValue(dateMonitoringComptExcelList.get(i).getDeleteComptCnt());
+                    cell = row.createCell(4);
+                    cell.setCellValue(dateMonitoringComptExcelList.get(i).getDeleteComptDate());
+                } else {
+                    cell = row.createCell(0);
+                    cell.setCellValue("");
+
+                    cell = row.createCell(1);
+                    cell.setCellValue(dateMonitoringComptExcelList.get(i).getUserNm());
+                    cell = row.createCell(2);
+                    cell.setCellValue(dateMonitoringComptExcelList.get(i).getUserId());
+                    cell = row.createCell(3);
+                    cell.setCellValue(dateMonitoringComptExcelList.get(i).getDeleteComptCnt());
+                    cell = row.createCell(4);
+                    cell.setCellValue(dateMonitoringComptExcelList.get(i).getDeleteComptDate());
+                }
+            }
+
+            rowNum = 0;
+            Sheet allTimeMonitoringCnt = wb.createSheet("기간별 24시 모니터링 현황");
+            row = allTimeMonitoringCnt.createRow(rowNum++);
+
+            cell = row.createCell(0);
+            cell.setCellValue("사용자 이름");
+
+            cell = row.createCell(1);
+            cell.setCellValue("사용자 아이디");
+
+            cell = row.createCell(2);
+            cell.setCellValue("24시 모니터링한 갯수");
+
+            cell = row.createCell(3);
+            cell.setCellValue("24시 모니터링한 갯수");
+
+            cell = row.createCell(4);
+            cell.setCellValue("24시 모니터링한 날짜");
+
+            for(int i=0; i<dateAlltimeMonitoringExcelList.size(); i++) {
+                row = allTimeMonitoringCnt.createRow(rowNum++);
+                cell = row.createCell(0);
+                cell.setCellValue(dateAlltimeMonitoringExcelList.get(i).getUserName());
+
+                cell = row.createCell(1);
+                cell.setCellValue(dateAlltimeMonitoringExcelList.get(i).getUserId());
+
+                cell = row.createCell(2);
+                cell.setCellValue(dateAlltimeMonitoringExcelList.get(i).getMonitoringCnt());
+
+                cell = row.createCell(3);
+                cell.setCellValue(dateAlltimeMonitoringExcelList.get(i).getMonitoringResultCnt());
+
+                cell = row.createCell(4);
+                cell.setCellValue(dateAlltimeMonitoringExcelList.get(i).getMonitoringDate());
+
+            }
+
+            String fileName = "사용자 현황";
+            fileName = URLEncoder.encode(fileName,"UTF-8").replaceAll("\\+", "%20");
+
+            response.setContentType("ms-vnd/excel");
+            response.setHeader("Content-Disposition", "attachment;filename="+fileName+".xlsx");
+
+            ServletOutputStream out = response.getOutputStream();
+            wb.write(out);
+            out.flush();
+
+    }
+
+    public void connectExcel(HttpServletResponse response
+            , List<SearchInfoExcelDto> searchInfoExcelDtoList
+            , List<TraceHistExcelDto> traceHistExcelDtoList
+            , List<SearchResultExcelDto> searchResultExcelDtoList
+            , List<NoticeListExcelDto> noticeListExcelDtoList
+            , List<LoginExcelDto> loginExcelDtoList
+            , List<SearchInfoExcelDto> userKeywordCntExcelList
+            , List<MonitoringHistExcelDto> userMonitoringExcelList
+            , List<DeleteReqHistExcelDto> userDeleteReqExcelList
+            , List<DeleteComptHistExcelDto> userDeleteComptExcelList
+            , List<AllTimeCntExcelDto> userAllTimeCntExcelList) throws IOException {
+
+        log.info("connectExcel 진입");
 
         Workbook wb = new XSSFWorkbook();
 
-        Sheet infoSheet = wb.createSheet("이력관리");
+        Sheet infoSheet = wb.createSheet("화면별 접속기록");
 
         Row row;
         Cell cell;
@@ -229,122 +649,148 @@ public class UserService {
 
         row = infoSheet.createRow(rowNum++);
         cell=row.createCell(0);
-        cell.setCellValue("사용자 이름");
+        cell.setCellValue("화면명");
 
         cell=row.createCell(1);
-        cell.setCellValue("사용자 아이디");
+        cell.setCellValue("사용자 이름");
 
         cell=row.createCell(2);
-        cell.setCellValue("방문 날짜");
+        cell.setCellValue("사용자 아이디");
 
         cell=row.createCell(3);
+        cell.setCellValue("방문 날짜");
+
+        cell=row.createCell(4);
         cell.setCellValue("방문 횟수");
 
         for(int i=0; i<searchInfoExcelDtoList.size(); i++) {
             row = infoSheet.createRow(rowNum++);
-            cell = row.createCell(0);
-            cell.setCellValue(searchInfoExcelDtoList.get(i).getUserNm());
 
-            cell = row.createCell(1);
-            cell.setCellValue(searchInfoExcelDtoList.get(i).getUserId());
+            if(searchInfoExcelDtoList.get(i).equals(searchInfoExcelDtoList.get(0))) {
+                cell = row.createCell(0);
+                cell.setCellValue("이력관리");
 
-            cell = row.createCell(2);
-            cell.setCellValue(searchInfoExcelDtoList.get(i).getDate());
+                cell = row.createCell(1);
+                cell.setCellValue(searchInfoExcelDtoList.get(i).getUserNm());
 
-            cell = row.createCell(3);
-            cell.setCellValue(searchInfoExcelDtoList.get(i).getCnt());
+                cell = row.createCell(2);
+                cell.setCellValue(searchInfoExcelDtoList.get(i).getUserId());
+
+                cell = row.createCell(3);
+                cell.setCellValue(searchInfoExcelDtoList.get(i).getDate());
+
+                cell = row.createCell(4);
+                cell.setCellValue(searchInfoExcelDtoList.get(i).getCnt());
+            } else {
+                cell = row.createCell(0);
+                cell.setCellValue("");
+
+                cell = row.createCell(1);
+                cell.setCellValue(searchInfoExcelDtoList.get(i).getUserNm());
+
+                cell = row.createCell(2);
+                cell.setCellValue(searchInfoExcelDtoList.get(i).getUserId());
+
+                cell = row.createCell(3);
+                cell.setCellValue(searchInfoExcelDtoList.get(i).getDate());
+
+                cell = row.createCell(4);
+                cell.setCellValue(searchInfoExcelDtoList.get(i).getCnt());
+            }
+
         }
-
-        rowNum = 0;
-        Sheet traceSheet = wb.createSheet("모니터링");
-        row = traceSheet.createRow(rowNum++);
-
-        cell =row.createCell(0);
-        cell.setCellValue("사용자 이름");
-
-        cell=row.createCell(1);
-        cell.setCellValue("사용자 아이디");
-
-        cell=row.createCell(2);
-        cell.setCellValue("방문 날짜");
-
-        cell=row.createCell(3);
-        cell.setCellValue("방문 횟수");
 
         for(int i=0; i<traceHistExcelDtoList.size(); i++) {
-            row=traceSheet.createRow(rowNum++);
-            cell = row.createCell(0);
-            cell.setCellValue(traceHistExcelDtoList.get(i).getUserNm());
+            row=infoSheet.createRow(rowNum++);
 
-            cell = row.createCell(1);
-            cell.setCellValue(traceHistExcelDtoList.get(i).getUserId());
+            if(traceHistExcelDtoList.get(i).equals(traceHistExcelDtoList.get(0))) {
+                cell = row.createCell(0);
+                cell.setCellValue("모니터링");
 
-            cell = row.createCell(2);
-            cell.setCellValue(traceHistExcelDtoList.get(i).getDate());
+                cell = row.createCell(1);
+                cell.setCellValue(traceHistExcelDtoList.get(i).getUserNm());
 
-            cell = row.createCell(3);
-            cell.setCellValue(traceHistExcelDtoList.get(i).getCnt());
+                cell = row.createCell(2);
+                cell.setCellValue(traceHistExcelDtoList.get(i).getUserId());
+
+                cell = row.createCell(3);
+                cell.setCellValue(traceHistExcelDtoList.get(i).getDate());
+
+                cell = row.createCell(4);
+                cell.setCellValue(traceHistExcelDtoList.get(i).getCnt());
+            } else {
+                cell = row.createCell(0);
+                cell.setCellValue("");
+
+                cell = row.createCell(1);
+                cell.setCellValue(traceHistExcelDtoList.get(i).getUserNm());
+
+                cell = row.createCell(2);
+                cell.setCellValue(traceHistExcelDtoList.get(i).getUserId());
+
+                cell = row.createCell(3);
+                cell.setCellValue(traceHistExcelDtoList.get(i).getDate());
+
+                cell = row.createCell(4);
+                cell.setCellValue(traceHistExcelDtoList.get(i).getCnt());
+
+            }
+
         }
-
-        rowNum = 0;
-        Sheet resultSheet = wb.createSheet("검색결과");
-        row = resultSheet.createRow(rowNum++);
-
-        cell =row.createCell(0);
-        cell.setCellValue("사용자 이름");
-
-        cell=row.createCell(1);
-        cell.setCellValue("사용자 아이디");
-
-        cell=row.createCell(2);
-        cell.setCellValue("방문 날짜");
-
-        cell=row.createCell(3);
-        cell.setCellValue("방문 횟수");
 
         for(int i=0; i<searchResultExcelDtoList.size(); i++) {
-            row=resultSheet.createRow(rowNum++);
-            cell = row.createCell(0);
-            cell.setCellValue(searchResultExcelDtoList.get(i).getUserNm());
+            row = infoSheet.createRow(rowNum++);
 
-            cell = row.createCell(1);
-            cell.setCellValue(searchResultExcelDtoList.get(i).getUserId());
+            if(searchResultExcelDtoList.get(i).equals(searchResultExcelDtoList.get(0))) {
+                cell=row.createCell(0);
+                cell.setCellValue("검색결과");
 
-            cell = row.createCell(2);
-            cell.setCellValue(searchResultExcelDtoList.get(i).getDate());
+                cell = row.createCell(1);
+                cell.setCellValue(searchResultExcelDtoList.get(i).getUserNm());
 
-            cell = row.createCell(3);
-            cell.setCellValue(searchResultExcelDtoList.get(i).getCnt());
+                cell = row.createCell(2);
+                cell.setCellValue(searchResultExcelDtoList.get(i).getUserId());
+
+                cell = row.createCell(3);
+                cell.setCellValue(searchResultExcelDtoList.get(i).getDate());
+
+                cell = row.createCell(4);
+                cell.setCellValue(searchResultExcelDtoList.get(i).getCnt());
+            } else {
+                cell=row.createCell(0);
+                cell.setCellValue("");
+
+                cell = row.createCell(1);
+                cell.setCellValue(searchResultExcelDtoList.get(i).getUserNm());
+
+                cell = row.createCell(2);
+                cell.setCellValue(searchResultExcelDtoList.get(i).getUserId());
+
+                cell = row.createCell(3);
+                cell.setCellValue(searchResultExcelDtoList.get(i).getDate());
+
+                cell = row.createCell(4);
+                cell.setCellValue(searchResultExcelDtoList.get(i).getCnt());
+            }
         }
 
-        rowNum = 0;
-        Sheet noticeSheet = wb.createSheet("재확산 자동추적");
-        row = noticeSheet.createRow(rowNum++);
-
-        cell =row.createCell(0);
-        cell.setCellValue("사용자 이름");
-
-        cell=row.createCell(1);
-        cell.setCellValue("사용자 아이디");
-
-        cell=row.createCell(2);
-        cell.setCellValue("방문 날짜");
-
-        cell=row.createCell(3);
-        cell.setCellValue("방문 횟수");
-
         for(int i=0; i<noticeListExcelDtoList.size(); i++) {
-            row = noticeSheet.createRow(rowNum++);
-            cell = row.createCell(0);
-            cell.setCellValue(noticeListExcelDtoList.get(i).getUserNm());
+            row = infoSheet.createRow(rowNum++);
+
+            cell=row.createCell(0);
+            cell.setCellValue("재확산 자동추적");
 
             cell = row.createCell(1);
-            cell.setCellValue(noticeListExcelDtoList.get(i).getUserId());
+            cell.setCellValue(noticeListExcelDtoList.get(i).getUserNm());
+            log.info("noticeListExcelDtoList: "+noticeListExcelDtoList.get(i).getUserId());
 
             cell = row.createCell(2);
-            cell.setCellValue(noticeListExcelDtoList.get(i).getDate());
+            cell.setCellValue(noticeListExcelDtoList.get(i).getUserId());
 
             cell = row.createCell(3);
+            cell.setCellValue(noticeListExcelDtoList.get(i).getDate());
+
+            cell = row.createCell(4);
             cell.setCellValue(noticeListExcelDtoList.get(i).getCnt());
         }
 
@@ -381,15 +827,189 @@ public class UserService {
             cell = row.createCell(3);
             cell.setCellValue(loginExcelDtoList.get(i).getCnt());
             log.info("getCnt"+loginExcelDtoList.get(i).getCnt());
+        }
+
+        rowNum = 0;
+        Sheet userSearchCntList = wb.createSheet("사용자별 검색 키워드 현황");
+        row = userSearchCntList.createRow(rowNum++);
+
+        cell=row.createCell(0);
+        cell.setCellValue("사용자 이름");
+
+        cell=row.createCell(1);
+        cell.setCellValue("사용자 아이디");
+
+        cell=row.createCell(2);
+        cell.setCellValue("키워드 검색 횟수");
+
+        cell=row.createCell(3);
+        cell.setCellValue("검색 갯수 총결과");
+        cell=row.createCell(4);
+        cell.setCellValue("검색 날짜");
+
+        for(int i=0; i<userKeywordCntExcelList.size(); i++) {
+            row = userSearchCntList.createRow(rowNum++);
+            cell = row.createCell(0);
+            cell.setCellValue(userKeywordCntExcelList.get(i).getUserNm());
+
+            cell = row.createCell(1);
+            cell.setCellValue(userKeywordCntExcelList.get(i).getUserId());
+
+            cell = row.createCell(2);
+            cell.setCellValue(userKeywordCntExcelList.get(i).getKeywordCnt());
+
+            cell = row.createCell(3);
+            cell.setCellValue(userKeywordCntExcelList.get(i).getCnt());
+
+            cell = row.createCell(4);
+            cell.setCellValue(userKeywordCntExcelList.get(i).getDate());
 
         }
 
-        String fileName = "사용자 현황";
+        rowNum = 0;
+        Sheet userMonitoringCntList = wb.createSheet("사용자별 모니터링 현황");
+        row = userMonitoringCntList.createRow(rowNum++);
+
+        cell=row.createCell(0);
+        cell.setCellValue("화면명");
+
+        cell=row.createCell(1);
+        cell.setCellValue("사용자 이름");
+
+        cell=row.createCell(2);
+        cell.setCellValue("사용자 아이디");
+
+        cell=row.createCell(3);
+        cell.setCellValue("작업 횟수");
+
+        cell=row.createCell(4);
+        cell.setCellValue("작업 날짜");
+
+        for(int i=0; i<userMonitoringExcelList.size(); i++) {
+            row = userMonitoringCntList.createRow(rowNum++);
+            if(userMonitoringExcelList.get(i).equals(userMonitoringExcelList.get(0))) {
+                cell = row.createCell(0);
+                cell.setCellValue("모니터링 한 갯수");
+
+                cell = row.createCell(1);
+                cell.setCellValue(userMonitoringExcelList.get(i).getUserNm());
+
+                cell = row.createCell(2);
+                cell.setCellValue(userMonitoringExcelList.get(i).getUserId());
+
+                cell = row.createCell(3);
+                cell.setCellValue(userMonitoringExcelList.get(i).getMonitoringCnt());
+
+                cell = row.createCell(4);
+                cell.setCellValue(userMonitoringExcelList.get(i).getMonitoringDate());
+
+            } else {
+                cell = row.createCell(0);
+                cell.setCellValue("");
+
+                cell = row.createCell(1);
+                cell.setCellValue(userMonitoringExcelList.get(i).getUserNm());
+
+                cell = row.createCell(2);
+                cell.setCellValue(userMonitoringExcelList.get(i).getUserId());
+
+                cell = row.createCell(3);
+                cell.setCellValue(userMonitoringExcelList.get(i).getMonitoringCnt());
+
+                cell = row.createCell(4);
+                cell.setCellValue(userMonitoringExcelList.get(i).getMonitoringDate());
+
+            }
+        }
+
+        for(int i=0; i<userDeleteReqExcelList.size(); i++) {
+            if(userDeleteReqExcelList.get(i).equals(userDeleteReqExcelList.get(0))) {
+                cell = row.createCell(0);
+                cell.setCellValue("삭제요청 한 갯수");
+
+                cell = row.createCell(1);
+                cell.setCellValue(userDeleteReqExcelList.get(i).getUserNm());
+                cell = row.createCell(2);
+                cell.setCellValue(userDeleteReqExcelList.get(i).getUserId());
+                cell = row.createCell(3);
+                cell.setCellValue(userDeleteReqExcelList.get(i).getDeleteRequestCnt());
+                cell = row.createCell(4);
+                cell.setCellValue(userDeleteReqExcelList.get(i).getDeleteRequestDate());
+            } else {
+                cell = row.createCell(0);
+                cell.setCellValue("");
+
+                cell = row.createCell(1);
+                cell.setCellValue(userDeleteReqExcelList.get(i).getUserNm());
+                cell = row.createCell(2);
+                cell.setCellValue(userDeleteReqExcelList.get(i).getUserId());
+                cell = row.createCell(3);
+                cell.setCellValue(userDeleteReqExcelList.get(i).getDeleteRequestCnt());
+                cell = row.createCell(4);
+                cell.setCellValue(userDeleteReqExcelList.get(i).getDeleteRequestDate());
+            }
+        }
+
+        for(int i=0; i<userDeleteComptExcelList.size(); i++) {
+            if(userDeleteComptExcelList.get(i).equals(userDeleteComptExcelList.get(0))){
+                cell = row.createCell(0);
+                cell.setCellValue("삭제 완료된 갯수");
+                cell = row.createCell(1);
+                cell.setCellValue(userDeleteComptExcelList.get(i).getUserNm());
+                cell = row.createCell(2);
+                cell.setCellValue(userDeleteComptExcelList.get(i).getUserId());
+                cell = row.createCell(3);
+                cell.setCellValue(userDeleteComptExcelList.get(i).getDeleteComptCnt());
+                cell = row.createCell(4);
+                cell.setCellValue(userDeleteComptExcelList.get(i).getDeleteComptDate());
+            } else {
+                cell = row.createCell(0);
+                cell.setCellValue("");
+                cell = row.createCell(1);
+                cell.setCellValue(userDeleteComptExcelList.get(i).getUserNm());
+                cell = row.createCell(2);
+                cell.setCellValue(userDeleteComptExcelList.get(i).getUserId());
+                cell = row.createCell(3);
+                cell.setCellValue(userDeleteComptExcelList.get(i).getDeleteComptCnt());
+                cell = row.createCell(4);
+                cell.setCellValue(userDeleteComptExcelList.get(i).getDeleteComptDate());
+            }
+        }
+
+        rowNum = 0;
+        Sheet userAlltimeMonitoring = wb.createSheet("사용자별 24시 모니터링 현황");
+        row = userAlltimeMonitoring.createRow(rowNum++);
+
+        cell=row.createCell(0);
+        cell.setCellValue("사용자 이름");
+        cell=row.createCell(1);
+        cell.setCellValue("사용자 아이디");
+        cell=row.createCell(2);
+        cell.setCellValue("24시 모니터링한 갯수");
+        cell=row.createCell(3);
+        cell.setCellValue("24시 모니터링 결과 갯수");
+        cell=row.createCell(4);
+        cell.setCellValue("검색 날짜");
+
+        for (AllTimeCntExcelDto allTimeCntExcelDto : userAllTimeCntExcelList) {
+            row = userAlltimeMonitoring.createRow(rowNum++);
+            cell = row.createCell(0);
+            cell.setCellValue(allTimeCntExcelDto.getUserName());
+            cell = row.createCell(1);
+            cell.setCellValue(allTimeCntExcelDto.getUserId());
+            cell = row.createCell(2);
+            cell.setCellValue(allTimeCntExcelDto.getMonitoringCnt());
+            cell = row.createCell(3);
+            cell.setCellValue(allTimeCntExcelDto.getMonitoringResultCnt());
+            cell = row.createCell(4);
+            cell.setCellValue(allTimeCntExcelDto.getMonitoringDate());
+        }
+
+        String fileName = "사용자별 현황";
         fileName = URLEncoder.encode(fileName,"UTF-8").replaceAll("\\+", "%20");
 
         response.setContentType("ms-vnd/excel");
         response.setHeader("Content-Disposition", "attachment;filename="+fileName+".xlsx");
-
 
         ServletOutputStream out = response.getOutputStream();
         wb.write(out);

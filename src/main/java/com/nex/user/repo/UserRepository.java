@@ -1,8 +1,7 @@
 package com.nex.user.repo;
 
-import com.nex.user.entity.LoginExcelDto;
-import com.nex.user.entity.LoginHistDto;
-import com.nex.user.entity.LoginHistEntity;
+import com.nex.Chart.dto.LoginExcelDto;
+import com.nex.Chart.dto.LoginHistDto;
 import com.nex.user.entity.UserEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -19,20 +18,20 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     String countByEmail = "SELECT COUNT(*) FROM TB_USER WHERE EMAIL_ID = :emailId AND EMAIL_DOMAIN = :emailDomain";
     String countByPhoneNum = "SELECT COUNT(*) FROM TB_USER WHERE PHONE_NUM_1 = :phoneNum1 AND PHONE_NUM_2 = :phoneNum2 AND PHONE_NUM_3 = :phoneNum3";
     String findAllByEntire = "SELECT * FROM TB_USER WHERE USER_CLF_CD != :userClfCd AND USE_YN = :useYn AND (USER_ID LIKE CONCAT('%',:keyword,'%') OR USER_NM LIKE CONCAT('%',:keyword,'%')) ORDER BY USER_UNO DESC";
-    String userHistCnt="SELECT DATE_FORMAT(clk_dml_dt,'%Y-%m-%d') AS date, COUNT(*) AS cnt " +
-            " FROM tb_login_history " +
-            " WHERE clk_dml_dt BETWEEN DATE_SUB(NOW(), INTERVAL 30 DAY) AND NOW() " +
-            " GROUP BY DATE_FORMAT(clk_dml_dt,'%Y-%m-%d')";
+    String userHistCnt = " SELECT USER_ID AS userId, " +
+                         " COUNT(*) AS  cnt " +
+                         " FROM tb_login_history " +
+                         " WHERE clk_dml_dt LIKE CONCAT(:toDate,'%') " +
+                         " GROUP BY userId ";
 
-    String userHistCnt_2 = "SELECT DATE_FORMAT(clk_dml_dt,'%Y%m%d') AS DATE, " +
-                          "COUNT(*) AS cnt " +
-                          "FROM tb_login_history " +
-                          "WHERE clk_dml_dt BETWEEN :fromDate AND :toDate2"+
-                          " GROUP BY DATE_FORMAT(clk_dml_dt,'%Y%m%d') " +
-                          " ORDER BY DATE ";
+    String userHistCnt_2 = " SELECT DATE_FORMAT(clk_dml_dt,'%Y%m%d') AS DATE, " +
+                           " COUNT(*) AS cnt " +
+                           " FROM tb_login_history " +
+                           " WHERE clk_dml_dt BETWEEN :fromDate AND :toDate2"+
+                           " GROUP BY DATE_FORMAT(clk_dml_dt,'%Y%m%d') " +
+                           " ORDER BY DATE ";
 
-    String userHistExcel =  " SELECT " +
-                            " TLH.USER_ID AS userId, " +
+    String userHistExcel =  " SELECT TLH.USER_ID AS userId, " +
                             " user.user_nm AS userNm, " +
                             " DATE_FORMAT(TLH.CLK_DML_DT,'%Y%m%d') AS date, " +
                             " COUNT(*) AS cnt " +
@@ -43,15 +42,18 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
                             " GROUP BY DATE_FORMAT(TLH.CLK_DML_DT,'%Y%m%d'), TLH.USER_ID, user.user_nm " +
                             " ORDER BY DATE ";
 
-    int countByUserId(String userId);    // 중복 아이디 체크
+    int countByUserId(String userId);
     @Query(value = countByEmail, nativeQuery = true)
-    int countByEmail(@Param("emailId") String emailId, @Param("emailDomain") String emailDomain);    // 중복 이메일 체크
+    int countByEmail(@Param("emailId") String emailId, @Param("emailDomain") String emailDomain);
     @Query(value = countByPhoneNum, nativeQuery = true)
-    int countByPhoneNum(@Param("phoneNum1") String phoneNum1, @Param("phoneNum2") String phoneNum2, @Param("phoneNum3") String phoneNum3);    // 중복 핸드폰 번호 체크
+    int countByPhoneNum(@Param("phoneNum1") String phoneNum1, @Param("phoneNum2") String phoneNum2, @Param("phoneNum3") String phoneNum3);
     UserEntity findByUserId(String userId);
     UserEntity findByUserUno(Long userUno);
     @Query(value = userHistCnt_2, nativeQuery = true)
     List<LoginHistDto> userHistCntList(@Param("fromDate") String fromDate, @Param("toDate2") String toDate);
+
+    @Query(value = userHistCnt, nativeQuery = true)
+    List<LoginHistDto> userHistList(@Param("toDate") String toDate);
 
     @Query(value = userHistExcel, nativeQuery = true)
     List<LoginExcelDto> userHistExcel(String fromDate, String toDate2);
@@ -66,7 +68,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Transactional
     @Modifying
     @Query(value = "UPDATE tb_user SET CRAWLING_LIMIT = :getCrawling_limit, PERCENT_LIMIT = :getPercent_limit WHERE USER_UNO = :tsrUno", nativeQuery = true)
-    int ajax_con_limit_update(Long tsrUno, String getCrawling_limit, int getPercent_limit);    // 자동추적 키워드 목록
+    int ajax_con_limit_update(Long tsrUno, String getCrawling_limit, int getPercent_limit);
 
 
 }

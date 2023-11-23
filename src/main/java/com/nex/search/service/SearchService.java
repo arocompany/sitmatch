@@ -2,14 +2,12 @@ package com.nex.search.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nex.Chart.entity.*;
+import com.nex.Chart.repo.*;
 import com.nex.common.Consts;
 import com.nex.search.entity.*;
 import com.nex.search.repo.*;
 import com.nex.user.entity.*;
-import com.nex.user.repo.NoticeHistRepository;
-import com.nex.user.repo.SearchInfoHistRepository;
-import com.nex.user.repo.SearchResultHistRepository;
-import com.nex.user.repo.TraceHistRepository;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -65,11 +63,16 @@ public class SearchService {
     private final VideoInfoRepository videoInfoRepository;
     private final SearchJobRepository searchJobRepository;
     private final MatchResultRepository matchResultRepository;
+    private final MonitoringHistRepository monitoringHistRepository;
+    private final DeleteReqHistRepository deleteReqHistRepository;
+    private final DeleteComptHistRepository deleteComptHistRepository;
+    private final AlltimeMonitoringHistRepository alltimeMonitoringHistRepository;
 
     private final SearchInfoHistRepository searchInfoHistRepository;
     private final TraceHistRepository traceHistRepository;
     private final SearchResultHistRepository searchResultHistRepository;
     private final NoticeHistRepository noticeHistRepository;
+
     private final NewKeywordRepository newKeywordRepository;
 
     @Autowired
@@ -107,7 +110,6 @@ public class SearchService {
     private String serverIp2;
     private Boolean loop = true;
     private final RestTemplate restTemplate;
-
 
     /**
      * 검색
@@ -3043,7 +3045,7 @@ public class SearchService {
         return searchInfoRepository.getSearchInfoTsiType(tsiUno);
     }
 
-    public void addTrkStat(Integer tsrUno) {
+    public void addTrkStat(int userUno,String userId, Integer tsrUno) {
 //        SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
 //        searchResultEntity.setTrkStatCd(StringUtils.hasText(searchResultEntity.getTrkStatCd()) ? Consts.TRK_STAT_CD_NULL : Consts.TRK_STAT_CD_MONITORING);
 //        searchResultRepository.save(searchResultEntity);
@@ -3052,6 +3054,12 @@ public class SearchService {
         if ("10".equals(trkStatCd)) {
             searchResultRepository.subTrkStat(tsrUno);
         } else {
+            MonitoringHistEntity mtr = new MonitoringHistEntity();
+            mtr.setTmhTsrUno(tsrUno);
+            mtr.setUserId(userId);
+            mtr.setClkDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+            mtr.setUserUno(userUno);
+            monitoringHistRepository.save(mtr);
             searchResultRepository.addTrkStat(tsrUno);
         }
     }
@@ -3073,10 +3081,6 @@ public class SearchService {
             sre.get(i).setTrkStatCd(null);
             sre.get(i).setDataStatCd("20");
             searchResultRepository.save(sre.get(i));
-
-
-            // log.info("matchResultRepository.findById((long) sre.get(i).getTsrUno(): "+matchResultRepository.findById((long) sre.get(i).getTsrUno()));
-
         }
 
     }
@@ -3100,16 +3104,58 @@ public class SearchService {
         searchResultRepository.save(searchResultEntity);
     }
 
-    public void setTrkStatCd(Integer tsrUno, String trkStatCd) {
-        SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
-        searchResultEntity.setTrkStatCd(trkStatCd);
-        searchResultRepository.save(searchResultEntity);
+    public void setTrkStatCd(int userUno,String userId, Integer tsrUno, String trkStatCd) {
+        if(trkStatCd.equals("20")) { // 삭제요청
+            SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
+            searchResultEntity.setTrkStatCd(trkStatCd);
+
+            DeleteReqHistEntity deleteReqHistEntity = new DeleteReqHistEntity();
+            deleteReqHistEntity.setClkDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+            deleteReqHistEntity.setUserId(userId);
+            deleteReqHistEntity.setTdrTsrUno(tsrUno);
+            deleteReqHistEntity.setUserUno(userUno);
+
+            searchResultRepository.save(searchResultEntity);
+            deleteReqHistRepository.save(deleteReqHistEntity);
+        } else if(trkStatCd.equals("30")) { // 삭제완료
+            SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
+            searchResultEntity.setTrkStatCd(trkStatCd);
+
+            DeleteComptHistEntity deleteComptHistEntity = new DeleteComptHistEntity();
+            deleteComptHistEntity.setClkDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+            deleteComptHistEntity.setTdcTsrUno(tsrUno);
+            deleteComptHistEntity.setUserUno(userUno);
+            deleteComptHistEntity.setUserId(userId);
+
+            searchResultRepository.save(searchResultEntity);
+            deleteComptHistRepository.save(deleteComptHistEntity);
+        } else {
+            SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
+            searchResultEntity.setTrkStatCd(trkStatCd);
+            searchResultRepository.save(searchResultEntity);
+        }
+
+
     }
 
-    public void setMonitoringCd(Integer tsrUno) {
+    public void setMonitoringCd(int userUno,String userId, Integer tsrUno) {
         SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
-        searchResultEntity.setMonitoringCd(Consts.MONITORING_CD_NONE.equals(searchResultEntity.getMonitoringCd()) ? Consts.MONITORING_CD_ING : Consts.MONITORING_CD_NONE);
-        searchResultRepository.save(searchResultEntity);
+
+        if(searchResultEntity.getMonitoringCd().equals("10")){ // 활성화 될 때
+            searchResultEntity.setMonitoringCd(Consts.MONITORING_CD_NONE.equals(searchResultEntity.getMonitoringCd()) ? Consts.MONITORING_CD_ING : Consts.MONITORING_CD_NONE);
+            searchResultRepository.save(searchResultEntity);
+
+            AlltimeMonitoringHistEntity alltimeMonitoringHistEntity = new AlltimeMonitoringHistEntity();
+            alltimeMonitoringHistEntity.setClkDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+            alltimeMonitoringHistEntity.setTsrUno(tsrUno);
+            alltimeMonitoringHistEntity.setUserUno(userUno);
+            alltimeMonitoringHistEntity.setUserId(userId);
+            alltimeMonitoringHistRepository.save(alltimeMonitoringHistEntity);
+        } else {
+            searchResultEntity.setMonitoringCd(Consts.MONITORING_CD_NONE.equals(searchResultEntity.getMonitoringCd()) ? Consts.MONITORING_CD_ING : Consts.MONITORING_CD_NONE);
+            searchResultRepository.save(searchResultEntity);
+        }
+
     }
 
 //    public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsrUno) {
@@ -3155,7 +3201,6 @@ public class SearchService {
         outMap.put("number", searchInfoListPage.getNumber());
         outMap.put("totalElements", searchInfoListPage.getTotalElements());
         outMap.put("maxPage", Consts.MAX_PAGE);
-
 
         return outMap;
     }
@@ -3407,7 +3452,7 @@ public class SearchService {
 
     }
 
-    public void resultExcelList(HttpServletResponse response, List<resultListExcelDto> resultListExcelDtoList) throws IOException {
+    public void resultExcelList(HttpServletResponse response, List<ResultListExcelDto> resultListExcelDtoList) throws IOException {
         Workbook wb = new XSSFWorkbook();
 
         Sheet sheet = wb.createSheet("검색 결과");
