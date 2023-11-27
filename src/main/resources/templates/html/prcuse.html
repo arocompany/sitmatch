@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lagn="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8" />
@@ -14,6 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.debug.js'></script>
     <script src="html2canvas.hertzen.com/dist/html2canvas.js"></script>
+    <!--    <script src="ttps://html2canvas.hertzen.com/dist/html2canvas.js"></script>-->
 </head>
 <style>
     table {
@@ -246,8 +247,9 @@
                         type="submit">Excel <br> Download</button>
                 <!--
                 <button  class="bor10 btn-off manager-add" style="height: 60px; font-size: 17px; width: 121px; font-weight: bold; color: #e88550;"
-                         type="button" onclick="createPdf();" > PDF <br> Download</button> &lt;!&ndash; id="pdfDown" &ndash;&gt;
+                         type="button" onclick="pdfDown();"> PDF <br> Download</button>
                 -->
+                <!-- createPdf(); -->
             </div>
         </form>
 
@@ -256,6 +258,7 @@
 </article>
 
 <script>
+
     //테이블안에 tr을 for문으로 td의 값을 뽑아서 arraypush
     $(document).ready(function(){
         getGraph();
@@ -265,81 +268,83 @@
         getMonitoring();
         // getBubble();
     });
+    /*
 
-    $("#pdfDown").click(function() {
-        alert('피디에프 버튼 클릭')
-        setTimeout(function(){
-            createPdf();
-        }, 100);
-    });
-
-    var renderedImg = new Array;
-
-    var contWidth=200;
-    var padding = 5;
-
-    function createPdf(){
-        var lists = document.querySelectorAll('div.pdfDiv > div'),
-            deferreds = [],
-            doc = new jsPDF("p", "mm", "a4"),
-            listsLeng = lists.length;
-
-        for (var i = 0; i < listsLeng; i++) { // li 개수만큼 이미지 생성
-            alert('zz')
-            var deferred = $.Deferred();
-            deferreds.push(deferred.promise());
-            generateCanvas(i, doc, deferred, lists[i]);
-        }
-
-        $.when.apply($, deferreds).then(function() {
-            alert('when.apply 진입')
-            var sorted = renderedImg.sort(function(a,b){return a.num < b.num ? -1 : 1}),
-                curHeight = padding,
-                sortedLeng = sorted.length;
-
-            for(var i=0; i<sortedLeng; i++) {
-                var sortedHeight = sorted[i].height;
-                var sortedImage = sorted[i].image;
-
-                alert('sortedHeight '+sortedHeight+' sortedImage '+sortedImage);
-
-                if(curHeight + sortedHeight > 297 - padding*2) {
-                    doc.addPage();
-                    curHeight = padding;
-                    doc.addImage(sortedHeight, 'image/png', padding, curHeight, contWidth, sortedHeight);
-                    curHeight += sortedHeight;
-                } else {
-                    doc.addImage(sortedImage, 'image/png', padding, curHeight, contWidth, sortedHeight);
-                    curHeight += sortedHeight;
-                }
-            }
-
-            doc.save('aa.pdf');
-            alert('when.apply 끝')
-            curHeight = padding;
-            renderedImg = new Array;
-
+        $("#pdfDown").click(function() {
+            alert('피디에프 버튼 클릭')
+            setTimeout(function(){
+                createPdf();
+            }, 100);
         });
 
-    }
+        var renderedImg = new Array;
 
-    function generateCanvas(i, doc, deferred, curList){
-        alert('generateCanvas 진입')
-        var pdfWidth = $(curList).outerWidth() * 0.2645;
-        var pdfHeight = $(curList).outerHeight() * 0.2645;
-        var heightCalc = contWidth * pdfHeight / pdfWidth;
+        var contWidth=200;
+        var padding = 5;
 
-        html2canvas(curList).then(
-            function(canvas) {
-                alert('canvas 진입')
-                var img = canvas.toDataURL('image/png', 1.0);
-                renderedImg.push({num:i, image:img, height:heightCalc});
-                deferred.resolve();
+        function createPdf(){
+            var lists = document.querySelectorAll('div.pdfDiv > div'),
+                deferreds = [],
+                doc = new jsPDF("p", "mm", "a4"),
+                listsLeng = lists.length;
+
+            for (var i = 0; i < listsLeng; i++) { // li 개수만큼 이미지 생성
+                alert('zz')
+                var deferred = $.Deferred();
+                deferreds.push(deferred.promise());
+                generateCanvas(i, doc, deferred, lists[i]);
             }
-        )
 
-        alert('generateCanvas 끝')
-    }
+            $.when.apply($, deferreds).then(function() {
+                alert('when.apply 진입')
+                var sorted = renderedImg.sort(function(a,b){return a.num < b.num ? -1 : 1}),
+                    curHeight = padding,
+                    sortedLeng = sorted.length;
+
+                for(var i=0; i<sortedLeng; i++) {
+                    var sortedHeight = sorted[i].height;
+                    var sortedImage = sorted[i].image;
+
+                    alert('sortedHeight '+sortedHeight+' sortedImage '+sortedImage);
+
+                    if(curHeight + sortedHeight > 297 - padding*2) {
+                        doc.addPage();
+                        curHeight = padding;
+                        doc.addImage(sortedHeight, 'image/png', padding, curHeight, contWidth, sortedHeight);
+                        curHeight += sortedHeight;
+                    } else {
+                        doc.addImage(sortedImage, 'image/png', padding, curHeight, contWidth, sortedHeight);
+                        curHeight += sortedHeight;
+                    }
+                }
+
+                doc.save('aa.pdf');
+                alert('when.apply 끝')
+                curHeight = padding;
+                renderedImg = new Array;
+
+            });
+
+        }
+
+        function generateCanvas(i, doc, deferred, curList){
+            alert('generateCanvas 진입')
+            var pdfWidth = $(curList).outerWidth() * 0.2645;
+            var pdfHeight = $(curList).outerHeight() * 0.2645;
+            var heightCalc = contWidth * pdfHeight / pdfWidth;
+
+            html2canvas(curList).then(
+                function(canvas) {
+                    alert('canvas 진입')
+                    var img = canvas.toDataURL('image/png', 1.0);
+                    renderedImg.push({num:i, image:img, height:heightCalc});
+                    deferred.resolve();
+                }
+            )
+
+            alert('generateCanvas 끝')
+        }
+    */
 
     function getGraph() {
         $('#myChart2').remove();
@@ -444,7 +449,6 @@
                     }
                 });
             }, error:function(){
-                alert("실패")
             }
         })
     }
@@ -826,12 +830,7 @@
                     totalDateList.push(result[i]);
                 }
 
-                for(var i=0; i<resultDateCntList.length; i++) {
-                    if(totalDateList[i] > resultDateCntList[i] ){
-                        resultDateCntList.unshift(totalDateList[i]);
-                        keywordCntList.unshift(0);
-                        resultCntList.unshift(0)
-                    }
+                for(var i=0; i<totalDateList.length; i++) {
 
                     if(totalDateList[i] !== resultDateCntList[i] && totalDateList[i] < resultDateCntList[i] ){
                         resultDateCntList.splice(i,0, totalDateList[i]);
@@ -840,7 +839,7 @@
                     }
 
                     for(var j=0; j<(totalDateList.length-resultDateCntList.length); j++) {
-                        resultDateCntList.push(totalDateList[i]);
+                        resultDateCntList.push(0);
                         keywordCntList.push(0);
                         resultCntList.push(0);
                     }
@@ -884,7 +883,6 @@
                 });
 
             }, error: function(){
-                alert('실패')
             }
 
         });
@@ -937,7 +935,23 @@
                     totalDateList.push(result[i]);
                 }
 
+                for(var i=0; i<totalDateList.length; i++) {
+                    if(totalDateList[i] < monitoringDateList[i]) {
+                        // alert('sortTotalDateList2[i]: '+sortTotalDateList2[i]+' deleteComptHistDateList[i]: '+deleteComptHistDateList[i])
+                        monitoringDateList.splice(i,0, totalDateList[i]);
+                        monitoringCntList.splice(i,0, 0);
+                        resultCntList.splice(i,0,0);
+                    }
 
+                    for(var j=0; j<(totalDateList.length-monitoringDateList.length); j++) {
+                        monitoringDateList.push(totalDateList[i]);
+                        monitoringCntList.push(0);
+                        resultCntList.push(0)
+                    }
+
+                }
+
+/*
                 for(var i=0; i<monitoringDateList.length; i++) {
                     if(totalDateList[i] > monitoringDateList[i] ){
                         monitoringDateList.unshift(totalDateList[i]);
@@ -956,8 +970,8 @@
                         monitoringCntList.push(0);
                         resultCntList.push(0);
                     }
-
                 }
+ */
 
                 new Chart(document.getElementById('myChart5'),{
                     type: 'bar',
@@ -996,7 +1010,7 @@
                 });
 
             }, error:function(){
-                alert("실패zz")
+
             }
 
         })
@@ -1154,13 +1168,10 @@
         });
         Array.isArray(sortTotalDateList2);
 
+//        alert("sortTotalDateList2: "+sortTotalDateList2)
+//        alert("monitoringStatusDateList: " +monitoringStatusDateList )
 
         for(var i=0; i<sortTotalDateList2.length; i++) {
-            if(sortTotalDateList2[i] > monitoringStatusDateList[i] ){
-                monitoringStatusDateList.unshift(sortTotalDateList2[i]);
-                monitoringStatusCntList.unshift(0)
-            }
-
             if(sortTotalDateList2[i] !== monitoringStatusDateList[i] && sortTotalDateList2[i] < monitoringStatusDateList[i] ){
                 monitoringStatusDateList.splice(i,0, sortTotalDateList2[i]);
                 monitoringStatusCntList.splice(i,0, 0);
@@ -1171,14 +1182,11 @@
                 monitoringStatusCntList.push(0);
             }
         }
+//        alert("monitoringStatusDateList2: " +monitoringStatusDateList )
 
-        for(var i=0; i<deleteReqHistDateList.length; i++) {
-            if(sortTotalDateList2[i] > deleteReqHistDateList[i] ){
-                deleteReqHistDateList.unshift(sortTotalDateList2[i]);
-                deleteReqHistCntList.unshift(0)
-            }
-
-            if(sortTotalDateList2[i] !== deleteReqHistDateList[i] && sortTotalDateList2[i] < deleteReqHistDateList[i] ){
+        for(var i=0; i<sortTotalDateList2.length; i++) {
+            if(sortTotalDateList2[i] < deleteReqHistDateList[i]) {
+                // alert('sortTotalDateList2[i]: '+sortTotalDateList2[i]+' deleteComptHistDateList[i]: '+deleteComptHistDateList[i])
                 deleteReqHistDateList.splice(i,0, sortTotalDateList2[i]);
                 deleteReqHistCntList.splice(i,0, 0);
             }
@@ -1187,15 +1195,12 @@
                 deleteReqHistDateList.push(sortTotalDateList2[i]);
                 deleteReqHistCntList.push(0);
             }
+
         }
 
-        for(var i=0; i<deleteComptHistDateList.length; i++) {
-            if(sortTotalDateList2[i] > deleteComptHistDateList[i] ){
-                deleteComptHistDateList.unshift(sortTotalDateList2[i]);
-                deleteComptHistCntList.unshift(0)
-            }
-
-            if(sortTotalDateList2[i] !== deleteReqHistDateList[i] && sortTotalDateList2[i] < deleteReqHistDateList[i] ){
+        for(var i=0; i<sortTotalDateList2.length; i++) {
+            if(sortTotalDateList2[i] < deleteComptHistDateList[i]) {
+                // alert('sortTotalDateList2[i]: '+sortTotalDateList2[i]+' deleteComptHistDateList[i]: '+deleteComptHistDateList[i])
                 deleteComptHistDateList.splice(i,0, sortTotalDateList2[i]);
                 deleteComptHistCntList.splice(i,0, 0);
             }
@@ -1205,7 +1210,6 @@
                 deleteComptHistCntList.push(0);
             }
         }
-
 
         const ctx = document.querySelector('#myChart4').getContext('2d');
 
@@ -1251,35 +1255,47 @@
         });
     }
 
+    function pdfDown() {
+        alert('피디엪 클릭')
+        html2canvas($('body')[0], {
+            //logging : true,		// 디버그 목적 로그
+            //proxy: "html2canvasproxy.php",
+            allowTaint : true,	// cross-origin allow
+            useCORS: true,		// CORS 사용한 서버로부터 이미지 로드할 것인지 여부
+            scale : 2			// 기본 96dpi에서 해상도를 두 배로 증가
+        }).then(function (canvas) {
+            // 캔버스를 이미지로 변환
+            var imgData = canvas.toDataURL('image/png');
 
+            var imgWidth = 190; // 이미지 가로 길이(mm) / A4 기준 210mm
+            var pageHeight = imgWidth * 1.414;  // 출력 페이지 세로 길이 계산 A4 기준
+            var imgHeight = canvas.height * imgWidth / canvas.width;
+            var heightLeft = imgHeight;
+            var margin = 10; // 출력 페이지 여백설정
+            var doc = new jsPDF('p', 'mm');
+            var position = 0;
 
+            // 첫 페이지 출력
+            doc.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
 
-    /*
-        function pdfDown(){
-            html2canvas(document.getElementById('pdfDiv'), {
-                allowTaint: true,
-                useCORS: true,
-                logging: false,
-                height: window.outerHeight + window.innerHeight,
-                windowHeight: window.outerHeight + window.innerHeight
-            }).then(function(canvas) {
-                var imgData = canvas.toDataURL('image/png', 1.0);
+            // 한 페이지 이상일 경우 루프 돌면서 출력
+            while (heightLeft >= 20) {			// 35
+                position = heightLeft - imgHeight;
+                position = position - 20 ;		// -25
 
-                var imgWidth = 210;
-                var pageHeight = imgWidth * 0.0545; // 1.141
-                var imgHeight = canvas.height * imgWidth / canvas.width;
-                var heightLeft = imgHeight;
-                var doc = new jsPDF('p','mm');
-                var position = 0;
-
-                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                doc.addPage();
+                doc.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
                 heightLeft -= pageHeight;
+            }
 
-                doc.save('기간별 활용 현황.pdf');
+            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
 
-            });
-        }
-     */
+            doc.save('기간별 활용 현황.pdf');
+
+        });
+    }
 </script>
 
 </body>
