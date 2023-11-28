@@ -324,9 +324,15 @@
             }]
           },
           options: {
-            title: {
-              display: true,
-              text: '카운트'
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: '사용자 접속 현황'
+              }
             },
             scales: {
               responsive: false,
@@ -468,6 +474,9 @@
           legend: {
             display: true,
             position: 'top',
+          }, title: {
+            display: true,
+            text: '사용자 접속 현황'
           }
         },
         scales: {
@@ -476,10 +485,6 @@
             min: 0,
             max: 200,
           }
-        },
-        title: {
-          display: true,
-          text: '사용자 접속 현황'
         }
       }
     });

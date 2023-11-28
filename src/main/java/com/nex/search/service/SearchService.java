@@ -7,7 +7,8 @@ import com.nex.Chart.repo.*;
 import com.nex.common.Consts;
 import com.nex.search.entity.*;
 import com.nex.search.repo.*;
-import com.nex.user.entity.*;
+import com.nex.user.entity.ResultListExcelDto;
+import com.nex.user.entity.SearchHistoryExcelDto;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -106,6 +107,7 @@ public class SearchService {
     private String fileLocation3;
     @Value("${server.url}")
     private String serverIp;
+
     @Value("${search.server.url}")
     private String serverIp2;
     private Boolean loop = true;
@@ -213,7 +215,6 @@ public class SearchService {
 
     public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) {
         int index=0;
-        loop = true;
 
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
@@ -1662,7 +1663,7 @@ public class SearchService {
             log.info("results: " + results);
 
             try {
-                String imageUrl = getOriginalFn.apply(result) ;
+                String imageUrl = getOriginalFn.apply(result);
                 log.info("imageUrl1: "+imageUrl);
                 if(imageUrl == null) {
                     imageUrl = getThumbnailFn.apply(result);
@@ -3193,7 +3194,7 @@ public class SearchService {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         // Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
-      //  Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10","0", keyword, pageRequest);
+        //  Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10","0", keyword, pageRequest);
 
         Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getSearchInfoResultCnt("10","0", keyword, pageRequest);
         outMap.put("searchInfoList", searchInfoListPage);
@@ -3570,8 +3571,7 @@ public class SearchService {
         // 이미지
         CompletableFuture
                 .supplyAsync(() -> {
-                    try {
-                        // text기반 yandex 검색
+                    try { // text기반 검색
                         return searchYandex(url, YandexByImageResult.class, YandexByImageResult::getError, YandexByImageResult::getInline_images);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -3579,8 +3579,7 @@ public class SearchService {
                     }
                 })
                 .thenApply((r) -> {
-                    try {
-                        // 결과 저장.(이미지)
+                    try { // 결과 저장.(이미지)
                         return saveYandex(
                                 r
                                 , tsrSns
@@ -3598,8 +3597,7 @@ public class SearchService {
                     }
                 })
                 .thenApplyAsync((r) -> {
-                    try {
-                        // yandex검색을 통해 결과 db에 적재.
+                    try { // 결과 db에 적재.
                         return saveImgSearchYandex(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
