@@ -1,15 +1,21 @@
 package com.nex.search.controller;
 
 import com.nex.common.Consts;
+import com.nex.search.ImageService.*;
 import com.nex.search.entity.*;
 import com.nex.search.service.*;
+import com.nex.search.textFacebookService.*;
+import com.nex.search.textGoogleService.*;
+import com.nex.search.textImageFacebookService.*;
+import com.nex.search.textImageGoogleService.*;
+import com.nex.search.textImageInstagramService.*;
+import com.nex.search.textInstagramService.*;
 import com.nex.user.entity.SessionInfoDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,7 +30,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @RestController // JSON 형태 결과값을 반환해줌 (@ResponseBody가 필요없음)
@@ -32,10 +37,63 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping("/search")
 public class SearchController {
     private final SearchService searchService;
-    private final SearchTextUsService searchTextUsService;
-    private final SearchTextKrService searchTextKrService;
-    private final SearchTextCnService searchTextCnService;
+
+    private final SearchTextUsGoogleService searchTextUsGoogleService;
+    private final SearchTextKrGoogleService searchTextKrGoogleService;
+    private final SearchTextCnGoogleService searchTextCnGoogleService;
+    private final SearchTextThGoogleService searchTextThGoogleService;
+    private final SearchTextRuGoogleService searchTextRuGoogleService;
+    private final SearchTextVnGoogleService searchTextVnGoogleService;
+    private final SearchTextNlGoogleService searchTextNlGoogleService;
+
+    private final SearchTextCnInstagramService searchTextCnInstagramService;
+    private final SearchTextKrInstagramService searchTextKrInstagramService;
+    private final SearchTextNlInstagramService searchTextNlInstagramService;
+    private final SearchTextRuInstagramService searchTextRuInstagramService;
+    private final SearchTextThInstagramService searchTextThInstagramService;
+    private final SearchTextUsInstagramService searchTextUsInstagramService;
+    private final SearchTextVnInstagramService searchTextVnInstagramService;
+
+    private final SearchTextCnFacebookService searchTextCnFacebookService;
+    private final SearchTextKrFacebookService searchTextKrFacebookService;
+    private final SearchTextNlFacebookService searchTextNlFacebookService;
+    private final SearchTextRuFacebookService searchTextRuFacebookService;
+    private final SearchTextThFacebookService searchTextThFacebookService;
+    private final SearchTextUsFacebookService searchTextUsFacebookService;
+    private final SearchTextVnFacebookService searchTextVnFacebookService;
+
+    private final SearchImageCnService searchImageCnService;
+    private final SearchImageKrService searchImageKrService;
+    private final SearchImageNlService searchImageNlService;
+    private final SearchImageRuService searchImageRuService;
+    private final SearchImageThService searchImageThService;
     private final SearchImageUsService searchImageUsService;
+    private final SearchImageVnService searchImageVnService;
+
+    private final SearchTextImageCnGoogleService searchTextImageCnGoogleService;
+    private final SearchTextImageKrGoogleService searchTextImageKrGoogleService;
+    private final SearchTextImageNlGoogleService searchTextImageNlGoogleService;
+    private final SearchTextImageRuGoogleService searchTextImageRuGoogleService;
+    private final SearchTextImageThGoogleService searchTextImageThGoogleService;
+    private final SearchTextImageUsGoogleService searchTextImageUsGoogleService;
+    private final SearchTextImageVnGoogleService searchTextImageVnGoogleService;
+
+    private final SearchTextImageCnInstagramService searchTextImageCnInstagramService;
+    private final SearchTextImageKrInstagramService searchTextImageKrInstagramService;
+    private final SearchTextImageNlInstagramService searchTextImageNlInstagramService;
+    private final SearchTextImageRuInstagramService searchTextImageRuInstagramService;
+    private final SearchTextImageThInstagramService searchTextImageThInstagramService;
+    private final SearchTextImageUsInstagramService searchTextImageUsInstagramService;
+    private final SearchTextImageVnInstagramService searchTextImageVnInstagramService;
+
+    private final SearchTextImageCnFacebookService searchTextImageCnFacebookService;
+    private final SearchTextImageKrFacebookService searchTextImageKrFacebookService;
+    private final SearchTextImageNlFacebookService searchTextImageNlFacebookService;
+    private final SearchTextImageRuFacebookService searchTextImageRuFacebookService;
+    private final SearchTextImageThFacebookService searchTextImageThFacebookService;
+    private final SearchTextImageUsFacebookService searchTextImageUsFacebookService;
+    private final SearchTextImageVnFacebookService searchTextImageVnFacebookService;
+
 
     @Value("${search.yandex.text.url}")
     private String textYandexUrl;
@@ -89,7 +147,7 @@ public class SearchController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String folder = now.format(formatter);
 
-        if(isFile){  // 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19: 영상
+        if(isFile){ // 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19: 영상
             try{
                 InputStream inputStream = file.get().getInputStream();
                 Tika tika = new Tika();
@@ -161,8 +219,97 @@ public class SearchController {
 
         insertResult = searchService.saveSearchInfo(searchInfoEntity);
 
-       searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
-       log.info("====== search 끝 ======");
+        // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
+        switch (tsiType) {
+            case "11": // 11:키워드
+                if(tsiGoogle == 1){
+                    searchService.searchYandexYoutube("11", insertResult, searchInfoDto);
+                    searchService.searchYandexText("11", insertResult, searchInfoDto);
+                    searchTextCnGoogleService.search(tsiGoogle, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextKrGoogleService.search(tsiGoogle, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextUsGoogleService.search(tsiGoogle, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextThGoogleService.search(tsiGoogle, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextRuGoogleService.search(tsiGoogle, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextVnGoogleService.search(tsiGoogle, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextNlGoogleService.search(tsiGoogle, tsiType, insertResult, folder, searchInfoDto);
+                }
+
+                if(tsiInstagram == 1){
+                    searchTextCnInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextKrInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextNlInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextRuInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextThInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextUsInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextVnInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
+                }
+
+                if(tsiFacebook == 1) {
+                    searchTextCnFacebookService.search(tsiFacebook, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextKrFacebookService.search(tsiFacebook, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextNlFacebookService.search(tsiFacebook, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextRuFacebookService.search(tsiFacebook, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextThFacebookService.search(tsiFacebook, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextUsFacebookService.search(tsiFacebook, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextVnFacebookService.search(tsiFacebook, tsiType, insertResult, folder, searchInfoDto);
+                }
+
+                break;
+            case "13": // 13:키워드+이미지
+                if(tsiGoogle == 1){
+                    searchTextImageCnGoogleService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageKrGoogleService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageNlGoogleService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageRuGoogleService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageThGoogleService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageUsGoogleService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageVnGoogleService.search(insertResult, folder, searchInfoDto);
+                }
+
+                if(tsiInstagram == 1) {
+                    searchTextImageCnInstagramService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageKrInstagramService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageNlInstagramService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageRuInstagramService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageThInstagramService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageUsInstagramService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageVnInstagramService.search(insertResult, folder, searchInfoDto);
+                }
+
+                if(tsiFacebook == 1) {
+                    searchTextImageCnFacebookService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageKrFacebookService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageNlFacebookService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageRuFacebookService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageThFacebookService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageUsFacebookService.search(insertResult, folder, searchInfoDto);
+                    searchTextImageVnFacebookService.search(insertResult, folder, searchInfoDto);
+                }
+
+                break;
+            case "15": // 15:키워드+영상
+                searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+
+                break;
+            case "17": // 17:이미지
+                // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+                searchImageCnService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+                searchImageKrService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+                searchImageNlService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+                searchImageRuService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+                searchImageThService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+                searchImageUsService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+                searchImageVnService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+
+                break;
+            case "19": // 19: 영상
+                searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+                break;
+
+        }
+
+        log.info("====== search 끝 ======");
+
         return modelAndView;
     }
 
