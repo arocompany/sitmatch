@@ -2,8 +2,9 @@ package com.nex.search.controller;
 
 import com.nex.common.Consts;
 import com.nex.search.ImageService.*;
-import com.nex.search.entity.*;
-import com.nex.search.service.*;
+import com.nex.search.entity.SearchInfoDto;
+import com.nex.search.entity.SearchInfoEntity;
+import com.nex.search.service.SearchService;
 import com.nex.search.textFacebookService.*;
 import com.nex.search.textGoogleService.*;
 import com.nex.search.textImageFacebookService.*;
@@ -11,7 +12,6 @@ import com.nex.search.textImageGoogleService.*;
 import com.nex.search.textImageInstagramService.*;
 import com.nex.search.textInstagramService.*;
 import com.nex.user.entity.SessionInfoDto;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
@@ -124,13 +124,13 @@ public class SearchController {
 
 
     @PostMapping("")
-    public ModelAndView search(@RequestParam("file") Optional<MultipartFile> file, SearchInfoEntity searchInfoEntity, HttpServletRequest request
+    public ModelAndView search(@RequestParam("file") Optional<MultipartFile> file, SearchInfoEntity searchInfoEntity
                                 ,@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
                                 ,SearchInfoDto searchInfoDto) throws Exception {
         ModelAndView modelAndView = new ModelAndView("redirect:/history");
 
         log.info("search진입 tsiKeyword "+searchInfoEntity.getTsiKeyword());
-        String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
+        // String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
         String tsiKeyword = searchInfoEntity.getTsiKeyword();
         String tsiType = "";
         byte tsiGoogle = searchInfoEntity.getTsiGoogle();

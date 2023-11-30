@@ -131,20 +131,23 @@
     </nav>
   </section>
 
-
   <!-- 추적 이력 -->
   <section class="trace-history layout history">
+
     <div class="searchbox">
       <form name="history-search" class="search-box" action="/history" id="traceForm">
         <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${traceKeyword}" name="traceKeyword" id="traceKeyword">
         <input type="hidden" name="tracePage" id="tracePage">
       </form>
+      <input id="traceHistoryValue" type="text" value="">
+
       <!--  <button type="button" style="margin-right: 495px; font-weight: bold; ">엑셀</button>-->
       <ul class="currently-state">
-        <li><span>전체 :</span> <span th:text="${traceHistoryListCount}">32</span></li>
-        <li><span>모니터링 :</span> <span th:text="${countMonitoring}">8</span></li>
-        <li><span>삭제 요청 :</span> <span th:text="${countDelReq}">10</span></li>
-        <li><span>삭제 완료 :</span> <span th:text="${countDelCmpl}">14</span></li>
+        <li onclick="traceList();"><span style="font-weight: bold">전체 :</span> <span th:text="${traceHistoryListCount}">32</span></li>
+        <!-- id="monitoringList" onclick="monitoringList();" -->
+        <li><span th:onclick="|location.href='@{/monitoringList}'|" style="font-weight: bold"> 모니터링 :</span> <span th:text="${countMonitoring}">8</span></li>
+        <li><span th:onclick="|location.href='@{/monitoringDeleteReqList}'|" style="font-weight: bold">삭제 요청 :</span> <span th:text="${countDelReq}">10</span></li>
+        <li><span  th:onclick="|location.href='@{/monitoringDeleteComptList}'|" style="font-weight: bold">삭제 완료 :</span> <span th:text="${countDelCmpl}">14</span></li>
       </ul>
     </div>
     <h2 class="list-tit">
@@ -787,6 +790,37 @@
       })
 
     }
+
+  }
+
+  function traceList(){
+    window.location.href = "/history";
+  }
+  function monitoringList(){
+    document.getElementById('traceHistoryValue').value = '10';
+    const traceHistoryValue = document.getElementById('traceHistoryValue').value;
+
+    alert('traceHistoryValue: '+traceHistoryValue)
+
+      $.ajax({
+        url: "/history",
+        type: "get",
+        data: {
+          traceHistoryValue: traceHistoryValue
+        },
+        success:function(data) {
+          alert("성공 .");
+
+          // window.location.href="/history";
+        }, error:function(){
+          // alert("실패")
+          console.log("통신 실패");
+        }
+      })
+
+
+      // window.location.href = '/history?'+'monitoringValue=10';
+
 
   }
 

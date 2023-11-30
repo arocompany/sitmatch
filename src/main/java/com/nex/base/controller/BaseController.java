@@ -6,23 +6,23 @@ import com.nex.search.entity.DefaultQueryDtoInterface;
 import com.nex.search.repo.NewKeywordRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.service.SearchService;
-
-import com.nex.user.entity.*;
-import com.nex.user.repo.*;
+import com.nex.user.entity.NewKeywordDto;
+import com.nex.user.entity.SessionInfoDto;
+import com.nex.user.repo.AutoRepository;
+import com.nex.user.repo.UserRepository;
 import com.nex.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -224,9 +224,13 @@ public class BaseController {
                                 @RequestParam(required = false, defaultValue = "1") Integer searchPage,
                                 @RequestParam(required = false, defaultValue = "") String searchKeyword,
                                 @RequestParam(required = false, defaultValue = "1") Integer tracePage,
-                                @RequestParam(required = false, defaultValue = "") String traceKeyword) {     // 검색 이력, 추적 이력
+                                @RequestParam(required = false, defaultValue = "") String traceKeyword,
+                                @RequestParam(required=false, defaultValue = "0") String traceHistoryValue) {
         ModelAndView modelAndView = new ModelAndView("html/history");
         Map<String, Object> searchHistMap = null;
+
+        log.info("monitoringValue: " + traceHistoryValue);
+
         // Page<List<ResultCntQueryDtoInterface>> searchHistMapCnt = null;
 
         log.info("history sessionInfoDto: " + sessionInfoDto.getUserId());
@@ -245,7 +249,6 @@ public class BaseController {
             searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword);
 
             // searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword);
-
             // searchHistMapCnt = searchService.getSearchInfoResultCnt("10","0", searchKeyword);
         } else {
             searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, sessionInfoDto.getUserUno());
@@ -254,8 +257,14 @@ public class BaseController {
 
         int Percent = sessionInfoDto.getPercent_limit();
         log.info("추적이력 진입");
+        Map<String, Object> traceHistoryMap = null;
         // 추적이력
-        Map<String, Object> traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword);
+        if(traceHistoryValue.equals("0")){
+            traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword);
+        } else if(traceHistoryValue.equals("10")){
+            traceHistoryMap = searchService.getTraceHistoryMonitoringList(tracePage, traceKeyword);
+        }
+
 
         // 검색이력 데이터
         modelAndView.addObject("userCount", searchService.getUserIdMap());
@@ -541,7 +550,7 @@ public class BaseController {
     }
 
 */
-    @GetMapping("/result-detail") // Integer
+    @GetMapping("/result-detail")
     public ModelAndView result_detail(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                       @RequestParam Integer tsiUno) {
 
@@ -623,7 +632,6 @@ public class BaseController {
         // List<NewKeywordEntity> newKeywordList = searchService.getNewKeywordList();
         List<NewKeywordDto> newKeywordList = newKeywordRepository.keywordList();
 
-
         // modelAndView.addObject("autoKeyword_list", autoKeyword_list.get("autoKeyword_list"));
         modelAndView.addObject("newKeywordList", newKeywordList);
         modelAndView.addObject("sessionInfo", sessionInfoDto);
@@ -662,6 +670,217 @@ public class BaseController {
 
         return "success";
     }
+
+    @GetMapping("/monitoringList")
+    public ModelAndView monitoringList(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
+                                       @RequestParam(required = false, defaultValue = "1") Integer searchPage,
+                                       @RequestParam(required = false, defaultValue = "") String searchKeyword,
+                                       @RequestParam(required = false, defaultValue = "1") Integer tracePage,
+                                       @RequestParam(required = false, defaultValue = "") String traceKeyword) {
+        ModelAndView modelAndView = new ModelAndView("html/history2");
+        log.info("monitoringList 진입");
+        Map<String, Object> searchHistMap = null;
+        // Page<List<ResultCntQueryDtoInterface>> searchHistMapCnt = null;
+
+        log.info("history sessionInfoDto: " + sessionInfoDto.getUserId());
+        log.info("traceKeyword: "+traceKeyword);
+        log.info("searchKeyword: "+searchKeyword);
+
+        int userUno = sessionInfoDto.getUserUno();
+        String userId = sessionInfoDto.getUserId();
+        searchService.searchInfoHistInsert(userUno, userId, searchKeyword, traceKeyword);
+
+        modelAndView.addObject("sessionInfo", sessionInfoDto);
+        modelAndView.addObject("headerMenu", "history");
+
+        if(sessionInfoDto.isAdmin()) {
+            log.info("검색이력 진입");
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword);
+
+            // searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword);
+            // searchHistMapCnt = searchService.getSearchInfoResultCnt("10","0", searchKeyword);
+        } else {
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, sessionInfoDto.getUserUno());
+            // searchHistMapCnt = searchService.getSearchInfoResultCnt(searchPage, searchKeyword, sessionInfoDto.getUserUno());
+        }
+
+        int Percent = sessionInfoDto.getPercent_limit();
+        log.info("추적이력 진입");
+        // 추적이력
+        Map<String, Object> traceHistoryMap = searchService.getTraceHistoryMonitoringList(tracePage, traceKeyword);
+
+        // 검색이력 데이터
+        modelAndView.addObject("userCount", searchService.getUserIdMap());
+        modelAndView.addObject("userIdMap", searchService.getUserIdMap());
+        modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap());
+        modelAndView.addObject("searchKeyword", searchKeyword);
+        modelAndView.addObject("searchInfoList",searchHistMap.get("searchInfoList"));
+        assert searchHistMap != null;
+        modelAndView.addObject("searchInfoListCount", searchHistMap.get("totalElements"));
+        modelAndView.addObject("searchNumber", searchHistMap.get("number"));
+        modelAndView.addObject("maxPage", searchHistMap.get("maxPage"));
+        modelAndView.addObject("searchTotalPages", searchHistMap.get("totalPages"));
+
+        // 추적이력 데이터
+        modelAndView.addObject("traceHistoryList", traceHistoryMap.get("traceHistoryList"));
+//        modelAndView.addObject("traceHistoryList", searchService2.getTraceHistoryList(tracePage, traceKeyword).get("traceHistoryList"));
+        modelAndView.addObject("traceHistoryListCount", traceHistoryMap.get("totalElements"));
+        modelAndView.addObject("traceNumber", traceHistoryMap.get("number"));
+        modelAndView.addObject("maxPage", traceHistoryMap.get("maxPage"));
+        modelAndView.addObject("traceTotalPages", traceHistoryMap.get("totalPages"));
+        modelAndView.addObject("traceKeyword", traceKeyword);
+
+        modelAndView.addObject("countMonitoring", traceHistoryMap.get("countMonitoring")); // 모니터링
+        modelAndView.addObject("countDelReq", traceHistoryMap.get("countDelReq"));         // 삭제요청
+        modelAndView.addObject("countDelCmpl", traceHistoryMap.get("countDelCmpl"));       // 삭제완료
+
+        modelAndView.addObject("tsiTypeMap", searchService.getTsiTypeMap());
+        modelAndView.addObject("tsiKeyword", searchService.getTsiKeywordMap());
+        modelAndView.addObject("tsiFstDmlDt", searchService.getTsiFstDmlDtMap());
+
+        return modelAndView;
+    }
+
+    @GetMapping("/monitoringDeleteReqList")
+    public ModelAndView monitoringDeleteReqList(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
+                                       @RequestParam(required = false, defaultValue = "1") Integer searchPage,
+                                       @RequestParam(required = false, defaultValue = "") String searchKeyword,
+                                       @RequestParam(required = false, defaultValue = "1") Integer tracePage,
+                                       @RequestParam(required = false, defaultValue = "") String traceKeyword) {
+        ModelAndView modelAndView = new ModelAndView("html/history3");
+        log.info("monitoringList 진입");
+        Map<String, Object> searchHistMap = null;
+        // Page<List<ResultCntQueryDtoInterface>> searchHistMapCnt = null;
+
+        log.info("history sessionInfoDto: " + sessionInfoDto.getUserId());
+        log.info("traceKeyword: "+traceKeyword);
+        log.info("searchKeyword: "+searchKeyword);
+
+        int userUno = sessionInfoDto.getUserUno();
+        String userId = sessionInfoDto.getUserId();
+        searchService.searchInfoHistInsert(userUno, userId, searchKeyword, traceKeyword);
+
+        modelAndView.addObject("sessionInfo", sessionInfoDto);
+        modelAndView.addObject("headerMenu", "history");
+
+        if(sessionInfoDto.isAdmin()) {
+            log.info("검색이력 진입");
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword);
+
+            // searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword);
+            // searchHistMapCnt = searchService.getSearchInfoResultCnt("10","0", searchKeyword);
+        } else {
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, sessionInfoDto.getUserUno());
+            // searchHistMapCnt = searchService.getSearchInfoResultCnt(searchPage, searchKeyword, sessionInfoDto.getUserUno());
+        }
+
+        int Percent = sessionInfoDto.getPercent_limit();
+        log.info("추적이력 진입");
+        // 추적이력
+        Map<String, Object> traceHistoryMap = searchService.getTraceHistoryDeleteReqList(tracePage, traceKeyword);
+
+        // 검색이력 데이터
+        modelAndView.addObject("userCount", searchService.getUserIdMap());
+        modelAndView.addObject("userIdMap", searchService.getUserIdMap());
+        modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap());
+        modelAndView.addObject("searchKeyword", searchKeyword);
+        modelAndView.addObject("searchInfoList",searchHistMap.get("searchInfoList"));
+        assert searchHistMap != null;
+        modelAndView.addObject("searchInfoListCount", searchHistMap.get("totalElements"));
+        modelAndView.addObject("searchNumber", searchHistMap.get("number"));
+        modelAndView.addObject("maxPage", searchHistMap.get("maxPage"));
+        modelAndView.addObject("searchTotalPages", searchHistMap.get("totalPages"));
+
+        // 추적이력 데이터
+        modelAndView.addObject("traceHistoryList", traceHistoryMap.get("traceHistoryList"));
+//        modelAndView.addObject("traceHistoryList", searchService2.getTraceHistoryList(tracePage, traceKeyword).get("traceHistoryList"));
+        modelAndView.addObject("traceHistoryListCount", traceHistoryMap.get("totalElements"));
+        modelAndView.addObject("traceNumber", traceHistoryMap.get("number"));
+        modelAndView.addObject("maxPage", traceHistoryMap.get("maxPage"));
+        modelAndView.addObject("traceTotalPages", traceHistoryMap.get("totalPages"));
+        modelAndView.addObject("traceKeyword", traceKeyword);
+
+        modelAndView.addObject("countMonitoring", traceHistoryMap.get("countMonitoring")); // 모니터링
+        modelAndView.addObject("countDelReq", traceHistoryMap.get("countDelReq"));         // 삭제요청
+        modelAndView.addObject("countDelCmpl", traceHistoryMap.get("countDelCmpl"));       // 삭제완료
+
+        modelAndView.addObject("tsiTypeMap", searchService.getTsiTypeMap());
+        modelAndView.addObject("tsiKeyword", searchService.getTsiKeywordMap());
+        modelAndView.addObject("tsiFstDmlDt", searchService.getTsiFstDmlDtMap());
+
+        return modelAndView;
+    }
+
+    @GetMapping("/monitoringDeleteComptList")
+    public ModelAndView monitoringDeleteComptList(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
+                                                @RequestParam(required = false, defaultValue = "1") Integer searchPage,
+                                                @RequestParam(required = false, defaultValue = "") String searchKeyword,
+                                                @RequestParam(required = false, defaultValue = "1") Integer tracePage,
+                                                @RequestParam(required = false, defaultValue = "") String traceKeyword) {
+        ModelAndView modelAndView = new ModelAndView("html/history4");
+        log.info("monitoringList 진입");
+        Map<String, Object> searchHistMap = null;
+        // Page<List<ResultCntQueryDtoInterface>> searchHistMapCnt = null;
+
+        log.info("history sessionInfoDto: " + sessionInfoDto.getUserId());
+        log.info("traceKeyword: "+traceKeyword);
+        log.info("searchKeyword: "+searchKeyword);
+
+        int userUno = sessionInfoDto.getUserUno();
+        String userId = sessionInfoDto.getUserId();
+        searchService.searchInfoHistInsert(userUno, userId, searchKeyword, traceKeyword);
+
+        modelAndView.addObject("sessionInfo", sessionInfoDto);
+        modelAndView.addObject("headerMenu", "history");
+
+        if(sessionInfoDto.isAdmin()) {
+            log.info("검색이력 진입");
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword);
+
+            // searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword);
+            // searchHistMapCnt = searchService.getSearchInfoResultCnt("10","0", searchKeyword);
+        } else {
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, sessionInfoDto.getUserUno());
+            // searchHistMapCnt = searchService.getSearchInfoResultCnt(searchPage, searchKeyword, sessionInfoDto.getUserUno());
+        }
+
+        int Percent = sessionInfoDto.getPercent_limit();
+        log.info("추적이력 진입");
+        // 추적이력
+        Map<String, Object> traceHistoryMap = searchService.getTraceHistoryDeleteComptList(tracePage, traceKeyword);
+
+        // 검색이력 데이터
+        modelAndView.addObject("userCount", searchService.getUserIdMap());
+        modelAndView.addObject("userIdMap", searchService.getUserIdMap());
+        modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap());
+        modelAndView.addObject("searchKeyword", searchKeyword);
+        modelAndView.addObject("searchInfoList",searchHistMap.get("searchInfoList"));
+        assert searchHistMap != null;
+        modelAndView.addObject("searchInfoListCount", searchHistMap.get("totalElements"));
+        modelAndView.addObject("searchNumber", searchHistMap.get("number"));
+        modelAndView.addObject("maxPage", searchHistMap.get("maxPage"));
+        modelAndView.addObject("searchTotalPages", searchHistMap.get("totalPages"));
+
+        // 추적이력 데이터
+        modelAndView.addObject("traceHistoryList", traceHistoryMap.get("traceHistoryList"));
+//        modelAndView.addObject("traceHistoryList", searchService2.getTraceHistoryList(tracePage, traceKeyword).get("traceHistoryList"));
+        modelAndView.addObject("traceHistoryListCount", traceHistoryMap.get("totalElements"));
+        modelAndView.addObject("traceNumber", traceHistoryMap.get("number"));
+        modelAndView.addObject("maxPage", traceHistoryMap.get("maxPage"));
+        modelAndView.addObject("traceTotalPages", traceHistoryMap.get("totalPages"));
+        modelAndView.addObject("traceKeyword", traceKeyword);
+
+        modelAndView.addObject("countMonitoring", traceHistoryMap.get("countMonitoring")); // 모니터링
+        modelAndView.addObject("countDelReq", traceHistoryMap.get("countDelReq"));         // 삭제요청
+        modelAndView.addObject("countDelCmpl", traceHistoryMap.get("countDelCmpl"));       // 삭제완료
+
+        modelAndView.addObject("tsiTypeMap", searchService.getTsiTypeMap());
+        modelAndView.addObject("tsiKeyword", searchService.getTsiKeywordMap());
+        modelAndView.addObject("tsiFstDmlDt", searchService.getTsiFstDmlDtMap());
+
+        return modelAndView;
+    }
+
 
 
 }

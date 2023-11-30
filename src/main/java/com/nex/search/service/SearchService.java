@@ -91,27 +91,30 @@ public class SearchService {
     private String textYandexNocache;
     @Value("${search.yandex.text.location}")
     private String textYandexLocation;
-    @Value("${search.yandex.text.tbm}")
-    private String textYandexTbm;
     @Value("${search.yandex.text.api_key}")
     private String textYandexApikey;
-    @Value("${search.yandex.text.engine}")
-    private String textYandexEngine;
     @Value("${search.yandex.image.engine}")
     private String imageYandexEngine;
     @Value("${search.yandex.text.count.limit}")
     private String textYandexCountLimit;
-    @Value("${file.location1}")
-    private String fileLocation1;
     @Value("${file.location3}")
     private String fileLocation3;
-    @Value("${server.url}")
-    private String serverIp;
-
     @Value("${search.server.url}")
     private String serverIp2;
+
     private Boolean loop = true;
     private final RestTemplate restTemplate;
+
+    /*
+    @Value("${server.url}")
+    private String serverIp;
+    @Value("${search.yandex.text.tbm}")
+    private String textYandexTbm;
+    @Value("${file.location1}")
+    private String fileLocation1;
+    @Value("${search.yandex.text.engine}")
+    private String textYandexEngine;
+    */
 
     /**
      * 검색
@@ -423,7 +426,7 @@ public class SearchService {
         int index = 0;
         loop = true;
 
-        String tsiKeyword = insertResult.getTsiKeyword();
+        // String tsiKeyword = insertResult.getTsiKeyword();
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
@@ -1212,17 +1215,17 @@ public class SearchService {
 
         //2023-03-26 에러 나는 url 처리
         byte[] imageBytes = null;
-        if (imageUrl != null) {
-            Resource resource = resourceLoader.getResource(imageUrl.toString());
+        if (imageUrl != null) { // .toString()
+            Resource resource = resourceLoader.getResource(imageUrl);
             try {
-                imageBytes = restTemplate.getForObject(imageUrl.toString(), byte[].class);
+                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
             } catch (Exception e) {
                 //구글인 경우 IGNORE
 //                if ("11".equals(sre.getTsrSns())) {
                 imageUrl = getThumnailFn.apply(result).toString();
                 imageUrl = imageUrl.replace("%7Bstatic%3Dhttps","https");
-                resource = resourceLoader.getResource(imageUrl.toString());
-                imageBytes = restTemplate.getForObject(imageUrl.toString(), byte[].class);
+                resource = resourceLoader.getResource(imageUrl);
+                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
 //                }
 //                else {
 //                    log.error(e.getMessage(), e);
@@ -1295,8 +1298,8 @@ public class SearchService {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
         // SearchInfoEntity updateResult = saveSearchInfo(insertResult);
-        SearchInfoEntity updateResult = saveSearchInfo_2(insertResult);
-
+        // SearchInfoEntity updateResult = saveSearchInfo_2(insertResult);
+        saveSearchInfo_2(insertResult);
         List<SearchResultEntity> searchResultEntity = result;
 
         for (SearchResultEntity sre : searchResultEntity) {
@@ -1325,8 +1328,8 @@ public class SearchService {
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
-        SearchInfoEntity updateResult = saveSearchInfo(insertResult);
-
+        // SearchInfoEntity updateResult = saveSearchInfo(insertResult);
+        saveSearchInfo(insertResult);
         List<SearchResultEntity> searchResultEntity = result;
 
         for (SearchResultEntity sre : searchResultEntity) {
@@ -1861,7 +1864,9 @@ public class SearchService {
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
-        SearchInfoEntity updateResult = saveSearchInfo(insertResult);
+
+        // SearchInfoEntity updateResult = saveSearchInfo(insertResult);
+        saveSearchInfo(insertResult);
 
         List<SearchResultEntity> searchResultEntity = result;
         SearchJobEntity sje = null;
@@ -1892,7 +1897,9 @@ public class SearchService {
     }
 
     public List<String> processVideo(SearchInfoEntity insertResult) throws Exception {
-        List<String> files = new ArrayList<String>();
+        // List<String> files = new ArrayList<String>();
+        List<String> files = new ArrayList<>();
+
         log.debug("Python Call");
         String[] command = new String[4];
         //python C:/utils/extract_keyframes.py C:/utils/input_Vid.mp4 C:/data/requests/20230312
@@ -2887,7 +2894,7 @@ public class SearchService {
 
         log.debug("priority => {}", priority);
 
-        String orderByTmrSimilarityDesc = " ORDER BY tmrSimilarity desc, TMR.TSR_UNO desc";
+        // String orderByTmrSimilarityDesc = " ORDER BY tmrSimilarity desc, TMR.TSR_UNO desc";
 
         if ("1".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_1");
@@ -2984,13 +2991,72 @@ public class SearchService {
         return videoInfoRepository.findAllByTsiUno(tsiUno);
     }
 
-
     public Map<String, Object> getTraceHistoryList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 //        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
 
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryList(keyword, pageRequest);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+
+        return outMap;
+    }
+
+    public Map<String, Object> getTraceHistoryMonitoringList(Integer page, String keyword) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringList(keyword, pageRequest);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+
+        return outMap;
+    }
+
+    public Map<String, Object> getTraceHistoryDeleteReqList(Integer page, String keyword) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqList(keyword, pageRequest);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+
+        return outMap;
+    }
+
+    public Map<String, Object> getTraceHistoryDeleteComptList(Integer page, String keyword) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptList(keyword, pageRequest);
 
         outMap.put("traceHistoryList", traceHistoryListPage);
         outMap.put("totalPages", traceHistoryListPage.getTotalPages());

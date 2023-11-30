@@ -1,25 +1,25 @@
 package com.nex.Chart.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.Chart.dto.*;
 import com.nex.Chart.repo.*;
 import com.nex.common.Consts;
 import com.nex.search.repo.SearchInfoRepository;
-import com.nex.search.repo.SearchResultRepository;
 import com.nex.search.service.SearchService;
-import com.nex.user.entity.*;
+import com.nex.user.entity.ResultListExcelDto;
+import com.nex.user.entity.SearchHistoryExcelDto;
+import com.nex.user.entity.SessionInfoDto;
 import com.nex.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.json.JSONParser;
-import org.json.simple.JSONObject;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 
 @Slf4j
@@ -32,7 +32,6 @@ public class ChartController {
     private final SearchResultHistRepository searchResultHistRepository;
     private final NoticeHistRepository noticeHistRepository;
     private final SearchInfoRepository searchInfoRepository;
-    private final SearchResultRepository searchResultRepository;
     private final MonitoringHistRepository monitoringHistRepository;
     private final DeleteReqHistRepository deleteReqHistRepository;
     private final DeleteComptHistRepository deleteComptHistRepository;
@@ -49,7 +48,7 @@ public class ChartController {
         Date now = new Date();
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(calendar.DATE, -6);
+        calendar.add(Calendar.DATE, -6);
 
         String fromDate = format.format(calendar.getTime());
         String toDate = format.format(now);
@@ -129,11 +128,12 @@ public class ChartController {
         Date now = new Date();
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(calendar.DATE, -6);
+        calendar.add(Calendar.DATE, -6);
 
-        String fromDate = format.format(calendar.getTime());
+
         String toDate = format.format(now);
-        String toDate2 = toDate+" 23:59:59";
+        // String fromDate = format.format(calendar.getTime());
+        // String toDate2 = toDate+" 23:59:59";
 
         List<TraceHistDto> userTraceHistList = traceHistRepository.userTraceHistList(toDate);
         List<SearchInfoHistDto> userSearchInfoHistList = searchInfoHistRepository.userSearchInfoHistList(toDate);
@@ -194,8 +194,7 @@ public class ChartController {
     }
 
     @GetMapping("/connectCnt")
-    public List<LoginHistDto> connectCnt(@RequestParam("fromDate") String fromDate
-            , @RequestParam("toDate") String toDate) {
+    public List<LoginHistDto> connectCnt(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) {
         String toDate2 = toDate + " 23:59:59";
         // List<LoginHistDto> userHistoryCountList2 = userService.getUserHistory2(fromDate, toDate2);
         return userService.getUserHistory2(fromDate, toDate2);
@@ -203,7 +202,6 @@ public class ChartController {
 
     @GetMapping("/userLoginCnt")
     public List<LoginHistDto> usreLoginCnt(@RequestParam("toDate") String toDate) {
-        String toDate2 = toDate + " 23:59:59";
         return userService.getUserHistory(toDate);
     }
 
@@ -279,6 +277,7 @@ public class ChartController {
 
         searchService.resultExcelList(response, resultListExcelDtoList);
     }
+
 /*
     @GetMapping("/keywordCntList")
     public Map<String, Object> keywordCntList(HttpServletResponse response
@@ -318,14 +317,12 @@ public class ChartController {
     }
  */
 
-
-    @GetMapping("/keywordCntList") // 여기
-    public List<KeywordCntDto> keywordCntList(HttpServletResponse response
-            ,@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) {
+    @GetMapping("/keywordCntList")
+    public List<KeywordCntDto> keywordCntList(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) {
         log.info(" == keywordcntList 진입 == "+fromDate +" "+toDate);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
         Calendar calendar = Calendar.getInstance();
-        calendar.add(calendar.DATE, -6);
+        calendar.add(Calendar.DATE, -6);
 
         String toDate2 = toDate+" 23:59:59";
 
@@ -333,37 +330,34 @@ public class ChartController {
     }
 
     @GetMapping("/userKeywordCntList")
-    public List<userKeywordCntDto> userKeywordCntList(HttpServletResponse response
-                                                    , @RequestParam("toDate") String toDate) {
+    public List<userKeywordCntDto> userKeywordCntList(@RequestParam("toDate") String toDate) {
         log.info(" == keywordcntList 진입 == ");
         return searchInfoRepository.userKeywordCntList(toDate);
     }
 
     @GetMapping("/allTimeCntList")
-    public List<AllTimeCntDto> allTimeCntList(HttpServletResponse response, @RequestParam("toDate") String toDate) {
-
+    public List<AllTimeCntDto> allTimeCntList(@RequestParam("toDate") String toDate) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date now = new Date();
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(calendar.DATE, -6);
+        calendar.add(Calendar.DATE, -6);
 
-        // fromDate = format.format(calendar.getTime());
         toDate = format.format(now);
-        String toDate2 = toDate + " 23:59:59";
+        // fromDate = format.format(calendar.getTime());
+        // String toDate2 = toDate + " 23:59:59";
 
         return alltimeMonitoringHistRepository.allTimeCntList(toDate);
     }
 
     @GetMapping("/monitoringDateCntList")
-    public List<AllTimeCntDto> monitoringDateCntList(HttpServletResponse response
-            ,@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) {
+    public List<AllTimeCntDto> monitoringDateCntList(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) {
 
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date now = new Date();
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(calendar.DATE, -6);
+        calendar.add(Calendar.DATE, -6);
 
         fromDate = format.format(calendar.getTime());
         toDate = format.format(now);

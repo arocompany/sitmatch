@@ -2,10 +2,11 @@ package com.nex.user.service;
 
 import com.nex.Chart.dto.*;
 import com.nex.Chart.entity.LoginHistEntity;
-import com.nex.common.EncryptUtil;
-import com.nex.user.entity.*;
-import com.nex.user.repo.AutoRepository;
 import com.nex.Chart.repo.LoginHistRepository;
+import com.nex.common.EncryptUtil;
+import com.nex.user.entity.AutoKeywordInterface;
+import com.nex.user.entity.UserEntity;
+import com.nex.user.repo.AutoRepository;
 import com.nex.user.repo.UserRepository;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.ServletOutputStream;
@@ -17,7 +18,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -97,7 +97,7 @@ public class UserService {
         return "Success";
     }
 
-    public UserEntity deleteCounselor(Long userUno) {
+    public void deleteCounselor(Long userUno) {
         UserEntity user = userRepository.findByUserUno(userUno);
 
         user.setUserId("-");
@@ -115,7 +115,7 @@ public class UserService {
         user.setUseYn("N");
         user.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     public String modifyPassword(String userId, String userPw) {
@@ -155,12 +155,11 @@ public class UserService {
         return userRepository.userHistList(toDate);
     }
 
-    public List<LoginExcelDto> userHistExcel(String fromDate, String toDate2) throws IOException {
+    public List<LoginExcelDto> userHistExcel(String fromDate, String toDate2) {
         return userRepository.userHistExcel(fromDate, toDate2);
     }
 
     public void excelUserHistory(HttpServletResponse response,List<LoginExcelDto> loginExcelDtoList) throws IOException {
-
         Workbook wb = new XSSFWorkbook();
 
         Sheet sheet = wb.createSheet("사용자 접속 이력");
@@ -200,8 +199,6 @@ public class UserService {
             log.info("getCnt"+loginExcelDtoList.get(i).getCnt());
 
         }
-
-
 
         String fileName = "기간별 사용자 현황";
         fileName = URLEncoder.encode(fileName,"UTF-8").replaceAll("\\+", "%20");
