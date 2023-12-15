@@ -2,18 +2,8 @@ package com.nex.search.ImageService;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nex.Chart.repo.NoticeHistRepository;
-import com.nex.Chart.repo.SearchInfoHistRepository;
-import com.nex.Chart.repo.SearchResultHistRepository;
-import com.nex.Chart.repo.TraceHistRepository;
 import com.nex.search.entity.*;
-import com.nex.search.repo.SearchInfoRepository;
-import com.nex.search.repo.SearchJobRepository;
-import com.nex.search.repo.SearchResultRepository;
-import com.nex.search.repo.VideoInfoRepository;
 import com.nex.search.service.SearchService;
-import com.nex.search.service.UrlService;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,14 +70,17 @@ public class SearchImageCnService {
 
     public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, byte tsiTwitter, String tsiType, SearchInfoEntity insertResult, String folder,
                            SearchInfoDto searchInfoDto){
+        log.info("== searchImageCnService 진입 w ==");
         String tsrSns = "11";
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+
         searchSnsByImage(searchImageUrl, searchInfoDto, tsrSns, insertResult);
 
     }
 
     public void searchSnsByImage(String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
+        log.info("== searchSnsByImage 진입 ==");
         int index=0;
 
         String textYandexGl = "cn";
@@ -140,11 +133,13 @@ public class SearchImageCnService {
                 });
     }
 
-    public <INFO, RESULT> List<RESULT> searchYandex(int index,String finalTextYandexGl1, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+
+    public <INFO, RESULT> List<RESULT> searchYandex(int index, String finalTextYandexGl1, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
         String url = textYandexUrl
                 + "?gl=" + finalTextYandexGl1
                 + "&no_cache=" + textYandexNocache
-                + "&api_key=" + textYandexApikey
+                // + "&api_key=" + textYandexApikey
+                + "&api_key=0777bc2e61fb5b82f9457304875b5be732181ee15d05cea257eec37167770593"
                 + "&safe=off"
                 + "&filter=0"
                 + "&nfpr=0"
@@ -165,14 +160,19 @@ public class SearchImageCnService {
 
         if (resultMap.getStatusCodeValue() == 200) {
             ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
             String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "images_results");
+            log.info("jsonInString: "+jsonInString);
+
             INFO info = mapper.readValue(jsonInString, infoClass);
+            log.info("info: "+info);
 
             if (getErrorFn.apply(info) == null) {
                 results = getResultFn.apply(info);
             }
         }
 
+        log.info("results: " + results);
 
         if(results == null || index >= Integer.parseInt(textYandexCountLimit) - 1) {
             loop=false;
@@ -180,7 +180,7 @@ public class SearchImageCnService {
 
         // if(index >1){ loop=false;}
 
-        log.info("results: " + results);
+        log.info("results2: " + results);
         log.debug("searchYandex loop: " + loop);
 
         return results != null ? results : new ArrayList<>();
@@ -247,7 +247,6 @@ public class SearchImageCnService {
         SearchInfoEntity updateResult = searchService.saveSearchInfo_2(insertResult);
 
         List<SearchResultEntity> searchResultEntity = result;
-
 
         //SearchJobEntity sje = null;
         for (SearchResultEntity sre : searchResultEntity) {

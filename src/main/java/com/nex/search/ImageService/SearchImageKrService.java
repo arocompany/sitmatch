@@ -2,18 +2,8 @@ package com.nex.search.ImageService;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nex.Chart.repo.NoticeHistRepository;
-import com.nex.Chart.repo.SearchInfoHistRepository;
-import com.nex.Chart.repo.SearchResultHistRepository;
-import com.nex.Chart.repo.TraceHistRepository;
 import com.nex.search.entity.*;
-import com.nex.search.repo.SearchInfoRepository;
-import com.nex.search.repo.SearchJobRepository;
-import com.nex.search.repo.SearchResultRepository;
-import com.nex.search.repo.VideoInfoRepository;
 import com.nex.search.service.SearchService;
-import com.nex.search.service.UrlService;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

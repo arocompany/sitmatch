@@ -37,6 +37,7 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping("/search")
 public class SearchController {
     private final SearchService searchService;
+    private final SearchImageGoogleLensService searchImageGoogleLensService;
 
     private final SearchTextUsGoogleService searchTextUsGoogleService;
     private final SearchTextKrGoogleService searchTextKrGoogleService;
@@ -220,6 +221,7 @@ public class SearchController {
         insertResult = searchService.saveSearchInfo(searchInfoEntity);
 
         // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
+
         switch (tsiType) {
             case "11": // 11:키워드
                 if(tsiGoogle == 1){
@@ -256,6 +258,7 @@ public class SearchController {
 
                 break;
             case "13": // 13:키워드+이미지
+                searchImageGoogleLensService.searchYandexByGoogleLensImage("11", insertResult);
                 if(tsiGoogle == 1){
                     searchTextImageCnGoogleService.search(insertResult, folder, searchInfoDto);
                     searchTextImageKrGoogleService.search(insertResult, folder, searchInfoDto);
@@ -292,7 +295,10 @@ public class SearchController {
 
                 break;
             case "17": // 17:이미지
+                log.info("== case17 진입 ==");
                 // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+
+                searchImageGoogleLensService.searchYandexByGoogleLensImage("11", insertResult);
                 searchImageCnService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
                 searchImageKrService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
                 searchImageNlService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
@@ -307,6 +313,8 @@ public class SearchController {
                 break;
 
         }
+
+       // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
 
         log.info("====== search 끝 ======");
 

@@ -1,13 +1,11 @@
 package com.nex.user.entity;
 
-import com.nex.search.entity.SearchResultEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Entity
 @AllArgsConstructor

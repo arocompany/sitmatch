@@ -1,16 +1,27 @@
 package com.nex.batch.tracking;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.RestTemplateConfig;
 import com.nex.common.Consts;
 import com.nex.search.entity.SearchInfoEntity;
+import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -86,7 +97,7 @@ public class TrackingSearchResultService{
      */
     public  <INFO, RESULT> List<RESULT> getAllResults(SearchInfoEntity searchInfoEntity
             , Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getSubFn, BiConsumer<RESULT, Integer> setTsiUnoCn
-            , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Boolean isText) {
+            , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Boolean isText) throws JsonProcessingException {
         log.info("모든 결과 List 추출 getAllResults 진입");
         List<String> siteUrls = searchService.findTsrSiteUrlDistinctByTsiUno(searchInfoEntity.getTsiUno());
 
@@ -182,7 +193,7 @@ public class TrackingSearchResultService{
      */
     private <INFO, RESULT> List<RESULT> getResults(String tsiKeyword, SearchInfoEntity searchInfoEntity, String dvn, List<String> siteUrls
             , Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getSubFn, BiConsumer<RESULT, Integer> setTsiUnoCn
-            , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Boolean isText) {
+            , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Boolean isText) throws JsonProcessingException {
         log.info("결과 List 추출 getResults 진입");
         List<RESULT> results = new ArrayList<>();
 
@@ -229,7 +240,7 @@ public class TrackingSearchResultService{
     private <INFO, RESULT> List<RESULT> getResults(String tsiKeyword, SearchInfoEntity searchInfoEntity, String dvn, List<String> siteUrls
             , List<RESULT> results, int index, Class<INFO> infoClass, Function<INFO, String> getErrorFn
             , Function<INFO, List<RESULT>> getSubFn, BiConsumer<RESULT, Integer> setTsiUnoCn
-            , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Boolean isText) {
+            , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Boolean isText) throws JsonProcessingException {
         log.info("이미지 결과 목록 추출 getResults 진입, index : "+index);
         boolean isFirst = index == 0;
         boolean loop = true;
@@ -245,7 +256,7 @@ public class TrackingSearchResultService{
                     .supplyAsync(() -> {
                         try {
                             // text기반 yandex 검색
-                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);searchBatchYandex
+                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
                             return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
                         } catch (Exception e) {
                             log.debug(e.getMessage());
@@ -260,7 +271,172 @@ public class TrackingSearchResultService{
             }
 
             index++;
+
         } while (loop);
+
+        // cn
+        do {
+            String url = getUrl(tsiKeyword, index, isText, searchInfoEntity);
+            log.info(" ### url ### : {} ", url);
+
+            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
+                    .supplyAsync(() -> {
+                        try {
+                            // text기반 yandex 검색
+                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
+                            return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
+                        } catch (Exception e) {
+                            log.debug(e.getMessage());
+                        }
+                        return null;
+                    });
+
+            completableFutures.add(listCompletableFuture);
+
+            if (index >= textYandexCountLimit - 1) {
+                loop = false;
+            }
+
+            index++;
+
+        } while (loop);
+
+        // kr
+        do {
+            String url = getUrl(tsiKeyword, index, isText, searchInfoEntity);
+            log.info(" ### url ### : {} ", url);
+
+            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
+                    .supplyAsync(() -> {
+                        try {
+                            // text기반 yandex 검색
+                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
+                            return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
+                        } catch (Exception e) {
+                            log.debug(e.getMessage());
+                        }
+                        return null;
+                    });
+
+            completableFutures.add(listCompletableFuture);
+
+            if (index >= textYandexCountLimit - 1) {
+                loop = false;
+            }
+
+            index++;
+
+        } while (loop);
+
+        // nl
+        do {
+            String url = getUrl(tsiKeyword, index, isText, searchInfoEntity);
+            log.info(" ### url ### : {} ", url);
+
+            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
+                    .supplyAsync(() -> {
+                        try {
+                            // text기반 yandex 검색
+                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
+                            return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
+                        } catch (Exception e) {
+                            log.debug(e.getMessage());
+                        }
+                        return null;
+                    });
+
+            completableFutures.add(listCompletableFuture);
+
+            if (index >= textYandexCountLimit - 1) {
+                loop = false;
+            }
+
+            index++;
+
+        } while (loop);
+
+        // ru
+        do {
+            String url = getUrl(tsiKeyword, index, isText, searchInfoEntity);
+            log.info(" ### url ### : {} ", url);
+
+            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
+                    .supplyAsync(() -> {
+                        try {
+                            // text기반 yandex 검색
+                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
+                            return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
+                        } catch (Exception e) {
+                            log.debug(e.getMessage());
+                        }
+                        return null;
+                    });
+
+            completableFutures.add(listCompletableFuture);
+
+            if (index >= textYandexCountLimit - 1) {
+                loop = false;
+            }
+
+            index++;
+
+        } while (loop);
+
+        // th
+        do {
+            String url = getUrl(tsiKeyword, index, isText, searchInfoEntity);
+            log.info(" ### url ### : {} ", url);
+
+            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
+                    .supplyAsync(() -> {
+                        try {
+                            // text기반 yandex 검색
+                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
+                            return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
+                        } catch (Exception e) {
+                            log.debug(e.getMessage());
+                        }
+                        return null;
+                    });
+
+            completableFutures.add(listCompletableFuture);
+
+            if (index >= textYandexCountLimit - 1) {
+                loop = false;
+            }
+
+            index++;
+
+        } while (loop);
+
+        // vn
+        do {
+            String url = getUrl(tsiKeyword, index, isText, searchInfoEntity);
+            log.info(" ### url ### : {} ", url);
+
+            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
+                    .supplyAsync(() -> {
+                        try {
+                            // text기반 yandex 검색
+                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
+                            return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
+                        } catch (Exception e) {
+                            log.debug(e.getMessage());
+                        }
+                        return null;
+                    });
+
+            completableFutures.add(listCompletableFuture);
+
+            if (index >= textYandexCountLimit - 1) {
+                loop = false;
+            }
+
+            index++;
+
+        } while (loop);
+
+
 
         //결과 값을 받아온다.
         List<RESULT> searchResults = completableFutures.stream().map(CompletableFuture::join).filter(Objects::nonNull).flatMap(s -> s.stream()).toList();
@@ -340,7 +516,7 @@ public class TrackingSearchResultService{
             // yandex search url
              url = textYandexUrl
                     + "?q=" + tsiKeyword
-                    + "&gl=" + textYandexGl
+                    + "&gl=vn"
                     + "&no_cache=" + textYandexNocache
                     + "&location=" + textYandexLocation
                     + "&tbm=" + textYandexTbm
@@ -350,20 +526,6 @@ public class TrackingSearchResultService{
                     + "&nfpr=0"
                     + "&api_key=" + textYandexApikey
                     + "&engine=" + textYandexEngine;
-/*
-            url = textYandexUrl
-                    + "?q=" + tsiKeyword
-                    + "&gl=" + textYandexGl
-                    + "&no_cache=" + textYandexNocache
-                    + "&location=" + textYandexLocation
-                    + "&tbm=" + textYandexTbm
-                    + "&ijn=" + String.valueOf(index*10)
-                    + "&safe=off"
-                    + "&filter=0"
-                    + "&nfpr=0"
-                    + "&api_key=" + textYandexApikey
-                    + "&engine=" + textYandexEngine;
-*/
 
         }
         //이미지 검색
@@ -373,19 +535,8 @@ public class TrackingSearchResultService{
             searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
             searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
 
-            /*
             url = textYandexUrl
-                    + "&gl=" + textYandexGl
-                    + "&no_cache=" + textYandexNocache
-                    + "&api_key=" + textYandexApikey
-                    + "&engine=" + imageYandexEngine
-                    + "&safe=off"
-                    + "&filter=0"
-                    + "&nfpr=0"
-                    + "&image_url=" + searchImageUrl;
-             */
-            url = textYandexUrl
-                    + "?gl=" + textYandexGl
+                    + "?gl=vn"
                     + "&no_cache=" + textYandexNocache
                     + "&api_key=" + textYandexApikey
                     + "&safe=off"
@@ -397,6 +548,63 @@ public class TrackingSearchResultService{
         }
 
         return url;
+    }
+
+    private String getGoogleLensUrl(String tsiKeyword, int index, Boolean isText, SearchInfoEntity searchInfoEntity) throws JsonProcessingException {
+        log.info("getGoogleLensUrl 진입");
+        String url, url2 = null;
+
+        //텍스트 검색
+        if (isText) {
+            log.info("텍스트검색 getGoogleLensUrl 진입");
+            // yandex search url
+            url = textYandexUrl
+                    + "?q=" + tsiKeyword
+                    + "&gl=" + textYandexGl
+                    + "&no_cache=" + textYandexNocache
+                    + "&location=" + textYandexLocation
+                    + "&tbm=" + textYandexTbm
+                    + "&start=" + String.valueOf(index*10)
+                    + "&safe=off"
+                    + "&filter=0"
+                    + "&nfpr=0"
+                    + "&api_key=" + textYandexApikey
+                    + "&engine=" + textYandexEngine;
+
+        } else { //이미지 검색
+            log.info("이미지검색 getGoogleLensUrl 진입");
+            String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
+            searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+            searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
+
+            url = textYandexUrl
+                    + "?engine=google_lens"
+                    + "&url=" + searchImageUrl
+                    + "&country="+textYandexGl
+                    + "&api_key=" + textYandexApikey;
+
+            HttpHeaders header = new HttpHeaders();
+            HttpEntity<?> entity = new HttpEntity<>(header);
+            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+            ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+
+            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            String jsonInString = mapper.writeValueAsString(resultMap.getBody());
+            JsonNode rootNode = mapper.readTree(jsonInString);
+            String pageToken = rootNode.at("/image_sources_search/page_token").asText();
+
+            System.out.println("배치 pageToken: " + pageToken);
+
+            url2 = textYandexUrl
+                    + "?engine=google_lens_image_sources"
+                    + "&page_token=" + pageToken
+                    + "&country="+textYandexGl
+                    + "&safe=off"
+                    + "&api_key=" + textYandexApikey;
+
+        }
+
+        return url2;
     }
 
     /**
@@ -422,7 +630,7 @@ public class TrackingSearchResultService{
             CompletableFuture<SearchResultEntity> completableFuture = CompletableFuture
                     .supplyAsync(() -> {
                         try {
-                            String tsrSns;                                      //SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북)
+                            String tsrSns; //SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북)
                             // RestTemplate restTemplate = new RestTemplate();     //RestTemplate
 
                             //페이스북
@@ -467,5 +675,16 @@ public class TrackingSearchResultService{
 
         return searchResults;
     }
+
+    /*
+    public SearchInfoEntity searchResultAllTimeEntity(SearchInfoEntity searchResultEntity) {
+        //검색 작업 엔티티 추출
+        SearchInfoEntity sie = searchService.getSearchResultAllTimeEntity(searchResultEntity);
+
+        //검색 작업 엔티티 기본값 세팅
+
+        return sie;
+    }
+    */
 
 }

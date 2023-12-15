@@ -1,7 +1,8 @@
 package com.nex.base.controller;
 
+import com.nex.Chart.dto.AllTimeMonitoringHistDto;
+import com.nex.Chart.repo.AlltimeMonitoringHistRepository;
 import com.nex.common.Consts;
-import com.nex.newKeyword.service.NewKeywordService;
 import com.nex.search.entity.DefaultQueryDtoInterface;
 import com.nex.search.repo.NewKeywordRepository;
 import com.nex.search.repo.SearchJobRepository;
@@ -10,7 +11,6 @@ import com.nex.user.entity.NewKeywordDto;
 import com.nex.user.entity.SessionInfoDto;
 import com.nex.user.repo.AutoRepository;
 import com.nex.user.repo.UserRepository;
-import com.nex.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,12 +32,10 @@ import java.util.Optional;
 public class BaseController {
     private final UserRepository userRepository;
     private final SearchService searchService;
-    private final UserService userService;
     private final AutoRepository autoRepository;
     private final SearchJobRepository searchJobRepository;
-    // private final SearchTextUsService searchTextUsService;
-    private final NewKeywordService newKeywordService;
     private final NewKeywordRepository newKeywordRepository;
+    private final AlltimeMonitoringHistRepository alltimeMonitoringHistRepository;
 
 
     @GetMapping("/")
@@ -224,13 +223,13 @@ public class BaseController {
                                 @RequestParam(required = false, defaultValue = "1") Integer searchPage,
                                 @RequestParam(required = false, defaultValue = "") String searchKeyword,
                                 @RequestParam(required = false, defaultValue = "1") Integer tracePage,
+                                @RequestParam(required = false, defaultValue = "") String userKeyword,
                                 @RequestParam(required = false, defaultValue = "") String traceKeyword,
                                 @RequestParam(required=false, defaultValue = "0") String traceHistoryValue) {
         ModelAndView modelAndView = new ModelAndView("html/history");
         Map<String, Object> searchHistMap = null;
 
-        log.info("monitoringValue: " + traceHistoryValue);
-
+        log.info("userKeyword: "+userKeyword +" traceKeyword: "+traceKeyword);
         // Page<List<ResultCntQueryDtoInterface>> searchHistMapCnt = null;
 
         log.info("history sessionInfoDto: " + sessionInfoDto.getUserId());
@@ -264,7 +263,6 @@ public class BaseController {
         } else if(traceHistoryValue.equals("10")){
             traceHistoryMap = searchService.getTraceHistoryMonitoringList(tracePage, traceKeyword);
         }
-
 
         // 검색이력 데이터
         modelAndView.addObject("userCount", searchService.getUserIdMap());
@@ -881,6 +879,49 @@ public class BaseController {
         return modelAndView;
     }
 
+    @GetMapping("/userSearchHistory")
+    public ModelAndView userSearchHistory(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
+                                          @RequestParam(required = false, defaultValue = "1") Integer searchPage,
+                                          @RequestParam(required = false, defaultValue = "") String searchKeyword) {
+        ModelAndView modelAndView = new ModelAndView("html/userSearchHistory");
+        log.info("searchKeyword: "+searchKeyword+" page: " + searchPage);
+        modelAndView.addObject("sessionInfo", sessionInfoDto);
+        modelAndView.addObject("headerMenu", "userSearchHistory");
+
+        Map<String, Object> userSearchHistoryList = new HashMap<>();
+
+       // userSearchHistoryList = searchService.getUserSearchHistoryList(searchPage, searchKeyword);
+
+        modelAndView.addObject("userCount", searchService.getUserIdMap());
+        modelAndView.addObject("userIdMap", searchService.getUserIdMap());
+        modelAndView.addObject("userSearchHistoryList", userSearchHistoryList.get("userSearchHistoryList"));
+        modelAndView.addObject("userSearchHistoryListCount", userSearchHistoryList.get("totalElements"));
+        modelAndView.addObject("searchNumber", userSearchHistoryList.get("number"));
+        modelAndView.addObject("maxPage", userSearchHistoryList.get("maxPage"));
+        modelAndView.addObject("searchTotalPages", userSearchHistoryList.get("totalPages"));
+        // modelAndView.addObject("searchKeyword", searchKeyword);
+
+
+        return modelAndView;
+    }
+
+    @GetMapping("/allTimeMonitoringHist")
+    public ModelAndView allTimeMonitoringHist(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
+                                                @RequestParam String tsrUno) {
+        log.info(" === allTimeMonitoringHist 진입 === " + tsrUno);
+        ModelAndView modelAndView = new ModelAndView("html/allTimeMonitoringHist");
+
+        List<AllTimeMonitoringHistDto> allTimeMonitoringHistList = alltimeMonitoringHistRepository.allTimeMonitoringList(String.valueOf(tsrUno));
+
+        for(int i=0; i<allTimeMonitoringHistList.size(); i++){
+            log.info("amh: "+allTimeMonitoringHistList.get(i).getClkDmlDt());
+        }
+
+        modelAndView.addObject("allTimeMonitoringHistList", allTimeMonitoringHistList);
+        modelAndView.addObject("sessionInfo", sessionInfoDto);
+
+        return modelAndView;
+    }
 
 
 }

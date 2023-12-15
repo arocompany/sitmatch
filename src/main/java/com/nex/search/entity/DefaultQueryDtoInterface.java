@@ -45,7 +45,6 @@ public interface DefaultQueryDtoInterface {
     String getTmrSimilarity();
     String getProgressPercent();
     String getTuUserId();
-
     String getMonitoringCd();
 
     String getMaxSimilarity();
@@ -54,5 +53,8 @@ public interface DefaultQueryDtoInterface {
     String getTsi3tsiuno();
     String getTsi3Keyword();
 
+    String getLastAlltimeHist();
+
+    String getUserKeyword();
 
 }

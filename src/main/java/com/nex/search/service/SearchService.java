@@ -118,9 +118,6 @@ public class SearchService {
 
     /**
      * 검색
-     * <p>
-     * 2023-03-26
-     * SearchController 에 있던 로직 이동
      *
      * @param tsiGoogle    (구글 검색 여부)
      * @param tsiFacebook  (페이스북 검색 여부)
@@ -138,6 +135,7 @@ public class SearchService {
             log.info("이미지만 검색시");
             String tsrSns = "11";
             searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
+
         } else if(tsiType.equals("19")){
             String tsrSns = "11";
             searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
@@ -171,9 +169,6 @@ public class SearchService {
 
     /**
      * 구글 검색
-     * <p>
-     * 2023-03-26
-     * SearchController 에 있던 로직 이동
      *
      * @param tsiType      (검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19: 영상)
      * @param insertResult (검색 이력 Entity)
@@ -208,9 +203,6 @@ public class SearchService {
 
     /**
      * Yandex 텍스트 검색
-     * <p>
-     * 2023-03-26
-     * SearchController 에 있던 로직 이동
      *
      * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
      * @param insertResult (검색 이력 Entity)
@@ -303,7 +295,6 @@ public class SearchService {
             index++;
         } while (loop);
 
-
         index=0;
         loop=true;
 
@@ -382,7 +373,6 @@ public class SearchService {
             index++;
         } while (loop);
 
-
         index=0;
         loop=true;
 
@@ -414,9 +404,6 @@ public class SearchService {
 
     /**
      * Yandex 이미지+키워드 검색
-     * <p>
-     * 2023-05-23
-     * SearchController 에 있던 로직 이동
      *
      * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
      * @param insertResult (검색 이력 Entity)
@@ -494,7 +481,6 @@ public class SearchService {
             index++;
         } while (loop);
 
-
         index=0;
         loop=true;
 
@@ -521,7 +507,6 @@ public class SearchService {
 
             index++;
         } while (loop);
-
 
         index=0;
         loop=true;
@@ -550,7 +535,6 @@ public class SearchService {
             index++;
         } while (loop);
 
-
         index=0;
         loop=true;
 
@@ -578,7 +562,6 @@ public class SearchService {
             index++;
         } while (loop);
 
-
         index=0;
         loop=true;
 
@@ -605,7 +588,6 @@ public class SearchService {
 
             index++;
         } while (loop);
-
 
         index=0;
         loop=true;
@@ -639,9 +621,6 @@ public class SearchService {
 
     /**
      * Yandex 이미지 검색
-     * <p>
-     * 2023-03-26
-     * SearchController 에 있던 로직 이동
      *
      * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
      * @param insertResult (검색 이력 Entity)
@@ -752,7 +731,6 @@ public class SearchService {
             index++;
         } while (loop);
 
-
         index = 0;
         loop=true;
 
@@ -777,7 +755,6 @@ public class SearchService {
 
             index++;
         } while (loop);
-
 
         index = 0;
         loop=true;
@@ -804,7 +781,6 @@ public class SearchService {
             index++;
         } while (loop);
 
-
         index = 0;
         loop=true;
 
@@ -830,8 +806,8 @@ public class SearchService {
             index++;
         } while (loop);
 
-
     }
+
 
     /**
      * @deprecated 2023-03-26 사용 중지, 메소드 2개로 분리 {@link #searchYandex(String, Class, Function, Function)}, {@link #saveYandex(List, String, SearchInfoEntity, Function, Function, Function, Function, Function, Function)}
@@ -998,28 +974,12 @@ public class SearchService {
 
         log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         sre.setTsrSns("11");
-/*
-        //Facebook 검색이고, source 값이 Facebook 인 경우
-        if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
-            sre.setTsrSns("17");
-        }
-        //Instagram 검색이고, source 값이 Instagram 인 경우
-        else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
-            sre.setTsrSns("15");
-        }
-        //그 외는 구글
-        else {
-            sre.setTsrSns("11");
-        }
-*/
 
         return sre;
     }
 
     /**
      * 검색 작업 엔티티 추출
-     * <p>
-     * 2023-03-26 추가
      *
      * @param sre (검색 결과 엔티티)
      * @return SearchJobEntity (검색 작업 엔티티)
@@ -1125,10 +1085,9 @@ public class SearchService {
     }
     */
 
-
     public <RESULT> void saveImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
             , RESULT result, Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn) throws IOException {
-        //Resource resource = resourceLoader.getResource(imageUrl);
+        // Resource resource = resourceLoader.getResource(imageUrl);
         // String imageUrl = "11".equals(sre.getTsrSns()) ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
         // imageUrl = imageUrl != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
 
@@ -1157,7 +1116,7 @@ public class SearchService {
 //                }
             }
 
-            //2023-03-26 에러가 안나도 imageBytes 가 null 일 때가 있음
+            // 에러가 안나도 imageBytes 가 null 일 때가 있음
             if (imageBytes == null) {
                 imageUrl = getThumbnailFn.apply(result);
                 resource = resourceLoader.getResource(imageUrl);
@@ -1234,7 +1193,7 @@ public class SearchService {
 //                }
             }
 
-            //2023-03-26 에러가 안나도 imageBytes 가 null 일 때가 있음
+            // 에러가 안나도 imageBytes 가 null 일 때가 있음
             if (imageBytes == null) {
                 imageUrl = getThumnailFn.apply(result).toString();
                 log.debug("imageUrl: "+imageUrl);
@@ -1284,8 +1243,6 @@ public class SearchService {
 
     /**
      * 검색 작업 저장
-     * <p>
-     * 2023-03-26 두 메소드 내용이 같아서 하나로 사용 {@link #saveImgSearchYandexByText(List, SearchInfoEntity)}, {@link #saveImgSearchYandexByImage(List, SearchInfoEntity)}
      *
      * @param result       (검색 결과 엔티티 List)
      * @param insertResult (검색 이력 엔티티)
@@ -1400,8 +1357,6 @@ public class SearchService {
                         }
 
                         //Resource resource = resourceLoader.getResource(imageUrl);
-                        //2023-03-21
-                        //구글은 original, Facebook, Instagram 는 thumbnail 로 값을 가져오도록 변경
                         Resource resource = resourceLoader.getResource("11".equals(sre.getTsrSns()) ? imageUrl : images_result.getThumbnail());
                         if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("")) {
 
@@ -1457,9 +1412,6 @@ public class SearchService {
 
     /**
      * Images_resultsByImage 추출
-     * <p>
-     * 2023-03-26
-     * 기존에 데이터 가져오는 부분, 저장 하는 부분 분리
      *
      * @param url (검색 Url)
      * @return List<Images_resultsByImage> (Images_resultsByImage List)
@@ -1490,8 +1442,7 @@ public class SearchService {
 
     /**
      * 텍스트 검색
-     * <p>
-     * 2023-05-25 추가
+     *
      * {@link #searchYandexByText(String, String, SearchInfoEntity)} {@link #searchYandexByImage(String, String, SearchInfoEntity)}}
      *
      * @param url         (URL)
@@ -1533,9 +1484,7 @@ public class SearchService {
 
     /**
      * 텍스트, 이미지 검색
-     * <p>
-     * 2023-03-26 추가
-     * 2개 메소드의 내용이 비슷하여 조회, 저장 메소드를 따로 분리하여 통합
+     *
      * {@link #searchYandexByText(String, String, SearchInfoEntity)} {@link #searchYandexByImage(String, String, SearchInfoEntity)}}
      *
      * @param url         (URL)
@@ -1631,9 +1580,6 @@ public class SearchService {
 
     /**
      * 검색 결과 저장
-     * <p>
-     * 2023-03-26
-     * 기존에 데이터 가져오는 부분, 저장 하는 부분 분리
      *
      * @param results        (RESULT List)
      * @param tsrSns         (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
@@ -1699,6 +1645,7 @@ public class SearchService {
 
         return sreList;
     }
+
     // ,Function<RESULT, String> getThumnailFn
     public <RESULT> List<SearchResultEntity> saveYoutube(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getPositionFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn ,Function<RESULT, Map<String,String>> getThumnailFn) throws Exception {
@@ -1762,7 +1709,6 @@ public class SearchService {
                 SearchResultEntity sre = null;
                 for (Images_resultsByImage images_result : YandexByImageResult.getInline_images()) {
                     try {
-
                         String imageUrl = images_result.getOriginal();
                         sre = new SearchResultEntity();
                         sre.setTsiUno(insertResult.getTsiUno());
@@ -1771,9 +1717,6 @@ public class SearchService {
                         sre.setTsrTitle(images_result.getTitle());
                         sre.setTsrSiteUrl(images_result.getLink());
                         //sre.setTsrSns("11");
-
-                        //2023-03-20
-                        //Facebook, Instagram 도 Google 로 검색, source 값으로 Facebook, Instagram 판별
 
                         //Facebook 검색이고, source 값이 Facebook 인 경우
                         if ("17".equals(tsrSns) && images_result.isFacebook()) {
@@ -1788,18 +1731,12 @@ public class SearchService {
                             sre.setTsrSns("11");
                         }
 
-
-                        //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                         if (!tsrSns.equals(sre.getTsrSns())) {
                             continue;
                         }
 
-
                         //Resource resource = resourceLoader.getResource(imageUrl);
-                        //2023-03-21
-                        //구글은 original, Facebook, Instagram 는 thumbnail 로 값을 가져오도록 변경
                         Resource resource = resourceLoader.getResource("11".equals(sre.getTsrSns()) ? imageUrl : images_result.getThumbnail());
-
 
                         if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("")) {
 
@@ -1816,7 +1753,6 @@ public class SearchService {
                                 extension = extension.replaceAll(regExpr, "").substring(0, Math.min(extension.length(), 10));
                                 extension_ = extension.substring(1);
                             }
-
 
                             byte[] imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
                             File destdir = new File(fileLocation2 + folder + File.separator + insertResult.getTsiUno());
@@ -2269,7 +2205,8 @@ public class SearchService {
             log.error(e.getMessage(), e);
         }
 
-    }*/
+    }
+    */
 
     @Async
     public void searchYandexByVideo(String tsrSns, SearchInfoEntity insertResult, String folder, String location3) throws Exception {
@@ -2825,8 +2762,6 @@ public class SearchService {
 
     /**
      * 검색 작업 엔티티 기본값 세팅
-     * <p>
-     * 2023-03-26 추가
      *
      * @param sje (검색 작업 엔티티)
      */
@@ -2853,6 +2788,8 @@ public class SearchService {
     public static void setSearchInfoDefault(SearchInfoEntity sie) {
         sie.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sie.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        // sie.setTsiAlltimeMonitoring(Timestamp.valueOf(LocalDateTime.now())+"   ");
+        // sie.setTsiAlltimeMonitoring(String.valueOf(Timestamp.valueOf(LocalDateTime.now())+"   "));
         sie.setDataStatCd("10");
         sie.setSearchValue("0");
     }
@@ -2876,7 +2813,6 @@ public class SearchService {
 
     /**
      * 검색 결과 엔티티 기본값 세팅
-     * <p>
      *
      * @param sre (검색 결과 엔티티)
      */
@@ -3201,8 +3137,6 @@ public class SearchService {
             searchResultEntity.setTrkStatCd(trkStatCd);
             searchResultRepository.save(searchResultEntity);
         }
-
-
     }
 
     public void setMonitoringCd(int userUno,String userId, Integer tsrUno) {
@@ -3671,7 +3605,6 @@ public class SearchService {
                     }
                 });
     }
-
 
     public void CompletableFutureYoutubeByResult(String url, String tsrSns, SearchInfoEntity insertResult) {
         // 이미지

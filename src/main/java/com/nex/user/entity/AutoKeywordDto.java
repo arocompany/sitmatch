@@ -1,11 +1,7 @@
 package com.nex.user.entity;
 
-import com.nex.search.entity.SearchInfoEntity;
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.sql.Timestamp;
-import java.util.Objects;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter

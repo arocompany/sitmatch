@@ -108,6 +108,8 @@ public class SearchResultEntity {
         this.tsrJson = tsrJson;
     }
 
+
+
     public String getTsrImgPath() {
         return tsrImgPath;
     }
