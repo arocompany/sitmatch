@@ -26,6 +26,7 @@ public class YandexImagesResult {
     private int original_height;
 
 
+
     public boolean isInstagram() {
         return "Instagram".equals(source);
     }
