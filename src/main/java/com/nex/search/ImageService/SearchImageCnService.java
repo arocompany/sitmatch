@@ -127,16 +127,12 @@ public class SearchImageCnService {
                         log.error(e.getMessage(), e);
                         return null;
                     }
-                });
-
-                /*
-                .thenRun(()->{
+                }).thenRun(()->{
                     if(loop == true){
                         log.info("loop == true 진입: " + loop);
                         CompletableFutureYandexByImage(index, finalTextYandexGl1,searchImageUrl,searchInfoDto, tsrSns,insertResult);
                     }
                 });
-                 */
 
     }
 
