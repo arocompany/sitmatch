@@ -72,10 +72,10 @@ public class SearchImageGoogleLensService {
     public void searchYandexByGoogleLensImage(String tsrSns, SearchInfoEntity insertResult) throws JsonProcessingException {
         log.info("searchYandexByGoogleLensImage 진입");
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
-        // searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+        searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
 
         // test용 이미지
-        searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20231129/f7497f8d-4784-4841-8897-e213a878cca3.jpg"; // 조세호
+        // searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20231129/f7497f8d-4784-4841-8897-e213a878cca3.jpg"; // 조세호
         // searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20231021/563ca536-01dd-4931-a7f8-9b93cc1dbd54.jpg"; // 아청물
 
         log.info("searchImageUrl: "+searchImageUrl);
@@ -87,8 +87,7 @@ public class SearchImageGoogleLensService {
                     + "?engine=google_lens"
                     + "&url=" + searchImageUrl
                     + "&country=cn"
-                    + "&api_key=0777bc2e61fb5b82f9457304875b5be732181ee15d05cea257eec37167770593";
-                    // + "&api_key="+textYandexApikey;
+                    + "&api_key="+textYandexApikey;
 
             log.info("url: " + url);
 
@@ -110,8 +109,7 @@ public class SearchImageGoogleLensService {
                     + "&page_token=" + pageToken
                     + "&country=cn"
                     + "&safe=off"
-                    + "&api_key=0777bc2e61fb5b82f9457304875b5be732181ee15d05cea257eec37167770593";
-                    // + "&api_key="+textYandexApikey;
+                    + "&api_key="+textYandexApikey;
 
             CompletableFutureGoogleLensByImage(url2, tsrSns, insertResult);
 

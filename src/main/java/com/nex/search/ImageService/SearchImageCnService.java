@@ -75,6 +75,8 @@ public class SearchImageCnService {
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
 
+        // searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20231021/563ca536-01dd-4931-a7f8-9b93cc1dbd54.jpg"; // 아청물
+
         searchSnsByImage(searchImageUrl, searchInfoDto, tsrSns, insertResult);
 
     }
@@ -125,12 +127,17 @@ public class SearchImageCnService {
                         log.error(e.getMessage(), e);
                         return null;
                     }
-                }).thenRun(()->{
+                });
+
+                /*
+                .thenRun(()->{
                     if(loop == true){
                         log.info("loop == true 진입: " + loop);
                         CompletableFutureYandexByImage(index, finalTextYandexGl1,searchImageUrl,searchInfoDto, tsrSns,insertResult);
                     }
                 });
+                 */
+
     }
 
 
@@ -138,8 +145,7 @@ public class SearchImageCnService {
         String url = textYandexUrl
                 + "?gl=" + finalTextYandexGl1
                 + "&no_cache=" + textYandexNocache
-                // + "&api_key=" + textYandexApikey
-                + "&api_key=0777bc2e61fb5b82f9457304875b5be732181ee15d05cea257eec37167770593"
+                + "&api_key=" + textYandexApikey
                 + "&safe=off"
                 + "&filter=0"
                 + "&nfpr=0"
