@@ -1,6 +1,5 @@
 package com.nex.base.controller;
 
-import com.nex.Chart.dto.AllTimeMonitoringHistDto;
 import com.nex.Chart.repo.AlltimeMonitoringHistRepository;
 import com.nex.common.Consts;
 import com.nex.search.entity.DefaultQueryDtoInterface;
@@ -904,7 +903,7 @@ public class BaseController {
 
         return modelAndView;
     }
-
+/*
     @GetMapping("/allTimeMonitoringHist")
     public ModelAndView allTimeMonitoringHist(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                                 @RequestParam String tsrUno) {
@@ -922,6 +921,6 @@ public class BaseController {
 
         return modelAndView;
     }
-
+ */
 
 }
