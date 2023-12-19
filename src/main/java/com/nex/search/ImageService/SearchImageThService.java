@@ -201,7 +201,7 @@ public class SearchImageThService {
                 log.info("imageUrl2: "+imageUrl);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = searchService.getSearchResultEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = searchService.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {
@@ -226,6 +226,7 @@ public class SearchImageThService {
 
         return sreList;
     }
+
     public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
         insertResult.setTsiStat("13");
 

@@ -70,6 +70,10 @@ public class SearchResultEntity {
     @Column(name = "TSR_IMG_SIZE")
     private String tsrImgSize;
 
+    @Basic
+    @Column(name = "TSR_SEARCH_VALUE")
+    private String tsrSearchValue;
+
     /*
     @Basic
     @Column(name = "re_monitor_cnt")
@@ -141,6 +145,12 @@ public class SearchResultEntity {
     public void setTsrDownloadUrl(String tsrDownloadUrl) {
         this.tsrDownloadUrl = tsrDownloadUrl;
     }
+
+    public String getTsrSearchValue() {
+        return tsrSearchValue;
+    }
+
+    public void setTsrSearchValue(String tsrSearchValue) { this.tsrSearchValue = tsrSearchValue; }
 
     public Timestamp getFstDmlDt() {
         return fstDmlDt;

@@ -936,6 +936,34 @@ public class SearchService {
      * @param <RESULT>      (결과)
      * @return RESULT        (결과)
      */
+
+    public <RESULT> SearchResultEntity getSearchResultGoogleLensEntity(int tsiUno, String tsrSns, RESULT result
+            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
+        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
+        SearchResultEntity sre = new SearchResultEntity();
+        sre.setTsiUno(tsiUno);
+        sre.setTsrJson(result.toString());
+        sre.setTsrDownloadUrl(getOriginalFn.apply(result));
+        sre.setTsrTitle(getTitleFn.apply(result));
+        sre.setTsrSiteUrl(getLinkFn.apply(result));
+        sre.setTsrSearchValue("1");
+
+        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
+        //sre.setTsrSns("11");
+
+        //Facebook 검색이고, source 값이 Facebook 인 경우
+        if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
+            sre.setTsrSns("17");
+        } else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
+            sre.setTsrSns("15");
+        } else {
+            sre.setTsrSns("11");
+        }
+
+        return sre;
+    }
+
     public <RESULT> SearchResultEntity getSearchResultEntity(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
@@ -946,6 +974,33 @@ public class SearchService {
         sre.setTsrDownloadUrl(getOriginalFn.apply(result));
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(getLinkFn.apply(result));
+
+        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
+        //sre.setTsrSns("11");
+
+        //Facebook 검색이고, source 값이 Facebook 인 경우
+        if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
+            sre.setTsrSns("17");
+        } else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
+            sre.setTsrSns("15");
+        } else {
+            sre.setTsrSns("11");
+        }
+
+        return sre;
+    }
+
+    public <RESULT> SearchResultEntity getSearchResultGoogleReverseEntity(int tsiUno, String tsrSns, RESULT result
+            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
+        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
+        SearchResultEntity sre = new SearchResultEntity();
+        sre.setTsiUno(tsiUno);
+        sre.setTsrJson(result.toString());
+        sre.setTsrDownloadUrl(getOriginalFn.apply(result));
+        sre.setTsrTitle(getTitleFn.apply(result));
+        sre.setTsrSiteUrl(getLinkFn.apply(result));
+        sre.setTsrSearchValue("0");
 
         log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");
@@ -1008,7 +1063,6 @@ public class SearchService {
      * @param getOriginalFn  (original getter Function)
      * @param getThumbnailFn (thumbnail getter Function)
      * @param <RESULT>       (결과)
-     * @throws IOException
      */
 
     /*
@@ -1097,7 +1151,7 @@ public class SearchService {
         log.info("imageUrl: "+imageUrl);
 
         //2023-03-26 에러 나는 url 처리
-        byte[] imageBytes = null;
+        byte[] imageBytes;
         if (imageUrl != null) {
             Resource resource = resourceLoader.getResource(imageUrl);
             try {
@@ -2788,7 +2842,7 @@ public class SearchService {
     public static void setSearchInfoDefault(SearchInfoEntity sie) {
         sie.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sie.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
-        // sie.setTsiAlltimeMonitoring(Timestamp.valueOf(LocalDateTime.now())+"   ");
+        sie.setTsiAlltimeMonitoring(null);
         // sie.setTsiAlltimeMonitoring(String.valueOf(Timestamp.valueOf(LocalDateTime.now())+"   "));
         sie.setDataStatCd("10");
         sie.setSearchValue("0");
@@ -2943,9 +2997,34 @@ public class SearchService {
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
         outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
         outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
 
         return outMap;
     }
+
+    public Map<String, Object> getTraceHistoryUserFileList(Integer page, String keyword) {
+        log.info(" == getTraceHistoryUserFileList 진입 == ");
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceUserFileList(keyword, pageRequest);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
+        return outMap;
+    }
+
+
 
     public Map<String, Object> getTraceHistoryMonitoringList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();
@@ -2963,9 +3042,75 @@ public class SearchService {
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
         outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
         outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
 
         return outMap;
     }
+
+    public Map<String, Object> getTraceHistoryMonitoringTsiUnoList(Integer page, String keyword, Integer tsiUno) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringTsiUnoList(keyword, pageRequest, tsiUno);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
+        return outMap;
+    }
+
+    public Map<String, Object> getTraceHistoryMonitoringTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringTsiUnoList(keyword, pageRequest, tsiUno);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
+        return outMap;
+    }
+    
+    // 대상자는 없고 대상자키워드 있을때
+    public Map<String, Object> getTraceHistoryMonitoringUserFileList(Integer page, String keyword) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringUserFileList(keyword, pageRequest);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
+        return outMap;
+    }
+
 
     public Map<String, Object> getTraceHistoryDeleteReqList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();
@@ -2983,6 +3128,68 @@ public class SearchService {
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
         outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
         outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
+        return outMap;
+    }
+
+    public Map<String, Object> getTraceHistoryDeleteReqUserFileList(Integer page, String keyword) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqUserFileList(keyword, pageRequest);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
+        return outMap;
+    }
+
+    public Map<String, Object> getTraceHistoryDeleteReqTsiUnoList(Integer page, String keyword, Integer tsiUno) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqTsiUnoList(keyword, pageRequest, tsiUno);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
+        return outMap;
+    }
+
+    public Map<String, Object> getTraceHistoryDeleteReqTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqTsiUnoUserFileList(keyword, pageRequest, tsiUno);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
 
         return outMap;
     }
@@ -3003,6 +3210,157 @@ public class SearchService {
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
         outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
         outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
+        return outMap;
+    }
+
+    public Map<String, Object> getTraceHistoryDeleteComptUserFileList(Integer page, String keyword) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptUserFileList(keyword, pageRequest);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
+        return outMap;
+    }
+
+    public Map<String, Object> getTraceHistoryDeleteComptTsiUnoList(Integer page, String keyword, Integer tsiUno) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptTsiUnoList(keyword, pageRequest, tsiUno);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
+        return outMap;
+    }
+
+    public Map<String, Object> getTraceHistoryDeleteComptTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptTsiUnoUserFileList(keyword, pageRequest, tsiUno);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
+        return outMap;
+    }
+
+    public Map<String, Object> allTimeMonitoringTsiUnoList(Integer page, String keyword, Integer tsiUno) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringTsiUnoList(keyword, pageRequest, tsiUno);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
+        return outMap;
+    }
+
+    public Map<String, Object> allTimeMonitoringTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringTsiUnoUserFileList(keyword, pageRequest, tsiUno);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
+        return outMap;
+    }
+
+
+    public Map<String, Object> allTimeMonitoringList(Integer page, String keyword) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringList(keyword, pageRequest);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
+
+        return outMap;
+    }
+
+    public Map<String, Object> allTimeMonitoringUserFileList(Integer page, String keyword) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+//        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
+
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringUserFileList(keyword, pageRequest);
+
+        outMap.put("traceHistoryList", traceHistoryListPage);
+        outMap.put("totalPages", traceHistoryListPage.getTotalPages());
+        outMap.put("number", traceHistoryListPage.getNumber());
+        outMap.put("totalElements", traceHistoryListPage.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));  // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));  // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                    // 24시간 모니터링
+
 
         return outMap;
     }
@@ -3842,5 +4200,20 @@ public class SearchService {
         return nke;
     }
 
+    public Map<String, Object> getUserSearchHistoryList(Integer page, String searchKeyword) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+
+        Page<UserSearchHistoryDtoInterface> userSearchHistoryList = searchInfoRepository.getUserSearchHistoryList(pageRequest, searchKeyword);
+
+        outMap.put("userSearchHistoryList", userSearchHistoryList);
+        outMap.put("totalPages", userSearchHistoryList.getTotalPages());
+        outMap.put("number", userSearchHistoryList.getNumber());
+        outMap.put("totalElements", userSearchHistoryList.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        return outMap;
+
+    }
 
 }

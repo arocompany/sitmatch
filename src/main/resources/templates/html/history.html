@@ -35,6 +35,23 @@
     color: inherit;
   }
 
+  .option {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    border-radius: 10px 10px 10px 10px;
+    background: #F2F2F8;
+    border-width: 2px 0 0 2px;
+    border-color: #fff;
+    border-style: solid;
+    -webkit-box-shadow: 6px 6px 12px rgba(25, 72, 148, 0.5), -2px -2px 4px rgba(255, 255, 255, 0.2);
+    box-shadow: 6px 6px 12px rgba(25, 72, 148, 0.5), -2px -2px 4px rgba(255, 255, 255, 0.2);
+    padding: 8px 6px;
+    width: 100%;
+    background: #F2F2F8;
+  }
+
 </style>
 
 <body>
@@ -133,21 +150,47 @@
 
   <!-- 추적 이력 -->
   <section class="trace-history layout history">
-
     <div class="searchbox">
-      <form name="history-search" class="search-box" action="/history" id="traceForm">
-        <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${traceKeyword}" name="traceKeyword" id="traceKeyword">
-        <input type="hidden" name="tracePage" id="tracePage">
-      </form>
+      <div>
+          <div>
+            <form method="get" name="history-search" class="search-box" action="/history" id="traceForm">
+              <!--
+              <div class="selection selectBox">
+                <button id="traceSelect" type="button" style="width: 110px;">전체</button> &lt;!&ndash;  th:text="${manageType}"  &ndash;&gt;
+                <input type="hidden" class="bor10 M-box-in" name="manageType" th:value="${manageType}" > &lt;!&ndash;  &ndash;&gt;
+                <input type="hidden" name="page" > &lt;!&ndash; id="searchPage"  &ndash;&gt;
+                <ul class="option select" id="option">
+                  <li>전체</li>
+                  <li>검색어</li>
+                  <li>대상자</li>
+                </ul>
+              </div>
+              -->
+              <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${traceKeyword}" name="traceKeyword" id="traceKeyword" >
+              <input type="hidden" name="tracePage" id="tracePage">
+            </form>
+          </div>
+
+      </div>
       <input id="traceHistoryValue" type="text" value="">
 
-      <!--  <button type="button" style="margin-right: 495px; font-weight: bold; ">엑셀</button>-->
+      <!-- <button type="button" style="margin-right: 495px; font-weight: bold; ">엑셀</button> -->
+      <!--
       <ul class="currently-state">
         <li onclick="traceList();"><span style="font-weight: bold">전체 :</span> <span th:text="${traceHistoryListCount}">32</span></li>
-        <!-- id="monitoringList" onclick="monitoringList();" -->
+        &lt;!&ndash; id="monitoringList" onclick="monitoringList();" &ndash;&gt;
         <li><span th:onclick="|location.href='@{/monitoringList}'|" style="font-weight: bold"> 모니터링 :</span> <span th:text="${countMonitoring}">8</span></li>
         <li><span th:onclick="|location.href='@{/monitoringDeleteReqList}'|" style="font-weight: bold">삭제 요청 :</span> <span th:text="${countDelReq}">10</span></li>
         <li><span  th:onclick="|location.href='@{/monitoringDeleteComptList}'|" style="font-weight: bold">삭제 완료 :</span> <span th:text="${countDelCmpl}">14</span></li>
+        <li><span  th:onclick="|location.href='@{/allTimeMonitoringChkList}'|" style="font-weight: bold">24시간 모니터링 :</span> <span th:text="${allTimeMonitoringCnt}">14</span></li>
+      </ul>
+      -->
+      <ul class="currently-state">
+        <li><span style="font-weight: bold">전체 :</span> <span th:text="${traceHistoryListCount}">32</span></li>
+        <!-- id="monitoringList" onclick="monitoringList();" -->
+        <li><span style="font-weight: bold"> 모니터링 :</span> <span th:text="${countMonitoring}">8</span></li>
+        <li><span style="font-weight: bold">삭제 요청 :</span> <span th:text="${countDelReq}">10</span></li>
+        <li><span style="font-weight: bold">삭제 완료 :</span> <span th:text="${countDelCmpl}">14</span></li>
       </ul>
     </div>
     <h2 class="list-tit">
@@ -183,15 +226,16 @@
             <a class="url" style="width:100%" th:href="${traceHistoryList.getTsrSiteUrl()}" target="_blank" th:text="${traceHistoryList.getTsrSiteUrl()}">url이 들어갑니다</a>
             <p class="content" th:text="${traceHistoryList.getTsrTitle()}">내용이 들어갑니다</p>
             <p class="detail"><span class="detail-info">검색정보 :
-                <th:block th:switch="${tsiTypeMap.get(traceHistoryList.getTsiUno())}">
-                  <span th:case="11">키워드</span>
-                  <span th:case="13">키워드 + 사진</span>
-                  <span th:case="15">키워드 + 영상</span>
-                  <span th:case="17">사진</span>
-                  <span th:case="19">영상</span>
-                </th:block>
-                /
-                <span th:text="${tsiKeyword.get(traceHistoryList.getTsiUno())}">키워드가 들어 갑니다</span> <span th:text="${traceHistoryList.tsrImgName}">파일명이 들어갑니다</span>
+              <th:block th:switch="${tsiTypeMap.get(traceHistoryList.getTsiUno())}">
+                <span th:case="11">키워드</span>
+                <span th:case="13">키워드 + 사진</span>
+                <span th:case="15">키워드 + 영상</span>
+                <span th:case="17">사진</span>
+                <span th:case="19">영상</span>
+              </th:block>
+               /
+              <span th:text="${tsiKeyword.get(traceHistoryList.getTsiUno())}">키워드가 들어갑니다</span>
+              <span th:text="${traceHistoryList.tsrImgName}">파일명이 들어갑니다</span>
                 </span>
               <span class="detail-time">
                   검색일 : <span th:text="${#dates.format(tsiFstDmlDt.get(traceHistoryList.getTsiUno()), 'yyyy.MM.dd')}">2022.01.12</span>
@@ -199,7 +243,22 @@
               </span>
             </p>
             <!--       <p class="counselor" th:text="${userIdMap.get(searchInfoList.getUserUno())}">상담사 아이디</p>-->
-            <p class="">상담사 : <span th:text="${traceHistoryList.getTuUserId()}"></span></p>
+            <!--
+            <p  class="detail">
+              <span class="detail-info">대상자 파일명:
+                <span th:text="${traceHistoryList.getTsiUno()}"></span>
+              </span>
+            </p>
+            -->
+            <p  class="detail">
+              <span class="detail-info">
+                상담사 : <span th:text="${traceHistoryList.getTuUserId()}"></span>
+              </span>
+              <span th:data-uno="${traceHistoryList.getTsrUno()}" class="detail-time mdTime" id="lastMonitoringChkTime" style="width: 410px;" th:if="${traceHistoryList.getLastAlltimeHist() != null}">
+                마지막 모니터링 체크시간: <span  th:text="${#strings.replace(traceHistoryList.getLastAlltimeHist(),'.0','')}"></span>
+              </span>
+            </p>
+
             <!--<p class="">상담사 : <span th:text="${traceHistoryList.getTuUserId()}"></span></p> 원본 -->
           </div>
         </div>
@@ -415,6 +474,21 @@
     }
   })
 
+  const searchType = document.querySelector(".selection.selectBox");
+  const option2 = document.querySelectorAll(".option.select li");
+  const tType2 = document.querySelector('input[name=manageType]');
+  const search = document.querySelector(".list-search");
+
+  searchType.addEventListener("click", (e)=>{
+    searchType.classList.toggle('active');
+    option2.forEach(btn => {
+      btn.addEventListener('click', (e)=>{
+        searchType.children[0].innerHTML = e.target.innerText;
+        tType2.value = e.target.innerText;
+      })
+    })
+  })
+
   // 셀렉트 구현
   const select = document.querySelectorAll(".selection.setTraceHistory");
   select.forEach(sel => {
@@ -454,6 +528,7 @@
 
   const traceForm = document.querySelector("#traceForm");
   const tracePage = document.querySelector("#tracePage");
+
   const traceEvent = (pageNum) => {
     tracePage.value = pageNum;
     traceForm.submit();
@@ -515,12 +590,7 @@
       pro.nextElementSibling.style.color = "#e87728";
       console.info(tsi_uno_count);
       console.info(per.innerText);
-      /*      if (per.innerText === '100%' || !tsi_uno_count) {
-
-            }
-      */
     }
-
   })
 
   function Req() {
@@ -586,6 +656,7 @@
   const trkHistMemo = document.querySelectorAll(".memo");
   trkHistMemo.forEach((memo) => {
     memo.addEventListener('focusout', () => {
+      alert("ㅋ: "+memo.dataset.uno +" ㅋㅋ : "+memo.value);
       //XMLHttpRequest 객체 생성
       var xhr = new XMLHttpRequest();
       //요청을 보낼 방식, 주소, 비동기여부 설정
@@ -653,6 +724,8 @@
 
   })
   */
+
+
 
   imgBtn.forEach((btn) => {
     const tsrUno = btn.querySelector("#tsrUno");
@@ -817,12 +890,10 @@
           console.log("통신 실패");
         }
       })
-
-
-      // window.location.href = '/history?'+'monitoringValue=10';
-
-
   }
+
+
+
 
 </script>
 </body>

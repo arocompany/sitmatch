@@ -419,7 +419,7 @@ public class SearchImageGoogleLensService {
                 log.info("imageUrl1: "+imageUrl);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = searchService.getSearchResultEntity(insertResult.getTsiUno(), tsrSns, result, getThumbnailFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = searchService.getSearchResultGoogleLensEntity(insertResult.getTsiUno(), tsrSns, result, getThumbnailFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {
