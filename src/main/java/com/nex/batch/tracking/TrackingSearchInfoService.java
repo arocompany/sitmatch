@@ -95,6 +95,7 @@ public class TrackingSearchInfoService {
         return searchInfoEntity;
     }
 
+/*
     public BatchAllTimeMonitoringEntity getBatchAllTimeMonitoringEntity(SearchInfoEntity searchInfoEntityByTsiUno, SearchResultEntity searchResultEntity) {
         log.info("getSearchInfoEntity 진입");
 
@@ -105,5 +106,6 @@ public class TrackingSearchInfoService {
 
         return batchAllTimeMonitoringEntity;
     }
+*/
 
 }
