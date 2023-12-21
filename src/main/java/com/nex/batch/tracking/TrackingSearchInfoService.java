@@ -1,6 +1,5 @@
 package com.nex.batch.tracking;
 
-import com.nex.search.entity.BatchAllTimeMonitoringEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.service.SearchService;
