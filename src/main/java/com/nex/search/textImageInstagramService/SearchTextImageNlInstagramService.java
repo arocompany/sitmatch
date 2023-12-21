@@ -95,7 +95,7 @@ public class SearchTextImageNlInstagramService {
                     }
                 }).thenApply((r) -> {
                     try { // 결과 저장.(이미지)
-                        return saveYandex(
+                        return saveImageYandex(
                                 r
                                 , tsrSns
                                 , insertResult
@@ -198,7 +198,7 @@ public class SearchTextImageNlInstagramService {
                 log.info("imageUrl2: "+imageUrl);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = searchService.getSearchResultEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = searchService.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {
@@ -268,7 +268,7 @@ public class SearchTextImageNlInstagramService {
                 })
                 .thenApply((r) -> {
                     try { // 결과 저장.(이미지)
-                        return saveYandex(
+                        return saveImageYandex(
                                 r
                                 , tsrSns
                                 , insertResult
@@ -384,5 +384,59 @@ public class SearchTextImageNlInstagramService {
                 });
 
     }
+
+
+    public <RESULT> List<SearchResultEntity> saveImageYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
+            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
+        log.info("========= saveYandex 진입 =========");
+
+        if (results == null) {
+            log.info("result null");
+            return null;
+        }
+
+        // RestTemplate restTemplate = new RestTemplate();
+        List<SearchResultEntity> sreList = new ArrayList<>();
+
+        //SearchResultEntity sre = null;
+        for (RESULT result : results) {
+            log.info("results: " + results);
+
+            try {
+                String imageUrl = getOriginalFn.apply(result) ;
+                log.info("imageUrl1: "+imageUrl);
+                if(imageUrl == null) {
+                    imageUrl = getThumbnailFn.apply(result);
+                }
+                log.info("imageUrl2: "+imageUrl);
+                if(imageUrl != null) {
+                    //검색 결과 엔티티 추출
+                    SearchResultEntity sre = searchService.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+
+                    //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
+                    if (!tsrSns.equals(sre.getTsrSns())) {
+                        continue;
+                    }
+
+                    log.info("getThumbnailFn: "+getThumbnailFn);
+
+                    //이미지 파일 저장
+                    searchService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
+                    searchService.saveSearchResult(sre);
+
+                    sreList.add(sre);
+                }
+            } catch (IOException e) { // IOException 의 경우 해당 Thread 를 종료하도록 처리.
+                log.error(e.getMessage());
+                throw new IOException(e);
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
+        }
+
+        return sreList;
+    }
+
 
 }

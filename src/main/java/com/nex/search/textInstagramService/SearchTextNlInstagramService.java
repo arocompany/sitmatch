@@ -88,10 +88,10 @@ public class SearchTextNlInstagramService {
     private final RestTemplate restTemplate;
 
     public void search(byte tsiInstagram, String tsiType, SearchInfoEntity insertResult, String folder,
-                           SearchInfoDto searchInfoDto){
-            String tsrSns = "15";
-            // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
-            searchSnsByText(tsrSns, insertResult, searchInfoDto);
+                       SearchInfoDto searchInfoDto){
+        String tsrSns = "15";
+        // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
+        searchSnsByText(tsrSns, insertResult, searchInfoDto);
     }
 
     public void searchSnsByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) {
@@ -233,7 +233,7 @@ public class SearchTextNlInstagramService {
 
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = searchService.getSearchResultEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = searchService.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
 
                     if (!tsrSns.equals(sre.getTsrSns())) {
                         continue;

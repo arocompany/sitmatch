@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>디지털 성범죄</title>
+  <link rel="stylesheet" href="/css/common.min.css?v=2023111401" />
+  <link rel="stylesheet" href="/css/histroy.min.css?v=2023111401">
+  <link rel="stylesheet" href="/css/userSearchHistory.css">
+  <link rel="stylesheet" href="/css/userSearchHistory.min.css">
+  <link rel="stylesheet" href="/css/trace.min.css?v=2023111401" />
+  <link rel="stylesheet" href="/css/detail.min.css?v=2023111401" />
+  <script src="/js/style.js"></script>
+  <script src="/js/footer.js"></script>
+  <script src="/js/function.js"></script>
+</head>
+
+<style>
+  .title2 {
+    margin-top: 60px;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #E87728;
+    text-align: center;
+  }
+
+</style>
+
+<body>
+<article class="history-wrap wrapper" id="userSearchHistory">
+  <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
+  <h1 class="title2">대상자 검색 이력</h1>
+
+  <section class="search-history layout history active" style="width: 1445px;">
+    <div class="searchbox">
+      <form method="get"  name="userSearchHistory" class="search-box" action="/userSearchHistory" id="searchForm">
+        <input type="text" class="list-search bor10 btn-off" placeholder="대상자를 입력해 주세요" th:value="${searchKeyword}" name="searchKeyword" id="searchKeyword">
+        <input type="hidden" name="searchPage" id="searchPage">
+      </form>
+      <p class="total-num">총 <span th:text="${userSearchHistoryListCount}"></span>건</p>
+    </div>
+    <h2 class="list-tit" style="padding: 10px 20px 20px; width: 1460px; margin-left: 25px;">
+      <span class="num" >대상자</span>
+      <span class="counselor" style="margin-left: 35px;">현재 모니터링 개수</span>
+      <span class="type">현재 삭제 요청 개수</span>
+      <span class="cont">현재 삭제 완료 개수</span>
+      <span class="social">24시 모니터링 유무</span>
+      <span class="time" style="margin-right: 45px;">24시 모니터링 횟수</span>
+      <span class="progress" style="margin-right: 50px;">24시 모니터링 시간</span>
+      <span class="dist">24시 모니터링<br> 재유포 건수</span>
+      <span class="dist" style="width: 8%;">총 검색 결과 수</span>
+    </h2>
+
+    <ul class="history-list history-search-list">
+      <li style="width: 1460px;" class="btn-off bor10" th:each="userSearchHistoryList:${userSearchHistoryList}" >
+        <!--<input type="checkbox" id="tsiUnos" name="tsiUnos" >-->
+        <div class="tsiUnoclass">
+          <input type="hidden" id="tsiUno2" name="tsiUno" >
+        </div> <!-- th:tsiUno="${userSearchHistoryList.getTsiuno()}" -->
+        <!-- <p class="num" th:text="${userSearchHistoryList.getTsiUno()}"> -->
+        <p class="num" th:text="${userSearchHistoryList.getTsiUserFile()}"></p> <!-- 대상자 -->
+        <button class="counselor monitoring"  th:tsiUno="${userSearchHistoryList.getTsiUno()}" th:text="${userSearchHistoryList.getMonitoringCnt()}"></button> <!-- 모니터링 -->
+        <button class="type deleteReq" style="text-align: center" th:tsiUno="${userSearchHistoryList.getTsiUno()}" th:text="${userSearchHistoryList.getDeleteReqCnt()}"></button> <!-- 삭제요청 -->
+        <button class="type deleteCompt" style="text-align: center; margin-right: 65px;"  th:tsiUno="${userSearchHistoryList.getTsiUno()}"  th:text="${userSearchHistoryList.getDeleteConfirmCnt()}"></button> <!-- 삭제완료 -->
+        <p class="con1" style="margin-right: 50px;"  th:text="${userSearchHistoryList.getAllDayMonitoringYn()}"></p> <!-- 모니터링 유무 -->
+        <p class="time" th:text="${userSearchHistoryList.getAllTimeCnt()}"></p> <!-- 24시 모니터링 횟수 -->
+        <textarea id="monitoringTime" class="dot-wrap progress" style="width: 14.8%;" th:text="${userSearchHistoryList.getResultMonitoringTime()}"></textarea>
+        <button class="social allTimeResultCnt" style="margin-right: 15px;" th:tsiUno="${userSearchHistoryList.getTsiUno()}" th:text="${userSearchHistoryList.getReDsmnCnt()}"></button> <!-- 24시 모니터링 재유포 건수 -->
+        <p style="margin-right: 17px;" th:text="${userSearchHistoryList.getResultCnt()}"></p> <!-- 총 검색결과 수-->
+      </li>
+      <li th:if="${userSearchHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
+    </ul>
+    <nav>
+      <ul id="pagination" th:with="start=${(searchNumber / maxPage * maxPage) + 1}, end=(${(searchTotalPages == 0) ? 1 : ((start + maxPage - 1) < searchTotalPages ? (start + maxPage - 1) : searchTotalPages)})">
+        <li class="page-num" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${1} + ');'" class="btn-off" style="width:30px;">처음</a></li>
+        <li class="page-prev" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
+        <li class="page-num" th:each="pageNum : ${#numbers.sequence(start, end)}"><a th:onclick="'javascript:searchEvent('+ ${pageNum} + ');'" class="btn-off" th:classappend="${searchNumber + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a></li>
+        <li class="page-next" th:if="${end < searchTotalPages}"><a th:onclick="'javascript:searchEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
+        <li class="page-num" th:if="${end < searchTotalPages}"><a th:onclick="'javascript:searchEvent('+ ${searchTotalPages} + ');'" class="btn-off" style="width:30px;">끝</a></li>
+      </ul>
+    </nav>
+  </section>
+
+  <script>
+    footer();
+  </script>
+
+</article>
+
+<script>
+
+  const monitoringBtn = document.querySelectorAll(".monitoring")
+  monitoringBtn.forEach((btn) => {
+    btn.addEventListener('click', () =>{
+      // alert("모니터링버튼 클릭" + btn.getAttribute("tsiUno"))
+      window.location.href = '/monitoringList?'+'tsiUno='+btn.getAttribute("tsiUno");
+    })
+  })
+
+  const deleteReqBtn = document.querySelectorAll(".deleteReq")
+  deleteReqBtn.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      window.location.href = '/monitoringDeleteReqList?'+'tsiUno='+btn.getAttribute("tsiUno");
+    })
+  })
+
+  const deleteComptBtn = document.querySelectorAll(".deleteCompt")
+  deleteComptBtn.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      window.location.href = '/monitoringDeleteComptList?'+'tsiUno='+btn.getAttribute("tsiUno");
+    })
+  })
+
+  const allTimeResultCntBtn = document.querySelectorAll(".allTimeResultCnt")
+  allTimeResultCntBtn.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      window.location.href='/allTimeMonitoringChkList?'+'tsiUno='+btn.getAttribute("tsiUno");
+    })
+  })
+
+  const searchForm = document.querySelector("#searchForm");
+  const searchPage = document.querySelector("#searchPage");
+  // Search 기능 추가
+  const searchEvent = (pageNum) => {
+    searchPage.value = pageNum;
+    searchForm.submit();
+  }
+  // var monitoringTime = document.getElementById("monitoringTime").value.replace(/(\n)/g, '<br>');
+
+</script>
+
+
+</body>
+
+</html>

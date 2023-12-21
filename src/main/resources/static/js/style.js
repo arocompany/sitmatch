@@ -276,6 +276,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
+  const autoKey2 = document.querySelectorAll(".mdTime");
+  autoKey2.forEach((mdTime) => {
+    mdTime.addEventListener("click", () => {
+      // alert("mdTime");
+      //XMLHttpRequest 객체 생성
+      var xhr = new XMLHttpRequest();
+      //요청을 보낼 방식, 주소, 비동기여부 설정
+      xhr.open('GET', '/allTimeMonitoringHist?tsrUno='+mdTime.dataset.uno, true);
+      // xhr.open('GET', '/allTimeMonitoringHist', true);
+      //요청 전송
+      xhr.send(null);
+      xhr.onload = () => {
+        //통신 성공
+        if (xhr.status == 200) {
+          document.body.style.overflow = 'hidden';
+          modal.style.display = 'flex';
+          modal.innerHTML = xhr.response;
+
+        }
+        const esc = document.querySelector(".esc-btn");
+        esc.onclick = () => {
+          modal.style.display = 'none';
+          document.body.style.overflow = 'unset';
+        }
+      }
+    })
+  })
+
+
+
 });
 
 

@@ -2,6 +2,7 @@ package com.nex.Chart.repo;
 
 import com.nex.Chart.dto.AllTimeCntDto;
 import com.nex.Chart.dto.AllTimeCntExcelDto;
+import com.nex.Chart.dto.AllTimeMonitoringHistDto;
 import com.nex.Chart.entity.AlltimeMonitoringHistEntity;
 import com.nex.Chart.entity.DeleteComptHistEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AlltimeMonitoringHistRepository extends JpaRepository<AlltimeMonitoringHistEntity, Long> {
@@ -70,6 +72,14 @@ public interface AlltimeMonitoringHistRepository extends JpaRepository<AlltimeMo
                                     " WHERE clk_dml_dt  BETWEEN :fromDate AND :toDate " +
                                     " GROUP BY monitoringDate " +
                                     " ORDER BY monitoringDate ASC";
+
+    String allTimeMonitoringList =  " SELECT TAM_UNO AS tamUno" +
+                                    " ,clk_dml_dt AS clkDmlDt " +
+                                    " ,tam_yn AS tamYn " +
+                                    " FROM tb_alltime_monitoring_history " +
+                                    " WHERE tsr_uno = :tsrUno " +
+                                    " ORDER BY tamUno DESC ";
+
     @Query(value = allTimeCntList, nativeQuery = true)
     List<AllTimeCntDto> allTimeCntList(String toDate);
 
@@ -80,4 +90,7 @@ public interface AlltimeMonitoringHistRepository extends JpaRepository<AlltimeMo
 
     @Query(value = dateAllTimeCntExcelList, nativeQuery = true)
     List<AllTimeCntExcelDto> dateAllTimeCntExcelList(String fromDate, String toDate);
+
+    @Query(value = allTimeMonitoringList, nativeQuery = true)
+    List<AllTimeMonitoringHistDto> allTimeMonitoringList(String tsrUno);
 }

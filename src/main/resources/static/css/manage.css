@@ -237,3 +237,7 @@
 .counselor-detail form > div:nth-of-type(12) {
   text-align: center;
 }
+
+ul.option.active {
+    display: inline-block;
+}

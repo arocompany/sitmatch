@@ -14,298 +14,123 @@
 </head>
 
 <body>
-  <article class="manage-wrap wrapper">
-    <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
-    <section class="layout" id="manage">
-      <h1 class="title">계정관리</h1>
-      <div class="manage-contents">
-        <form name="manage-search" class="manage-search" action="/manage" method="post">
-          <div class="selection">
-            <button type="button" th:text="${manageType}">전체</button>
-            <input type="hidden" class="bor10 M-box-in" name="manageType" th:value="${manageType}">
-            <input type="hidden" name="page" id="searchPage">
-            <ul class="option">
-              <li>전체</li>
-              <li>아이디</li>
-              <li>이름</li>
-            </ul>
-          </div>
-          <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" name="keyword" th:value="${keyword}">
-        </form>
-        <button class="bor10 btn-off manager-add">추가</button>
-      </div>
-      <section class="manage-list bor10 L-box-up">
-        <h2 class="tit">
-          <span class="num">순번</span>
-          <span class="id">아이디</span>
-          <span class="name">이름</span>
-          <span class="belong">소속</span>
-          <span class="position">직위</span>
-          <span class="email">이메일</span>
-          <span class="phone">휴대전화</span>
-          <span class="enroll">등록일시</span>
-          <span class="final">최종 로그인</span>
-          <span class="distinc">구분</span>
-        </h2>
-        <div class="bor10 M-box-in list-con">
-          <p th:each="list:${counselorInfoList}">
-            <span class="num" th:text="${list.getUserUno()}">${i}</span>
-            <span class="id" th:text="${list.getUserId()}">tester000${i}</span>
-            <span class="name" th:text="${list.getUserNm()}">사원${i}</span>
-            <span class="belong" th:text="${list.getOrgNm()}">서울시청</span>
-            <span class="position" th:text="${list.getUserPosition()}">사원</span>
-            <span class="email" th:text="|${list.getEmailId()}@${list.getEmailDomain()}|">tester0001@gmail.com</span>
-            <span class="phone" th:text="|${list.getPhoneNum1()}-${list.getPhoneNum2()}-${list.getPhoneNum3()}|">010-1234-4567</span>
-            <span class="enroll" th:text="${#dates.format(list.getFstDmlDt(), 'yy.MM.dd HH:mm')}">22.01.02 03:04</span>
-            <span class="final" th:text="${#dates.format(list.getLstLoginDt(), 'yy.MM.dd HH:mm')}">22.01.02 03:04</span>
-            <span class="distinc">
+<article class="manage-wrap wrapper">
+  <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
+  <section class="layout" id="manage">
+    <h1 class="title">계정관리</h1>
+    <div class="manage-contents">
+      <form name="manage-search" class="manage-search" action="/manage" method="post">
+        <div class="selection">
+          <button type="button" th:text="${manageType}">전체</button>
+          <input type="hidden" class="bor10 M-box-in" name="manageType" th:value="${manageType}">
+          <input type="hidden" name="page" id="searchPage">
+          <ul class="option">
+            <li>전체</li>
+            <li>아이디</li>
+            <li>이름</li>
+          </ul>
+        </div>
+        <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" name="keyword" th:value="${keyword}">
+      </form>
+      <button class="bor10 btn-off manager-add">추가</button>
+    </div>
+    <section class="manage-list bor10 L-box-up">
+      <h2 class="tit">
+        <span class="num">순번</span>
+        <span class="id">아이디</span>
+        <span class="name">이름</span>
+        <span class="belong">소속</span>
+        <span class="position">직위</span>
+        <span class="email">이메일</span>
+        <span class="phone">휴대전화</span>
+        <span class="enroll">등록일시</span>
+        <span class="final">최종 로그인</span>
+        <span class="distinc">구분</span>
+      </h2>
+      <div class="bor10 M-box-in list-con">
+        <p th:each="list:${counselorInfoList}">
+          <span class="num" th:text="${list.getUserUno()}">${i}</span>
+          <span class="id" th:text="${list.getUserId()}">tester000${i}</span>
+          <span class="name" th:text="${list.getUserNm()}">사원${i}</span>
+          <span class="belong" th:text="${list.getOrgNm()}">서울시청</span>
+          <span class="position" th:text="${list.getUserPosition()}">사원</span>
+          <span class="email" th:text="|${list.getEmailId()}@${list.getEmailDomain()}|">tester0001@gmail.com</span>
+          <span class="phone" th:text="|${list.getPhoneNum1()}-${list.getPhoneNum2()}-${list.getPhoneNum3()}|">010-1234-4567</span>
+          <span class="enroll" th:text="${#dates.format(list.getFstDmlDt(), 'yy.MM.dd HH:mm')}">22.01.02 03:04</span>
+          <span class="final" th:text="${#dates.format(list.getLstLoginDt(), 'yy.MM.dd HH:mm')}">22.01.02 03:04</span>
+          <span class="distinc">
               <button class="btn-off bor10 detail" th:value="${list.getUserUno()}">상세</button>
               <button class="btn-off bor10 del" th:value="${list.getUserUno()}">삭제</button>
             </span>
-          </p>
-          <span th:if="${totalElements == 0}" style="text-align: center;">조회 결과가 없습니다.</span>
-        </div>
-      </section>
+        </p>
+        <span th:if="${totalElements == 0}" style="text-align: center;">조회 결과가 없습니다.</span>
+      </div>
     </section>
-    <nav>
-      <ul id="pagination" th:with="start=${(counselorInfoList.number / maxPage * maxPage) + 1}, end=(${(counselorInfoList.totalPages == 0) ? 1 : ((start + maxPage - 1) < counselorInfoList.totalPages ? (start + maxPage - 1) : counselorInfoList.totalPages)})">
-        <li class="page-num" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${1} + ');'" class="btn-off" style="width:30px;">처음</a></li>
-        <li class="page-prev" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
-        <li class="page-num" th:each="pageNum : ${#numbers.sequence(start, end)}"><a th:onclick="'javascript:searchEvent('+ ${pageNum} + ');'" class="btn-off" th:classappend="${counselorInfoList.number + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a></li>
-        <li class="page-next" th:if="${end < counselorInfoList.totalPages}"><a th:onclick="'javascript:searchEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
-        <li class="page-num" th:if="${end < counselorInfoList.totalPages}"><a th:onclick="'javascript:searchEvent('+ ${counselorInfoList.totalPages} + ');'" class="btn-off" style="width:30px;">끝</a></li>
-      </ul>
-    </nav>
-    <script>footer()</script>
-  </article>
-<script type="text/javascript" th:inline="javascript">
-/*<![CDATA[*/
-// 셀렉트 구현
-const select = document.querySelector(".selection");
-const option = document.querySelectorAll(".selection .option li");
-const tType = document.querySelector('input[name=manageType]');
-const search = document.querySelector(".list-search");
-const searchForm = document.querySelector(".manage-search");
-// tType.value === "전체" ? search.style.visibility = 'hidden' : search.style.visibility = 'visible';
-select.addEventListener("click", (e) => {
-  select.classList.toggle('active');
-  option.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      select.children[0].innerHTML = e.target.innerText;
-      tType.value = e.target.innerText;
-    })
+  </section>
+  <nav>
+    <ul id="pagination" th:with="start=${(counselorInfoList.number / maxPage * maxPage) + 1}, end=(${(counselorInfoList.totalPages == 0) ? 1 : ((start + maxPage - 1) < counselorInfoList.totalPages ? (start + maxPage - 1) : counselorInfoList.totalPages)})">
+      <li class="page-num" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${1} + ');'" class="btn-off" style="width:30px;">처음</a></li>
+      <li class="page-prev" th:if="${start > 1}"><a th:onclick="'javascript:searchEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
+      <li class="page-num" th:each="pageNum : ${#numbers.sequence(start, end)}"><a th:onclick="'javascript:searchEvent('+ ${pageNum} + ');'" class="btn-off" th:classappend="${counselorInfoList.number + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a></li>
+      <li class="page-next" th:if="${end < counselorInfoList.totalPages}"><a th:onclick="'javascript:searchEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
+      <li class="page-num" th:if="${end < counselorInfoList.totalPages}"><a th:onclick="'javascript:searchEvent('+ ${counselorInfoList.totalPages} + ');'" class="btn-off" style="width:30px;">끝</a></li>
+    </ul>
+  </nav>
+  <script>footer()</script>
+</article>
+<script  th:inline="javascript">
+  // type="text/javascript"
+  /*<![CDATA[*/
+  // 셀렉트 구현
+  const select = document.querySelector(".selection");
+  const option = document.querySelector(".selection.option li");
+  const tType = document.querySelector('input[name=manageType]');
+  const search = document.querySelector(".list-search");
+  const searchForm = document.querySelector(".manage-search");
+  // tType.value === "전체" ? search.style.visibility = 'hidden' : search.style.visibility = 'visible';
+  select.addEventListener("click", (e) => {
+    select.classList.toggle('active');
+    option.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        select.children[0].innerHTML = e.target.innerText;
+        tType.value = e.target.innerText;
+      })
+    });
   });
-});
-// select.addEventListener("click", (e) => {
-//   select.classList.toggle('active');
-//   option.forEach(btn => {
-//     btn.addEventListener('click', (e) => {
-//       select.children[0].innerHTML = e.target.innerText;
-//       tType.value = e.target.innerText;
-//       if(e.target.innerText === "전체") {
-//         search.style.visibility = 'hidden';
-//         search.value = "";
-//         searchForm.submit();
-//       } else {
-//         search.style.visibility = 'visible';
-//       }
-//     })
-//   });
-// });
+  // select.addEventListener("click", (e) => {
+  //   select.classList.toggle('active');
+  //   option.forEach(btn => {
+  //     btn.addEventListener('click', (e) => {
+  //       select.children[0].innerHTML = e.target.innerText;
+  //       tType.value = e.target.innerText;
+  //       if(e.target.innerText === "전체") {
+  //         search.style.visibility = 'hidden';
+  //         search.value = "";
+  //         searchForm.submit();
+  //       } else {
+  //         search.style.visibility = 'visible';
+  //       }
+  //     })
+  //   });
+  // });
 
 
-const modal = document.querySelector("#modal");
+  const modal = document.querySelector("#modal");
 
-const searchPage = document.querySelector("#searchPage");
-// Search 기능 추가
-const searchEvent = (pageNum) => {
-  searchPage.value = pageNum;
-  searchForm.submit();
-}
-
-// 상담사 추가
-const regBtn = document.querySelector(".manager-add");
-regBtn.addEventListener("click", () => {
-  //XMLHttpRequest 객체 생성
-  const xhr = new XMLHttpRequest();
-  //요청을 보낼 방식, 주소, 비동기여부 설정
-  xhr.open('GET', 'counselor-add', true);
-  //요청 전송
-  xhr.send(null);
-  //통신후 작업
-  xhr.onload = () => {
-    //통신 성공
-    if (xhr.status === 200) {
-      document.body.style.overflow='hidden';
-      modal.style.display = 'block';
-      modal.innerHTML = xhr.response;
-
-      // counselor-add 파일 관련 변수 추가
-      const counselorAddForm = document.querySelector("#counselorAddForm");
-      const userId = document.querySelector("#userId");
-      const userPw = document.querySelector("#userPw");
-      const checkPw = document.querySelector("#checkPw");
-      const userNm = document.querySelector("#userNm");
-      const phoneNum = document.querySelector("#phoneNum");
-      const phoneNum1 = document.querySelector("#phoneNum1");
-      const phoneNum2 = document.querySelector("#phoneNum2");
-      const phoneNum3 = document.querySelector("#phoneNum3");
-      const emailId = document.querySelector("#emailId");
-      const emailDomain = document.querySelector("#emailDomain");
-      const orgNm = document.querySelector("#orgNm");
-      const userPosition = document.querySelector("#userPosition");
-      const bizDetail = document.querySelector("#bizDetail");
-      const pinchk = document.querySelector(".pin-check");
-      const change = document.querySelector(".reg");
-
-      // 정규식 추가
-      // const regExpId = /^[a-z]+[a-z0-9]{3,19}$/g;   // 영문자로 시작하는 영문자 또는 숫자 4~20자
-      const regExpId = /^(?=.*[a-z0-9])[a-z0-9]{3,25}$/   // 3자 이상 25자 이하, 영어 또는 숫자로 구성
-      const regExpBlank = /\s/g;    // 공백
-      const regExpPwCheck = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}$/;
-      const regExpPhoneNum = /[^0-9]/g;
-      const regExpPhoneNum2 = /^(\d{2,3})(\d{3,4})(\d{4})$/;
-      const regExpEmail = /^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-
-      userId.addEventListener("keyup", function () {
-        userId.value = userId.value.replace(regExpBlank, "");
-      })
-      userPw.addEventListener("keyup", function () {
-        isPwCheck();
-      })
-      checkPw.addEventListener("keyup", function () {
-        isPwCheck();
-      })
-      userNm.addEventListener("keyup", function () {
-        userNm.value = userNm.value.replace(regExpBlank, "");
-      })
-      phoneNum.addEventListener("keyup", function () {
-        phoneNum.value = phoneNum.value.replace(regExpPhoneNum, '')
-                .replace(regExpBlank, '')
-                .replace(regExpPhoneNum2, `$1-$2-$3`);
-      })
-      emailId.addEventListener("keyup", function () {
-        emailId.value = emailId.value.replace(regExpBlank, '');
-      })
-      emailDomain.addEventListener("keyup", function () {
-        emailDomain.value = emailDomain.value.replace(regExpBlank, '');
-      })
-
-      const isPwCheck = () => {
-        if (!regExpPwCheck.test(userPw.value)) {
-          change.classList.remove('active');
-          change.disabled = true;
-          pinchk.innerText = `*비밀번호는 8~16자 이내 영문,숫자 조합 으로 사용해야 합니다.`;
-        } else if (userPw.value !== '' && userPw.value === checkPw.value) {
-          change.classList.add('active');
-          change.disabled = false;
-          pinchk.innerText = ``;
-        } else if (userPw.value !== checkPw.value) {
-          change.classList.remove('active');
-          change.disabled = true;
-          pinchk.innerText = `*비밀번호가 불일치합니다.`;
-        }
-      }
-
-      const isValid = () => {
-        orgNm.value = orgNm.value.trim();
-        userPosition.value = userPosition.value.trim();
-        bizDetail.value = bizDetail.value.trim();
-
-        if(userId.value.length === 0 || userId.value.trim() === "") {
-          alert("아이디를 입력해주세요.");
-          return false;
-        } else if (!regExpId.test(userId.value)) {
-          alert("3자 이상 25자 이하, 영어 또는 숫자를 입력해주세요.");
-          return false;
-        } else if (userPw.value.length === 0 || userPw.value.trim() === "") {
-          alert("비밀번호를 입력해주세요.");
-          return false;
-        } else if (checkPw.value.length === 0 || checkPw.value.trim() === "") {
-          alert("비밀번호 확인을 입력해주세요.");
-          return false;
-        } else if (userNm.value.length === 0 || userNm.value.trim() === "") {
-          alert("이름을 입력해주세요.");
-          return false;
-        } else if (phoneNum.value.length === 0 || phoneNum.value.trim() === "") {
-          alert("전화번호를 입력해주세요.");
-          return false;
-        } else if (!regExpPhoneNum2.test(phoneNum.value.replace(regExpPhoneNum, ''))) {
-          alert("올바른 전화번호 형식이 아닙니다. 다시 확인해주세요.");
-          return false;
-        } else if (emailId.value.length === 0 || emailId.value.trim() === ""
-                || emailDomain.value.length === 0 || emailDomain.value.trim() === "") {
-          alert("이메일을 입력해주세요.");
-          return false;
-        } else if (!regExpEmail.test(emailId.value+'@'+emailDomain.value)) {
-          alert("올바른 이메일 형식이 아닙니다. 다시 확인해주세요.");
-          return false;
-        } else if (orgNm.value.length === 0 || orgNm.value.trim() === "") {
-          alert("소속을 입력해 주세요.");
-          return false;
-        } else if (userPosition.value.length === 0 || userPosition.value.trim() === "") {
-          alert("직위를 입력해 주세요.");
-          return false;
-        } else if (bizDetail.value.length === 0 || bizDetail.value.trim() === "") {
-          alert("업무내용을 입력해주세요");
-          return false;
-        } else {
-          const phoneNumArr = phoneNum.value.split("-");
-          phoneNum1.value = phoneNumArr[0];
-          phoneNum2.value = phoneNumArr[1];
-          phoneNum3.value = phoneNumArr[2];
-          return true;
-        }
-      }
-
-      // 등록 버튼
-      const reg = document.querySelector(".counselor-btn .reg");
-      reg.onclick = () => {
-        if ( isValid() ) {
-          const formData = new FormData(counselorAddForm);
-          const payload = new URLSearchParams(formData);
-
-          fetch('/user/signup', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-            },
-            body: payload,
-          }).then((response) => response.text())
-                  .then((text) => {
-                    if(text === 'success') {
-                      window.location.href = '/manage';
-                    } else {
-                      alert(text);
-                    }
-                  })
-                  .catch(error => console.log(error));
-        } else {
-          console.log("checkValidation false");
-        }
-      }
-
-      // 취소 버튼
-      const esc = document.querySelector(".counselor-btn .esc");
-      esc.onclick = () => {
-        modal.style.display = 'none';
-        document.body.style.overflow='unset';
-      }
-    } else {
-      //통신 실패
-      console.log("통신 실패");
-    }
+  const searchPage = document.querySelector("#searchPage");
+  // Search 기능 추가
+  const searchEvent = (pageNum) => {
+    searchPage.value = pageNum;
+    searchForm.submit();
   }
-})
 
-// 상담사 디테일
-const detailBtn = document.querySelectorAll(".distinc .detail");
-detailBtn.forEach((btn) => {
-  btn.addEventListener('click', () => {
+  // 상담사 추가
+  const regBtn = document.querySelector(".manager-add");
+  regBtn.addEventListener("click", () => {
     //XMLHttpRequest 객체 생성
     const xhr = new XMLHttpRequest();
     //요청을 보낼 방식, 주소, 비동기여부 설정
-    xhr.open('GET', 'counselor-detail?userUno='+btn.value, true);
+    xhr.open('GET', 'counselor-add', true);
     //요청 전송
     xhr.send(null);
     //통신후 작업
@@ -316,9 +141,11 @@ detailBtn.forEach((btn) => {
         modal.style.display = 'block';
         modal.innerHTML = xhr.response;
 
-        const counselorForm = document.querySelector("#counselorForm");
-        const new_pw = document.querySelector("#new_pw");
-        const check_pw = document.querySelector("#check_pw");
+        // counselor-add 파일 관련 변수 추가
+        const counselorAddForm = document.querySelector("#counselorAddForm");
+        const userId = document.querySelector("#userId");
+        const userPw = document.querySelector("#userPw");
+        const checkPw = document.querySelector("#checkPw");
         const userNm = document.querySelector("#userNm");
         const phoneNum = document.querySelector("#phoneNum");
         const phoneNum1 = document.querySelector("#phoneNum1");
@@ -329,67 +156,89 @@ detailBtn.forEach((btn) => {
         const orgNm = document.querySelector("#orgNm");
         const userPosition = document.querySelector("#userPosition");
         const bizDetail = document.querySelector("#bizDetail");
-        const change = document.querySelector("#modifyBtn");
-        const modifyBtn = document.querySelector("#modifyBtn");
+        const pinchk = document.querySelector(".pin-check");
+        const change = document.querySelector(".reg");
 
+        // 정규식 추가
+        // const regExpId = /^[a-z]+[a-z0-9]{3,19}$/g;   // 영문자로 시작하는 영문자 또는 숫자 4~20자
+        const regExpId = /^(?=.*[a-z0-9])[a-z0-9]{3,25}$/   // 3자 이상 25자 이하, 영어 또는 숫자로 구성
+        const regExpBlank = /\s/g;    // 공백
+        const regExpPwCheck = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}$/;
+        const regExpPhoneNum = /[^0-9]/g;
+        const regExpPhoneNum2 = /^(\d{2,3})(\d{3,4})(\d{4})$/;
+        const regExpEmail = /^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+
+        userId.addEventListener("keyup", function () {
+          userId.value = userId.value.replace(regExpBlank, "");
+        })
+        userPw.addEventListener("keyup", function () {
+          isPwCheck();
+        })
+        checkPw.addEventListener("keyup", function () {
+          isPwCheck();
+        })
+        userNm.addEventListener("keyup", function () {
+          userNm.value = userNm.value.replace(regExpBlank, "");
+        })
         phoneNum.addEventListener("keyup", function () {
-          regexPhoneNumber(phoneNum);
+          phoneNum.value = phoneNum.value.replace(regExpPhoneNum, '')
+                  .replace(regExpBlank, '')
+                  .replace(regExpPhoneNum2, `$1-$2-$3`);
         })
-        new_pw.addEventListener("keyup", function () {
-          isPwCheck();
+        emailId.addEventListener("keyup", function () {
+          emailId.value = emailId.value.replace(regExpBlank, '');
         })
-        check_pw.addEventListener("keyup", function () {
-          isPwCheck();
+        emailDomain.addEventListener("keyup", function () {
+          emailDomain.value = emailDomain.value.replace(regExpBlank, '');
         })
 
-        const isPwCheck = function () {
-          const pinchk = document.querySelector(".newpin-check");
-          const regExpPwCheck = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}$/;
-
-          if (new_pw.value === '' && check_pw.value === '') {
+        const isPwCheck = () => {
+          if (!regExpPwCheck.test(userPw.value)) {
+            change.classList.remove('active');
+            change.disabled = true;
+            pinchk.innerText = `*비밀번호는 8~16자 이내 영문,숫자 조합 으로 사용해야 합니다.`;
+          } else if (userPw.value !== '' && userPw.value === checkPw.value) {
             change.classList.add('active');
             change.disabled = false;
             pinchk.innerText = ``;
-          } else {
-            if (!regExpPwCheck.test(new_pw.value)) {
-              change.classList.remove('active');
-              change.disabled = true;
-              pinchk.innerText = `*비밀번호는 8~16자 이내 영문,숫자 조합 으로 사용해야 합니다.`;
-            } else if (new_pw.value !== '' && new_pw.value === check_pw.value) {
-              change.classList.add('active');
-              change.disabled = false;
-              pinchk.innerText = ``;
-            } else if (new_pw.value !== check_pw.value) {
-              change.classList.remove('active');
-              change.disabled = true;
-              pinchk.innerText = `*비밀번호가 불일치합니다.`;
-            }
+          } else if (userPw.value !== checkPw.value) {
+            change.classList.remove('active');
+            change.disabled = true;
+            pinchk.innerText = `*비밀번호가 불일치합니다.`;
           }
         }
 
-        // 전화번호 자동 정규식 처리
-        const regexPhoneNumber = (target) => {
-          target.value = target.value.replace(/[^0-9]/g, '').replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`);
-        }
+        const isValid = () => {
+          orgNm.value = orgNm.value.trim();
+          userPosition.value = userPosition.value.trim();
+          bizDetail.value = bizDetail.value.trim();
 
-        const checkValidation = () => {
-          const emailExp = /^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$/;
-          const phoneNumExp = /^(\\d{2,3})(\\d{3,4})(\\d{4})$/;
-
-          if (userNm.value.length === 0 || userNm.value.trim() === "") {
+          if(userId.value.length === 0 || userId.value.trim() === "") {
+            alert("아이디를 입력해주세요.");
+            return false;
+          } else if (!regExpId.test(userId.value)) {
+            alert("3자 이상 25자 이하, 영어 또는 숫자를 입력해주세요.");
+            return false;
+          } else if (userPw.value.length === 0 || userPw.value.trim() === "") {
+            alert("비밀번호를 입력해주세요.");
+            return false;
+          } else if (checkPw.value.length === 0 || checkPw.value.trim() === "") {
+            alert("비밀번호 확인을 입력해주세요.");
+            return false;
+          } else if (userNm.value.length === 0 || userNm.value.trim() === "") {
             alert("이름을 입력해주세요.");
             return false;
           } else if (phoneNum.value.length === 0 || phoneNum.value.trim() === "") {
             alert("전화번호를 입력해주세요.");
             return false;
-          } else if (phoneNumExp.test(phoneNum.value.replace(/[^0-9]/g, ''))) {
+          } else if (!regExpPhoneNum2.test(phoneNum.value.replace(regExpPhoneNum, ''))) {
             alert("올바른 전화번호 형식이 아닙니다. 다시 확인해주세요.");
             return false;
           } else if (emailId.value.length === 0 || emailId.value.trim() === ""
                   || emailDomain.value.length === 0 || emailDomain.value.trim() === "") {
             alert("이메일을 입력해주세요.");
             return false;
-          } else if (emailExp.test(emailId + '@' + emailDomain)) {
+          } else if (!regExpEmail.test(emailId.value+'@'+emailDomain.value)) {
             alert("올바른 이메일 형식이 아닙니다. 다시 확인해주세요.");
             return false;
           } else if (orgNm.value.length === 0 || orgNm.value.trim() === "") {
@@ -410,9 +259,28 @@ detailBtn.forEach((btn) => {
           }
         }
 
-        modifyBtn.onclick = () => {
-          if ( checkValidation() ) {
-            counselorForm.submit();
+        // 등록 버튼
+        const reg = document.querySelector(".counselor-btn .reg");
+        reg.onclick = () => {
+          if ( isValid() ) {
+            const formData = new FormData(counselorAddForm);
+            const payload = new URLSearchParams(formData);
+
+            fetch('/user/signup', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+              },
+              body: payload,
+            }).then((response) => response.text())
+                    .then((text) => {
+                      if(text === 'success') {
+                        window.location.href = '/manage';
+                      } else {
+                        alert(text);
+                      }
+                    })
+                    .catch(error => console.log(error));
           } else {
             console.log("checkValidation false");
           }
@@ -430,32 +298,165 @@ detailBtn.forEach((btn) => {
       }
     }
   })
-});
 
-// 상담사 삭제
-const delBtn = document.querySelectorAll(".distinc .del");
-delBtn.forEach((btn) => {
-  btn.addEventListener('click', () => {
-    if((confirm("삭제하시겠습니까?"))) {
+  // 상담사 디테일
+  const detailBtn = document.querySelectorAll(".distinc .detail");
+  detailBtn.forEach((btn) => {
+    btn.addEventListener('click', () => {
       //XMLHttpRequest 객체 생성
       const xhr = new XMLHttpRequest();
       //요청을 보낼 방식, 주소, 비동기여부 설정
-      xhr.open('GET', 'user/delete?userUno='+btn.value, true);
+      xhr.open('GET', 'counselor-detail?userUno='+btn.value, true);
       //요청 전송
       xhr.send(null);
       //통신후 작업
       xhr.onload = () => {
-        if (xhr.status === 200) {  //통신 성공
-          console.log("통신 성공");
-          window.location.href="/manage"
-        } else {  //통신 실패
+        //통신 성공
+        if (xhr.status === 200) {
+          document.body.style.overflow='hidden';
+          modal.style.display = 'block';
+          modal.innerHTML = xhr.response;
+
+          const counselorForm = document.querySelector("#counselorForm");
+          const new_pw = document.querySelector("#new_pw");
+          const check_pw = document.querySelector("#check_pw");
+          const userNm = document.querySelector("#userNm");
+          const phoneNum = document.querySelector("#phoneNum");
+          const phoneNum1 = document.querySelector("#phoneNum1");
+          const phoneNum2 = document.querySelector("#phoneNum2");
+          const phoneNum3 = document.querySelector("#phoneNum3");
+          const emailId = document.querySelector("#emailId");
+          const emailDomain = document.querySelector("#emailDomain");
+          const orgNm = document.querySelector("#orgNm");
+          const userPosition = document.querySelector("#userPosition");
+          const bizDetail = document.querySelector("#bizDetail");
+          const change = document.querySelector("#modifyBtn");
+          const modifyBtn = document.querySelector("#modifyBtn");
+
+          phoneNum.addEventListener("keyup", function () {
+            regexPhoneNumber(phoneNum);
+          })
+          new_pw.addEventListener("keyup", function () {
+            isPwCheck();
+          })
+          check_pw.addEventListener("keyup", function () {
+            isPwCheck();
+          })
+
+          const isPwCheck = function () {
+            const pinchk = document.querySelector(".newpin-check");
+            const regExpPwCheck = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}$/;
+
+            if (new_pw.value === '' && check_pw.value === '') {
+              change.classList.add('active');
+              change.disabled = false;
+              pinchk.innerText = ``;
+            } else {
+              if (!regExpPwCheck.test(new_pw.value)) {
+                change.classList.remove('active');
+                change.disabled = true;
+                pinchk.innerText = `*비밀번호는 8~16자 이내 영문,숫자 조합 으로 사용해야 합니다.`;
+              } else if (new_pw.value !== '' && new_pw.value === check_pw.value) {
+                change.classList.add('active');
+                change.disabled = false;
+                pinchk.innerText = ``;
+              } else if (new_pw.value !== check_pw.value) {
+                change.classList.remove('active');
+                change.disabled = true;
+                pinchk.innerText = `*비밀번호가 불일치합니다.`;
+              }
+            }
+          }
+
+          // 전화번호 자동 정규식 처리
+          const regexPhoneNumber = (target) => {
+            target.value = target.value.replace(/[^0-9]/g, '').replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`);
+          }
+
+          const checkValidation = () => {
+            const emailExp = /^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$/;
+            const phoneNumExp = /^(\\d{2,3})(\\d{3,4})(\\d{4})$/;
+
+            if (userNm.value.length === 0 || userNm.value.trim() === "") {
+              alert("이름을 입력해주세요.");
+              return false;
+            } else if (phoneNum.value.length === 0 || phoneNum.value.trim() === "") {
+              alert("전화번호를 입력해주세요.");
+              return false;
+            } else if (phoneNumExp.test(phoneNum.value.replace(/[^0-9]/g, ''))) {
+              alert("올바른 전화번호 형식이 아닙니다. 다시 확인해주세요.");
+              return false;
+            } else if (emailId.value.length === 0 || emailId.value.trim() === ""
+                    || emailDomain.value.length === 0 || emailDomain.value.trim() === "") {
+              alert("이메일을 입력해주세요.");
+              return false;
+            } else if (emailExp.test(emailId + '@' + emailDomain)) {
+              alert("올바른 이메일 형식이 아닙니다. 다시 확인해주세요.");
+              return false;
+            } else if (orgNm.value.length === 0 || orgNm.value.trim() === "") {
+              alert("소속을 입력해 주세요.");
+              return false;
+            } else if (userPosition.value.length === 0 || userPosition.value.trim() === "") {
+              alert("직위를 입력해 주세요.");
+              return false;
+            } else if (bizDetail.value.length === 0 || bizDetail.value.trim() === "") {
+              alert("업무내용을 입력해주세요");
+              return false;
+            } else {
+              const phoneNumArr = phoneNum.value.split("-");
+              phoneNum1.value = phoneNumArr[0];
+              phoneNum2.value = phoneNumArr[1];
+              phoneNum3.value = phoneNumArr[2];
+              return true;
+            }
+          }
+
+          modifyBtn.onclick = () => {
+            if ( checkValidation() ) {
+              counselorForm.submit();
+            } else {
+              console.log("checkValidation false");
+            }
+          }
+
+          // 취소 버튼
+          const esc = document.querySelector(".counselor-btn .esc");
+          esc.onclick = () => {
+            modal.style.display = 'none';
+            document.body.style.overflow='unset';
+          }
+        } else {
+          //통신 실패
           console.log("통신 실패");
         }
       }
-    }
-  })
-});
-/*]]>*/
+    })
+  });
+
+  // 상담사 삭제
+  const delBtn = document.querySelectorAll(".distinc .del");
+  delBtn.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if((confirm("삭제하시겠습니까?"))) {
+        //XMLHttpRequest 객체 생성
+        const xhr = new XMLHttpRequest();
+        //요청을 보낼 방식, 주소, 비동기여부 설정
+        xhr.open('GET', 'user/delete?userUno='+btn.value, true);
+        //요청 전송
+        xhr.send(null);
+        //통신후 작업
+        xhr.onload = () => {
+          if (xhr.status === 200) {  //통신 성공
+            console.log("통신 성공");
+            window.location.href="/manage"
+          } else {  //통신 실패
+            console.log("통신 실패");
+          }
+        }
+      }
+    })
+  });
+  /*]]>*/
 </script>
 </body>
 </html>

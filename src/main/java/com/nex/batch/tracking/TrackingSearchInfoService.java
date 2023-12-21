@@ -1,5 +1,6 @@
 package com.nex.batch.tracking;
 
+import com.nex.search.entity.BatchAllTimeMonitoringEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.service.SearchService;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
@@ -84,11 +87,23 @@ public class TrackingSearchInfoService {
         searchInfoEntity.setTsiImgWidth(searchResultEntity.getTsrImgWidth());
         searchInfoEntity.setTsiImgSize(searchResultEntity.getTsrImgSize());
         searchInfoEntity.setTsrUno(searchResultEntity.getTsrUno());
+        searchInfoEntity.setTsiAlltimeMonitoring(Timestamp.valueOf(LocalDateTime.now())+"  ");
 
         //검색 정보 엔티티 기본값 세팅
         searchService.setSearchInfoDefault(searchInfoEntity);
 
         return searchInfoEntity;
+    }
+
+    public BatchAllTimeMonitoringEntity getBatchAllTimeMonitoringEntity(SearchInfoEntity searchInfoEntityByTsiUno, SearchResultEntity searchResultEntity) {
+        log.info("getSearchInfoEntity 진입");
+
+        BatchAllTimeMonitoringEntity batchAllTimeMonitoringEntity = new BatchAllTimeMonitoringEntity();
+        batchAllTimeMonitoringEntity.setTsiUno(searchResultEntity.getTsiUno());
+        batchAllTimeMonitoringEntity.setTsrUno(searchResultEntity.getTsrUno());
+        batchAllTimeMonitoringEntity.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+
+        return batchAllTimeMonitoringEntity;
     }
 
 }

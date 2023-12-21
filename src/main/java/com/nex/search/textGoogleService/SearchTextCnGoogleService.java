@@ -70,10 +70,10 @@ public class SearchTextCnGoogleService {
     private final RestTemplate restTemplate;
 
     public void search(byte tsiGoogle, String tsiType, SearchInfoEntity insertResult, String folder,
-                           SearchInfoDto searchInfoDto){
-            String tsrSns = "11";
-            // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
-            searchSnsByText(tsrSns, insertResult, searchInfoDto);
+                       SearchInfoDto searchInfoDto){
+        String tsrSns = "11";
+        // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
+        searchSnsByText(tsrSns, insertResult, searchInfoDto);
     }
 
     public void searchSnsByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) {
@@ -220,7 +220,7 @@ public class SearchTextCnGoogleService {
                 log.info("imageUrl2: "+imageUrl);
 
                 if(imageUrl != null) {
-                    SearchResultEntity sre = searchService.getSearchResultEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = searchService.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
                     if (!tsrSns.equals(sre.getTsrSns())) {
                         continue;
                     }

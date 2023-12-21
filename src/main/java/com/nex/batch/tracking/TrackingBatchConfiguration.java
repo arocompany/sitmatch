@@ -5,7 +5,6 @@ import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.repo.SearchInfoRepository;
-import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
@@ -44,8 +43,6 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
     private final SearchResultRepository searchResultRepository;
 
-    private final SearchJobRepository searchJobRepository;
-
     private final int CHUNK_SIZE = 100;
 
 
@@ -77,7 +74,68 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
     }
 
     @Bean
+    public JpaPagingItemReader<SearchResultEntity> allTimeInfoReader() {
+        log.info("allTimeInfoReader 진입");
+        String queryString = """
+                             select sr
+                             from   SearchResultEntity sr
+                             where  sr.monitoringCd = '20'
+                             and    exists (
+                                           select 1
+                                           from   SearchInfoEntity si
+                                           where  si.tsiUno = sr.tsiUno
+                                           )
+                             and    not exists (
+                                               select 1
+                                               from   SearchInfoEntity si
+                                               where  si.tsrUno = sr.tsrUno
+                                               )
+                             """;
+        return new JpaPagingItemReaderBuilder<SearchResultEntity>()
+                .name("allTimeInfoReader")
+                .pageSize(CHUNK_SIZE)
+                .entityManagerFactory(em)
+                .queryString(queryString)
+                .build();
+    }
+
+    @Bean
+    public JpaPagingItemReader<SearchResultEntity> searchResultAllTimeReader() {
+        log.info("searchResultAllTimeReader 진입");
+        String queryString = """
+                             select sr
+                             from   SearchResultEntity sr
+                             where  sr.monitoringCd = '20'
+                             and    exists (
+                                           select 1
+                                           from   SearchInfoEntity si
+                                           where  si.tsiUno = sr.tsiUno
+                                           )
+                             and    not exists (
+                                               select 1
+                                               from   SearchInfoEntity si
+                                               where  si.tsrUno = sr.tsrUno
+                                               )
+                             """;
+        return new JpaPagingItemReaderBuilder<SearchResultEntity>()
+                .name("searchResultAllTimeReader")
+                .pageSize(CHUNK_SIZE)
+                .entityManagerFactory(em)
+                .queryString(queryString)
+                .build();
+    }
+
+    @Bean
     public ItemProcessor<SearchResultEntity, SearchInfoEntity> searchInfoProcessor() {
+        log.info("searchInfoProcessor 진입");
+        return findSearchResult -> {
+            SearchInfoEntity findSearchInfo = searchInfoRepository.findById(findSearchResult.getTsiUno()).orElseThrow();
+            return trackingSearchInfoService.getSearchInfoEntity(findSearchInfo, findSearchResult);
+        };
+    }
+
+    @Bean
+    public ItemProcessor<SearchResultEntity, SearchInfoEntity> allTimeInfoProcessor() {
         log.info("searchInfoProcessor 진입");
         return findSearchResult -> {
             SearchInfoEntity findSearchInfo = searchInfoRepository.findById(findSearchResult.getTsiUno()).orElseThrow();
@@ -104,8 +162,20 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .writer(searchInfoWriter())
                 .build();
     }
+
     //************************** searchInfo 관련 END **************************
 
+    @Bean
+    public Step allTimeInfoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        log.info("searchInfoStep 진입");
+        return new StepBuilder("allTimeInfoStep", jobRepository)
+                .allowStartIfComplete(true)
+                .<SearchResultEntity, SearchInfoEntity>chunk(CHUNK_SIZE, transactionManager)
+                .reader(allTimeInfoReader())
+                .processor(allTimeInfoProcessor())
+                .writer(searchInfoWriter())
+                .build();
+    }
 
     //************************** searchResult 관련 START **************************
     @Bean
@@ -213,11 +283,24 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
     //************************** searchJob 관련 START **************************
 
 
+/*
     @Bean
     public Job trackingJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         log.info("trackingJob 진입");
         return new JobBuilder("trackingJob", jobRepository)
                 .start(searchInfoStep(jobRepository, transactionManager))
+                .next(searchResultStep(jobRepository, transactionManager))
+                .next(searchJobStep(jobRepository, transactionManager))
+                .build();
+    }
+*/
+
+    @Bean
+    public Job trackingJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        log.info("trackingJob 진입");
+        return new JobBuilder("trackingJob", jobRepository)
+                .start(allTimeInfoStep(jobRepository, transactionManager))
+                .next(searchInfoStep(jobRepository, transactionManager))
                 .next(searchResultStep(jobRepository, transactionManager))
                 .next(searchJobStep(jobRepository, transactionManager))
                 .build();

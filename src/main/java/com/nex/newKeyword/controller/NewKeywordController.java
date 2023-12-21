@@ -33,10 +33,11 @@ public class NewKeywordController {
     // 신조어 이력관리
     @GetMapping("/newKeyword")
     public ModelAndView newKeyword(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
-            , @RequestParam(required = false, defaultValue = "1") Integer searchPage
-            , @RequestParam(required = false, defaultValue = "") String searchKeyword) {
+                                , @RequestParam(required = false, defaultValue = "1") Integer searchPage
+                                , @RequestParam(required = false, defaultValue = "") String searchKeyword) {
         ModelAndView modelAndView = new ModelAndView("html/newKeyword");
         log.info("========= keyword 페이지 진입 ========");
+        log.info("searchKeyword: "+searchKeyword);
 
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("headerMenu", "newKeyword");

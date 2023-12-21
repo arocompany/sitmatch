@@ -31,8 +31,8 @@
   <section class="search-history layout history active">
     <h1 class="title2">신조어 검색 이력</h1>
     <div class="searchbox">
-      <form  class="search-box" action="/newKeyword" id="searchForm">
-        <input type="hidden" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요"  name="searchKeyword" id="searchKeyword">
+      <form method="get" class="search-box" action="/keyword/newKeyword" id="searchForm">
+        <input class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${searchKeyword}" name="searchKeyword" id="searchKeyword">
         <input type="hidden" name="searchPage" id="searchPage">
       </form>
       <!--

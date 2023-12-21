@@ -69,7 +69,7 @@ public class SearchImageCnService {
     private final RestTemplate restTemplate;
 
     public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, byte tsiTwitter, String tsiType, SearchInfoEntity insertResult, String folder,
-                           SearchInfoDto searchInfoDto){
+                       SearchInfoDto searchInfoDto){
         log.info("== searchImageCnService 진입 ==");
         String tsrSns = "11";
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();

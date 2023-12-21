@@ -34,4 +34,8 @@ public class AlltimeMonitoringHistEntity {
     @Column(name = "USER_ID")
     private String userId;
 
+    @Basic
+    @Column(name = "TAM_YN")
+    private String tamYn;
+
 }

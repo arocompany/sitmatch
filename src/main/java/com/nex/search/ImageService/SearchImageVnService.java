@@ -71,7 +71,7 @@ public class SearchImageVnService {
     private final RestTemplate restTemplate;
 
     public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, byte tsiTwitter, String tsiType, SearchInfoEntity insertResult, String folder,
-                           SearchInfoDto searchInfoDto){
+                       SearchInfoDto searchInfoDto){
         String tsrSns = "11";
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);

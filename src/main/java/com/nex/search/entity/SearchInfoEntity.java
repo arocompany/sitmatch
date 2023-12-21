@@ -81,6 +81,14 @@ public class SearchInfoEntity {
     @Column(name = "SEARCH_VALUE")
     private String searchValue;
 
+    @Basic
+    @Column(name = "TSI_ALLTIME_MONITORING")
+    private String tsiAlltimeMonitoring;
+    @Basic
+    @Column(name = "TSI_USER_FILE")
+    private String tsiUserFile;
+
+
     public int getTsiUno() {
         return tsiUno;
     }
@@ -217,12 +225,19 @@ public class SearchInfoEntity {
         this.searchValue = searchValue;
     }
 
+    public String getTsiAlltimeMonitoring(){ return tsiAlltimeMonitoring;}
+
+    public void setTsiAlltimeMonitoring(String tsiAlltimeMonitoring) {this.tsiAlltimeMonitoring = tsiAlltimeMonitoring;}
+
+    public String getTsiUserFile(){return tsiUserFile;}
+    public void setTsiUserFile(String tsiUserFile){this.tsiUserFile=tsiUserFile;}
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SearchInfoEntity that = (SearchInfoEntity) o;
-        return tsiUno == that.tsiUno && tsiGoogle == that.tsiGoogle && tsiTwitter == that.tsiTwitter && tsiFacebook == that.tsiFacebook && tsiInstagram == that.tsiInstagram && userUno == that.userUno && Objects.equals(tsiType, that.tsiType) && Objects.equals(tsiKeyword, that.tsiKeyword) && Objects.equals(tsiImgPath, that.tsiImgPath) && Objects.equals(tsiImgName, that.tsiImgName) && Objects.equals(tsiImgExt, that.tsiImgExt) && Objects.equals(tsiStat, that.tsiStat) && Objects.equals(tsiDnaPath, that.tsiDnaPath) && Objects.equals(tsiDnaText, that.tsiDnaText) && Objects.equals(fstDmlDt, that.fstDmlDt) && Objects.equals(lstDmlDt, that.lstDmlDt);
+        return tsiUno == that.tsiUno && tsiGoogle == that.tsiGoogle && tsiTwitter == that.tsiTwitter && tsiFacebook == that.tsiFacebook && tsiInstagram == that.tsiInstagram && userUno == that.userUno && Objects.equals(tsiType, that.tsiType) && Objects.equals(tsiKeyword, that.tsiKeyword) && Objects.equals(tsiImgPath, that.tsiImgPath) && Objects.equals(tsiImgName, that.tsiImgName) && Objects.equals(tsiImgExt, that.tsiImgExt) && Objects.equals(tsiStat, that.tsiStat) && Objects.equals(tsiDnaPath, that.tsiDnaPath) && Objects.equals(tsiDnaText, that.tsiDnaText) && Objects.equals(fstDmlDt, that.fstDmlDt) && Objects.equals(lstDmlDt, that.lstDmlDt)&& Objects.equals(tsiUserFile, that.tsiUserFile);
     }
 
     @Override

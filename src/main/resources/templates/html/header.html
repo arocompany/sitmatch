@@ -13,7 +13,7 @@
         <li th:class="${headerMenu == 'newKeyword' ? 'menu-on' : 'M-box-up'}"><a href="/keyword/newKeyword">신조어 이력관리</a></li>
         <li th:class="${headerMenu == 'prcuse' ? 'menu-on' : 'M-box-up'}" th:if="${sessionInfo.isAdmin}"><a href="/prcuse">기간별 현황</a></li>
         <li th:class="${headerMenu == 'connect' ? 'menu-on' : 'M-box-up'}" th:if="${sessionInfo.isAdmin}"><a href="/connect">사용자별 현황</a></li>
-        <!--<li th:class="${headerMenu == 'userSearchHistory' ? 'menu-on' : 'M-box-up'}" th:if="${sessionInfo.isAdmin}"><a href="/userSearchHistory">검색 현황</a></li>-->
+        <li th:class="${headerMenu == 'userSearchHistory' ? 'menu-on' : 'M-box-up'}" th:if="${sessionInfo.isAdmin}"><a href="/userSearchHistory">검색 현황</a></li>
         <!--<li th:class="${headerMenu == 'connect' ? 'menu-on' : 'M-box-up'}" th:if="${sessionInfo.isAdmin}"><a href="/newKeyword">자동추적 키워드</a></li>-->
         <!--<li th:class="${headerMenu == 'connect' ? 'menu-on' : 'M-box-up'}" th:if="${sessionInfo.isAdmin}"><a href="/connect">사용자 접속 현황</a></li>-->
       </ul>

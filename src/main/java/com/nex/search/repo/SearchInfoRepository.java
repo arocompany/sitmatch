@@ -21,169 +21,169 @@ import java.util.Optional;
 public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, Integer> {
 
     String dateKeywordResultCntList=" SELECT COUNT(*) AS keywordCnt " +
-                                    " ,SUM((SELECT COUNT(*) " +
-                                    " from tb_search_result tsr " +
-                                    " LEFT OUTER JOIN tb_search_info tsi3 " +
-                                    " ON tsr.tsi_uno = tsi3.tsi_uno " +
-                                    " WHERE  tsr.tsi_uno = tsi.tsi_uno )) AS resultCnt " +
-                                    " ,DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') AS date " +
-                                    " FROM tb_search_info tsi " +
-                                    " WHERE tsi.fst_dml_dt BETWEEN :fromDate AND :toDate " +
-                                    " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') ";
+            " ,SUM((SELECT COUNT(*) " +
+            " from tb_search_result tsr " +
+            " LEFT OUTER JOIN tb_search_info tsi3 " +
+            " ON tsr.tsi_uno = tsi3.tsi_uno " +
+            " WHERE  tsr.tsi_uno = tsi.tsi_uno )) AS resultCnt " +
+            " ,DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') AS date " +
+            " FROM tb_search_info tsi " +
+            " WHERE tsi.fst_dml_dt BETWEEN :fromDate AND :toDate " +
+            " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') ";
     String dateSearchInfoResultExcelList =  " SELECT tu.user_nm AS userNm " +
-                                            " ,tu.user_id AS userId " +
-                                            " ,COUNT(tsi.tsi_keyword) keywordCnt " +
-                                            " ,SUM((SELECT COUNT(DISTINCT tsr.tsr_site_url) " +
-                                            " from tb_search_result tsr " +
-                                            " LEFT OUTER JOIN tb_search_info tsi2 " +
-                                            " ON tsr.tsi_uno = tsi2.tsi_uno " +
-                                            " WHERE tsr.tsi_uno = tsi.tsi_uno)) AS resultCnt " +
-                                            " ,tsi.fst_dml_dt AS resultDate " +
-                                            " FROM tb_search_info tsi " +
-                                            " LEFT OUTER JOIN tb_user tu " +
-                                            " ON tsi.user_uno = tu.user_uno " +
-                                            " WHERE tsi.fst_dml_dt BETWEEN :fromDate AND :toDate " +
-                                            " GROUP BY tsi.fst_dml_dt " +
-                                            " ORDER BY tsi.fst_dml_dt ASC";
+            " ,tu.user_id AS userId " +
+            " ,COUNT(tsi.tsi_keyword) keywordCnt " +
+            " ,SUM((SELECT COUNT(DISTINCT tsr.tsr_site_url) " +
+            " from tb_search_result tsr " +
+            " LEFT OUTER JOIN tb_search_info tsi2 " +
+            " ON tsr.tsi_uno = tsi2.tsi_uno " +
+            " WHERE tsr.tsi_uno = tsi.tsi_uno)) AS resultCnt " +
+            " ,tsi.fst_dml_dt AS resultDate " +
+            " FROM tb_search_info tsi " +
+            " LEFT OUTER JOIN tb_user tu " +
+            " ON tsi.user_uno = tu.user_uno " +
+            " WHERE tsi.fst_dml_dt BETWEEN :fromDate AND :toDate " +
+            " GROUP BY tsi.fst_dml_dt " +
+            " ORDER BY tsi.fst_dml_dt ASC";
 
     String userKeywordCntList = " SELECT COUNT(tsi.tsi_keyword) AS keywordCnt " +
-                                " ,user_id AS userId ,SUM((SELECT COUNT(DISTINCT tsr.tsr_site_url) " +
-                                " from tb_search_result tsr LEFT OUTER JOIN tb_search_info tsi2 " +
-                                " ON tsr.tsi_uno = tsi2.tsi_uno " +
-                                " WHERE tsr.tsi_uno = tsi.tsi_uno)) AS resultCnt " +
-                                " FROM tb_search_info tsi " +
-                                " LEFT OUTER JOIN tb_user tu " +
-                                " ON tsi.user_uno = tu.user_uno " +
-                                " WHERE tsi.fst_dml_dt LIKE CONCAT(:toDate,'%') " +
-                                " GROUP BY tu.user_id " +
-                                " ORDER BY tu.user_uno ASC";
+            " ,user_id AS userId ,SUM((SELECT COUNT(DISTINCT tsr.tsr_site_url) " +
+            " from tb_search_result tsr LEFT OUTER JOIN tb_search_info tsi2 " +
+            " ON tsr.tsi_uno = tsi2.tsi_uno " +
+            " WHERE tsr.tsi_uno = tsi.tsi_uno)) AS resultCnt " +
+            " FROM tb_search_info tsi " +
+            " LEFT OUTER JOIN tb_user tu " +
+            " ON tsi.user_uno = tu.user_uno " +
+            " WHERE tsi.fst_dml_dt LIKE CONCAT(:toDate,'%') " +
+            " GROUP BY tu.user_id " +
+            " ORDER BY tu.user_uno ASC";
     String searchInfoResultCnt =    " SELECT tsi.tsi_uno AS tsiUno, " +
-                                    " tsi.data_stat_cd AS tsiDataStatCd, " +
-                                    " tsi.fst_dml_dt AS tsiFstDmlDt, " +
-                                    " tsi.lst_dml_dt AS tsiLstDmlDt, " +
-                                    " tsi.tsi_dna_path AS tsiDnaPath, " +
-                                    " tsi.tsi_dna_text AS tsiDnaText, " +
-                                    " tsi.tsi_facebook AS tsiFacebook, " +
-                                    " tsi.tsi_google AS tsiGoogle, " +
-                                    " tsi.tsi_img_ext AS tsiImgExt, " +
-                                    " tsi.tsi_img_height AS tsiImgHeight, " +
-                                    " tsi.tsi_img_name AS tsiImgName, " +
-                                    " tsi.tsi_img_path AS tsiImgPath, " +
-                                    " tsi.tsi_img_real_path AS tsiImgRealPath, " +
-                                    " tsi.tsi_img_size AS tsiImgSize, " +
-                                    " tsi.tsi_img_width AS tsiImgWidth, " +
-                                    " tsi.tsi_instagram AS tsiInstagram, " +
-                                    " tsi.tsi_keyword AS tsiKeyword, " +
-                                    " tsi.tsi_stat AS tsiStat, " +
-                                    " tsi.tsi_twitter AS tsiTwitter, " +
-                                    " tsi.tsi_type AS tsiType, " +
-                                    " tsi.tsr_uno AS tsrUno, " +
-                                    " tsi.user_uno AS tsiUserUno, " +
-                                    " (SELECT COUNT(DISTINCT tsr.tsr_site_url)  FROM tb_search_result tsr " +
-                                    " inner JOIN tb_search_info tsi_2 " +
-                                    " ON tsr.TSI_UNO = tsi_2.tsi_uno " +
-                                    " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt, " +
-                                    " (SELECT COUNT(DISTINCT(tsr_2.tsr_site_url)) " +
-                                    " FROM tb_search_result tsr_2 " +
-                                    " LEFT OUTER JOIN tb_match_result tmr " +
-                                    " ON tsr_2.TSR_UNO = tmr.tsr_uno " +
-                                    " WHERE tmr.tsi_uno = tsi.tsi_uno " +
-                                    " AND tsr_2.tsi_uno = tsi.tsi_uno " +
-                                    " AND tmr.tmr_stat=11 " +
-                                    " AND if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', " +
-                                    " ceiling(((case " +
-                                    " when isnull(tmr.TMR_V_SCORE) then 0 " +
-                                    " ELSE TMR_V_SCORE " +
-                                    " end + case " +
-                                    " when isnull(tmr.TMR_A_SCORE) then 0 " +
-                                    " ELSE TMR_A_SCORE " +
-                                    " end + case " +
-                                    " when isnull(tmr.TMR_T_SCORE) then 0 " +
-                                    " ELSE TMR_T_SCORE " +
-                                    " end) / (case " +
-                                    " when isnull(tmr.TMR_V_SCORE) then 0 " +
-                                    " else 1 " +
-                                    " end + case " +
-                                    " when isnull(tmr.TMR_A_SCORE) then 0 " +
-                                    " else 1 " +
-                                    " end + case " +
-                                    " when isnull(tmr.TMR_T_SCORE) then 0 " +
-                                    " else 1 " +
-                                    " end)) * 1000)) > 1) AS tmrSimilarityCnt " +
-                                    " from tb_search_info tsi " +
-                                    " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
-                                    " and tsi.SEARCH_VALUE= :searchValue" +
-                                    " and tsi.TSI_KEYWORD like '%' :keyword '%' " +
-                                    " and tsi.TSR_UNO is null " +
-                                    " order by  tsi.tsi_uno desc ";
+            " tsi.data_stat_cd AS tsiDataStatCd, " +
+            " tsi.fst_dml_dt AS tsiFstDmlDt, " +
+            " tsi.lst_dml_dt AS tsiLstDmlDt, " +
+            " tsi.tsi_dna_path AS tsiDnaPath, " +
+            " tsi.tsi_dna_text AS tsiDnaText, " +
+            " tsi.tsi_facebook AS tsiFacebook, " +
+            " tsi.tsi_google AS tsiGoogle, " +
+            " tsi.tsi_img_ext AS tsiImgExt, " +
+            " tsi.tsi_img_height AS tsiImgHeight, " +
+            " tsi.tsi_img_name AS tsiImgName, " +
+            " tsi.tsi_img_path AS tsiImgPath, " +
+            " tsi.tsi_img_real_path AS tsiImgRealPath, " +
+            " tsi.tsi_img_size AS tsiImgSize, " +
+            " tsi.tsi_img_width AS tsiImgWidth, " +
+            " tsi.tsi_instagram AS tsiInstagram, " +
+            " tsi.tsi_keyword AS tsiKeyword, " +
+            " tsi.tsi_stat AS tsiStat, " +
+            " tsi.tsi_twitter AS tsiTwitter, " +
+            " tsi.tsi_type AS tsiType, " +
+            " tsi.tsr_uno AS tsrUno, " +
+            " tsi.user_uno AS tsiUserUno, " +
+            " (SELECT COUNT(DISTINCT tsr.tsr_site_url)  FROM tb_search_result tsr " +
+            " inner JOIN tb_search_info tsi_2 " +
+            " ON tsr.TSI_UNO = tsi_2.tsi_uno " +
+            " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt, " +
+            " (SELECT COUNT(DISTINCT(tsr_2.tsr_site_url)) " +
+            " FROM tb_search_result tsr_2 " +
+            " LEFT OUTER JOIN tb_match_result tmr " +
+            " ON tsr_2.TSR_UNO = tmr.tsr_uno " +
+            " WHERE tmr.tsi_uno = tsi.tsi_uno " +
+            " AND tsr_2.tsi_uno = tsi.tsi_uno " +
+            " AND tmr.tmr_stat=11 " +
+            " AND if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', " +
+            " ceiling(((case " +
+            " when isnull(tmr.TMR_V_SCORE) then 0 " +
+            " ELSE TMR_V_SCORE " +
+            " end + case " +
+            " when isnull(tmr.TMR_A_SCORE) then 0 " +
+            " ELSE TMR_A_SCORE " +
+            " end + case " +
+            " when isnull(tmr.TMR_T_SCORE) then 0 " +
+            " ELSE TMR_T_SCORE " +
+            " end) / (case " +
+            " when isnull(tmr.TMR_V_SCORE) then 0 " +
+            " else 1 " +
+            " end + case " +
+            " when isnull(tmr.TMR_A_SCORE) then 0 " +
+            " else 1 " +
+            " end + case " +
+            " when isnull(tmr.TMR_T_SCORE) then 0 " +
+            " else 1 " +
+            " end)) * 1000)) > 1) AS tmrSimilarityCnt " +
+            " from tb_search_info tsi " +
+            " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
+            " and tsi.SEARCH_VALUE= :searchValue" +
+            " and tsi.TSI_KEYWORD like '%' :keyword '%' " +
+            " and tsi.TSR_UNO is null " +
+            " order by  tsi.tsi_uno desc ";
 
     String userSearchInfoList = " SELECT tsi.tsi_uno AS tsiUno, " +
-                                " tsi.data_stat_cd AS tsiDataStatCd, " +
-                                " tsi.fst_dml_dt AS tsiFstDmlDt, " +
-                                " tsi.lst_dml_dt AS tsiLstDmlDt, " +
-                                " tsi.tsi_dna_path AS tsiDnaPath, " +
-                                " tsi.tsi_dna_text AS tsiDnaText, " +
-                                " tsi.tsi_facebook AS tsiFacebook, " +
-                                " tsi.tsi_google AS tsiGoogle, " +
-                                " tsi.tsi_img_ext AS tsiImgExt, " +
-                                " tsi.tsi_img_height AS tsiImgHeight, " +
-                                " tsi.tsi_img_name AS tsiImgName, " +
-                                " tsi.tsi_img_path AS tsiImgPath, " +
-                                " tsi.tsi_img_real_path AS tsiImgRealPath, " +
-                                " tsi.tsi_img_size AS tsiImgSize, " +
-                                " tsi.tsi_img_width AS tsiImgWidth, " +
-                                " tsi.tsi_instagram AS tsiInstagram, " +
-                                " tsi.tsi_keyword AS tsiKeyword, " +
-                                " tsi.tsi_stat AS tsiStat, " +
-                                " tsi.tsi_twitter AS tsiTwitter, " +
-                                " tsi.tsi_type AS tsiType, " +
-                                " tsi.tsr_uno AS tsrUno, " +
-                                " tsi.user_uno AS tsiUserUno, " +
-                                " (SELECT COUNT(DISTINCT tsr.tsr_site_url)  FROM tb_search_result tsr " +
-                                " inner JOIN tb_search_info tsi_2 " +
-                                " ON tsr.TSI_UNO = tsi_2.tsi_uno " +
-                                " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt, " +
-                                " (SELECT COUNT(DISTINCT(tsr_2.tsr_site_url)) " +
-                                " FROM tb_search_result tsr_2 " +
-                                " LEFT OUTER JOIN tb_match_result tmr " +
-                                " ON tsr_2.TSR_UNO = tmr.tsr_uno " +
-                                " WHERE tmr.tsi_uno = tsi.tsi_uno " +
-                                " AND tsr_2.tsi_uno = tsi.tsi_uno " +
-                                " AND tmr.tmr_stat=11 " +
-                                " AND if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', " +
-                                " ceiling(((case " +
-                                " when isnull(tmr.TMR_V_SCORE) then 0 " +
-                                " ELSE TMR_V_SCORE " +
-                                " end + case " +
-                                " when isnull(tmr.TMR_A_SCORE) then 0 " +
-                                " ELSE TMR_A_SCORE " +
-                                " end + case " +
-                                " when isnull(tmr.TMR_T_SCORE) then 0 " +
-                                " ELSE TMR_T_SCORE " +
-                                " end) / (case " +
-                                " when isnull(tmr.TMR_V_SCORE) then 0 " +
-                                " else 1 " +
-                                " end + case " +
-                                " when isnull(tmr.TMR_A_SCORE) then 0 " +
-                                " else 1 " +
-                                " end + case " +
-                                " when isnull(tmr.TMR_T_SCORE) then 0 " +
-                                " else 1 " +
-                                " end)) * 1000)) > 1) AS tmrSimilarityCnt " +
-                                " from tb_search_info tsi " +
-                                " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
-                                " and tsi.SEARCH_VALUE= :searchValue" +
-                                " and tsi.tsi_user_file LIKE CONCAT('%',:userKeyword,'%')  " +
-                                " and tsi.TSI_KEYWORD like '%' :keyword '%' " +
-                                " and tsi.TSR_UNO is null " +
-                                " and tsi.user_uno = :userUno " +
-                                " order by  tsi.tsi_uno desc ";
+            " tsi.data_stat_cd AS tsiDataStatCd, " +
+            " tsi.fst_dml_dt AS tsiFstDmlDt, " +
+            " tsi.lst_dml_dt AS tsiLstDmlDt, " +
+            " tsi.tsi_dna_path AS tsiDnaPath, " +
+            " tsi.tsi_dna_text AS tsiDnaText, " +
+            " tsi.tsi_facebook AS tsiFacebook, " +
+            " tsi.tsi_google AS tsiGoogle, " +
+            " tsi.tsi_img_ext AS tsiImgExt, " +
+            " tsi.tsi_img_height AS tsiImgHeight, " +
+            " tsi.tsi_img_name AS tsiImgName, " +
+            " tsi.tsi_img_path AS tsiImgPath, " +
+            " tsi.tsi_img_real_path AS tsiImgRealPath, " +
+            " tsi.tsi_img_size AS tsiImgSize, " +
+            " tsi.tsi_img_width AS tsiImgWidth, " +
+            " tsi.tsi_instagram AS tsiInstagram, " +
+            " tsi.tsi_keyword AS tsiKeyword, " +
+            " tsi.tsi_stat AS tsiStat, " +
+            " tsi.tsi_twitter AS tsiTwitter, " +
+            " tsi.tsi_type AS tsiType, " +
+            " tsi.tsr_uno AS tsrUno, " +
+            " tsi.user_uno AS tsiUserUno, " +
+            " (SELECT COUNT(DISTINCT tsr.tsr_site_url)  FROM tb_search_result tsr " +
+            " inner JOIN tb_search_info tsi_2 " +
+            " ON tsr.TSI_UNO = tsi_2.tsi_uno " +
+            " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt, " +
+            " (SELECT COUNT(DISTINCT(tsr_2.tsr_site_url)) " +
+            " FROM tb_search_result tsr_2 " +
+            " LEFT OUTER JOIN tb_match_result tmr " +
+            " ON tsr_2.TSR_UNO = tmr.tsr_uno " +
+            " WHERE tmr.tsi_uno = tsi.tsi_uno " +
+            " AND tsr_2.tsi_uno = tsi.tsi_uno " +
+            " AND tmr.tmr_stat=11 " +
+            " AND if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', " +
+            " ceiling(((case " +
+            " when isnull(tmr.TMR_V_SCORE) then 0 " +
+            " ELSE TMR_V_SCORE " +
+            " end + case " +
+            " when isnull(tmr.TMR_A_SCORE) then 0 " +
+            " ELSE TMR_A_SCORE " +
+            " end + case " +
+            " when isnull(tmr.TMR_T_SCORE) then 0 " +
+            " ELSE TMR_T_SCORE " +
+            " end) / (case " +
+            " when isnull(tmr.TMR_V_SCORE) then 0 " +
+            " else 1 " +
+            " end + case " +
+            " when isnull(tmr.TMR_A_SCORE) then 0 " +
+            " else 1 " +
+            " end + case " +
+            " when isnull(tmr.TMR_T_SCORE) then 0 " +
+            " else 1 " +
+            " end)) * 1000)) > 1) AS tmrSimilarityCnt " +
+            " from tb_search_info tsi " +
+            " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
+            " and tsi.SEARCH_VALUE= :searchValue" +
+            " and tsi.tsi_user_file LIKE CONCAT('%',:userKeyword,'%')  " +
+            " and tsi.TSI_KEYWORD like '%' :keyword '%' " +
+            " and tsi.TSR_UNO is null " +
+            " and tsi.user_uno = :userUno " +
+            " order by  tsi.tsi_uno desc ";
     String searchInfoCount= " select count(s1_0.TSI_UNO) " +
-                            " from tb_search_info s1_0 " +
-                            " where s1_0.DATA_STAT_CD= :dataStatCd " +
-                            " and s1_0.SEARCH_VALUE=:searchValue " +
-                            " and s1_0.TSI_KEYWORD like CONCAT('%',:keyword,'%') " +
-                            " and s1_0.TSR_UNO is NULL";
+            " from tb_search_info s1_0 " +
+            " where s1_0.DATA_STAT_CD= :dataStatCd " +
+            " and s1_0.SEARCH_VALUE=:searchValue " +
+            " and s1_0.TSI_KEYWORD like CONCAT('%',:keyword,'%') " +
+            " and s1_0.TSR_UNO is NULL";
 
     String userSearchInfoCount= " select count(s1_0.TSI_UNO) " +
             " from tb_search_info s1_0 " +
@@ -194,73 +194,73 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             " and s1_0.TSR_UNO is NULL";
 
     String searchKeywordDateCnt = "SELECT DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') AS searchDate " +
-                                  " FROM tb_search_info tsi " +
-                                  " WHERE tsi.tsr_uno IS null " +
-                                  " AND fst_dml_dt BETWEEN :fromDate AND :toDate" +
-                                  " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') " +
-                                  " ORDER BY tsi.fst_dml_dt asc ";
+            " FROM tb_search_info tsi " +
+            " WHERE tsi.tsr_uno IS null " +
+            " AND fst_dml_dt BETWEEN :fromDate AND :toDate" +
+            " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') " +
+            " ORDER BY tsi.fst_dml_dt asc ";
     String searchKeywordCnt =   " SELECT COUNT(tsi.tsi_keyword) AS searchCnt " +
-                                " FROM tb_search_info tsi " +
-                                " WHERE tsi.tsr_uno IS null " +
-                                " AND fst_dml_dt BETWEEN :fromDate AND :toDate" +
-                                " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') " +
-                                " ORDER BY tsi.fst_dml_dt asc ";
+            " FROM tb_search_info tsi " +
+            " WHERE tsi.tsr_uno IS null " +
+            " AND fst_dml_dt BETWEEN :fromDate AND :toDate" +
+            " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') " +
+            " ORDER BY tsi.fst_dml_dt asc ";
 
     String userSearchHistoryCount = " SELECT COUNT(*) " +
-                                    " FROM  tb_search_info tsi " +
-                                    " WHERE SEARCH_VALUE='0' ";
+            " FROM  tb_search_info tsi " +
+            " WHERE SEARCH_VALUE='0' ";
     String userSearchHistoryList =  " SELECT " +
-                                    " tsi.tsi_uno AS tsiUno, " +
-                                    " tsi.tsi_user_file AS tsiUserFile, " +
-                                    " (SELECT COUNT(tsr3.tsr_uno) " +
-                                    " FROM tb_search_result tsr3 " +
-                                    " inner JOIN tb_search_info tsi3 " +
-                                    " ON tsr3.TSI_UNO = tsi3.tsi_uno " +
-                                    " WHERE tsr3.TSI_UNO = tsi.tsi_uno " +
-                                    " AND tsr3.TRK_STAT_CD = '10') AS monitoringCnt, " +
-                                    " (SELECT COUNT(tsr4.tsr_uno) " +
-                                    " FROM tb_search_result tsr4 " +
-                                    " inner JOIN tb_search_info tsi4 " +
-                                    " ON tsr4.TSI_UNO = tsi4.tsi_uno " +
-                                    " WHERE tsr4.TSI_UNO = tsi.tsi_uno " +
-                                    " AND tsr4.trk_stat_cd = '20') AS deleteReqCnt, " +
-                                    " (SELECT COUNT(tsr5.tsr_uno) " +
-                                    " FROM tb_search_result tsr5 " +
-                                    " inner JOIN tb_search_info tsi5 " +
-                                    " ON tsr5.TSI_UNO = tsi5.tsi_uno " +
-                                    " WHERE tsr5.TSI_UNO = tsi.tsi_uno " +
-                                    " AND tsr5.trk_stat_cd = '30') AS deleteConfirmCnt, " +
-                                    " (CASE " +
-                                    " WHEN ((SELECT COUNT(tsr6.tsr_uno) " +
-                                    " FROM tb_search_result tsr6 " +
-                                    " inner JOIN tb_search_info tsi6 " +
-                                    " ON tsr6.TSI_UNO = tsi6.tsi_uno " +
-                                    " WHERE tsr6.TSI_UNO = tsi.tsi_uno " +
-                                    " AND tsr6.monitoring_cd='20') > 0 ) THEN 'Y' " +
-                                    " ELSE 'N' " +
-                                    " END ) AS allDayMonitoringYn, " +
-                                    " (SELECT COUNT(tsr7.tsr_uno) " +
-                                    " FROM tb_search_result tsr7 " +
-                                    " INNER JOIN tb_search_info tsi7 " +
-                                    " ON tsr7.tsi_uno = tsi7.tsi_uno " +
-                                    " WHERE tsi7.tsi_uno = tsi.tsi_uno " +
-                                    " AND tsr7.monitoring_cd = '20') AS allTimeCnt, " +
-                                    " tsi.TSI_ALLTIME_MONITORING AS resultMonitoringTime, " +
-                                    " (SELECT COUNT(tam8.tsr_uno) " +
-                                    " FROM tb_alltime_monitoring_history tam8 " +
-                                    " INNER JOIN tb_search_result tsr8 " +
-                                    " ON tam8.tsr_uno = tsr8.tsr_uno " +
-                                    " WHERE tsr8.tsi_uno = tsi.tsi_uno " +
-                                    " AND tam8.TAM_YN = 'Y') AS reDsmnCnt, " +
-                                    " (SELECT COUNT(DISTINCT tsr.tsr_site_url) " +
-                                    " FROM tb_search_result tsr " +
-                                    " inner JOIN tb_search_info tsi_2 " +
-                                    " ON tsr.TSI_UNO = tsi_2.tsi_uno " +
-                                    " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt " +
-                                    " FROM  tb_search_info tsi " +
-                                    " WHERE tsi.tsi_user_file LIKE CONCAT('%',:searchKeyword,'%')  " +
-                                    " AND SEARCH_VALUE = '0' "+
-                                    " ORDER BY tsi.tsi_uno DESC   ";
+            " tsi.tsi_uno AS tsiUno, " +
+            " tsi.tsi_user_file AS tsiUserFile, " +
+            " (SELECT COUNT(tsr3.tsr_uno) " +
+            " FROM tb_search_result tsr3 " +
+            " inner JOIN tb_search_info tsi3 " +
+            " ON tsr3.TSI_UNO = tsi3.tsi_uno " +
+            " WHERE tsr3.TSI_UNO = tsi.tsi_uno " +
+            " AND tsr3.TRK_STAT_CD = '10') AS monitoringCnt, " +
+            " (SELECT COUNT(tsr4.tsr_uno) " +
+            " FROM tb_search_result tsr4 " +
+            " inner JOIN tb_search_info tsi4 " +
+            " ON tsr4.TSI_UNO = tsi4.tsi_uno " +
+            " WHERE tsr4.TSI_UNO = tsi.tsi_uno " +
+            " AND tsr4.trk_stat_cd = '20') AS deleteReqCnt, " +
+            " (SELECT COUNT(tsr5.tsr_uno) " +
+            " FROM tb_search_result tsr5 " +
+            " inner JOIN tb_search_info tsi5 " +
+            " ON tsr5.TSI_UNO = tsi5.tsi_uno " +
+            " WHERE tsr5.TSI_UNO = tsi.tsi_uno " +
+            " AND tsr5.trk_stat_cd = '30') AS deleteConfirmCnt, " +
+            " (CASE " +
+            " WHEN ((SELECT COUNT(tsr6.tsr_uno) " +
+            " FROM tb_search_result tsr6 " +
+            " inner JOIN tb_search_info tsi6 " +
+            " ON tsr6.TSI_UNO = tsi6.tsi_uno " +
+            " WHERE tsr6.TSI_UNO = tsi.tsi_uno " +
+            " AND tsr6.monitoring_cd='20') > 0 ) THEN 'Y' " +
+            " ELSE 'N' " +
+            " END ) AS allDayMonitoringYn, " +
+            " (SELECT COUNT(tsr7.tsr_uno) " +
+            " FROM tb_search_result tsr7 " +
+            " INNER JOIN tb_search_info tsi7 " +
+            " ON tsr7.tsi_uno = tsi7.tsi_uno " +
+            " WHERE tsi7.tsi_uno = tsi.tsi_uno " +
+            " AND tsr7.monitoring_cd = '20') AS allTimeCnt, " +
+            " tsi.TSI_ALLTIME_MONITORING AS resultMonitoringTime, " +
+            " (SELECT COUNT(tam8.tsr_uno) " +
+            " FROM tb_alltime_monitoring_history tam8 " +
+            " INNER JOIN tb_search_result tsr8 " +
+            " ON tam8.tsr_uno = tsr8.tsr_uno " +
+            " WHERE tsr8.tsi_uno = tsi.tsi_uno " +
+            " AND tam8.TAM_YN = 'Y') AS reDsmnCnt, " +
+            " (SELECT COUNT(DISTINCT tsr.tsr_site_url) " +
+            " FROM tb_search_result tsr " +
+            " inner JOIN tb_search_info tsi_2 " +
+            " ON tsr.TSI_UNO = tsi_2.tsi_uno " +
+            " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt " +
+            " FROM  tb_search_info tsi " +
+            " WHERE tsi.tsi_user_file LIKE CONCAT('%',:searchKeyword,'%')  " +
+            " AND SEARCH_VALUE = '0' "+
+            " ORDER BY tsi.tsi_uno DESC   ";
 
     List<SearchInfoEntity> findAllByOrderByTsiUnoDesc();
     Page<SearchInfoEntity> findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd, String keyword, Pageable pageable);

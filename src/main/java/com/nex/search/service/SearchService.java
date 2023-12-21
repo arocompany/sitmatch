@@ -39,8 +39,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -939,12 +940,27 @@ public class SearchService {
 
     public <RESULT> SearchResultEntity getSearchResultGoogleLensEntity(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
-        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws IOException {
+        // log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
+
+        /*
+        String imageUrl = getOriginalFn.apply(result);
+        log.info("getSearchResultGoogleLensEntity imageUrl: "+imageUrl);
+
+        try {
+            imageUrl = googleLensImageFile(imageUrl).toString();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        log.info("imageUrl: " + imageUrl);
+*/
+
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
         sre.setTsrDownloadUrl(getOriginalFn.apply(result));
+        // sre.setTsrImgName(imageUrl);
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(getLinkFn.apply(result));
         sre.setTsrSearchValue("1");
@@ -1139,6 +1155,7 @@ public class SearchService {
     }
     */
 
+
     public <RESULT> void saveImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
             , RESULT result, Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn) throws IOException {
         // Resource resource = resourceLoader.getResource(imageUrl);
@@ -1213,6 +1230,7 @@ public class SearchService {
         }
 
     }
+
 
     public <RESULT> void saveYoutubeImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
             , RESULT result, Function<RESULT, String> getPositionFn,  Function<RESULT, Map<String,String>> getThumnailFn) throws IOException {
@@ -2925,9 +2943,11 @@ public class SearchService {
         log.info("tsiuno: " + tsiUno);
 
         if (tsiUno == 0) {
-            return searchResultRepository.getNoticeList(pageRequest, percent);
+            // return searchResultRepository.getNoticeList(pageRequest, percent);
+            return searchResultRepository.getNoticeList(pageRequest);
         } else {
-            return searchResultRepository.getNoticeSelList(pageRequest, tsiUno, percent, tsiKeyword);
+            // return searchResultRepository.getNoticeSelList(pageRequest, tsiUno, percent, tsiKeyword);
+            return searchResultRepository.getNoticeSelList(pageRequest, tsiUno, tsiKeyword);
         }
     }
 
@@ -3509,10 +3529,21 @@ public class SearchService {
             alltimeMonitoringHistEntity.setTsrUno(tsrUno);
             alltimeMonitoringHistEntity.setUserUno(userUno);
             alltimeMonitoringHistEntity.setUserId(userId);
+            alltimeMonitoringHistEntity.setTamYn("Y");
+
             alltimeMonitoringHistRepository.save(alltimeMonitoringHistEntity);
         } else {
             searchResultEntity.setMonitoringCd(Consts.MONITORING_CD_NONE.equals(searchResultEntity.getMonitoringCd()) ? Consts.MONITORING_CD_ING : Consts.MONITORING_CD_NONE);
             searchResultRepository.save(searchResultEntity);
+
+            AlltimeMonitoringHistEntity alltimeMonitoringHistEntity = new AlltimeMonitoringHistEntity();
+            alltimeMonitoringHistEntity.setClkDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+            alltimeMonitoringHistEntity.setTsrUno(tsrUno);
+            alltimeMonitoringHistEntity.setUserUno(userUno);
+            alltimeMonitoringHistEntity.setUserId(userId);
+            alltimeMonitoringHistEntity.setTamYn("N");
+
+            alltimeMonitoringHistRepository.save(alltimeMonitoringHistEntity);
         }
 
     }
@@ -4117,8 +4148,8 @@ public class SearchService {
         } while(loop);
 
     }
-
 /*
+
     public void searchYandexImage(String tsrSns, SearchInfoEntity insertResult) {
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
@@ -4215,5 +4246,187 @@ public class SearchService {
         return outMap;
 
     }
+
+    public FileOutputStream googleLensImageFile(String imageUrl, String randomFileName) throws IOException {
+        URL url = new URL(imageUrl);
+
+        String destinationFile = randomFileName;
+        log.info("destinationFile: " + destinationFile);
+
+        URLConnection connection = url.openConnection();
+
+        InputStream in = new BufferedInputStream(connection.getInputStream());
+        FileOutputStream fileOutputStream = new FileOutputStream(destinationFile);
+
+        byte[] dataBuffer = new byte[1024];
+        int bytesRead;
+
+        while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+            fileOutputStream.write(dataBuffer, 0, bytesRead);
+        }
+
+        return fileOutputStream;
+    }
+
+    public String generateRandomFileName(int length) {
+        String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder randomFileName = new StringBuilder();
+
+        Random random = new Random();
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            randomFileName.append(characters.charAt(index));
+        }
+
+        randomFileName.append(".jpg");
+        log.info("randomFileName: " + randomFileName.toString());
+
+        return randomFileName.toString();
+    }
+
+
+    public <RESULT> SearchResultEntity getSearchResultTextEntity(int tsiUno, String tsrSns, RESULT result
+            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
+        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
+        SearchResultEntity sre = new SearchResultEntity();
+        sre.setTsiUno(tsiUno);
+        sre.setTsrJson(result.toString());
+        sre.setTsrDownloadUrl(getOriginalFn.apply(result));
+        sre.setTsrTitle(getTitleFn.apply(result));
+        sre.setTsrSiteUrl(getLinkFn.apply(result));
+        sre.setTsrSearchValue("2");
+
+        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
+        //sre.setTsrSns("11");
+
+        //Facebook 검색이고, source 값이 Facebook 인 경우
+        if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
+            sre.setTsrSns("17");
+        } else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
+            sre.setTsrSns("15");
+        } else {
+            sre.setTsrSns("11");
+        }
+
+        return sre;
+    }
+
+
+    public <RESULT> void saveGoogleLensImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
+            , RESULT result, Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn) throws IOException {
+        // Resource resource = resourceLoader.getResource(imageUrl);
+        // String imageUrl = "11".equals(sre.getTsrSns()) ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
+        // imageUrl = imageUrl != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
+
+        String imageUrl = getOriginalFn.apply(result);
+        imageUrl = imageUrl != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
+        log.info("saveImageFile imageUrl: "+imageUrl);
+
+        String fileName = generateRandomFileName(30);
+        FileOutputStream aa = googleLensImageFile(imageUrl, fileName);
+        log.info("saveImageFile fileName: "+fileName);
+
+        byte[] imageBytes;
+        if (imageUrl != null) {
+            Resource resource = resourceLoader.getResource(imageUrl);
+            try {
+                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
+            } catch (Exception e) {
+                imageUrl = getThumbnailFn.apply(result);
+                resource = resourceLoader.getResource(imageUrl);
+                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
+            }
+
+            if (imageBytes == null) {
+                imageUrl = getThumbnailFn.apply(result);
+                resource = resourceLoader.getResource(imageUrl);
+                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
+            }
+
+            if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("") && imageBytes != null) {
+                LocalDate now = LocalDate.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+                String folder = now.format(formatter);
+                String restrictChars = "|\\\\?*<\":>/";
+                String regExpr = "[" + restrictChars + "]+";
+                String uuid = UUID.randomUUID().toString();
+                String extension = "";
+                String extension_ = "";
+
+                if (resource.getFilename().indexOf(".") > 0) {
+                    extension = resource.getFilename().substring(resource.getFilename().lastIndexOf("."));
+                    extension = extension.replaceAll(regExpr, "").substring(0, Math.min(extension.length(), 10));
+
+                    // extension_ = fileName.substring(fileName.length()-3);
+                }
+
+                if(fileName.indexOf(".") > 0){
+                    extension_ = fileName.substring(fileName.length()-3);
+                }
+
+                File destdir = new File(fileLocation2 + folder + File.separator + tsiUno);
+                if (!destdir.exists()) {
+                    destdir.mkdirs();
+                }
+
+                Files.write(Paths.get(destdir + File.separator + fileName), imageBytes);
+                /*
+                sre.setTsrImgExt(extension_);
+                sre.setTsrImgName(uuid + extension);
+                */
+                sre.setTsrImgExt(extension_);
+                sre.setTsrImgName(fileName);
+                sre.setTsrImgPath((destdir + File.separator).replaceAll("\\\\", "/"));
+
+                // Image img = new ImageIcon(destdir + File.separator + uuid + extension).getImage();
+                Image img = new ImageIcon(destdir + File.separator + fileName).getImage();
+                sre.setTsrImgHeight(String.valueOf(img.getHeight(null)));
+                sre.setTsrImgWidth(String.valueOf(img.getWidth(null)));
+                sre.setTsrImgSize(String.valueOf(destdir.length() / 1024));
+                img.flush();
+            }
+
+/*
+            if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("") && imageBytes != null) {
+                LocalDate now = LocalDate.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+                String folder = now.format(formatter);
+                String restrictChars = "|\\\\?*<\":>/";
+                String regExpr = "[" + restrictChars + "]+";
+                String uuid = UUID.randomUUID().toString();
+                String extension = "";
+                String extension_ = "";
+                if (resource.getFilename().indexOf(".") > 0) {
+                    extension = resource.getFilename().substring(resource.getFilename().lastIndexOf("."));
+                    extension = extension.replaceAll(regExpr, "").substring(0, Math.min(extension.length(), 10));
+                    extension_ = extension.substring(1);
+                }
+
+                File destdir = new File(fileLocation2 + folder + File.separator + tsiUno);
+                if (!destdir.exists()) {
+                    destdir.mkdirs();
+                }
+
+                Files.write(Paths.get(destdir + File.separator + uuid + extension), imageBytes);
+
+                sre.setTsrImgExt(extension_);
+                sre.setTsrImgName(uuid + extension);
+                sre.setTsrImgPath((destdir + File.separator).replaceAll("\\\\", "/"));
+
+                Image img = new ImageIcon(destdir + File.separator + uuid + extension).getImage();
+                sre.setTsrImgHeight(String.valueOf(img.getHeight(null)));
+                sre.setTsrImgWidth(String.valueOf(img.getWidth(null)));
+                sre.setTsrImgSize(String.valueOf(destdir.length() / 1024));
+                img.flush();
+            }
+            */
+        } else {
+
+        }
+
+    }
+
+
 
 }

@@ -30,41 +30,41 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     /*----------------------------------------------------------------------------------------------------------------*/
 
     String allTimeMonitoringCnt =   " SELECT COUNT(*) " +
-                                    " FROM TB_SEARCH_RESULT TSR " +
-                                    " LEFT OUTER JOIN " +
-                                    " TB_SEARCH_INFO TSI3 " +
-                                    " ON TSI3.TSR_UNO = TSR.TSR_UNO " +
-                                    " LEFT OUTER JOIN " +
-                                    " TB_SEARCH_JOB TSJ " +
-                                    " ON TSR.TSR_UNO = TSJ.TSR_UNO " +
-                                    " LEFT OUTER JOIN TB_MATCH_RESULT TMR " +
-                                    " ON TSR.TSR_UNO = TMR.TSR_UNO " +
-                                    " LEFT OUTER JOIN TB_SEARCH_INFO TSI " +
-                                    " ON TSI.TSI_UNO = TSR.TSI_UNO " +
-                                    " LEFT OUTER JOIN " +
-                                    " (SELECT TSJ.TSI_UNO AS TSI_UNO, CEILING(SUM(CASE TSJ.TSJ_STATUS " +
-                                    " WHEN '11' THEN 1 " +
-                                    " WHEN '10' THEN 1 " +
-                                    " ELSE 0 " +
-                                    " END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
-                                    " FROM TB_SEARCH_JOB TSJ " +
-                                    " GROUP BY TSJ.TSI_UNO) PP " +
-                                    " ON TSR.TSI_UNO = PP.TSI_UNO " +
-                                    " LEFT OUTER JOIN TB_USER TU " +
-                                    " ON TSI.USER_UNO = TU.USER_UNO " +
-                                    " WHERE TSR.TRK_STAT_CD IS NOT NULL " +
-                                    " AND TRK_STAT_CD IS NOT NULL " +
-                                    " AND TSR.TSR_TITLE LIKE CONCAT('%','','%') " +
-                                    " AND TSR.MONITORING_CD = '20' " +
-                                    " ORDER BY tsr.MST_DML_DT DESC ";
+            " FROM TB_SEARCH_RESULT TSR " +
+            " LEFT OUTER JOIN " +
+            " TB_SEARCH_INFO TSI3 " +
+            " ON TSI3.TSR_UNO = TSR.TSR_UNO " +
+            " LEFT OUTER JOIN " +
+            " TB_SEARCH_JOB TSJ " +
+            " ON TSR.TSR_UNO = TSJ.TSR_UNO " +
+            " LEFT OUTER JOIN TB_MATCH_RESULT TMR " +
+            " ON TSR.TSR_UNO = TMR.TSR_UNO " +
+            " LEFT OUTER JOIN TB_SEARCH_INFO TSI " +
+            " ON TSI.TSI_UNO = TSR.TSI_UNO " +
+            " LEFT OUTER JOIN " +
+            " (SELECT TSJ.TSI_UNO AS TSI_UNO, CEILING(SUM(CASE TSJ.TSJ_STATUS " +
+            " WHEN '11' THEN 1 " +
+            " WHEN '10' THEN 1 " +
+            " ELSE 0 " +
+            " END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
+            " FROM TB_SEARCH_JOB TSJ " +
+            " GROUP BY TSJ.TSI_UNO) PP " +
+            " ON TSR.TSI_UNO = PP.TSI_UNO " +
+            " LEFT OUTER JOIN TB_USER TU " +
+            " ON TSI.USER_UNO = TU.USER_UNO " +
+            " WHERE TSR.TRK_STAT_CD IS NOT NULL " +
+            " AND TRK_STAT_CD IS NOT NULL " +
+            " AND TSR.TSR_TITLE LIKE CONCAT('%','','%') " +
+            " AND TSR.MONITORING_CD = '20' " +
+            " ORDER BY tsr.MST_DML_DT DESC ";
 
     String keywordResultCntList = " SELECT COUNT(*) AS resultCnt " +
-                                  " FROM tb_search_result tsr " +
-                                  " LEFT OUTER JOIN tb_search_info tsi " +
-                                  " ON tsr.tsi_uno = tsi.tsi_uno " +
-                                  " WHERE tsr.fst_dml_dt BETWEEN :fromDate AND :toDate " +
-                                  " GROUP BY DATE_FORMAT(tsr.fst_dml_dt,'%Y%m%d') " +
-                                  " ORDER BY tsr.fst_dml_dt asc";
+            " FROM tb_search_result tsr " +
+            " LEFT OUTER JOIN tb_search_info tsi " +
+            " ON tsr.tsi_uno = tsi.tsi_uno " +
+            " WHERE tsr.fst_dml_dt BETWEEN :fromDate AND :toDate " +
+            " GROUP BY DATE_FORMAT(tsr.fst_dml_dt,'%Y%m%d') " +
+            " ORDER BY tsr.fst_dml_dt asc";
 
     String from_5 = " from  tb_search_info TSI " +
             " INNER JOIN tb_search_result TSR ON TSR.TSI_UNO = TSI.TSI_UNO " +
@@ -266,7 +266,6 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
             "            ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
             "            WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            "            AND TAM9.TAM_YN = 'Y' " +
             "            GROUP BY TSR9.TSR_UNO " +
             "            ORDER BY TAM_UNO DESC) AS lastAlltimeHist    "+
             " FROM TB_SEARCH_RESULT TSR " +
@@ -333,7 +332,6 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
             "            ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
             "            WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            "            AND TAM9.TAM_YN = 'Y' " +
             "            GROUP BY TSR9.TSR_UNO " +
             "            ORDER BY TAM_UNO DESC) AS lastAlltimeHist    "+
             " FROM TB_SEARCH_RESULT TSR " +
@@ -712,65 +710,65 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '20' AND TSI3.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') " +
             " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
     String defaultQeury_15 = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
-                            "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
-                            "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
-                            "tsr.TSR_IMG_EXT as tsrImgExt, tsr.TSR_DOWNLOAD_URL as tsrDownloadUrl, tsr.TSR_IMG_HEIGHT as tsrImgHeight, "+
-                            "tsr.TSR_IMG_WIDTH as tsrImgWidth, tsr.TSR_IMG_SIZE as tsrImgSize, tsr.TRK_STAT_CD as trkStatCd, " +
-                            "tsr.TRK_HIST_MEMO as trkHistMemo, tsr.DATA_STAT_CD as tsrDataStatCd, tsr.FST_DML_DT as tsrFstDmlDt, tsr.MST_DML_DT as mstDmlDt, "+
-                            "tsi.TSI_TYPE as tsiType, tsi.TSI_GOOGLE as tsiGoogle, tsi.TSI_TWITTER as tsiTwitter, " +
-                            "tsi.TSI_FACEBOOK as tsiFacebook, tsi.TSI_INSTAGRAM as tsiInstagram, tsi.TSI_KEYWORD as tsiKeyword, "+
-                            "tsi.TSI_IMG_PATH as tsiImgPath, tsi.TSI_IMG_NAME as tsiImgName, tsi.TSI_IMG_EXT as tsiImgExt, "+
-                            "tsi.TSI_IMG_HEIGHT as tsiImgHeight, tsi.TSI_IMG_WIDTH as tsiImgWidth, tsi.TSI_IMG_SIZE as tsiImgSize, "+
-                            "tsi.TSI_STAT as tsiStat, tsi.TSI_DNA_PATH as tsiDnaPath, tsi.TSI_DNA_TEXT as tsiDnaText, "+
-                            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, TSR.MONITORING_CD as monitoringCd, "+
-                            "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
-                            "tmr.TMR_STAT as tmrStat, tmr.TMR_MESSAGE as tmrMessage, tu.USER_ID as tuUserId, " +
-                            "if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', "+
-                            "ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + "+
-                            "case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + "+
-                            "case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / "+
-                            "(case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + "+
-                            "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
-                            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity" +
-                            ", pp.progressPercent as progressPercent " +
-                            ", (SELECT COUNT(*) " +
-                            " FROM TB_SEARCH_RESULT TSR2 " +
-                            " INNER JOIN TB_SEARCH_INFO TSI_2 ON TSR2.TSI_UNO = TSI_2.TSI_UNO" +
-                            " LEFT OUTER JOIN TB_SEARCH_JOB TSJ2 ON TSR2.TSR_UNO = TSJ2.TSR_UNO" +
-                            " LEFT OUTER JOIN TB_MATCH_RESULT TMR2 ON TSR2.TSR_UNO = TMR2.TSR_UNO" +
-                            " WHERE " +
-                            " TSR2.TSI_UNO = TSI3.TSI_UNO " +
-                            " AND " +
-                            " if(TMR2.TMR_V_SCORE + TMR2.TMR_A_SCORE + TMR2.TMR_T_SCORE = 0, '0', ceiling(((case " +
-                            "            when isnull(TMR2.TMR_V_SCORE) then 0 " +
-                            "            else TMR2.TMR_V_SCORE " +
-                            "        end + case " +
-                            "            when isnull(TMR2.TMR_A_SCORE) then 0 " +
-                            "            else TMR2.TMR_A_SCORE " +
-                            "        end + case " +
-                            "            when isnull(TMR2.TMR_T_SCORE) then 0 " +
-                            "            else TMR2.TMR_T_SCORE " +
-                            "        end) / (case " +
-                            "            when isnull(TMR2.TMR_V_SCORE) then 0 " +
-                            "            else 1 " +
-                            "        end + case " +
-                            "            when isnull(TMR2.TMR_A_SCORE) then 0 " +
-                            "           else 1 " +
-                            "        end + case " +
-                            "            when isnull(TMR2.TMR_T_SCORE) then 0 " +
-                            "            else 1 " +
-                            "        end)) * 100)) > 0" +
-                            "         ) as re_monitor_cnt " +
-                            " FROM TB_SEARCH_RESULT TSR " +
-                            "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
-                            "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
-                            "LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
-                            "LEFT OUTER JOIN TB_SEARCH_INFO TSI ON TSI.TSI_UNO = TSR.TSI_UNO " +
-                            "LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, " +
-                            "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
-                            "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
-                            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '20' AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno " +
-                            " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
+            "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
+            "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
+            "tsr.TSR_IMG_EXT as tsrImgExt, tsr.TSR_DOWNLOAD_URL as tsrDownloadUrl, tsr.TSR_IMG_HEIGHT as tsrImgHeight, "+
+            "tsr.TSR_IMG_WIDTH as tsrImgWidth, tsr.TSR_IMG_SIZE as tsrImgSize, tsr.TRK_STAT_CD as trkStatCd, " +
+            "tsr.TRK_HIST_MEMO as trkHistMemo, tsr.DATA_STAT_CD as tsrDataStatCd, tsr.FST_DML_DT as tsrFstDmlDt, tsr.MST_DML_DT as mstDmlDt, "+
+            "tsi.TSI_TYPE as tsiType, tsi.TSI_GOOGLE as tsiGoogle, tsi.TSI_TWITTER as tsiTwitter, " +
+            "tsi.TSI_FACEBOOK as tsiFacebook, tsi.TSI_INSTAGRAM as tsiInstagram, tsi.TSI_KEYWORD as tsiKeyword, "+
+            "tsi.TSI_IMG_PATH as tsiImgPath, tsi.TSI_IMG_NAME as tsiImgName, tsi.TSI_IMG_EXT as tsiImgExt, "+
+            "tsi.TSI_IMG_HEIGHT as tsiImgHeight, tsi.TSI_IMG_WIDTH as tsiImgWidth, tsi.TSI_IMG_SIZE as tsiImgSize, "+
+            "tsi.TSI_STAT as tsiStat, tsi.TSI_DNA_PATH as tsiDnaPath, tsi.TSI_DNA_TEXT as tsiDnaText, "+
+            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, TSR.MONITORING_CD as monitoringCd, "+
+            "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
+            "tmr.TMR_STAT as tmrStat, tmr.TMR_MESSAGE as tmrMessage, tu.USER_ID as tuUserId, " +
+            "if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', "+
+            "ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + "+
+            "case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + "+
+            "case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / "+
+            "(case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + "+
+            "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
+            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity" +
+            ", pp.progressPercent as progressPercent " +
+            ", (SELECT COUNT(*) " +
+            " FROM TB_SEARCH_RESULT TSR2 " +
+            " INNER JOIN TB_SEARCH_INFO TSI_2 ON TSR2.TSI_UNO = TSI_2.TSI_UNO" +
+            " LEFT OUTER JOIN TB_SEARCH_JOB TSJ2 ON TSR2.TSR_UNO = TSJ2.TSR_UNO" +
+            " LEFT OUTER JOIN TB_MATCH_RESULT TMR2 ON TSR2.TSR_UNO = TMR2.TSR_UNO" +
+            " WHERE " +
+            " TSR2.TSI_UNO = TSI3.TSI_UNO " +
+            " AND " +
+            " if(TMR2.TMR_V_SCORE + TMR2.TMR_A_SCORE + TMR2.TMR_T_SCORE = 0, '0', ceiling(((case " +
+            "            when isnull(TMR2.TMR_V_SCORE) then 0 " +
+            "            else TMR2.TMR_V_SCORE " +
+            "        end + case " +
+            "            when isnull(TMR2.TMR_A_SCORE) then 0 " +
+            "            else TMR2.TMR_A_SCORE " +
+            "        end + case " +
+            "            when isnull(TMR2.TMR_T_SCORE) then 0 " +
+            "            else TMR2.TMR_T_SCORE " +
+            "        end) / (case " +
+            "            when isnull(TMR2.TMR_V_SCORE) then 0 " +
+            "            else 1 " +
+            "        end + case " +
+            "            when isnull(TMR2.TMR_A_SCORE) then 0 " +
+            "           else 1 " +
+            "        end + case " +
+            "            when isnull(TMR2.TMR_T_SCORE) then 0 " +
+            "            else 1 " +
+            "        end)) * 100)) > 0" +
+            "         ) as re_monitor_cnt " +
+            " FROM TB_SEARCH_RESULT TSR " +
+            "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
+            "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
+            "LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
+            "LEFT OUTER JOIN TB_SEARCH_INFO TSI ON TSI.TSI_UNO = TSR.TSI_UNO " +
+            "LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, " +
+            "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
+            "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
+            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '20' AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno " +
+            " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
 
     String traceHistoryDeleteReqTsiUnoUserFileList =  "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
@@ -953,65 +951,65 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '30' AND TSI3.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') " +
             " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
     String defaultQeury_16 = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
-                            "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
-                            "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
-                            "tsr.TSR_IMG_EXT as tsrImgExt, tsr.TSR_DOWNLOAD_URL as tsrDownloadUrl, tsr.TSR_IMG_HEIGHT as tsrImgHeight, "+
-                            "tsr.TSR_IMG_WIDTH as tsrImgWidth, tsr.TSR_IMG_SIZE as tsrImgSize, tsr.TRK_STAT_CD as trkStatCd, " +
-                            "tsr.TRK_HIST_MEMO as trkHistMemo, tsr.DATA_STAT_CD as tsrDataStatCd, tsr.FST_DML_DT as tsrFstDmlDt, tsr.MST_DML_DT as mstDmlDt, "+
-                            "tsi.TSI_TYPE as tsiType, tsi.TSI_GOOGLE as tsiGoogle, tsi.TSI_TWITTER as tsiTwitter, " +
-                            "tsi.TSI_FACEBOOK as tsiFacebook, tsi.TSI_INSTAGRAM as tsiInstagram, tsi.TSI_KEYWORD as tsiKeyword, "+
-                            "tsi.TSI_IMG_PATH as tsiImgPath, tsi.TSI_IMG_NAME as tsiImgName, tsi.TSI_IMG_EXT as tsiImgExt, "+
-                            "tsi.TSI_IMG_HEIGHT as tsiImgHeight, tsi.TSI_IMG_WIDTH as tsiImgWidth, tsi.TSI_IMG_SIZE as tsiImgSize, "+
-                            "tsi.TSI_STAT as tsiStat, tsi.TSI_DNA_PATH as tsiDnaPath, tsi.TSI_DNA_TEXT as tsiDnaText, "+
-                            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, TSR.MONITORING_CD as monitoringCd, "+
-                            "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
-                            "tmr.TMR_STAT as tmrStat, tmr.TMR_MESSAGE as tmrMessage, tu.USER_ID as tuUserId, " +
-                            "if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', "+
-                            "ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + "+
-                            "case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + "+
-                            "case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / "+
-                            "(case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + "+
-                            "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
-                            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity" +
-                            ", pp.progressPercent as progressPercent " +
-                            ", (SELECT COUNT(*) " +
-                            " FROM TB_SEARCH_RESULT TSR2 " +
-                            " INNER JOIN TB_SEARCH_INFO TSI_2 ON TSR2.TSI_UNO = TSI_2.TSI_UNO" +
-                            " LEFT OUTER JOIN TB_SEARCH_JOB TSJ2 ON TSR2.TSR_UNO = TSJ2.TSR_UNO" +
-                            " LEFT OUTER JOIN TB_MATCH_RESULT TMR2 ON TSR2.TSR_UNO = TMR2.TSR_UNO" +
-                            " WHERE " +
-                            " TSR2.TSI_UNO = TSI3.TSI_UNO " +
-                            " AND " +
-                            " if(TMR2.TMR_V_SCORE + TMR2.TMR_A_SCORE + TMR2.TMR_T_SCORE = 0, '0', ceiling(((case " +
-                            "            when isnull(TMR2.TMR_V_SCORE) then 0 " +
-                            "            else TMR2.TMR_V_SCORE " +
-                            "        end + case " +
-                            "            when isnull(TMR2.TMR_A_SCORE) then 0 " +
-                            "            else TMR2.TMR_A_SCORE " +
-                            "        end + case " +
-                            "            when isnull(TMR2.TMR_T_SCORE) then 0 " +
-                            "            else TMR2.TMR_T_SCORE " +
-                            "        end) / (case " +
-                            "            when isnull(TMR2.TMR_V_SCORE) then 0 " +
-                            "            else 1 " +
-                            "        end + case " +
-                            "            when isnull(TMR2.TMR_A_SCORE) then 0 " +
-                            "           else 1 " +
-                            "        end + case " +
-                            "            when isnull(TMR2.TMR_T_SCORE) then 0 " +
-                            "            else 1 " +
-                            "        end)) * 100)) > 0" +
-                            "         ) as re_monitor_cnt " +
-                            " FROM TB_SEARCH_RESULT TSR " +
-                            "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
-                            "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
-                            "LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
-                            "LEFT OUTER JOIN TB_SEARCH_INFO TSI ON TSI.TSI_UNO = TSR.TSI_UNO " +
-                            "LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, " +
-                            "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
-                            "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
-                            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '30' AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno " +
-                            " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
+            "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
+            "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
+            "tsr.TSR_IMG_EXT as tsrImgExt, tsr.TSR_DOWNLOAD_URL as tsrDownloadUrl, tsr.TSR_IMG_HEIGHT as tsrImgHeight, "+
+            "tsr.TSR_IMG_WIDTH as tsrImgWidth, tsr.TSR_IMG_SIZE as tsrImgSize, tsr.TRK_STAT_CD as trkStatCd, " +
+            "tsr.TRK_HIST_MEMO as trkHistMemo, tsr.DATA_STAT_CD as tsrDataStatCd, tsr.FST_DML_DT as tsrFstDmlDt, tsr.MST_DML_DT as mstDmlDt, "+
+            "tsi.TSI_TYPE as tsiType, tsi.TSI_GOOGLE as tsiGoogle, tsi.TSI_TWITTER as tsiTwitter, " +
+            "tsi.TSI_FACEBOOK as tsiFacebook, tsi.TSI_INSTAGRAM as tsiInstagram, tsi.TSI_KEYWORD as tsiKeyword, "+
+            "tsi.TSI_IMG_PATH as tsiImgPath, tsi.TSI_IMG_NAME as tsiImgName, tsi.TSI_IMG_EXT as tsiImgExt, "+
+            "tsi.TSI_IMG_HEIGHT as tsiImgHeight, tsi.TSI_IMG_WIDTH as tsiImgWidth, tsi.TSI_IMG_SIZE as tsiImgSize, "+
+            "tsi.TSI_STAT as tsiStat, tsi.TSI_DNA_PATH as tsiDnaPath, tsi.TSI_DNA_TEXT as tsiDnaText, "+
+            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, TSR.MONITORING_CD as monitoringCd, "+
+            "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
+            "tmr.TMR_STAT as tmrStat, tmr.TMR_MESSAGE as tmrMessage, tu.USER_ID as tuUserId, " +
+            "if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', "+
+            "ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + "+
+            "case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + "+
+            "case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / "+
+            "(case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + "+
+            "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
+            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity" +
+            ", pp.progressPercent as progressPercent " +
+            ", (SELECT COUNT(*) " +
+            " FROM TB_SEARCH_RESULT TSR2 " +
+            " INNER JOIN TB_SEARCH_INFO TSI_2 ON TSR2.TSI_UNO = TSI_2.TSI_UNO" +
+            " LEFT OUTER JOIN TB_SEARCH_JOB TSJ2 ON TSR2.TSR_UNO = TSJ2.TSR_UNO" +
+            " LEFT OUTER JOIN TB_MATCH_RESULT TMR2 ON TSR2.TSR_UNO = TMR2.TSR_UNO" +
+            " WHERE " +
+            " TSR2.TSI_UNO = TSI3.TSI_UNO " +
+            " AND " +
+            " if(TMR2.TMR_V_SCORE + TMR2.TMR_A_SCORE + TMR2.TMR_T_SCORE = 0, '0', ceiling(((case " +
+            "            when isnull(TMR2.TMR_V_SCORE) then 0 " +
+            "            else TMR2.TMR_V_SCORE " +
+            "        end + case " +
+            "            when isnull(TMR2.TMR_A_SCORE) then 0 " +
+            "            else TMR2.TMR_A_SCORE " +
+            "        end + case " +
+            "            when isnull(TMR2.TMR_T_SCORE) then 0 " +
+            "            else TMR2.TMR_T_SCORE " +
+            "        end) / (case " +
+            "            when isnull(TMR2.TMR_V_SCORE) then 0 " +
+            "            else 1 " +
+            "        end + case " +
+            "            when isnull(TMR2.TMR_A_SCORE) then 0 " +
+            "           else 1 " +
+            "        end + case " +
+            "            when isnull(TMR2.TMR_T_SCORE) then 0 " +
+            "            else 1 " +
+            "        end)) * 100)) > 0" +
+            "         ) as re_monitor_cnt " +
+            " FROM TB_SEARCH_RESULT TSR " +
+            "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
+            "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
+            "LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
+            "LEFT OUTER JOIN TB_SEARCH_INFO TSI ON TSI.TSI_UNO = TSR.TSI_UNO " +
+            "LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, " +
+            "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
+            "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
+            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '30' AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno " +
+            " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
 
     String traceHistoryDeleteComptTsiUnoUserFileList = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
@@ -1366,6 +1364,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > :percent" +
             "       ORDER BY tsr.MST_DML_DT, tsr.tsr_uno desc";
 
+    String whereSimilarity_3 = " ORDER BY tsr.MST_DML_DT, tsr.tsr_uno desc";
+
 
     // ORDER BY 여기
     // String orderByTmrSimilarityDesc = "  GROUP BY tsrSiteUrl  ORDER BY tmrVScore desc, tmrAScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
@@ -1413,22 +1413,22 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String limit4 = " LIMIT 4";
 
     String InfoImgSrc = " select " +
-                        " s1_0.tsi_uno AS tsiUno, " +
-                        " s1_0.data_stat_cd AS dataStateCd, " +
-                        " s1_0.tsi_dna_path AS tsiDnaPath, " +
-                        " s1_0.tsi_dna_text AS tsiDanText, " +
-                        " s1_0.tsi_img_ext AS tsiImgExt, " +
-                        " s1_0.tsi_img_height AS tsiImgHeight, " +
-                        " s1_0.tsi_img_name AS tsiImgName, " +
-                        " s1_0.tsi_img_path AS tsiImgPath, " +
-                        " s1_0.tsi_img_real_path AS tsiImgRealPath, " +
-                        " s1_0.tsi_img_size AS tsiImgSize, " +
-                        " s1_0.tsi_img_width AS tsiImgWidh, " +
-                        " s1_0.tsi_type AS tsiType, " +
-                        " s1_0.tsr_uno AS tsrUno, " +
-                        " s1_0.user_uno AS userUno " +
-                        " from tb_search_info s1_0 " +
-                        " where s1_0.tsi_uno = :tsiUno ";
+            " s1_0.tsi_uno AS tsiUno, " +
+            " s1_0.data_stat_cd AS dataStateCd, " +
+            " s1_0.tsi_dna_path AS tsiDnaPath, " +
+            " s1_0.tsi_dna_text AS tsiDanText, " +
+            " s1_0.tsi_img_ext AS tsiImgExt, " +
+            " s1_0.tsi_img_height AS tsiImgHeight, " +
+            " s1_0.tsi_img_name AS tsiImgName, " +
+            " s1_0.tsi_img_path AS tsiImgPath, " +
+            " s1_0.tsi_img_real_path AS tsiImgRealPath, " +
+            " s1_0.tsi_img_size AS tsiImgSize, " +
+            " s1_0.tsi_img_width AS tsiImgWidh, " +
+            " s1_0.tsi_type AS tsiType, " +
+            " s1_0.tsr_uno AS tsrUno, " +
+            " s1_0.user_uno AS userUno " +
+            " from tb_search_info s1_0 " +
+            " where s1_0.tsi_uno = :tsiUno ";
 
     // 추적 이력
     @Query(value = defaultQeury_10, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining)
@@ -1546,15 +1546,15 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     // 여기
     // AND TSJ.TSJ_STATUS = '11'
-    @Query(value = defaultQeury_2+from_2+" WHERE TSI.TSR_UNO IS NOT null  AND TMR.TMR_STAT = '11' "+whereSimilarity_2 , nativeQuery = true, countQuery = countQuery+from_2+whereNotice+" AND TMR.TMR_STAT = '11'"+whereSimilarity_2)
-    Page<DefaultQueryDtoInterface> getNoticeList(Pageable pageable, Integer percent);
+    @Query(value = defaultQeury_2+from_2+" WHERE TSI.TSR_UNO IS NOT null  AND TMR.TMR_STAT = '11' "+whereSimilarity_3 , nativeQuery = true, countQuery = countQuery+from_2+whereNotice+" AND TMR.TMR_STAT = '11'"+whereSimilarity_3)
+    Page<DefaultQueryDtoInterface> getNoticeList(Pageable pageable);
 
     @Query(value = defaultQeury_2+from_2+" WHERE TSI.TSR_UNO IS NOT null  AND TMR.TMR_STAT = '11' "+whereSimilarity_2+" limit 4", nativeQuery = true)
     List<DefaultQueryDtoInterface> getNoticeListMain(Integer percent);
 
     /*@Query(value = defaultQeury_3+from_5+" WHERE TSI.TSI_UNO = :tsiuno AND TSI.TSI_KEYWORD like :keyword AND TMR.TMR_STAT = '11' "+whereSimilarity_2 , nativeQuery = true, countQuery = countQuery+from_2+" WHERE TSI.TSI_UNO = :tsiuno AND TSI.TSI_KEYWORD=:keyword AND TMR.TMR_STAT = '11'"+whereSimilarity_2)*/
-    @Query(value = defaultQeury_3+from_5+"AND TMR.TMR_STAT = '11' "+whereSimilarity_2 , nativeQuery = true, countQuery = countQuery+from_5+" AND TMR.TMR_STAT = '11'"+whereSimilarity_2)
-    Page<DefaultQueryDtoInterface> getNoticeSelList(Pageable pageable, Integer tsiUno, Integer percent, String tsiKeyword);
+    @Query(value = defaultQeury_3+from_5+"AND TMR.TMR_STAT = '11' "+whereSimilarity_3 , nativeQuery = true, countQuery = countQuery+from_5+" AND TMR.TMR_STAT = '11'"+whereSimilarity_3)
+    Page<DefaultQueryDtoInterface> getNoticeSelList(Pageable pageable, Integer tsiUno, String tsiKeyword);
     //추적이력 삭제
     @Transactional
     @Modifying

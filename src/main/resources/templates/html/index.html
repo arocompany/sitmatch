@@ -12,6 +12,16 @@
   <script src="/js/footer.js"></script>
   <script src="/js/style.js"></script>
 </head>
+<style>
+  .file-btn2 {
+    border-radius: 4px 4px 4px 4px;
+    height: 38px;
+    line-height: 38px;
+    padding: 0 24px;
+    color: #194894;
+    width: 80px;
+  }
+</style>
 <script>
 
 </script>
@@ -37,8 +47,11 @@
         <div class="sns-check">
         </div>
       </div>
+      <div class="search-bar-user bor10" style="width: 550px; height: 60px;">
+        <input style="text-align: center; margin-left: 100px;" id="tsiUserFile" name="tsiUserFile" type="text" placeholder="대상자의 파일명을 입력하세요" >
+      </div>
       <div class="search-bar bor10">
-        <input type="text" placeholder="검색어를 입력하세요" id="search-text" name="tsiKeyword">
+        <input type="text" style="text-align: center;" placeholder="검색어를 입력하세요" id="search-text" name="tsiKeyword">
         <input type="hidden" id="search-text-hidden" name="tsiKeywordHiddenValue">
         <button type="button" class="btn-off img-btn" tooltip="Search by image or audio/video">이미지로 검색</button>
         <div class="img-search bor10">
@@ -141,22 +154,13 @@
   // }
   const goresult = () => {
    // window.location.href="/history";
-    /*
-    if(document.getElementById('google').checked){
-      if(document.getElementById('search-text').value == "" && document.getElementById('file').value == ""){
-        alert("검색어를 입력하세요.");
-      } else {
-        return true;
-      }
-    } else {
-      alert("현재는 구글 검색만 지원합니다.");
-    }
-     */
 
-    //2023-03-20
-    //트위터 제외 검색 가능 하도록
     if (document.getElementById('google').checked || document.getElementById('instar').checked || document.getElementById('facebook').checked) {
-      if (document.getElementById('search-text').value == "" && document.getElementById('file').value == "") {
+      if(document.getElementById('tsiUserFile').value == ""){
+        alert("대상자의 파일명을 입력하세요.");
+      }
+
+      if (document.getElementById('search-text').value == "" && document.getElementById('file').value == "" ) {
         alert("검색어를 입력하세요.");
       } else {
 
@@ -170,11 +174,9 @@
         }else{
           document.getElementById('search-text-hidden').value= search_text;
         }
-
         return true;
       }
-    }
-    else {
+    } else {
       alert("구글, 인스타, 페이스북 검색만 지원합니다.");
     }
 
@@ -201,6 +203,7 @@
       }
     })
   })
+
   // 이미지 버튼
   const imgBtn = document.querySelector(".img-btn");
   imgBtn.addEventListener("click", () => {

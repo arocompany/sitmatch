@@ -117,6 +117,7 @@ public class SearchImageGoogleLensService {
             e.printStackTrace();
         }
 
+        /*
         try {
             log.info("== kr 시작 ==");
             String url = textYandexUrl
@@ -332,7 +333,7 @@ public class SearchImageGoogleLensService {
         } catch (Exception e){
             e.printStackTrace();
         }
-
+*/
 
     }
 
@@ -429,7 +430,7 @@ public class SearchImageGoogleLensService {
                     log.info("getThumbnailFn: "+getThumbnailFn);
 
                     //이미지 파일 저장
-                    searchService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getThumbnailFn, getThumbnailFn);
+                    searchService.saveGoogleLensImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getThumbnailFn, getThumbnailFn);
                     searchService.saveSearchResult(sre);
 
                     sreList.add(sre);
