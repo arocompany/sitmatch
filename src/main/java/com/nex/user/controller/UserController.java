@@ -58,9 +58,13 @@ public class UserController {
         if (userRepository.countByUserId(userLoginCheckDto.getLoginId()) > 0) {                // 아이디가 있는지 확인
             UserEntity user = userRepository.findByUserId(userLoginCheckDto.getLoginId());
 
-            if (encryptUtil.matches(userLoginCheckDto.getLoginPw(), user.getUserPw())) {       // 비밀번호 확인(userInfo로 받은 평문 비밀번호와 디비에 있는 암호화된 비밀번호 비교)
+            if(user.getUserChkCnt()>0 && user.getUseYn().equals("N")){
+                modelAndView.addObject("errorMessage", "계정이 잠겼습니다. 관리자한테 문의하세요.");
+                modelAndView.setViewName("html/login");
+            } else if (encryptUtil.matches(userLoginCheckDto.getLoginPw(), user.getUserPw())) {       // 비밀번호 확인(userInfo로 받은 평문 비밀번호와 디비에 있는 암호화된 비밀번호 비교)
                 // 마지막 로그인 시간 업데이트
                 user.setLstLoginDt(Timestamp.valueOf(LocalDateTime.now()));
+                user.setUserChkCnt(0);
                 userRepository.save(user);
 
                 // password 변경 시간 확인
@@ -112,8 +116,19 @@ public class UserController {
                 session.setAttribute(Consts.SESSION_USER_PL, user.getPercent_limit());
                 session.setAttribute(Consts.LOGIN_SESSION, sessionInfo);
             } else {    // 로그인 실패
-                modelAndView.addObject("errorMessage", "아이디 또는 비밀번호를 다시 입력해주세요.");
-                modelAndView.setViewName("html/login");
+                if(user.getUserChkCnt() > 5) {
+                    user.setUseYn("N");
+                    userRepository.save(user);
+
+                    modelAndView.addObject("errorMessage", "계정이 잠겼습니다. 관리자한테 문의하세요.");
+                    modelAndView.setViewName("html/login");
+                } else {
+                    user.setUserChkCnt(user.getUserChkCnt()+1);
+                    userRepository.save(user);
+
+                    modelAndView.addObject("errorMessage", "아이디 또는 비밀번호를 다시 입력해주세요.");
+                    modelAndView.setViewName("html/login");
+                }
             }
         } else {    // 로그인 실패
             modelAndView.addObject("errorMessage", "아이디 또는 비밀번호를 다시 입력해주세요.");

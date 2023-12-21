@@ -61,7 +61,7 @@ public class SearchTextImageCnInstagramService {
     private String fileLocation1;
     @Value("${file.location3}")
     private String fileLocation3;
-    @Value("${server.url}")
+    @Value("${search.server.url}")
     private String serverIp;
 
     private Boolean loop = true;

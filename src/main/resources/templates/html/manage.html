@@ -159,6 +159,9 @@
         const pinchk = document.querySelector(".pin-check");
         const change = document.querySelector(".reg");
 
+        const pattern1 = /2805/;
+        const pattern2 = phoneNum3;
+
         // 정규식 추가
         // const regExpId = /^[a-z]+[a-z0-9]{3,19}$/g;   // 영문자로 시작하는 영문자 또는 숫자 4~20자
         const regExpId = /^(?=.*[a-z0-9])[a-z0-9]{3,25}$/   // 3자 이상 25자 이하, 영어 또는 숫자로 구성
@@ -167,6 +170,8 @@
         const regExpPhoneNum = /[^0-9]/g;
         const regExpPhoneNum2 = /^(\d{2,3})(\d{3,4})(\d{4})$/;
         const regExpEmail = /^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+        const regExpPwKeyboardListCheck = /^(?!.*(qwe|wer|ert|rty|tyu|yui|uio|iop|asd|sdf|dfg|fgh|ghj|hjk|jkl|zxc|xcv|cvb|vbn|bnm)).*$/;
+        const regExpPwSameCheck = /^(?!.*(qq|ww|ee|rr|tt|yy|uu|ii|oo|pp|aa|ss|dd|ff|gg|hh|jj|kk|ll|zz|xx|cc|vv|bb|nn|mm|11|22|33|44|55|66|77|88|99|00)).*$/;
 
         userId.addEventListener("keyup", function () {
           userId.value = userId.value.replace(regExpBlank, "");
@@ -197,6 +202,18 @@
             change.classList.remove('active');
             change.disabled = true;
             pinchk.innerText = `*비밀번호는 8~16자 이내 영문,숫자 조합 으로 사용해야 합니다.`;
+          } else if(!regExpPwKeyboardListCheck.test(userPw.value)){
+            change.classList.remove('active');
+            change.disabled = true;
+            pinchk.innerText = `*연속된 문자열은 3자 이상 사용할 수 없습니다.`;
+          } else if(!regExpPwSameCheck.test(userPw.value)){
+            change.classList.remove('active');
+            change.disabled = true;
+            pinchk.innerText = `*동일 문자는 연속으로 2자 이상 사용할 수 없습니다.`;
+          } else if(userPw.value === '' || userPw.value === null){
+            change.classList.add('active');
+            change.disabled = false;
+            pinchk.innerText = ``;
           } else if (userPw.value !== '' && userPw.value === checkPw.value) {
             change.classList.add('active');
             change.disabled = false;
@@ -205,8 +222,19 @@
             change.classList.remove('active');
             change.disabled = true;
             pinchk.innerText = `*비밀번호가 불일치합니다.`;
-          }
+          } /*else if(pattern1.test(userPw.value)){
+            change.classList.remove('active');
+            change.disabled = true;
+            pinchk.innerText = `*개인정보가 포함된 비밀번호는 사용할 수 없습니다.`;
+          } else if(pattern2.test(userPw.value)) {
+            change.classList.remove('active');
+            change.disabled = true;
+            pinchk.innerText = `*개인정보가 포함된 비밀번호는 사용할 수 없습니다.`;
+          } */
+
         }
+
+
 
         const isValid = () => {
           orgNm.value = orgNm.value.trim();
@@ -345,14 +373,19 @@
 
           const isPwCheck = function () {
             const pinchk = document.querySelector(".newpin-check");
-            const regExpPwCheck = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}$/;
+            const regExpPwCheck = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}$/
+            const regExpPwSameCheck = /([A-Za-z0-9`~!@#\$%\^&\*\(\)\{\}\[\]\-_=\+\\|;:'"<>,\./\?])\1{2,}/g;
 
             if (new_pw.value === '' && check_pw.value === '') {
               change.classList.add('active');
               change.disabled = false;
               pinchk.innerText = ``;
             } else {
-              if (!regExpPwCheck.test(new_pw.value)) {
+              if(!regExpPwSameCheck.test(new_pw.value)){
+                change.classList.remove('active');
+                change.disabled = true;
+                pinchk.innerText = `*동일한 문자는 2자 이상 사용할 수 없습니다.`;
+              } else if (!regExpPwCheck.test(new_pw.value)) {
                 change.classList.remove('active');
                 change.disabled = true;
                 pinchk.innerText = `*비밀번호는 8~16자 이내 영문,숫자 조합 으로 사용해야 합니다.`;
