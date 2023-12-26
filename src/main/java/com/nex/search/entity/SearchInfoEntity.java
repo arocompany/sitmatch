@@ -88,18 +88,6 @@ public class SearchInfoEntity {
     @Column(name = "TSI_USER_FILE")
     private String tsiUserFile;
 
-    @Basic
-    @Column(name = "TSI_MONITORING_CNT")
-    private Integer tsiMonitoringCnt;
-
-    public int getTsiMonitoringCnt() {
-        return tsiMonitoringCnt;
-    }
-
-    public void setTsiMonitoringCnt(int tsiMonitoringCnt) {
-        this.tsiMonitoringCnt = tsiMonitoringCnt;
-    }
-
 
     public int getTsiUno() {
         return tsiUno;
