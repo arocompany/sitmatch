@@ -41,6 +41,9 @@ public class TrackingSearchInfoService {
 
         searchInfoEntity.setUserUno(1);
         searchInfoEntity.setTsiStat("11");
+        searchInfoEntity.setTsiMonitoringCnt((searchInfoEntity.getTsiMonitoringCnt())+1);
+
+        log.info("searchInfoEntity.getTsiMonitoringCnt(): "+ searchInfoEntity.getTsiMonitoringCnt());
 
         //기존 searchInfo 값 세팅 (기본 정보)
         //배치는 11, 17 제외 13

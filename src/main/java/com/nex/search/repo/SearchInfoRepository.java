@@ -239,12 +239,9 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             " AND tsr6.monitoring_cd='20') > 0 ) THEN 'Y' " +
             " ELSE 'N' " +
             " END ) AS allDayMonitoringYn, " +
-            " (SELECT COUNT(tsr7.tsr_uno) " +
-            " FROM tb_search_result tsr7 " +
-            " INNER JOIN tb_search_info tsi7 " +
-            " ON tsr7.tsi_uno = tsi7.tsi_uno " +
-            " WHERE tsi7.tsi_uno = tsi.tsi_uno " +
-            " AND tsr7.monitoring_cd = '20') AS allTimeCnt, " +
+            " (SELECT COUNT(tsi9.tsi_monitoring_cnt) " +
+            " FROM tb_search_info tsi9 " +
+            " WHERE tsi9.tsi_uno = tsi.tsi_uno) AS allTimeCnt, "+
             " tsi.TSI_ALLTIME_MONITORING AS resultMonitoringTime, " +
             " (SELECT COUNT(tam8.tsr_uno) " +
             " FROM tb_alltime_monitoring_history tam8 " +
