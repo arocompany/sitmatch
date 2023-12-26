@@ -57,6 +57,9 @@ public class TrackingSearchInfoService {
         searchInfoEntity.setTsiFacebook(searchInfoEntityByTsiUno.getTsiFacebook());     //페이스북 검색 여부
         searchInfoEntity.setTsiInstagram(searchInfoEntityByTsiUno.getTsiInstagram());   //인스타그램 검색 여부
         searchInfoEntity.setTsiKeyword(searchInfoEntityByTsiUno.getTsiKeyword());       //검색어
+        searchInfoEntity.setTsiMonitoringCnt((searchInfoEntityByTsiUno.getTsiMonitoringCnt())+1);
+
+        log.info("searchInfoEntity.getTsiUno: "+searchInfoEntity.getTsiUno());
 
         //기존 searchResult 이미지 파일 복사
         String folder = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
