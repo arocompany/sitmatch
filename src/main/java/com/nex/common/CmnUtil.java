@@ -52,8 +52,11 @@ public class CmnUtil {
     }
 
     public static String execPython(String[] command) throws IOException, InterruptedException {
+        log.info(" === execPython 진입 === ");
         CommandLine commandLine = CommandLine.parse(command[0]);
         for (int i = 1, n = command.length; i < n; i++) {
+            log.info("command.length: "+command.length);
+            log.info(" commandLine.addArgument(command[i]) :"+commandLine.addArgument(command[i]));
             commandLine.addArgument(command[i]);
         }
 
@@ -61,6 +64,8 @@ public class CmnUtil {
         PumpStreamHandler pumpStreamHandler = new PumpStreamHandler(outputStream);
         DefaultExecutor executor = new DefaultExecutor();
         executor.setStreamHandler(pumpStreamHandler);
+        log.info(" === execPython 중간 === ");
+        
         int result = executor.execute(commandLine);
         log.error("result: " + result);
         log.error("output: " + outputStream.toString());

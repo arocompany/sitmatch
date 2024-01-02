@@ -36,11 +36,13 @@
 
   <script th:inline="javascript">
     /*<![CDATA[*/
-    const errMsg = [[${errorMessage}]];
-    console.log(errMsg);
+    // const errMsg = [[${errorMessage}]];
+    const errMsg1 = [[${errorMessage1}]] ;
+    const errMsg2 = [[${errorMessage2}]] ;
+    console.log(errMsg1);
     window.onload = function() {
-      if(errMsg !== null && errMsg !== undefined) {
-        alert(errMsg);
+      if(errMsg1 !== null && errMsg1 !== undefined) {
+        alert(errMsg1 + errMsg2);
       }
     }
 

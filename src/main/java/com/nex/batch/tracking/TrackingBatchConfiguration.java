@@ -136,10 +136,10 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
     @Bean
     public ItemProcessor<SearchResultEntity, SearchInfoEntity> allTimeInfoProcessor() {
-        log.info("searchInfoProcessor 진입");
+        log.info("allTimeInfoProcessor 진입");
         return findSearchResult -> {
             SearchInfoEntity findSearchInfo = searchInfoRepository.findById(findSearchResult.getTsiUno()).orElseThrow();
-            return trackingSearchInfoService.getSearchInfoEntity(findSearchInfo, findSearchResult);
+            return trackingSearchInfoService.getSearchInfoEntity2(findSearchInfo, findSearchResult);
         };
     }
 
@@ -167,7 +167,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
     @Bean
     public Step allTimeInfoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        log.info("searchInfoStep 진입");
+        log.info("allTimeInfoStep 진입");
         return new StepBuilder("allTimeInfoStep", jobRepository)
                 .allowStartIfComplete(true)
                 .<SearchResultEntity, SearchInfoEntity>chunk(CHUNK_SIZE, transactionManager)
@@ -282,8 +282,32 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
     }
     //************************** searchJob 관련 START **************************
 
+    @Bean
+    public Job trackingJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        log.info("trackingJob 진입");
+
+        return new JobBuilder("trackingJob", jobRepository)
+                .start(allTimeInfoStep(jobRepository, transactionManager))
+                .build();
+    }
+
 
 /*
+    @Bean
+    public Job trackingJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        log.info("trackingJob 진입");
+
+        return new JobBuilder("trackingJob", jobRepository)
+                .start(allTimeInfoStep(jobRepository, transactionManager))
+                .next(searchInfoStep(jobRepository, transactionManager))
+                .next(searchResultStep(jobRepository, transactionManager))
+                .next(searchJobStep(jobRepository, transactionManager))
+                .build();
+    }
+*/
+
+
+    /*
     @Bean
     public Job trackingJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         log.info("trackingJob 진입");
@@ -293,17 +317,5 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .next(searchJobStep(jobRepository, transactionManager))
                 .build();
     }
-*/
-
-    @Bean
-    public Job trackingJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        log.info("trackingJob 진입");
-        return new JobBuilder("trackingJob", jobRepository)
-                .start(allTimeInfoStep(jobRepository, transactionManager))
-                .next(searchInfoStep(jobRepository, transactionManager))
-                .next(searchResultStep(jobRepository, transactionManager))
-                .next(searchJobStep(jobRepository, transactionManager))
-                .build();
-    }
-
+    */
 }

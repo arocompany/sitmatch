@@ -77,6 +77,9 @@ public class TrackingSearchResultService{
     @Value("${server.url}")
     private String serverIp;
 
+    @Value("${search.server.url}")
+    private String serverIp2;
+
     private final RestTemplate restTemplate;
 
 
@@ -532,8 +535,8 @@ public class TrackingSearchResultService{
         else {
             log.info("이미지검색 getUrl 진입");
             String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
-            searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
-            searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
+            searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+            // searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
 
             url = textYandexUrl
                     + "?gl=vn"
@@ -574,8 +577,8 @@ public class TrackingSearchResultService{
         } else { //이미지 검색
             log.info("이미지검색 getGoogleLensUrl 진입");
             String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
-            searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
-            searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
+            searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+            // searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
 
             url = textYandexUrl
                     + "?engine=google_lens"

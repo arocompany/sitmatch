@@ -29,5 +29,4 @@ public interface ResultCntQueryDtoInterface {
     String getTmrSimilarityCnt();
 
 
-
 }

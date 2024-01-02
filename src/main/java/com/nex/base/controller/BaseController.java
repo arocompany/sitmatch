@@ -150,15 +150,13 @@ public class BaseController {
                                 @RequestParam(required = false, defaultValue = "") String traceUserKeyword,
                                 @RequestParam(required = false, defaultValue = "") String traceKeyword,
                                 @RequestParam(required=false, defaultValue = "0") String traceHistoryValue,
-                                @RequestParam(required = false, defaultValue = "전체") String manageType) {
+                                @RequestParam(required = false, defaultValue = "검색어") String manageType) {
         ModelAndView modelAndView = new ModelAndView("html/history");
         Map<String, Object> searchHistMap;
 
         log.info(" == history 진입 == manageType: " + manageType);
 
-        if(manageType.equals("전체")){
-            manageType = "0";
-        } else if(manageType.equals("검색어")) {
+        if (manageType.equals("검색어")) {
             manageType = "1";
         } else {
             manageType = "2";
@@ -188,7 +186,7 @@ public class BaseController {
         Map<String, Object> traceHistoryMap = null;
 
         // 검색어(타이틀) 검색
-        if(manageType.equals("0") || manageType.equals("1")) {
+        if(manageType.equals("1")) {
             if(traceHistoryValue.equals("0")){
                 traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword);
             } else if(traceHistoryValue.equals("10")){
@@ -601,8 +599,10 @@ public class BaseController {
 
         if(manageType.equals("0") || manageType.equals("1")) {
             if(tsiUno == null){
+                log.info("tsiUno == null");
                 traceHistoryMap = searchService.getTraceHistoryMonitoringList(tracePage, traceKeyword);
             } else {
+                log.info("tsiUno != null");
                 traceHistoryMap = searchService.getTraceHistoryMonitoringTsiUnoList(tracePage, traceKeyword, tsiUno);
             }
         } else {

@@ -374,7 +374,10 @@
           const isPwCheck = function () {
             const pinchk = document.querySelector(".newpin-check");
             const regExpPwCheck = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}$/
-            const regExpPwSameCheck = /([A-Za-z0-9`~!@#\$%\^&\*\(\)\{\}\[\]\-_=\+\\|;:'"<>,\./\?])\1{2,}/g;
+
+            const regExpPwKeyboardListCheck = /^(?!.*(qwe|wer|ert|rty|tyu|yui|uio|iop|asd|sdf|dfg|fgh|ghj|hjk|jkl|zxc|xcv|cvb|vbn|bnm)).*$/;
+            const regExpPwSameCheck = /^(?!.*(qq|ww|ee|rr|tt|yy|uu|ii|oo|pp|aa|ss|dd|ff|gg|hh|jj|kk|ll|zz|xx|cc|vv|bb|nn|mm|11|22|33|44|55|66|77|88|99|00)).*$/;
+
 
             if (new_pw.value === '' && check_pw.value === '') {
               change.classList.add('active');
@@ -385,6 +388,10 @@
                 change.classList.remove('active');
                 change.disabled = true;
                 pinchk.innerText = `*동일한 문자는 2자 이상 사용할 수 없습니다.`;
+              } else if(!regExpPwKeyboardListCheck.test(new_pw.value)){
+                change.classList.remove('active');
+                change.disabled = true;
+                pinchk.innerText = `*연속된 문자열은 3자 이상 사용할 수 없습니다.`;
               } else if (!regExpPwCheck.test(new_pw.value)) {
                 change.classList.remove('active');
                 change.disabled = true;

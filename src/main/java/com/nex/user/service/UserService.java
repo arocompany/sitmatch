@@ -68,6 +68,9 @@ public class UserService {
                 .lstLoginDt(Timestamp.valueOf(LocalDateTime.now()))
                 .fstDmlDt(Timestamp.valueOf(LocalDateTime.now()))
                 .lstDmlDt(Timestamp.valueOf(LocalDateTime.now()))
+                .userChkCnt(0)
+                .chkLoginDt(Timestamp.valueOf(LocalDateTime.now()))
+                .chkYn("Y")
                 .build();
         userRepository.save(user);
         return "success";

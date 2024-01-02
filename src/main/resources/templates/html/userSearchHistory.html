@@ -25,6 +25,34 @@
     text-align: center;
   }
 
+  #userSearchHistory .list-tit span{
+    width : auto !important;
+    word-break:keep-all;
+    flex:1  !important;
+  }
+  .history-list.history-search-list .tsiUnoclass{
+    display:none;
+  }
+
+  .history-list.history-search-list li>*{
+    width : auto !important;
+    flex:1  !important;
+    text-align :center;
+  }
+
+
+  .history-list.history-search-list .tsiUnoclass{
+    display:none;
+  }
+  #userSearchHistory .search-history .num{
+    width : 15% !important;
+    flex:none  !important;
+  }
+  #userSearchHistory .search-history .progress{
+    width : 15% !important;
+    flex:none  !important;
+  }
+
 </style>
 
 <body>
@@ -32,7 +60,7 @@
   <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
   <h1 class="title2">대상자 검색 이력</h1>
 
-  <section class="search-history layout history active" style="width: 1445px;">
+  <section class="search-history layout history active" >
     <div class="searchbox">
       <form method="get"  name="userSearchHistory" class="search-box" action="/userSearchHistory" id="searchForm">
         <input type="text" class="list-search bor10 btn-off" placeholder="대상자를 입력해 주세요" th:value="${searchKeyword}" name="searchKeyword" id="searchKeyword">
@@ -40,20 +68,20 @@
       </form>
       <p class="total-num">총 <span th:text="${userSearchHistoryListCount}"></span>건</p>
     </div>
-    <h2 class="list-tit" style="padding: 10px 20px 20px; width: 1460px; margin-left: 25px;">
+    <h2 class="list-tit" >
       <span class="num" >대상자</span>
-      <span class="counselor" style="margin-left: 35px;">현재 모니터링 개수</span>
-      <span class="type">현재 삭제 요청 개수</span>
-      <span class="cont">현재 삭제 완료 개수</span>
-      <span class="social">24시 모니터링 유무</span>
-      <span class="time" style="margin-right: 45px;">24시 모니터링 횟수</span>
-      <span class="progress" style="margin-right: 50px;">24시 모니터링 시간</span>
+      <span class="counselor" >현재 모니터링 <br> 개수</span>
+      <span class="type">현재 삭제 요청 <br> 개수</span>
+      <span class="cont">현재 삭제 완료 <br> 개수</span>
+      <span class="social">24시 모니터링 <br> 유무</span>
+      <span class="time" >24시 모니터링 <br> 횟수</span>
+      <span class="progress" >24시 모니터링 <br> 시간</span>
       <span class="dist">24시 모니터링<br> 재유포 건수</span>
-      <span class="dist" style="width: 8%;">총 검색 결과 수</span>
+      <span class="dist" >총 검색 <br> 결과 </span>
     </h2>
 
     <ul class="history-list history-search-list">
-      <li style="width: 1460px;" class="btn-off bor10" th:each="userSearchHistoryList:${userSearchHistoryList}" >
+      <li class="btn-off bor10" th:each="userSearchHistoryList:${userSearchHistoryList}" >
         <!--<input type="checkbox" id="tsiUnos" name="tsiUnos" >-->
         <div class="tsiUnoclass">
           <input type="hidden" id="tsiUno2" name="tsiUno" >
@@ -61,13 +89,13 @@
         <!-- <p class="num" th:text="${userSearchHistoryList.getTsiUno()}"> -->
         <p class="num" th:text="${userSearchHistoryList.getTsiUserFile()}"></p> <!-- 대상자 -->
         <button class="counselor monitoring"  th:tsiUno="${userSearchHistoryList.getTsiUno()}" th:text="${userSearchHistoryList.getMonitoringCnt()}"></button> <!-- 모니터링 -->
-        <button class="type deleteReq" style="text-align: center" th:tsiUno="${userSearchHistoryList.getTsiUno()}" th:text="${userSearchHistoryList.getDeleteReqCnt()}"></button> <!-- 삭제요청 -->
-        <button class="type deleteCompt" style="text-align: center; margin-right: 65px;"  th:tsiUno="${userSearchHistoryList.getTsiUno()}"  th:text="${userSearchHistoryList.getDeleteConfirmCnt()}"></button> <!-- 삭제완료 -->
-        <p class="con1" style="margin-right: 50px;"  th:text="${userSearchHistoryList.getAllDayMonitoringYn()}"></p> <!-- 모니터링 유무 -->
+        <button class="deleteReq" th:tsiUno="${userSearchHistoryList.getTsiUno()}" th:text="${userSearchHistoryList.getDeleteReqCnt()}"></button> <!-- 삭제요청 -->
+        <button class="deleteCompt" th:tsiUno="${userSearchHistoryList.getTsiUno()}"  th:text="${userSearchHistoryList.getDeleteConfirmCnt()}"></button> <!-- 삭제완료 -->
+        <p class="con1" th:text="${userSearchHistoryList.getAllDayMonitoringYn()}"></p> <!-- 모니터링 유무 -->
         <p class="time" th:text="${userSearchHistoryList.getAllTimeCnt()}"></p> <!-- 24시 모니터링 횟수 -->
-        <textarea id="monitoringTime" class="dot-wrap progress" style="width: 14.8%;" th:text="${userSearchHistoryList.getResultMonitoringTime()}"></textarea>
-        <button class="social allTimeResultCnt" style="margin-right: 15px;" th:tsiUno="${userSearchHistoryList.getTsiUno()}" th:text="${userSearchHistoryList.getReDsmnCnt()}"></button> <!-- 24시 모니터링 재유포 건수 -->
-        <p style="margin-right: 17px;" th:text="${userSearchHistoryList.getResultCnt()}"></p> <!-- 총 검색결과 수-->
+        <textarea id="monitoringTime" class="dot-wrap progress" th:text="${userSearchHistoryList.getResultMonitoringTime()}"></textarea>
+        <button class="social allTimeResultCnt" th:tsiUno="${userSearchHistoryList.getTsiUno()}" th:text="${userSearchHistoryList.getReDsmnCnt()}"></button> <!-- 24시 모니터링 재유포 건수 -->
+        <p th:text="${userSearchHistoryList.getResultCnt()}"></p> <!-- 총 검색결과 수-->
       </li>
       <li th:if="${userSearchHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
     </ul>

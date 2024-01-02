@@ -322,7 +322,7 @@
 }
 
 #history .trace-history .selection .option li {
-    font-size: 1rem
+    font-size: 1rem; color: #000;
 }
 
 #history .trace-history .currently-state {
@@ -333,6 +333,10 @@
     margin-left: 20px;
     color: #545759
 }
+
+#history .trace-history .currently-state.monitoring_sort_link .monitoring_sort_tit{font-weight: bold;}
+#history .trace-history .currently-state.monitoring_sort_link .monitoring_sort_tit:hover{cursor: pointer; color: #e87728}
+
 
 #history .trace-history .cont {
     -webkit-box-flex: 1;
