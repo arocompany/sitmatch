@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 
@@ -55,83 +58,126 @@ public class UserController {
             return modelAndView;
         }
 
-        if (userRepository.countByUserId(userLoginCheckDto.getLoginId()) > 0) {                // 아이디가 있는지 확인
+        /*
+        * 로그인 횟수 5번을 잰다.
+        * 5회 이상 틀리면 chk타임에 현재시간보다 10분 지난값을 넣음
+        * 로그인시 getChkLoginDt null이 아니고 현재시간보다 지나지 않았으면 조건1
+        *
+        * */
+
+        if (userRepository.countByUserId(userLoginCheckDto.getLoginId()) > 0) { // 아이디가 있는지 확인
             UserEntity user = userRepository.findByUserId(userLoginCheckDto.getLoginId());
+            // log.info("사용자 체크 시간: " +user.getChkLoginDt() );
 
-            if(user.getUserChkCnt()>0 && user.getUseYn().equals("N")){
-                modelAndView.addObject("errorMessage", "계정이 잠겼습니다. 관리자한테 문의하세요.");
-                modelAndView.setViewName("html/login");
-            } else if (encryptUtil.matches(userLoginCheckDto.getLoginPw(), user.getUserPw())) {       // 비밀번호 확인(userInfo로 받은 평문 비밀번호와 디비에 있는 암호화된 비밀번호 비교)
-                // 마지막 로그인 시간 업데이트
-                user.setLstLoginDt(Timestamp.valueOf(LocalDateTime.now()));
-                user.setUserChkCnt(0);
-                userRepository.save(user);
+            Timestamp currentDateTime = new Timestamp(System.currentTimeMillis()); // 현재시간
+            Timestamp userChkLoginDt = user.getChkLoginDt();                       // 사용자 잠김시간
 
-                // password 변경 시간 확인
-                Timestamp pwModifyDt = user.getPwModifyDt();
-                Timestamp nowDt = new Timestamp(new Date().getTime());
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            String userChkTime = formatter.format(userChkLoginDt);
 
-                long diffDay = (nowDt.getTime() - pwModifyDt.getTime()) / 1000 / (24 * 60 * 60);
+            if( user.getChkYn().equals("N") ){
+                if( !userChkLoginDt.before(currentDateTime) ){
+                    log.info("5회 초과 현재시간이 더 커서 로그인 못함");
+                    modelAndView.addObject("errorMessage1", userChkTime);
+                    modelAndView.addObject("errorMessage2", " 이후에 로그인 하실 수 있습니다.");
+                    modelAndView.setViewName("html/login");
+                } else {
+                    user.setChkYn("Y");
+                    user.setUserChkCnt(0);
+                    userRepository.save(user);
+                }
+            } else {
+                if (encryptUtil.matches(userLoginCheckDto.getLoginPw(), user.getUserPw())) { // 비밀번호 확인(userInfo로 받은 평문 비밀번호와 디비에 있는 암호화된 비밀번호 비교)
+                    // 마지막 로그인 시간 업데이트
+                    user.setLstLoginDt(Timestamp.valueOf(LocalDateTime.now()));
+                    user.setUserChkCnt(0);
+                    user.setChkYn("Y");
+                    userRepository.save(user);
 
-                log.debug("diffDay = {}", diffDay);
+                    // password 변경 시간 확인
+                    Timestamp pwModifyDt = user.getPwModifyDt();
+                    Timestamp nowDt = new Timestamp(new Date().getTime());
 
-                if (diffDay >= 90) {   //   비밀번호 변경일자가 90일이 넘을 경우 패스워드 변경 화면으로 이동
-                    if(user.getUserClfCd().equals("99")) { // 관리자인 경우 redirect
-                        modelAndView.setViewName("redirect:/");
+                    long diffDay = (nowDt.getTime() - pwModifyDt.getTime()) / 1000 / (24 * 60 * 60);
+
+                    log.debug("diffDay = {}", diffDay);
+
+                    if (diffDay >= 90) {   //   비밀번호 변경일자가 90일이 넘을 경우 패스워드 변경 화면으로 이동
+                        if(user.getUserClfCd().equals("99")) { // 관리자인 경우 redirect
+                            modelAndView.setViewName("redirect:/");
+                        } else {
+                            modelAndView.setViewName("redirect:/password");
+                        }
                     } else {
-                        modelAndView.setViewName("redirect:/password");
-                    }
-                } else {
                         modelAndView.setViewName("redirect:/");
-                }
+                    }
 
-                // 로그인 성공 처리
-                // 세션이 있으면 있는 세션 반환, 없으면 신규 세션 설정
-                HttpSession session = request.getSession();
-                SessionInfoDto sessionInfo = SessionInfoDto.builder()
-                        .userUno(Math.toIntExact(user.getUserUno()))
-                        .userId(user.getUserId())
-                        .userNm(user.getUserNm())
-                        .crawling_limit(user.getCrawling_limit())
-                        .percent_limit(user.getPercent_limit())
-                        .build();
+                    // 로그인 성공 처리
+                    // 세션이 있으면 있는 세션 반환, 없으면 신규 세션 설정
+                    HttpSession session = request.getSession();
+                    SessionInfoDto sessionInfo = SessionInfoDto.builder()
+                            .userUno(Math.toIntExact(user.getUserUno()))
+                            .userId(user.getUserId())
+                            .userNm(user.getUserNm())
+                            .crawling_limit(user.getCrawling_limit())
+                            .percent_limit(user.getPercent_limit())
+                            .build();
 
-                if( user.getUserClfCd().equals("99") ) {
-                    sessionInfo.setAdmin(true);
-                    session.setAttribute(Consts.SESSION_IS_ADMIN, true);
-                } else {
-                    sessionInfo.setAdmin(false);
-                    session.setAttribute(Consts.SESSION_IS_ADMIN, false);
-                }
+                    if( user.getUserClfCd().equals("99") ) {
+                        sessionInfo.setAdmin(true);
+                        session.setAttribute(Consts.SESSION_IS_ADMIN, true);
+                    } else {
+                        sessionInfo.setAdmin(false);
+                        session.setAttribute(Consts.SESSION_IS_ADMIN, false);
+                    }
 
-                int userUno = Math.toIntExact(user.getUserUno());
-                String userId = user.getUserId();
-                log.info("userUno: "+userUno+" userId "+userId);
-                userService.loginHistInsert(userUno, userId);
+                    int userUno = Math.toIntExact(user.getUserUno());
+                    String userId = user.getUserId();
+                    log.info("userUno: "+userUno+" userId "+userId);
+                    userService.loginHistInsert(userUno, userId);
 
-                session.setAttribute(Consts.SESSION_USER_UNO, user.getUserUno());
-                session.setAttribute(Consts.SESSION_USER_ID, user.getUserId());
-                session.setAttribute(Consts.SESSION_USER_NM, user.getUserNm());
-                session.setAttribute(Consts.SESSION_USER_CL, user.getCrawling_limit());
-                session.setAttribute(Consts.SESSION_USER_PL, user.getPercent_limit());
-                session.setAttribute(Consts.LOGIN_SESSION, sessionInfo);
-            } else {    // 로그인 실패
-                if(user.getUserChkCnt() > 5) {
-                    user.setUseYn("N");
-                    userRepository.save(user);
+                    session.setAttribute(Consts.SESSION_USER_UNO, user.getUserUno());
+                    session.setAttribute(Consts.SESSION_USER_ID, user.getUserId());
+                    session.setAttribute(Consts.SESSION_USER_NM, user.getUserNm());
+                    session.setAttribute(Consts.SESSION_USER_CL, user.getCrawling_limit());
+                    session.setAttribute(Consts.SESSION_USER_PL, user.getPercent_limit());
+                    session.setAttribute(Consts.LOGIN_SESSION, sessionInfo);
+                } else {    // 로그인 실패
+                    if (user.getUserChkCnt() >= 5) {
+                        log.info("5번 넘으면 현재시간에서 10분 추가");
+                        // 현재 시간을 가져오기
+                        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 
-                    modelAndView.addObject("errorMessage", "계정이 잠겼습니다. 관리자한테 문의하세요.");
-                    modelAndView.setViewName("html/login");
-                } else {
-                    user.setUserChkCnt(user.getUserChkCnt()+1);
-                    userRepository.save(user);
+                        // 10분 뒤의 시간을 계산
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTimeInMillis(currentTimestamp.getTime());
+                        calendar.add(Calendar.MINUTE, 10);
 
-                    modelAndView.addObject("errorMessage", "아이디 또는 비밀번호를 다시 입력해주세요.");
-                    modelAndView.setViewName("html/login");
+                        // 10분 뒤의 시간을 Timestamp로 변환
+                        Timestamp tenMinutesLaterTimestamp = new Timestamp(calendar.getTimeInMillis());
+                        user.setChkLoginDt(tenMinutesLaterTimestamp);
+                        user.setChkYn("N");
+                        userRepository.save(user);
+
+                        modelAndView.addObject("errorMessage1", "로그인 횟수를 초과하여 ");
+                        modelAndView.addObject("errorMessage2", tenMinutesLaterTimestamp + " 이후로 로그인 하실 수 있습니다.");
+                        modelAndView.setViewName("html/login");
+                    } else {
+                        log.info("chkCnt만 추가");
+                        user.setUserChkCnt(user.getUserChkCnt() + 1);
+                        userRepository.save(user);
+
+                        modelAndView.addObject("errorMessage1", "아이디");
+                        modelAndView.addObject("errorMessage2", " 또는 비밀번호를 다시 입력해주세요.");
+                        modelAndView.setViewName("html/login");
+                    }
                 }
             }
+
+
         } else {    // 로그인 실패
-            modelAndView.addObject("errorMessage", "아이디 또는 비밀번호를 다시 입력해주세요.");
+            modelAndView.addObject("errorMessage1", "아이디");
+            modelAndView.addObject("errorMessage2", " 또는 비밀번호를 다시 입력해주세요.");
             modelAndView.setViewName("html/login");
         }
         return modelAndView;

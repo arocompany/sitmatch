@@ -156,9 +156,12 @@
    // window.location.href="/history";
 
     if (document.getElementById('google').checked || document.getElementById('instar').checked || document.getElementById('facebook').checked) {
+      /*
       if(document.getElementById('tsiUserFile').value == ""){
         alert("대상자의 파일명을 입력하세요.");
+        return false;
       }
+      */
 
       if (document.getElementById('search-text').value == "" && document.getElementById('file').value == "" ) {
         alert("검색어를 입력하세요.");

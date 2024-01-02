@@ -56,5 +56,6 @@ public interface DefaultQueryDtoInterface {
     String getLastAlltimeHist();
 
     String getUserKeyword();
+    String getTsiUserFile();
 
 }

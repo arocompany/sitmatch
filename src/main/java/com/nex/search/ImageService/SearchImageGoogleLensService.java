@@ -79,7 +79,7 @@ public class SearchImageGoogleLensService {
         // searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20231021/563ca536-01dd-4931-a7f8-9b93cc1dbd54.jpg"; // 아청물
 
         log.info("searchImageUrl: "+searchImageUrl);
-
+        // CompletableFutureGoogleLensByImage(searchImageUrl, tsrSns, insertResult);
 
         try {
             log.info("== cn 시작 ==");
@@ -91,33 +91,13 @@ public class SearchImageGoogleLensService {
 
             log.info("url: " + url);
 
-            HttpHeaders header = new HttpHeaders();
-            HttpEntity<?> entity = new HttpEntity<>(header);
-            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody());
-            JsonNode rootNode = mapper.readTree(jsonInString);
-            String pageToken = rootNode.at("/image_sources_search/page_token").asText();
-
-            // pageToken값 출력 + textYandexApikey
-            System.out.println("page_token: " + pageToken);
-
-            String url2 = textYandexUrl
-                    + "?engine=google_lens_image_sources"
-                    + "&page_token=" + pageToken
-                    + "&country=cn"
-                    + "&safe=off"
-                    + "&api_key="+textYandexApikey;
-
-            CompletableFutureGoogleLensByImage(url2, tsrSns, insertResult);
+            CompletableFutureGoogleLensByCnImage(url, tsrSns, insertResult);
 
         } catch (Exception e){
             e.printStackTrace();
         }
 
-        /*
+
         try {
             log.info("== kr 시작 ==");
             String url = textYandexUrl
@@ -128,27 +108,7 @@ public class SearchImageGoogleLensService {
 
             log.info("url: " + url);
 
-            HttpHeaders header = new HttpHeaders();
-            HttpEntity<?> entity = new HttpEntity<>(header);
-            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody());
-            JsonNode rootNode = mapper.readTree(jsonInString);
-            String pageToken = rootNode.at("/image_sources_search/page_token").asText();
-
-            // pageToken값 출력
-            System.out.println("page_token: " + pageToken);
-
-            String url2 = textYandexUrl
-                    + "?engine=google_lens_image_sources"
-                    + "&page_token=" + pageToken
-                    + "&country=kr"
-                    + "&safe=off"
-                    + "&api_key="+textYandexApikey;
-
-            CompletableFutureGoogleLensByImage(url2, tsrSns, insertResult);
+            CompletableFutureGoogleLensByKrImage(url, tsrSns, insertResult);
 
         } catch (Exception e){
             e.printStackTrace();
@@ -164,27 +124,7 @@ public class SearchImageGoogleLensService {
 
             log.info("url: " + url);
 
-            HttpHeaders header = new HttpHeaders();
-            HttpEntity<?> entity = new HttpEntity<>(header);
-            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody());
-            JsonNode rootNode = mapper.readTree(jsonInString);
-            String pageToken = rootNode.at("/image_sources_search/page_token").asText();
-
-            // pageToken값 출력
-            System.out.println("page_token: " + pageToken);
-
-            String url2 = textYandexUrl
-                    + "?engine=google_lens_image_sources"
-                    + "&page_token=" + pageToken
-                    + "&country=nl"
-                    + "&safe=off"
-                    + "&api_key="+textYandexApikey;
-
-            CompletableFutureGoogleLensByImage(url2, tsrSns, insertResult);
+            CompletableFutureGoogleLensByNlImage(url, tsrSns, insertResult);
 
         } catch (Exception e){
             e.printStackTrace();
@@ -200,27 +140,7 @@ public class SearchImageGoogleLensService {
 
             log.info("url: " + url);
 
-            HttpHeaders header = new HttpHeaders();
-            HttpEntity<?> entity = new HttpEntity<>(header);
-            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody());
-            JsonNode rootNode = mapper.readTree(jsonInString);
-            String pageToken = rootNode.at("/image_sources_search/page_token").asText();
-
-            // pageToken값 출력
-            System.out.println("page_token: " + pageToken);
-
-            String url2 = textYandexUrl
-                    + "?engine=google_lens_image_sources"
-                    + "&page_token=" + pageToken
-                    + "&country=ru"
-                    + "&safe=off"
-                    + "&api_key="+textYandexApikey;
-
-            CompletableFutureGoogleLensByImage(url2, tsrSns, insertResult);
+            CompletableFutureGoogleLensByRuImage(url, tsrSns, insertResult);
 
         } catch (Exception e){
             e.printStackTrace();
@@ -236,27 +156,7 @@ public class SearchImageGoogleLensService {
 
             log.info("url: " + url);
 
-            HttpHeaders header = new HttpHeaders();
-            HttpEntity<?> entity = new HttpEntity<>(header);
-            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody());
-            JsonNode rootNode = mapper.readTree(jsonInString);
-            String pageToken = rootNode.at("/image_sources_search/page_token").asText();
-
-            // pageToken값 출력
-            System.out.println("page_token: " + pageToken);
-
-            String url2 = textYandexUrl
-                    + "?engine=google_lens_image_sources"
-                    + "&page_token=" + pageToken
-                    + "&country=th"
-                    + "&safe=off"
-                    + "&api_key="+textYandexApikey;
-
-            CompletableFutureGoogleLensByImage(url2, tsrSns, insertResult);
+            CompletableFutureGoogleLensByThImage(url, tsrSns, insertResult);
 
         } catch (Exception e){
             e.printStackTrace();
@@ -272,27 +172,7 @@ public class SearchImageGoogleLensService {
 
             log.info("url: " + url);
 
-            HttpHeaders header = new HttpHeaders();
-            HttpEntity<?> entity = new HttpEntity<>(header);
-            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody());
-            JsonNode rootNode = mapper.readTree(jsonInString);
-            String pageToken = rootNode.at("/image_sources_search/page_token").asText();
-
-            // pageToken값 출력
-            System.out.println("page_token: " + pageToken);
-
-            String url2 = textYandexUrl
-                    + "?engine=google_lens_image_sources"
-                    + "&page_token=" + pageToken
-                    + "&country=us"
-                    + "&safe=off"
-                    + "&api_key="+textYandexApikey;
-
-            CompletableFutureGoogleLensByImage(url2, tsrSns, insertResult);
+            CompletableFutureGoogleLensByUsImage(url, tsrSns, insertResult);
 
         } catch (Exception e){
             e.printStackTrace();
@@ -308,41 +188,20 @@ public class SearchImageGoogleLensService {
 
             log.info("url: " + url);
 
-            HttpHeaders header = new HttpHeaders();
-            HttpEntity<?> entity = new HttpEntity<>(header);
-            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody());
-            JsonNode rootNode = mapper.readTree(jsonInString);
-            String pageToken = rootNode.at("/image_sources_search/page_token").asText();
-
-            // pageToken값 출력
-            System.out.println("page_token: " + pageToken);
-
-            String url2 = textYandexUrl
-                    + "?engine=google_lens_image_sources"
-                    + "&page_token=" + pageToken
-                    + "&country=vn"
-                    + "&safe=off"
-                    + "&api_key="+textYandexApikey;
-
-            CompletableFutureGoogleLensByImage(url2, tsrSns, insertResult);
+            CompletableFutureGoogleLensByVnImage(url, tsrSns, insertResult);
 
         } catch (Exception e){
             e.printStackTrace();
         }
-*/
 
     }
 
-    public void CompletableFutureGoogleLensByImage(String url, String tsrSns, SearchInfoEntity insertResult) {
+    public void CompletableFutureGoogleLensByCnImage(String url, String tsrSns, SearchInfoEntity insertResult) {
         // 이미지
         CompletableFuture
                 .supplyAsync(() -> {
                     try { // text기반 검색
-                        return searchGoogleLens(url, GoogleLensImagesByImageResult.class, GoogleLensImagesByImageResult::getError, GoogleLensImagesByImageResult::getImage_sources);
+                        return searchCnGoogleLens(url, GoogleLensImagesByImageResult.class, GoogleLensImagesByImageResult::getError, GoogleLensImagesByImageResult::getImage_sources);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -363,8 +222,7 @@ public class SearchImageGoogleLensService {
                         log.error(e.getMessage(), e);
                         return null;
                     }
-                })
-                .thenApplyAsync((r) -> {
+                }).thenApplyAsync((r) -> {
                     try { // 결과 db에 적재.
                         return saveImgSearchGoogleLens(r, insertResult);
                     } catch (Exception e) {
@@ -374,21 +232,267 @@ public class SearchImageGoogleLensService {
                 });
     }
 
-    public <INFO, RESULT> List<RESULT> searchGoogleLens(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        log.info("searchYandex 진입");
+
+    public void CompletableFutureGoogleLensByKrImage(String url, String tsrSns, SearchInfoEntity insertResult) {
+        // 이미지
+        CompletableFuture
+                .supplyAsync(() -> {
+                    try { // text기반 검색
+                        return searchKrGoogleLens(url, GoogleLensImagesByImageResult.class, GoogleLensImagesByImageResult::getError, GoogleLensImagesByImageResult::getImage_sources);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                }).thenApply((r) -> {
+                    try { // 결과 저장.(이미지)
+                        return saveGoogleLens(
+                                r
+                                , tsrSns
+                                , insertResult
+                                , Images_resultsByGoogleLens::getTitle
+                                , Images_resultsByGoogleLens::getLink
+                                , Images_resultsByGoogleLens::getThumbnail
+                                , Images_resultsByGoogleLens::isFacebook
+                                , Images_resultsByGoogleLens::isInstagram
+                        );
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                }).thenApplyAsync((r) -> {
+                    try { // 결과 db에 적재.
+                        return saveImgSearchGoogleLens(r, insertResult);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                });
+    }
+
+
+    public void CompletableFutureGoogleLensByNlImage(String url, String tsrSns, SearchInfoEntity insertResult) {
+        // 이미지
+        CompletableFuture
+                .supplyAsync(() -> {
+                    try { // text기반 검색
+                        return searchNlGoogleLens(url, GoogleLensImagesByImageResult.class, GoogleLensImagesByImageResult::getError, GoogleLensImagesByImageResult::getImage_sources);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                }).thenApply((r) -> {
+                    try { // 결과 저장.(이미지)
+                        return saveGoogleLens(
+                                r
+                                , tsrSns
+                                , insertResult
+                                , Images_resultsByGoogleLens::getTitle
+                                , Images_resultsByGoogleLens::getLink
+                                , Images_resultsByGoogleLens::getThumbnail
+                                , Images_resultsByGoogleLens::isFacebook
+                                , Images_resultsByGoogleLens::isInstagram
+                        );
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                }).thenApplyAsync((r) -> {
+                    try { // 결과 db에 적재.
+                        return saveImgSearchGoogleLens(r, insertResult);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                });
+    }
+
+
+    public void CompletableFutureGoogleLensByRuImage(String url, String tsrSns, SearchInfoEntity insertResult) {
+        // 이미지
+        CompletableFuture
+                .supplyAsync(() -> {
+                    try { // text기반 검색
+                        return searchRuGoogleLens(url, GoogleLensImagesByImageResult.class, GoogleLensImagesByImageResult::getError, GoogleLensImagesByImageResult::getImage_sources);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                }).thenApply((r) -> {
+                    try { // 결과 저장.(이미지)
+                        return saveGoogleLens(
+                                r
+                                , tsrSns
+                                , insertResult
+                                , Images_resultsByGoogleLens::getTitle
+                                , Images_resultsByGoogleLens::getLink
+                                , Images_resultsByGoogleLens::getThumbnail
+                                , Images_resultsByGoogleLens::isFacebook
+                                , Images_resultsByGoogleLens::isInstagram
+                        );
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                }).thenApplyAsync((r) -> {
+                    try { // 결과 db에 적재.
+                        return saveImgSearchGoogleLens(r, insertResult);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                });
+    }
+
+
+    public void CompletableFutureGoogleLensByThImage(String url, String tsrSns, SearchInfoEntity insertResult) {
+        // 이미지
+        CompletableFuture
+                .supplyAsync(() -> {
+                    try { // text기반 검색
+                        return searchThGoogleLens(url, GoogleLensImagesByImageResult.class, GoogleLensImagesByImageResult::getError, GoogleLensImagesByImageResult::getImage_sources);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                }).thenApply((r) -> {
+                    try { // 결과 저장.(이미지)
+                        return saveGoogleLens(
+                                r
+                                , tsrSns
+                                , insertResult
+                                , Images_resultsByGoogleLens::getTitle
+                                , Images_resultsByGoogleLens::getLink
+                                , Images_resultsByGoogleLens::getThumbnail
+                                , Images_resultsByGoogleLens::isFacebook
+                                , Images_resultsByGoogleLens::isInstagram
+                        );
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                }).thenApplyAsync((r) -> {
+                    try { // 결과 db에 적재.
+                        return saveImgSearchGoogleLens(r, insertResult);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                });
+    }
+
+
+    public void CompletableFutureGoogleLensByUsImage(String url, String tsrSns, SearchInfoEntity insertResult) {
+        // 이미지
+        CompletableFuture
+                .supplyAsync(() -> {
+                    try { // text기반 검색
+                        return searchUsGoogleLens(url, GoogleLensImagesByImageResult.class, GoogleLensImagesByImageResult::getError, GoogleLensImagesByImageResult::getImage_sources);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                }).thenApply((r) -> {
+                    try { // 결과 저장.(이미지)
+                        return saveGoogleLens(
+                                r
+                                , tsrSns
+                                , insertResult
+                                , Images_resultsByGoogleLens::getTitle
+                                , Images_resultsByGoogleLens::getLink
+                                , Images_resultsByGoogleLens::getThumbnail
+                                , Images_resultsByGoogleLens::isFacebook
+                                , Images_resultsByGoogleLens::isInstagram
+                        );
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                }).thenApplyAsync((r) -> {
+                    try { // 결과 db에 적재.
+                        return saveImgSearchGoogleLens(r, insertResult);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                });
+    }
+
+
+    public void CompletableFutureGoogleLensByVnImage(String url, String tsrSns, SearchInfoEntity insertResult) {
+        // 이미지
+        CompletableFuture
+                .supplyAsync(() -> {
+                    try { // text기반 검색
+                        return searchVnGoogleLens(url, GoogleLensImagesByImageResult.class, GoogleLensImagesByImageResult::getError, GoogleLensImagesByImageResult::getImage_sources);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                }).thenApply((r) -> {
+                    try { // 결과 저장.(이미지)
+                        return saveGoogleLens(
+                                r
+                                , tsrSns
+                                , insertResult
+                                , Images_resultsByGoogleLens::getTitle
+                                , Images_resultsByGoogleLens::getLink
+                                , Images_resultsByGoogleLens::getThumbnail
+                                , Images_resultsByGoogleLens::isFacebook
+                                , Images_resultsByGoogleLens::isInstagram
+                        );
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                }).thenApplyAsync((r) -> {
+                    try { // 결과 db에 적재.
+                        return saveImgSearchGoogleLens(r, insertResult);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                });
+    }
+    
+    // searchCnGoogleLens 시작
+    public <INFO, RESULT> List<RESULT> searchCnGoogleLens(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+        log.info("searchYandex 진입: "+url);
+
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
         ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
 
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        String jsonInString = mapper.writeValueAsString(resultMap.getBody());
+        JsonNode rootNode = mapper.readTree(jsonInString);
+        String pageToken = rootNode.at("/image_sources_search/page_token").asText();
+
+        System.out.println("page_token: " + pageToken);
+
+        // pageToken값 출력
+        System.out.println("page_token: " + pageToken);
+
+        String url2 = textYandexUrl
+                + "?engine=google_lens_image_sources"
+                + "&page_token=" + pageToken
+                + "&country=cn"
+                + "&safe=off"
+                + "&api_key="+textYandexApikey;
+
+        HttpHeaders header2 = new HttpHeaders();
+        HttpEntity<?> entity2 = new HttpEntity<>(header2);
+        UriComponents uri2 = UriComponentsBuilder.fromHttpUrl(url2).build();
+        ResponseEntity<?> resultMap2 = new RestTemplate().exchange(uri2.toString(), HttpMethod.GET, entity2, Object.class);
+
         List<RESULT> results = null;
 
-        log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+        log.debug("resultMap.getStatusCodeValue(): " + resultMap2.getStatusCodeValue());
 
-        if (resultMap.getStatusCodeValue() == 200) {
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody());
-            INFO info = mapper.readValue(jsonInString, infoClass);
+        if (resultMap2.getStatusCodeValue() == 200) {
+            ObjectMapper mapper2 = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            String jsonInString2 = mapper2.writeValueAsString(resultMap2.getBody());
+            INFO info = mapper2.readValue(jsonInString2, infoClass);
 
             if (getErrorFn.apply(info) == null) {
                 results = getResultFn.apply(info);
@@ -398,6 +502,294 @@ public class SearchImageGoogleLensService {
         log.debug("results: " + results);
         return results != null ? results : new ArrayList<>();
     }
+
+    public <INFO, RESULT> List<RESULT> searchKrGoogleLens(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+        log.info("searchYandex 진입: "+url);
+
+        HttpHeaders header = new HttpHeaders();
+        HttpEntity<?> entity = new HttpEntity<>(header);
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        String jsonInString = mapper.writeValueAsString(resultMap.getBody());
+        JsonNode rootNode = mapper.readTree(jsonInString);
+        String pageToken = rootNode.at("/image_sources_search/page_token").asText();
+
+        System.out.println("page_token: " + pageToken);
+
+        // pageToken값 출력
+        System.out.println("page_token: " + pageToken);
+
+        String url2 = textYandexUrl
+                + "?engine=google_lens_image_sources"
+                + "&page_token=" + pageToken
+                + "&country=kr"
+                + "&safe=off"
+                + "&api_key="+textYandexApikey;
+
+        HttpHeaders header2 = new HttpHeaders();
+        HttpEntity<?> entity2 = new HttpEntity<>(header2);
+        UriComponents uri2 = UriComponentsBuilder.fromHttpUrl(url2).build();
+        ResponseEntity<?> resultMap2 = new RestTemplate().exchange(uri2.toString(), HttpMethod.GET, entity2, Object.class);
+
+        List<RESULT> results = null;
+
+        log.debug("resultMap.getStatusCodeValue(): " + resultMap2.getStatusCodeValue());
+
+        if (resultMap2.getStatusCodeValue() == 200) {
+            ObjectMapper mapper2 = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            String jsonInString2 = mapper2.writeValueAsString(resultMap2.getBody());
+            INFO info = mapper2.readValue(jsonInString2, infoClass);
+
+            if (getErrorFn.apply(info) == null) {
+                results = getResultFn.apply(info);
+            }
+        }
+
+        log.debug("results: " + results);
+        return results != null ? results : new ArrayList<>();
+    }
+
+    public <INFO, RESULT> List<RESULT> searchNlGoogleLens(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+        log.info("searchYandex 진입: "+url);
+
+        HttpHeaders header = new HttpHeaders();
+        HttpEntity<?> entity = new HttpEntity<>(header);
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        String jsonInString = mapper.writeValueAsString(resultMap.getBody());
+        JsonNode rootNode = mapper.readTree(jsonInString);
+        String pageToken = rootNode.at("/image_sources_search/page_token").asText();
+
+        // pageToken값 출력
+        System.out.println("page_token: " + pageToken);
+
+        String url2 = textYandexUrl
+                + "?engine=google_lens_image_sources"
+                + "&page_token=" + pageToken
+                + "&country=nl"
+                + "&safe=off"
+                + "&api_key="+textYandexApikey;
+
+        HttpHeaders header2 = new HttpHeaders();
+        HttpEntity<?> entity2 = new HttpEntity<>(header2);
+        UriComponents uri2 = UriComponentsBuilder.fromHttpUrl(url2).build();
+        ResponseEntity<?> resultMap2 = new RestTemplate().exchange(uri2.toString(), HttpMethod.GET, entity2, Object.class);
+
+        List<RESULT> results = null;
+
+        log.debug("resultMap.getStatusCodeValue(): " + resultMap2.getStatusCodeValue());
+
+        if (resultMap2.getStatusCodeValue() == 200) {
+            ObjectMapper mapper2 = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            String jsonInString2 = mapper2.writeValueAsString(resultMap2.getBody());
+            INFO info = mapper2.readValue(jsonInString2, infoClass);
+
+            if (getErrorFn.apply(info) == null) {
+                results = getResultFn.apply(info);
+            }
+        }
+
+        log.debug("results: " + results);
+        return results != null ? results : new ArrayList<>();
+    }
+
+    public <INFO, RESULT> List<RESULT> searchRuGoogleLens(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+        log.info("searchYandex 진입: "+url);
+
+        HttpHeaders header = new HttpHeaders();
+        HttpEntity<?> entity = new HttpEntity<>(header);
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        String jsonInString = mapper.writeValueAsString(resultMap.getBody());
+        JsonNode rootNode = mapper.readTree(jsonInString);
+        String pageToken = rootNode.at("/image_sources_search/page_token").asText();
+
+        System.out.println("page_token: " + pageToken);
+
+        // pageToken값 출력
+        System.out.println("page_token: " + pageToken);
+
+        String url2 = textYandexUrl
+                + "?engine=google_lens_image_sources"
+                + "&page_token=" + pageToken
+                + "&country=ru"
+                + "&safe=off"
+                + "&api_key="+textYandexApikey;
+
+        HttpHeaders header2 = new HttpHeaders();
+        HttpEntity<?> entity2 = new HttpEntity<>(header2);
+        UriComponents uri2 = UriComponentsBuilder.fromHttpUrl(url2).build();
+        ResponseEntity<?> resultMap2 = new RestTemplate().exchange(uri2.toString(), HttpMethod.GET, entity2, Object.class);
+
+        List<RESULT> results = null;
+
+        log.debug("resultMap.getStatusCodeValue(): " + resultMap2.getStatusCodeValue());
+
+        if (resultMap2.getStatusCodeValue() == 200) {
+            ObjectMapper mapper2 = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            String jsonInString2 = mapper2.writeValueAsString(resultMap2.getBody());
+            INFO info = mapper2.readValue(jsonInString2, infoClass);
+
+            if (getErrorFn.apply(info) == null) {
+                results = getResultFn.apply(info);
+            }
+        }
+
+        log.debug("results: " + results);
+        return results != null ? results : new ArrayList<>();
+    }
+
+    public <INFO, RESULT> List<RESULT> searchThGoogleLens(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+        log.info("searchYandex 진입: "+url);
+
+        HttpHeaders header = new HttpHeaders();
+        HttpEntity<?> entity = new HttpEntity<>(header);
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        String jsonInString = mapper.writeValueAsString(resultMap.getBody());
+        JsonNode rootNode = mapper.readTree(jsonInString);
+        String pageToken = rootNode.at("/image_sources_search/page_token").asText();
+
+        System.out.println("page_token: " + pageToken);
+
+        // pageToken값 출력
+        System.out.println("page_token: " + pageToken);
+
+        String url2 = textYandexUrl
+                + "?engine=google_lens_image_sources"
+                + "&page_token=" + pageToken
+                + "&country=th"
+                + "&safe=off"
+                + "&api_key="+textYandexApikey;
+
+        HttpHeaders header2 = new HttpHeaders();
+        HttpEntity<?> entity2 = new HttpEntity<>(header2);
+        UriComponents uri2 = UriComponentsBuilder.fromHttpUrl(url2).build();
+        ResponseEntity<?> resultMap2 = new RestTemplate().exchange(uri2.toString(), HttpMethod.GET, entity2, Object.class);
+
+        List<RESULT> results = null;
+
+        log.debug("resultMap.getStatusCodeValue(): " + resultMap2.getStatusCodeValue());
+
+        if (resultMap2.getStatusCodeValue() == 200) {
+            ObjectMapper mapper2 = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            String jsonInString2 = mapper2.writeValueAsString(resultMap2.getBody());
+            INFO info = mapper2.readValue(jsonInString2, infoClass);
+
+            if (getErrorFn.apply(info) == null) {
+                results = getResultFn.apply(info);
+            }
+        }
+
+        log.debug("results: " + results);
+        return results != null ? results : new ArrayList<>();
+    }
+
+    public <INFO, RESULT> List<RESULT> searchUsGoogleLens(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+        log.info("searchYandex 진입: "+url);
+
+        HttpHeaders header = new HttpHeaders();
+        HttpEntity<?> entity = new HttpEntity<>(header);
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        String jsonInString = mapper.writeValueAsString(resultMap.getBody());
+        JsonNode rootNode = mapper.readTree(jsonInString);
+        String pageToken = rootNode.at("/image_sources_search/page_token").asText();
+
+        System.out.println("page_token: " + pageToken);
+
+        // pageToken값 출력
+        System.out.println("page_token: " + pageToken);
+
+        String url2 = textYandexUrl
+                + "?engine=google_lens_image_sources"
+                + "&page_token=" + pageToken
+                + "&country=us"
+                + "&safe=off"
+                + "&api_key="+textYandexApikey;
+
+        HttpHeaders header2 = new HttpHeaders();
+        HttpEntity<?> entity2 = new HttpEntity<>(header2);
+        UriComponents uri2 = UriComponentsBuilder.fromHttpUrl(url2).build();
+        ResponseEntity<?> resultMap2 = new RestTemplate().exchange(uri2.toString(), HttpMethod.GET, entity2, Object.class);
+
+        List<RESULT> results = null;
+
+        log.debug("resultMap.getStatusCodeValue(): " + resultMap2.getStatusCodeValue());
+
+        if (resultMap2.getStatusCodeValue() == 200) {
+            ObjectMapper mapper2 = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            String jsonInString2 = mapper2.writeValueAsString(resultMap2.getBody());
+            INFO info = mapper2.readValue(jsonInString2, infoClass);
+
+            if (getErrorFn.apply(info) == null) {
+                results = getResultFn.apply(info);
+            }
+        }
+
+        log.debug("results: " + results);
+        return results != null ? results : new ArrayList<>();
+    }
+
+    public <INFO, RESULT> List<RESULT> searchVnGoogleLens(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+        log.info("searchYandex 진입: "+url);
+
+        HttpHeaders header = new HttpHeaders();
+        HttpEntity<?> entity = new HttpEntity<>(header);
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        String jsonInString = mapper.writeValueAsString(resultMap.getBody());
+        JsonNode rootNode = mapper.readTree(jsonInString);
+        String pageToken = rootNode.at("/image_sources_search/page_token").asText();
+
+        System.out.println("page_token: " + pageToken);
+
+        // pageToken값 출력
+        System.out.println("page_token: " + pageToken);
+
+        String url2 = textYandexUrl
+                + "?engine=google_lens_image_sources"
+                + "&page_token=" + pageToken
+                + "&country=vn"
+                + "&safe=off"
+                + "&api_key="+textYandexApikey;
+
+        HttpHeaders header2 = new HttpHeaders();
+        HttpEntity<?> entity2 = new HttpEntity<>(header2);
+        UriComponents uri2 = UriComponentsBuilder.fromHttpUrl(url2).build();
+        ResponseEntity<?> resultMap2 = new RestTemplate().exchange(uri2.toString(), HttpMethod.GET, entity2, Object.class);
+
+        List<RESULT> results = null;
+
+        log.debug("resultMap.getStatusCodeValue(): " + resultMap2.getStatusCodeValue());
+
+        if (resultMap2.getStatusCodeValue() == 200) {
+            ObjectMapper mapper2 = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            String jsonInString2 = mapper2.writeValueAsString(resultMap2.getBody());
+            INFO info = mapper2.readValue(jsonInString2, infoClass);
+
+            if (getErrorFn.apply(info) == null) {
+                results = getResultFn.apply(info);
+            }
+        }
+
+        log.debug("results: " + results);
+        return results != null ? results : new ArrayList<>();
+    }
+
+
 
     public <RESULT> List<SearchResultEntity> saveGoogleLens(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
@@ -473,6 +865,5 @@ public class SearchImageGoogleLensService {
         }
         return "저장 완료";
     }
-
 
 }

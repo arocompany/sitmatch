@@ -27,6 +27,32 @@ public class TrackingSearchInfoService {
     @Value("${file.location1}")
     private String fileLocation1;
 
+    public SearchInfoEntity getSearchInfoEntity2(SearchInfoEntity searchInfoEntityByTsiUno, SearchResultEntity searchResultEntity) {
+        log.info("getSearchInfoEntity2 진입" + searchInfoEntityByTsiUno.getTsiUno());
+
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDateTime = currentDateTime.format(formatter);
+        String monitoringAllTime = formattedDateTime+"   ";
+
+        log.info("monitoringAllTime: "+monitoringAllTime);
+
+        if(searchInfoEntityByTsiUno.getTsiMonitoringCnt() != 0){
+            log.info("!= 0 searchInfoEntityByTsiUno.getTsiMonitoringCnt(): "+searchInfoEntityByTsiUno.getTsiMonitoringCnt());
+            searchInfoEntityByTsiUno.setTsiMonitoringCnt(searchInfoEntityByTsiUno.getTsiMonitoringCnt()+1);
+        } else {
+            log.info("== 0 searchInfoEntityByTsiUno.getTsiMonitoringCnt(): "+searchInfoEntityByTsiUno.getTsiMonitoringCnt());
+            searchInfoEntityByTsiUno.setTsiMonitoringCnt(1);
+        }
+
+        searchInfoEntityByTsiUno.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        searchInfoEntityByTsiUno.setTsiAlltimeMonitoring(searchInfoEntityByTsiUno.getTsiAlltimeMonitoring()+monitoringAllTime);
+
+        log.info("Timestamp.valueOf(LocalDateTime.now()): "+Timestamp.valueOf(LocalDateTime.now()));
+
+        return searchInfoEntityByTsiUno;
+    }
+
 
     /**
      * 검색 이력 엔티티 추출
@@ -36,13 +62,15 @@ public class TrackingSearchInfoService {
      * @return SearchInfoEntity         (검색 정보 엔티티)
      */
     public SearchInfoEntity getSearchInfoEntity(SearchInfoEntity searchInfoEntityByTsiUno, SearchResultEntity searchResultEntity) {
-        log.info("getSearchInfoEntity 진입");
+        log.info("getSearchInfoEntity 진입" + searchInfoEntityByTsiUno.getTsiUno());
         SearchInfoEntity searchInfoEntity = new SearchInfoEntity();
 
         searchInfoEntity.setUserUno(1);
         searchInfoEntity.setTsiStat("11");
-        searchInfoEntity.setTsiMonitoringCnt((searchInfoEntity.getTsiMonitoringCnt())+1);
+        searchInfoEntity.setTsiMonitoringCnt(1);
+        searchInfoEntity.setTsiAlltimeMonitoring(String.valueOf(Timestamp.valueOf(LocalDateTime.now())));
 
+        log.info("String.valueOf(Timestamp.valueOf(LocalDateTime.now())): "+String.valueOf(Timestamp.valueOf(LocalDateTime.now())));
         log.info("searchInfoEntity.getTsiMonitoringCnt(): "+ searchInfoEntity.getTsiMonitoringCnt());
 
         //기존 searchInfo 값 세팅 (기본 정보)
@@ -60,9 +88,6 @@ public class TrackingSearchInfoService {
         searchInfoEntity.setTsiFacebook(searchInfoEntityByTsiUno.getTsiFacebook());     //페이스북 검색 여부
         searchInfoEntity.setTsiInstagram(searchInfoEntityByTsiUno.getTsiInstagram());   //인스타그램 검색 여부
         searchInfoEntity.setTsiKeyword(searchInfoEntityByTsiUno.getTsiKeyword());       //검색어
-        searchInfoEntity.setTsiMonitoringCnt((searchInfoEntityByTsiUno.getTsiMonitoringCnt())+1);
-
-        log.info("searchInfoEntity.getTsiUno: "+searchInfoEntity.getTsiUno());
 
         //기존 searchResult 이미지 파일 복사
         String folder = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -92,7 +117,6 @@ public class TrackingSearchInfoService {
         searchInfoEntity.setTsiImgWidth(searchResultEntity.getTsrImgWidth());
         searchInfoEntity.setTsiImgSize(searchResultEntity.getTsrImgSize());
         searchInfoEntity.setTsrUno(searchResultEntity.getTsrUno());
-        searchInfoEntity.setTsiAlltimeMonitoring(Timestamp.valueOf(LocalDateTime.now())+"  ");
 
         //검색 정보 엔티티 기본값 세팅
         searchService.setSearchInfoDefault(searchInfoEntity);

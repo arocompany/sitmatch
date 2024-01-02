@@ -86,6 +86,7 @@
             </div>
         </form>
     </div>
+
     <seciton class="layout" id="result">
         <h1 class="sound">검색 결과</h1>
         <div class="search-contents">
@@ -122,189 +123,98 @@
                 <button class="img-btn btn-off">이미지형</button>
             </div>
         </div>
-        <div class="result-list  list-content">
-            <!--      grid-template-columns: 0 auto 32px;-->
-            <span th:each="list:${searchResultList}">
-      <section class="list M-box-up bor10" th:if="${not #strings.isEmpty(list.getTsrImgPath())}">
-        <div class="img-box">
-          <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
-          <div class="img">
-<!--            <img src="./img/replace/man.png" alt="" loading="lazy" >-->
-            <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}"
-                 th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt=""
-                 loading="lazy">
-          </div>
-            <!--          <div class="video">-->
-            <!--            <video src="./img/replace/replacevideo.mp4" loading="lazy"></video>-->
-            <!--            <div class="play-wrap">-->
-            <!--              <div class="play-btn"></div>-->
-            <!--            </div>-->
-            <!--          </div>-->
-          <th:block th:switch="${list.getTsrSns()}">
-            <img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">
-            <img th:case="13" src="/img/common/sns/twitter-round.png" alt="" class="sns">
-            <img th:case="15" src="/img/common/sns/insta-round.png" alt="" class="sns">
-            <img th:case="17" src="/img/common/sns/facebook-round.png" alt="" class="sns">
-          </th:block>
-        </div>
-        <div>
-          <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}"> <!-- 검색타입이 키워드가 아닌경우 -->
-            <span th:case="00">대기중</span> <!-- 00 : 대기중, 01 : 처리중, 10 : SKIP, 11 : 처리완료 -->
-            <span th:case="01">처리중</span>
-            <span th:case="10">SKIP</span>
-            <span th:case="11">
-              <span>
-                <h2 th:if="${list.getMaxSimilarity() != null || list.getMaxSimilarity() != '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getMaxSimilarity(), '%')}">99%</h2>
-                <h2 th:unless="${list.getMaxSimilarity() != null || list.getMaxSimilarity() != '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
-              </span>
+
+        <!--            <img src="./img/replace/man.png" alt="" loading="lazy" >-->
+        <div class="result-list  list-content" >
+            <section class="list M-box-up bor10" th:each="list:${searchResultList}">
+                <div class="img-box">
+                    <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
+                    <div class="img">
+                        <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}"
+                             alt=""
+                             loading="lazy">
+                    </div>
+
+                    <!--          <div class="video">-->
+                    <!--            <video src="./img/replace/replacevideo.mp4" loading="lazy"></video>-->
+                    <!--            <div class="play-wrap">-->
+                    <!--              <div class="play-btn"></div>-->
+                    <!--            </div>-->
+                    <!--          </div>-->
+
+                    <th:block th:switch="${list.getTsrSns()}">
+                        <img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">
+                        <img th:case="13" src="/img/common/sns/twitter-round.png" alt="" class="sns">
+                        <img th:case="15" src="/img/common/sns/insta-round.png" alt="" class="sns">
+                        <img th:case="17" src="/img/common/sns/facebook-round.png" alt="" class="sns">
+                    </th:block>
+                </div>
+                <div>
+                    <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}"> <!-- 검색타입이 키워드가 아닌경우 -->
+                        <span th:case="00">대기중</span> <!-- 00 : 대기중, 01 : 처리중, 10 : SKIP, 11 : 처리완료 -->
+                        <span th:case="01">처리중</span>
+                        <span th:case="10">SKIP</span>
+                        <span th:case="11">
+                            <span>
+                                <h2 th:if="${list.getMaxSimilarity() != null || list.getMaxSimilarity() != '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getMaxSimilarity(), '%')}">99%</h2>
+                                <h2 th:unless="${list.getMaxSimilarity() != null || list.getMaxSimilarity() != '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
+                            </span>
+                            <!--
+                                <span th:elseif="${list.getMaxSimilarity() == null || list.getMaxSimilarity() == '0'}">
+                                <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
+                                </span>
+                            -->
+                            <span th:if="${(tsiType == '15' || tsiType == '19')}"> <!-- 15: 키워드+영상 / 19: 영상 --> <!-- 이미지는 17 -->
+                                <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">
+                                    (V : <span th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>
+                                <b th:if="${list.getTmrVScore() == null || list.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>
+                                <b th:if="${list.getTmrAScore() != null && list.getTmrAScore() != '0.0'}">A : <span
+                                        th:text="${list.getTmrAScore()}">100</span>%,&nbsp;</b>
+                                <b th:if="${list.getTmrAScore() == null || list.getTmrAScore() == '0.0'}">A : <span>비교없음,&nbsp;</span></b>
+                                <b th:if="${list.getTmrTScore() != null && list.getTmrTScore() != '0.0'}">T : <span
+                                        th:text="${list.getTmrTScore()}">100</span>%)</b>
+                                <b th:if="${list.getTmrTScore() == null || list.getTmrTScore() == '0.0'}">T : <span>비교없음</span>)</b>
+                            </span>
+                        </span>
+                    </th:block>
+                </div>
+                <!--        <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span><span th:case="11"><h2 class="unity" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h2></span></th:block>-->
+                <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url">
+                    <p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p>
+                </a>
+                <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
+                <!-- <p class="detail" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),', ','파일명 : ',list.getTsrImgName())}">파일 정보가 들어갑니다</p> -->
+                <p class="detail">
+                    <span th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgExt()} != ''" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),',')}"></span>
+                    <span th:if="${list.getTsrImgName()} != null and ${list.getTsrImgName()} != ''"
+                          th:text="${#strings.concat('파일명 : ',list.getTsrImgName())}"></span>
+                    <span th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == null">파일 정보가 없습니다.</span>
+                    <span th:if="${list.getTsrImgExt()} == '' and ${list.getTsrImgName()} == ''">파일 정보가 없습니다.</span>
+                    <span th:if="${list.getTsrImgExt()} == '' and ${list.getTsrImgName()} == null">파일 정보가 없습니다.</span>
+                    <span th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == ''">파일 정보가 없습니다.</span>
+                </p>
+
                 <!--
-              <span th:elseif="${list.getMaxSimilarity() == null || list.getMaxSimilarity() == '0'}">
-                <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
-              </span>
+                        <p th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} != null"
+                           class="detail" th:text="${#strings.concat('파일명z : ',list.getTsrImgName())}">파일 정보가 들어갑니다</p>
+
+                        <p th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgName()} == null"
+                           class="detail" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt())}">파일 정보가 들어갑니다</p>
+
+                        <p th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == null"
+                           class="detail" ></p>
                 -->
-              <span th:if="${(tsiType == '15' || tsiType == '19')}"> <!-- 15: 키워드+영상 / 19: 영상 --> <!-- 이미지는 17 -->
-                <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">(V : <span
-                        th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>
-                <b th:if="${list.getTmrVScore() == null || list.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>
-                <b th:if="${list.getTmrAScore() != null && list.getTmrAScore() != '0.0'}">A : <span
-                        th:text="${list.getTmrAScore()}">100</span>%,&nbsp;</b>
-                <b th:if="${list.getTmrAScore() == null || list.getTmrAScore() == '0.0'}">A : <span>비교없음,&nbsp;</span></b>
-                <b th:if="${list.getTmrTScore() != null && list.getTmrTScore() != '0.0'}">T : <span
-                        th:text="${list.getTmrTScore()}">100</span>%)</b>
-                <b th:if="${list.getTmrTScore() == null || list.getTmrTScore() == '0.0'}">T : <span>비교없음</span>)</b>
-              </span>
-            </span>
-          </th:block>
-        </div>
-          <!--        <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span><span th:case="11"><h2 class="unity" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h2></span></th:block>-->
-        <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url"><p class="url"
-                                                                            th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p></a>
-        <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
 
-          <!--
-                  <p class="detail" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),', ','파일명 : ',list.getTsrImgName())}">파일 정보가 들어갑니다</p>
-          -->
+                <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}"
+                        th:value="${list.getTsrUno()}">추가</button>
+                <!-- <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}" th:disabled="${list.getTrkStatCd() != null}">추가</button> -->
+                <!-- <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}">추가</button> -->
 
-        <p class="detail">
-          <span th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgExt()} != ''"
-                th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),',')}"></span>
-          <span th:if="${list.getTsrImgName()} != null and ${list.getTsrImgName()} != ''"
-                th:text="${#strings.concat('파일명 : ',list.getTsrImgName())}"></span>
-          <span th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == null">파일 정보가 없습니다.</span>
-          <span th:if="${list.getTsrImgExt()} == '' and ${list.getTsrImgName()} == ''">파일 정보가 없습니다.</span>
-          <span th:if="${list.getTsrImgExt()} == '' and ${list.getTsrImgName()} == null">파일 정보가 없습니다.</span>
-          <span th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == ''">파일 정보가 없습니다.</span>
-        </p>
-
-          <!--
-                  <p th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} != null"
-                     class="detail" th:text="${#strings.concat('파일명z : ',list.getTsrImgName())}">파일 정보가 들어갑니다</p>
-
-                  <p th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgName()} == null"
-                     class="detail" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt())}">파일 정보가 들어갑니다</p>
-
-                  <p th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == null"
-                     class="detail" ></p>
-          -->
-
-        <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}"
-                th:value="${list.getTsrUno()}">추가</button>
-          <!--
-          <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}" th:disabled="${list.getTrkStatCd() != null}">추가</button>
-          -->
-          <!--        <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}">추가</button>-->
-      </section>
-
-      <!-- style="grid-template-columns: 0 auto 32px; 여기 -->
-      <section class="list M-box-up bor10 " th:if="${#strings.isEmpty(list.getTsrImgPath())}"
-               style="grid-template-columns: 0 auto 32px;">
-      <!-- <section class="list M-box-up bor10" th:if="${#strings.isEmpty(list.getTsrImgPath())}">-->
-        <div class="img-box">
-          <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
-          <div class="img">
-<!--            <img src="./img/replace/man.png" alt="" loading="lazy" >-->
-          </div>
-            <!--          <div class="video">-->
-            <!--            <video src="./img/replace/replacevideo.mp4" loading="lazy"></video>-->
-            <!--            <div class="play-wrap">-->
-            <!--              <div class="play-btn"></div>-->
-            <!--            </div>-->
-            <!--          </div>-->
-
-        </div>
-        <div>
-          <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}">
-            <span th:case="00">대기중</span>
-            <span th:case="01">처리중</span>
-            <span th:case="10">SKIP</span>
-            <span th:case="11">
-              <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
-              <span th:if="${(tsiType == '15' || tsiType == '19')}">
-                <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">(V : <span
-                        th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>
-                <b th:if="${list.getTmrVScore() == null || list.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>
-                <b th:if="${list.getTmrAScore() != null && list.getTmrAScore() != '0.0'}">A : <span
-                        th:text="${list.getTmrAScore()}">100</span>%,&nbsp;</b>
-                <b th:if="${list.getTmrAScore() == null || list.getTmrAScore() == '0.0'}">A : <span>비교없음,&nbsp;</span></b>
-                <b th:if="${list.getTmrTScore() != null && list.getTmrTScore() != '0.0'}">T : <span
-                        th:text="${list.getTmrTScore()}">100</span>%)</b>
-                <b th:if="${list.getTmrTScore() == null || list.getTmrTScore() == '0.0'}">T : <span>비교없음</span>)</b>
-              </span>
-            </span>
-          </th:block>
-        </div>
-          <!--        <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span><span th:case="11"><h2 class="unity" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h2></span></th:block>-->
-        <p style="font-size: 0;">
-            <th:block th:switch="${list.getTsrSns()}">
-                <img th:case="11" src="/img/common/sns/google-round.png" alt="">
-                <img th:case="13" src="/img/common/sns/twitter-round.png" alt="">
-                <img th:case="15" src="/img/common/sns/insta-round.png" alt="">
-                <img th:case="17" src="/img/common/sns/facebook-round.png" alt="">
-            </th:block>
-        </p>
-        <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url">
-            <p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p>
-        </a>
-
-        <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
-
-          <!--
-                  <p class="detail" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),', ','파일명 : ',list.getTsrImgName())}">파일 정보가 들어갑니다</p>
-          -->
-
-        <p class="detail">
-          <span th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgExt()} != ''"
-                th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),',')}"></span>
-          <span th:if="${list.getTsrImgName()} != null and ${list.getTsrImgName()} != ''"
-                th:text="${#strings.concat('파일명 : ',list.getTsrImgName())}"></span>
-          <span th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == null">파일 정보가 없습니다.</span>
-          <span th:if="${list.getTsrImgExt()} == '' and ${list.getTsrImgName()} == ''">파일 정보가 없습니다.</span>
-          <span th:if="${list.getTsrImgExt()} == '' and ${list.getTsrImgName()} == null">파일 정보가 없습니다.</span>
-          <span th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == ''">파일 정보가 없습니다.</span>
-        </p>
-
-          <!--
-                  <p th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} != null"
-                     class="detail" th:text="${#strings.concat('파일명z : ',list.getTsrImgName())}">파일 정보가 들어갑니다</p>
-
-                  <p th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgName()} == null"
-                     class="detail" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt())}">파일 정보가 들어갑니다</p>
-
-                  <p th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == null"
-                     class="detail" ></p>
-          -->
-
-
-        <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}"
-                th:value="${list.getTsrUno()}">추가</button>
-          <!--
-          <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}" th:disabled="${list.getTrkStatCd() != null}">추가</button>
-          -->
-          <!--        <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}">추가</button>-->
-      </section>
-      </span>
-            <section th:if="${searchResultListCount == 0}" style="width: 100%; text-align: center;">조회 결과가 없습니다.
             </section>
+
+
+            <!--      </span>-->
+            <section th:if="${searchResultListCount == 0}" style="width: 100%; text-align: center;">조회 결과가 없습니다.</section>
         </div>
     </seciton>
     <nav>
@@ -312,17 +222,17 @@
             th:with="start=${(number / maxPage * maxPage) + 1}, end=(${(totalPages == 0) ? 1 : ((start + maxPage - 1) < totalPages ? (start + maxPage - 1) : totalPages)})">
             <li class="page-num" th:if="${start > 1}">
                 <a th:onclick="'javascript:searchEvent('+ ${1} + ');'"
-                                                         class="btn-off" style="width:30px;">처음</a></li>
+                   class="btn-off" style="width:30px;">처음</a></li>
             <li class="page-prev" th:if="${start > 1}">
                 <a th:onclick="'javascript:searchEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
             <li class="page-num" th:each="pageNum : ${#numbers.sequence(start, end)}">
                 <a th:onclick="'javascript:searchEvent('+ ${pageNum} + ');'" class="btn-off"
-                    th:classappend="${number + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a></li>
+                   th:classappend="${number + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a></li>
             <li class="page-next" th:if="${end < totalPages}">
                 <a th:onclick="'javascript:searchEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
             <li class="page-num" th:if="${end < totalPages}">
                 <a th:onclick="'javascript:searchEvent('+ ${totalPages} + ');'" class="btn-off"
-                    style="width:30px;">끝</a></li>
+                   style="width:30px;">끝</a></li>
         </ul>
     </nav>
     <script>footer();</script>

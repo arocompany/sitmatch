@@ -83,6 +83,25 @@ public class UserEntity {
     @Column(name = "USER_CHK_CNT")
     private Integer userChkCnt;
 
+    @Basic
+    @Column(name = "CHK_LOGIN_DT")
+    private Timestamp chkLoginDt;
+
+    @Basic
+    @Column(name = "CHK_YN")
+    private String chkYn;
+
+    public String getChkYn(){ return chkYn; }
+    public void setChkYn(String chkYn){ this.chkYn = chkYn; }
+
+    public Timestamp getChkLoginDt() {
+        return chkLoginDt;
+    }
+
+    public void setChkLoginDt(Timestamp chkLoginDt) {
+        this.chkLoginDt = chkLoginDt;
+    }
+
     public Integer getUserChkCnt() {
         return userChkCnt;
     }

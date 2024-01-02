@@ -222,7 +222,7 @@ button {
 }
 
 .selection .option li:hover, .setSearchNumber .option li:hover {
-    background-color: #194894;
+    background-color: #c7d8f3;
     color: #f2f2f8;
     border-radius: 6px 6px 6px 6px
 }

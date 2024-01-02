@@ -39,6 +39,7 @@ public class SearchController {
     private final SearchService searchService;
     private final SearchImageGoogleLensService searchImageGoogleLensService;
 
+
     private final SearchTextUsGoogleService searchTextUsGoogleService;
     private final SearchTextKrGoogleService searchTextKrGoogleService;
     private final SearchTextCnGoogleService searchTextCnGoogleService;
@@ -299,6 +300,7 @@ public class SearchController {
                 // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
 
                 searchImageGoogleLensService.searchYandexByGoogleLensImage("11", insertResult);
+
                 searchImageCnService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
                 searchImageKrService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
                 searchImageNlService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);

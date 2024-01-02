@@ -10,5 +10,4 @@ public class YandexByImageResult {
     private String error;
 
     private List<Images_resultsByImage> inline_images;
-
 }
