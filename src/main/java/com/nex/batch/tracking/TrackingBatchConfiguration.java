@@ -282,6 +282,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
     }
     //************************** searchJob 관련 START **************************
 
+/*
     @Bean
     public Job trackingJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         log.info("trackingJob 진입");
@@ -290,9 +291,8 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .start(allTimeInfoStep(jobRepository, transactionManager))
                 .build();
     }
+*/
 
-
-/*
     @Bean
     public Job trackingJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         log.info("trackingJob 진입");
@@ -304,8 +304,6 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .next(searchJobStep(jobRepository, transactionManager))
                 .build();
     }
-*/
-
 
     /*
     @Bean
