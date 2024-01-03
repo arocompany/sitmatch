@@ -173,7 +173,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             " from tb_search_info tsi " +
             " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
             " and tsi.SEARCH_VALUE= :searchValue" +
-            // " and tsi.tsi_user_file LIKE CONCAT('%',:userKeyword,'%')  " +
+            " and tsi.tsi_user_file LIKE CONCAT('%',:userKeyword,'%')  " +
             " and tsi.TSI_KEYWORD like '%' :keyword '%' " +
             " and tsi.TSR_UNO is null " +
             " and tsi.user_uno = :userUno " +
@@ -239,7 +239,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             " AND tsr6.monitoring_cd='20') > 0 ) THEN 'Y' " +
             " ELSE 'N' " +
             " END ) AS allDayMonitoringYn, " +
-            " tsi.tsi_monitoring_cnt AS allTimeCnt, " +
+            " tsi.tsi_monitoring_cnt AS allTimeCnt,  " +
             " tsi.TSI_ALLTIME_MONITORING AS resultMonitoringTime, " +
             " (SELECT COUNT(tsr8.tsr_uno) " +
             " FROM  tb_search_result tsr8 " +

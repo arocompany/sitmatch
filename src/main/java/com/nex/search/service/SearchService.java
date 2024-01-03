@@ -4247,6 +4247,7 @@ public class SearchService {
 
     }
 
+    /*
     public FileOutputStream googleLensImageFile(String imageUrl, String randomFileName) throws IOException {
         URL url = new URL(imageUrl);
 
@@ -4255,18 +4256,22 @@ public class SearchService {
 
         URLConnection connection = url.openConnection();
 
-        InputStream in = new BufferedInputStream(connection.getInputStream());
+        // InputStream in = new BufferedInputStream(connection.getInputStream());
         FileOutputStream fileOutputStream = new FileOutputStream(destinationFile);
 
+*//*
         byte[] dataBuffer = new byte[1024];
         int bytesRead;
 
         while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
             fileOutputStream.write(dataBuffer, 0, bytesRead);
         }
+*//*
 
         return fileOutputStream;
     }
+
+    */
 
     public String generateRandomFileName(int length) {
         String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -4324,7 +4329,7 @@ public class SearchService {
         log.info("saveImageFile imageUrl: "+imageUrl);
 
         String fileName = generateRandomFileName(30);
-        FileOutputStream aa = googleLensImageFile(imageUrl, fileName);
+        // FileOutputStream aa = googleLensImageFile(imageUrl, fileName);
         log.info("saveImageFile fileName: "+fileName);
 
         byte[] imageBytes;

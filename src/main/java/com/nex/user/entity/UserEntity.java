@@ -65,7 +65,7 @@ public class UserEntity {
     private String bizDetail;
     @Basic
     @Column(name = "FST_DML_DT")
-    private Timestamp fstDmlDt;
+    private Timestamp fstDmlDt; 
     @Basic
     @Column(name = "LST_DML_DT")
     private Timestamp lstDmlDt;
