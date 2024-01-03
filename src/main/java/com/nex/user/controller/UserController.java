@@ -53,7 +53,9 @@ public class UserController {
         ModelAndView modelAndView = new ModelAndView();
 
         if (result.hasErrors()) {
-            modelAndView.addObject("errorMessage", "아이디와 비밀번호를 입력해주세요.");
+            modelAndView.addObject("errorMessage1", "아이디와 ");
+            modelAndView.addObject("errorMessage2", "비밀번호를 ");
+            modelAndView.addObject("errorMessage3", "입력해주세요.");
             modelAndView.setViewName("html/login");
             return modelAndView;
         }
@@ -79,7 +81,8 @@ public class UserController {
                 if( !userChkLoginDt.before(currentDateTime) ){
                     log.info("5회 초과 현재시간이 더 커서 로그인 못함");
                     modelAndView.addObject("errorMessage1", userChkTime);
-                    modelAndView.addObject("errorMessage2", " 이후에 로그인 하실 수 있습니다.");
+                    modelAndView.addObject("errorMessage2", " 이후                        ");
+                    modelAndView.addObject("errorMessage3", "  로그인하실 수 있습니다.");
                     modelAndView.setViewName("html/login");
                 } else {
                     user.setChkYn("Y");
@@ -159,8 +162,11 @@ public class UserController {
                         user.setChkYn("N");
                         userRepository.save(user);
 
+                        String tenMinutesLaterTime = formatter.format(tenMinutesLaterTimestamp);
+
                         modelAndView.addObject("errorMessage1", "로그인 횟수를 초과하여 ");
-                        modelAndView.addObject("errorMessage2", tenMinutesLaterTimestamp + " 이후로 로그인 하실 수 있습니다.");
+                        modelAndView.addObject("errorMessage2", tenMinutesLaterTime + " 이후                        ");
+                        modelAndView.addObject("errorMessage3","  로그인하실 수 있습니다.");
                         modelAndView.setViewName("html/login");
                     } else {
                         log.info("chkCnt만 추가");
@@ -168,7 +174,8 @@ public class UserController {
                         userRepository.save(user);
 
                         modelAndView.addObject("errorMessage1", "아이디");
-                        modelAndView.addObject("errorMessage2", " 또는 비밀번호를 다시 입력해주세요.");
+                        modelAndView.addObject("errorMessage2", " 또는 비밀번호를");
+                        modelAndView.addObject("errorMessage3"," 다시 입력해주세요.");
                         modelAndView.setViewName("html/login");
                     }
                 }
@@ -177,7 +184,8 @@ public class UserController {
 
         } else {    // 로그인 실패
             modelAndView.addObject("errorMessage1", "아이디");
-            modelAndView.addObject("errorMessage2", " 또는 비밀번호를 다시 입력해주세요.");
+            modelAndView.addObject("errorMessage2", " 또는 비밀번호를");
+            modelAndView.addObject("errorMessage3"," 다시 입력해주세요.");
             modelAndView.setViewName("html/login");
         }
         return modelAndView;
