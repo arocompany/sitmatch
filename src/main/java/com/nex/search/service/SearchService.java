@@ -6,7 +6,10 @@ import com.nex.Chart.entity.*;
 import com.nex.Chart.repo.*;
 import com.nex.common.Consts;
 import com.nex.search.entity.*;
-import com.nex.search.repo.*;
+import com.nex.search.repo.SearchInfoRepository;
+import com.nex.search.repo.SearchJobRepository;
+import com.nex.search.repo.SearchResultRepository;
+import com.nex.search.repo.VideoInfoRepository;
 import com.nex.user.entity.ResultListExcelDto;
 import com.nex.user.entity.SearchHistoryExcelDto;
 import jakarta.servlet.ServletOutputStream;
@@ -33,15 +36,13 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.File;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -64,7 +65,6 @@ public class SearchService {
     private final SearchResultRepository searchResultRepository;
     private final VideoInfoRepository videoInfoRepository;
     private final SearchJobRepository searchJobRepository;
-    private final MatchResultRepository matchResultRepository;
     private final MonitoringHistRepository monitoringHistRepository;
     private final DeleteReqHistRepository deleteReqHistRepository;
     private final DeleteComptHistRepository deleteComptHistRepository;
@@ -75,7 +75,6 @@ public class SearchService {
     private final SearchResultHistRepository searchResultHistRepository;
     private final NoticeHistRepository noticeHistRepository;
 
-    private final NewKeywordRepository newKeywordRepository;
 
     @Autowired
     ResourceLoader resourceLoader;
@@ -129,8 +128,9 @@ public class SearchService {
      * @param folder       (저장 폴더)
      */
 
-    //Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
-    public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, byte tsiTwitter, String tsiType, SearchInfoEntity insertResult, String folder,
+    // Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
+    // byte tsiTwitter,
+    public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, String tsiType, SearchInfoEntity insertResult, String folder,
                        SearchInfoDto searchInfoDto) throws Exception {
         if (tsiType.equals("17")) {
             log.info("이미지만 검색시");
@@ -162,9 +162,11 @@ public class SearchService {
                 searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
             }
 
+            /*
             if (tsiTwitter == 1) {
                 // Twitter 검색기능 구현
             }
+            */
         }
     }
 
@@ -1033,7 +1035,7 @@ public class SearchService {
         return sre;
     }
 
-    public <RESULT> SearchResultEntity getYoutubeResultEntity(int tsiUno, String tsrSns, RESULT result
+    public <RESULT> SearchResultEntity getYoutubeResultEntity(int tsiUno, RESULT result
             , Function<RESULT, String> getPositionFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn) {
         log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
         SearchResultEntity sre = new SearchResultEntity();
@@ -1231,10 +1233,9 @@ public class SearchService {
 
     }
 
-
     public <RESULT> void saveYoutubeImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
-            , RESULT result, Function<RESULT, String> getPositionFn,  Function<RESULT, Map<String,String>> getThumnailFn) throws IOException {
-
+            , RESULT result, Function<RESULT, Map<String,String>> getThumnailFn) throws IOException {
+        // Function<RESULT, String> getPositionFn,
         log.info("saveYoutubeImageFile 진입 ===============");
         log.info("getThumbnailFn: " + getThumnailFn);
         // Map<String, String> imageUrl = "11".equals(sre.getTsrSns()) ? getPositionFn.apply(result) : getThumnailFn.apply(result);
@@ -1482,13 +1483,14 @@ public class SearchService {
         return sreList;
     }
 
-    /**
+    /*
      * Images_resultsByImage 추출
      *
      * @param url (검색 Url)
      * @return List<Images_resultsByImage> (Images_resultsByImage List)
      * @throws Exception
      */
+    /*
     public List<Images_resultsByImage> searchYandexByImage(String url) throws Exception {
 
         String jsonInString = "";
@@ -1511,10 +1513,10 @@ public class SearchService {
 
         return inlineImages;
     }
+    */
 
     /**
      * 텍스트 검색
-     *
      * {@link #searchYandexByText(String, String, SearchInfoEntity)} {@link #searchYandexByImage(String, String, SearchInfoEntity)}}
      *
      * @param url         (URL)
@@ -1738,7 +1740,7 @@ public class SearchService {
             log.info("results: " + results);
             try {
                 //검색 결과 엔티티 추출
-                SearchResultEntity sre = getYoutubeResultEntity(insertResult.getTsiUno(), tsrSns, result, getPositionFn,getLinkFn, getTitleFn);
+                SearchResultEntity sre = getYoutubeResultEntity(insertResult.getTsiUno(), result, getPositionFn,getLinkFn, getTitleFn);
 
                 //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                 if (!tsrSns.equals(sre.getTsrSns())) {
@@ -1746,7 +1748,7 @@ public class SearchService {
                 }
 
                 //이미지 파일 저장
-                saveYoutubeImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getPositionFn, getThumnailFn);
+                saveYoutubeImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getThumnailFn);
                 saveSearchResult(sre);
 
                 sreList.add(sre);
@@ -1763,6 +1765,7 @@ public class SearchService {
         return sreList;
     }
 
+    /*
     public List<SearchResultEntity> searchYandexByImage2(String url, String tsrSns, SearchInfoEntity insertResult) throws Exception {
         String jsonInString = "";
         // RestTemplate restTemplate = new RestTemplate();
@@ -1770,7 +1773,7 @@ public class SearchService {
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
         ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-        List<SearchResultEntity> sreList = new ArrayList<SearchResultEntity>();
+        List<SearchResultEntity> sreList = new ArrayList<>();
         if (resultMap.getStatusCodeValue() == 200) {
 
             ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -1857,9 +1860,9 @@ public class SearchService {
                 }
             }
         }
-
         return sreList;
     }
+    */
 
     /**
      * @Deprecated 2023-03-26 사용 중지 {@link #saveImgSearchYandex(List, SearchInfoEntity)}
@@ -1876,9 +1879,10 @@ public class SearchService {
         // SearchInfoEntity updateResult = saveSearchInfo(insertResult);
         saveSearchInfo(insertResult);
 
-        List<SearchResultEntity> searchResultEntity = result;
+        // List<SearchResultEntity> searchResultEntity = result;
         SearchJobEntity sje = null;
-        for (SearchResultEntity sre : searchResultEntity) {
+        // for (SearchResultEntity sre : searchResultEntity) {
+        for (SearchResultEntity sre : result) {
             try {
                 sje = new SearchJobEntity();
                 sje.setTsiUno(sre.getTsiUno());
@@ -2937,7 +2941,8 @@ public class SearchService {
         }
     }
 
-    public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsiUno, Integer percent, String tsiKeyword) {
+    // Integer percent,
+    public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsiUno, String tsiKeyword) {
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         log.info("pageRequest: " + pageRequest);
         log.info("tsiuno: " + tsiUno);
@@ -2969,9 +2974,11 @@ public class SearchService {
         return searchResultRepository.getNoticeListMain(percent);
     }
 
+/*
     public DefaultQueryDtoInterface getResultInfo(Integer tsrUno) {
         return searchResultRepository.getResultInfo(tsrUno);
     }
+*/
 
     public DefaultQueryDtoInterface getInfoList(Integer tsiUno) {
         return searchResultRepository.getInfoList(tsiUno);
@@ -2989,9 +2996,11 @@ public class SearchService {
         return searchResultRepository.getTraceList(Consts.DATA_STAT_CD_NORMAL, Consts.TRK_STAT_CD_DEL_CMPL, trkStatCd, keyword, pageRequest);
     }
 
+/*
     public List<DefaultQueryDtoInterface> getTraceListByHome() {
         return searchResultRepository.getTraceListByHome(Consts.DATA_STAT_CD_NORMAL, Consts.TRK_STAT_CD_DEL_CMPL, "", "");
     }
+*/
 
     public DefaultQueryDtoInterface getTraceInfo(Integer tsrUno) {
         return searchResultRepository.getTraceInfo(tsrUno);
@@ -3427,10 +3436,6 @@ public class SearchService {
     }
 
     public void addTrkStat(int userUno,String userId, Integer tsrUno) {
-//        SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
-//        searchResultEntity.setTrkStatCd(StringUtils.hasText(searchResultEntity.getTrkStatCd()) ? Consts.TRK_STAT_CD_NULL : Consts.TRK_STAT_CD_MONITORING);
-//        searchResultRepository.save(searchResultEntity);
-
         String trkStatCd = searchResultRepository.getTrkStatCd(tsrUno);
         if ("10".equals(trkStatCd)) {
             searchResultRepository.subTrkStat(tsrUno);
@@ -3446,22 +3451,21 @@ public class SearchService {
     }
 
     public void deleteTsiUnos(List<Integer> tsiUnosValue) {
-        // SearchInfoEntity searchInfoEntity = searchInfoRepository.updateDataStatCd(tsiUnosValue);
         List<SearchInfoEntity> searchInfoEntity = searchInfoRepository.findByTsiUnoIn(tsiUnosValue);
-        for(int i=0; i<searchInfoEntity.size(); i++) {
-            searchInfoEntity.get(i).setDataStatCd(Consts.DATA_STAT_CD_DELETE);
-            searchInfoRepository.save(searchInfoEntity.get(i));
+        for (SearchInfoEntity infoEntity : searchInfoEntity) {
+            infoEntity.setDataStatCd(Consts.DATA_STAT_CD_DELETE);
+            searchInfoRepository.save(infoEntity);
         }
     }
 
     public void deleteTsrUnos(List<Integer> tsrUnoValues) {
         log.info("추적이력 일괄삭제 진입");
         List<SearchResultEntity> sre = searchResultRepository.findByTsrUnoIn(tsrUnoValues);
-        List<MatchResultEntity> mre = matchResultRepository.findByTsrUnoIn(tsrUnoValues);
-        for(int i=0; i < sre.size(); i++) {
-            sre.get(i).setTrkStatCd(null);
-            sre.get(i).setDataStatCd("20");
-            searchResultRepository.save(sre.get(i));
+        // List<MatchResultEntity> mre = matchResultRepository.findByTsrUnoIn(tsrUnoValues);
+        for (SearchResultEntity searchResultEntity : sre) {
+            searchResultEntity.setTrkStatCd(null);
+            searchResultEntity.setDataStatCd("20");
+            searchResultRepository.save(searchResultEntity);
         }
 
     }
@@ -3645,6 +3649,7 @@ public class SearchService {
         return userIdMap;
     }
 
+/*
     public Map<Integer, String> getHistoryCount() {
         List<UserIdDtoInterface> userIdList = searchInfoRepository.getUserIdByUserUno();
         Map<Integer, String> userIdMap = new HashMap<>();
@@ -3652,9 +3657,9 @@ public class SearchService {
         for (UserIdDtoInterface item : userIdList) {
             userIdMap.put(item.getUserUno(), item.getUserId());
         }
-
         return userIdMap;
     }
+*/
 
 
     public Map<Integer, String> getUserIdByTsiUnoMap() {
@@ -3686,9 +3691,12 @@ public class SearchService {
      * @param monitoringCd (24시간 모니터링 코드 (10 : 안함, 20 : 모니터링))
      * @return List<SearchResultEntity> (검색 결과 엔티티 List)
      */
+
+    /*
     public List<SearchResultEntity> findByMonitoringCd(String monitoringCd) {
         return searchResultRepository.findByMonitoringCd(monitoringCd);
     }
+    */
 
     /**
      * 검색 결과 사이트 URL 목록 조회
@@ -3708,6 +3716,7 @@ public class SearchService {
      * @param page           (페이지)
      * @param modelAndView   (ModelAndView)
      */
+    /*
     public void getNotice(String tsjStatus, Optional<Integer> optionalTsrUno, Integer page, ModelAndView modelAndView) {
         if (optionalTsrUno.isPresent()) {
             Optional<SearchInfoEntity> searchInfo = searchInfoRepository.findByTsrUno(optionalTsrUno.get());
@@ -3717,11 +3726,12 @@ public class SearchService {
         }
 
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        /*
+        *//*
         searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                 snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
-         */
+         *//*
     }
+    */
 
     public void searchInfoHistInsert(int userUno, String userId, String searchKeyword, String traceKeyword) {
         SearchInfoHistEntity she = new SearchInfoHistEntity();
@@ -4221,6 +4231,7 @@ public class SearchService {
         searchResultRepository.save(sre);
     }
 
+/*
     public List<NewKeywordEntity> getNewKeywordList() {
         List<NewKeywordEntity> nke = newKeywordRepository.findAll();
 
@@ -4230,6 +4241,7 @@ public class SearchService {
         }
         return nke;
     }
+*/
 
     public Map<String, Object> getUserSearchHistoryList(Integer page, String searchKeyword) {
         Map<String, Object> outMap = new HashMap<>();
@@ -4355,7 +4367,7 @@ public class SearchService {
                 String folder = now.format(formatter);
                 String restrictChars = "|\\\\?*<\":>/";
                 String regExpr = "[" + restrictChars + "]+";
-                String uuid = UUID.randomUUID().toString();
+                // String uuid = UUID.randomUUID().toString();
                 String extension = "";
                 String extension_ = "";
 

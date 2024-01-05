@@ -57,7 +57,7 @@ public class ChartController {
         log.info("toDate " + toDate);
         log.info("fromDate " + fromDate);
 
-        List<SearchInfoHistDto> searchInfoHistDtoList = searchInfoHistRepository.countByClkSearchInfo(fromDate, toDate2);
+        List<SearchInfoHistDto> searchInfoHistList = searchInfoHistRepository.countByClkSearchInfo(fromDate, toDate2);
         List<TraceHistDto> traceHistEntityList = traceHistRepository.countByClkTrace(fromDate, toDate2);
         List<SearchResultHistDto> searchResultHistDtoList = searchResultHistRepository.countByClkSearchResult(fromDate, toDate2);
         List<NoticeHistDto> noticeHistDtoList = noticeHistRepository.countByClkNotice(fromDate, toDate2);
@@ -66,7 +66,7 @@ public class ChartController {
         List<DeleteComptHistDto> deleteComptHistDtoList = deleteComptHistRepository.deleteComptHistList(fromDate, toDate2);
 
 
-        modelAndView.addObject("searchInfoHistDtoList",searchInfoHistDtoList);
+        modelAndView.addObject("searchInfoHistDtoList",searchInfoHistList);
         modelAndView.addObject("traceHistEntityList",traceHistEntityList);
         modelAndView.addObject("searchResultHistDtoList",searchResultHistDtoList);
         modelAndView.addObject("noticeHistDtoList", noticeHistDtoList);
@@ -86,7 +86,7 @@ public class ChartController {
 
     @PostMapping("/prcuse")
     public ModelAndView user_prcuse_post(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
-            , String fromDate, String toDate) {
+                                        , String fromDate, String toDate) {
         log.info(" ==== prcuse POST 매핑 진입 ===");
         ModelAndView modelAndView = new ModelAndView("html/prcuse");
 
@@ -129,11 +129,7 @@ public class ChartController {
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -6);
-
-
         String toDate = format.format(now);
-        // String fromDate = format.format(calendar.getTime());
-        // String toDate2 = toDate+" 23:59:59";
 
         List<TraceHistDto> userTraceHistList = traceHistRepository.userTraceHistList(toDate);
         List<SearchInfoHistDto> userSearchInfoHistList = searchInfoHistRepository.userSearchInfoHistList(toDate);
@@ -144,7 +140,6 @@ public class ChartController {
         List<DeleteReqHistDto> userDeleteReqHistList = deleteReqHistRepository.userDeleteReqHistList(toDate);
         List<DeleteComptHistDto> userDeleteComptHistList = deleteComptHistRepository.userDeleteComptHistList(toDate);
 
-
         modelAndView.addObject("userTraceHistList", userTraceHistList);
         modelAndView.addObject("userSearchInfoHistList", userSearchInfoHistList);
         modelAndView.addObject("userSearchResultHistList", userSearchResultHistList);
@@ -154,7 +149,6 @@ public class ChartController {
         modelAndView.addObject("userDeleteReqHistList", userDeleteReqHistList);
         modelAndView.addObject("userDeleteComptHistList", userDeleteComptHistList);
 
-        // modelAndView.addObject("fromDate", fromDate);
         modelAndView.addObject("toDate", toDate);
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("headerMenu", "connect");
@@ -167,7 +161,7 @@ public class ChartController {
         ModelAndView modelAndView = new ModelAndView("html/connect");
         log.info("connect 진입: "+toDate);
 
-        List<TraceHistDto> userTraceHistList = traceHistRepository.userTraceHistList(toDate);
+        List<TraceHistDto> userTraceHistList2 = traceHistRepository.userTraceHistList(toDate);
         List<SearchInfoHistDto> userSearchInfoHistList = searchInfoHistRepository.userSearchInfoHistList(toDate);
         List<SearchResultHistDto> userSearchResultHistList = searchResultHistRepository.searchResultHistList(toDate);
         List<NoticeHistDto> userNoticeHistList = noticeHistRepository.userNoticeHistList(toDate);
@@ -176,7 +170,7 @@ public class ChartController {
         List<DeleteReqHistDto> userDeleteReqHistList = deleteReqHistRepository.userDeleteReqHistList(toDate);
         List<DeleteComptHistDto> userDeleteComptHistList = deleteComptHistRepository.userDeleteComptHistList(toDate);
 
-        modelAndView.addObject("userTraceHistList", userTraceHistList);
+        modelAndView.addObject("userTraceHistList", userTraceHistList2);
         modelAndView.addObject("userSearchInfoHistList", userSearchInfoHistList);
         modelAndView.addObject("userSearchResultHistList", userSearchResultHistList);
         modelAndView.addObject("userNoticeHistList", userNoticeHistList);
@@ -342,10 +336,7 @@ public class ChartController {
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -6);
-
         toDate = format.format(now);
-        // fromDate = format.format(calendar.getTime());
-        // String toDate2 = toDate + " 23:59:59";
 
         return alltimeMonitoringHistRepository.allTimeCntList(toDate);
     }
@@ -353,7 +344,7 @@ public class ChartController {
     @GetMapping("/monitoringDateCntList")
     public List<AllTimeCntDto> monitoringDateCntList(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) {
 
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date now = new Date();
 
         Calendar calendar = Calendar.getInstance();

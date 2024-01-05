@@ -19,9 +19,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -97,15 +97,17 @@ public class BaseController {
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
         modelAndView.addObject("maxPage", Consts.MAX_PAGE);
 
-        if(manageType.equals("아이디")) {
-            modelAndView.addObject("counselorInfoList", userRepository.findAllByUserClfCdNotAndUseYnAndUserIdContainingOrderByUserUnoDesc("99", "Y", keyword, pageRequest));
-        } else if(manageType.equals("이름")) {
-            modelAndView.addObject("counselorInfoList", userRepository.findAllByUserClfCdNotAndUseYnAndUserNmContainingOrderByUserUnoDesc("99", "Y", keyword, pageRequest));
-        } else if(manageType.equals("전체")) {
-            modelAndView.addObject("counselorInfoList", userRepository.findAllByEntire("99", "Y", keyword, pageRequest));
+        switch (manageType) {
+            case "아이디" ->
+                    modelAndView.addObject("counselorInfoList", userRepository.findAllByUserClfCdNotAndUseYnAndUserIdContainingOrderByUserUnoDesc("99", "Y", keyword, pageRequest));
+            case "이름" ->
+                    modelAndView.addObject("counselorInfoList", userRepository.findAllByUserClfCdNotAndUseYnAndUserNmContainingOrderByUserUnoDesc("99", "Y", keyword, pageRequest));
+            case "전체" ->
+                    modelAndView.addObject("counselorInfoList", userRepository.findAllByEntire("99", "Y", keyword, pageRequest));
+
 //            modelAndView.addObject("counselorInfoList", userRepository.findAllByUserClfCdNotAndUseYnAndUserIdContainingOrUserNmContainingOrderByUserUnoDesc("99", "Y", keyword, keyword, pageRequest));
-        } else {
-            modelAndView.addObject("counselorInfoList", userRepository.findAllByUserClfCdNotAndUseYnOrderByUserUnoDesc("99", "Y", pageRequest));
+            default ->
+                    modelAndView.addObject("counselorInfoList", userRepository.findAllByUserClfCdNotAndUseYnOrderByUserUnoDesc("99", "Y", pageRequest));
         }
         return modelAndView;
     }
@@ -176,7 +178,7 @@ public class BaseController {
             log.info("검색이력 진입");
             searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword);
         } else {
-            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, sessionInfoDto.getUserUno());
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, userUno);
         }
 
         // int Percent = sessionInfoDto.getPercent_limit();
@@ -206,14 +208,13 @@ public class BaseController {
         modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap());
         modelAndView.addObject("searchKeyword", searchKeyword);
         modelAndView.addObject("searchInfoList",searchHistMap.get("searchInfoList"));
-        assert searchHistMap != null;
         modelAndView.addObject("searchInfoListCount", searchHistMap.get("totalElements"));
         modelAndView.addObject("searchNumber", searchHistMap.get("number"));
         modelAndView.addObject("maxPage", searchHistMap.get("maxPage"));
         modelAndView.addObject("searchTotalPages", searchHistMap.get("totalPages"));
 
         // 추적이력 데이터
-        modelAndView.addObject("traceHistoryList", traceHistoryMap.get("traceHistoryList"));
+        modelAndView.addObject("traceHistoryList", Objects.requireNonNull(traceHistoryMap).get("traceHistoryList"));
         modelAndView.addObject("traceHistoryListCount", traceHistoryMap.get("totalElements"));
         modelAndView.addObject("traceNumber", traceHistoryMap.get("number"));
         modelAndView.addObject("maxPage", traceHistoryMap.get("maxPage"));
@@ -264,9 +265,11 @@ public class BaseController {
         log.debug("priority => {}", priority);
         int userUno = sessionInfoDto.getUserUno();
         String userId = sessionInfoDto.getUserId();
-        int histTsiUno = tsiUno.get();
 
-        searchService.searchResultHistInsert(userUno, userId, histTsiUno);
+        if(tsiUno.isPresent()){
+            int histTsiUno = tsiUno.get();
+            searchService.searchResultHistInsert(userUno, userId, histTsiUno);
+        }
 
         //검색 조건 값이 다 없을 경우
         if (!StringUtils.hasText(tsjStatusAll)
@@ -378,9 +381,6 @@ public class BaseController {
             }else if("1".equals(odStatus01) && !"1".equals(odStatus02) && "1".equals(odStatus03)){
                 order_type = "5"; //이미지, 텍스트 선택
             }
-            /*else if(!"1".equals(odStatus01) && "1".equals(odStatus02) && !"1".equals(odStatus03)){
-                order_type = "6"; //오디오, 텍스트 선택
-            }*/
 
             defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, order_type);
@@ -405,9 +405,9 @@ public class BaseController {
     public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
             , @RequestParam(required = false, defaultValue = "0", value = "tsiUno") Integer tsiUno
             , @RequestParam(required = false,  defaultValue = "0", value = "tsiKeyword") String tsiKeyword
-            , @RequestParam(required = false, defaultValue = "80") String tsjStatus
             , @RequestParam (required = false, defaultValue = "0") Integer tsrUno
             , @RequestParam(required = false, defaultValue = "1") Integer page) {
+        // , @RequestParam(required = false, defaultValue = "80") String tsjStatus
         int percent = sessionInfoDto.getPercent_limit();
         Page<DefaultQueryDtoInterface> defaultQueryDtoInterface;
 
@@ -416,7 +416,7 @@ public class BaseController {
         searchService.noticeHistInsert(userUno, userId);
 
         // defaultQueryDtoInterface = searchService.getNoticeList(page,tsiuno, percent, keyword, tsiKeyword);
-        defaultQueryDtoInterface = searchService.getNoticeList(page, tsiUno, percent, tsiKeyword);
+        defaultQueryDtoInterface = searchService.getNoticeList(page, tsiUno, tsiKeyword);
 
         ModelAndView modelAndView = new ModelAndView("html/notice");
         modelAndView.addObject("sessionInfo", sessionInfoDto);
@@ -472,8 +472,8 @@ public class BaseController {
     public ModelAndView trace(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                               @RequestParam(required = false, defaultValue = "1") Integer page,
                               @RequestParam(required = false, defaultValue = "") String trkStatCd,
-                              @RequestParam(required = false, defaultValue = "") String keyword,
-                              @RequestParam(required = false, defaultValue = "list") String listType) {
+                              @RequestParam(required = false, defaultValue = "") String keyword) {
+        // @RequestParam(required = false, defaultValue = "list") String listType
         ModelAndView modelAndView = new ModelAndView("html/trace");
 
         int userUno = sessionInfoDto.getUserUno();
@@ -567,13 +567,8 @@ public class BaseController {
         ModelAndView modelAndView = new ModelAndView("html/monitoringList");
         log.info("monitoringList 진입 manageType : " + manageType );
 
-        if(manageType.equals("전체")){
-            manageType = "0";
-        } else if(manageType.equals("검색어")) {
-            manageType = "1";
-        } else {
-            manageType = "2";
-        }
+        String manageTypeValue = setManageType(manageType);
+        log.info("manageTypeValue: " + manageTypeValue);
 
         Map<String, Object> searchHistMap;
 
@@ -597,7 +592,7 @@ public class BaseController {
         // 추적이력
         Map<String, Object> traceHistoryMap;
 
-        if(manageType.equals("0") || manageType.equals("1")) {
+        if(manageTypeValue.equals("0") || manageTypeValue.equals("1")) {
             if(tsiUno == null){
                 log.info("tsiUno == null");
                 traceHistoryMap = searchService.getTraceHistoryMonitoringList(tracePage, traceKeyword);
@@ -619,7 +614,6 @@ public class BaseController {
         modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap());
         modelAndView.addObject("searchKeyword", searchKeyword);
         modelAndView.addObject("searchInfoList",searchHistMap.get("searchInfoList"));
-        assert searchHistMap != null;
         modelAndView.addObject("searchInfoListCount", searchHistMap.get("totalElements"));
         modelAndView.addObject("searchNumber", searchHistMap.get("number"));
         modelAndView.addObject("maxPage", searchHistMap.get("maxPage"));
@@ -655,15 +649,9 @@ public class BaseController {
                                        @RequestParam(required = false, defaultValue = "전체") String manageType) {
         ModelAndView modelAndView = new ModelAndView("html/monitoringDeleteReqList");
         log.info("monitoringDeleteReqList 진입 " + " manageType: "+manageType);
-        
-        if(manageType.equals("전체")) {
-            manageType="0";
-        } else if(manageType.equals("검색어")) {
-            manageType="1";
-        } else {
-            manageType="2";
-        }
-        
+
+        String manageTypeValue = setManageType(manageType);
+
         Map<String, Object> searchHistMap;
 
         log.info("history sessionInfoDto: " + sessionInfoDto.getUserId());
@@ -687,10 +675,10 @@ public class BaseController {
         // int Percent = sessionInfoDto.getPercent_limit();
         log.info("추적이력 진입");
 
-        Map<String, Object> traceHistoryMap = null;
+        Map<String, Object> traceHistoryMap;
 
         // 추적이력
-        if(manageType.equals("0") || manageType.equals("1")) {
+        if(manageTypeValue.equals("0") || manageTypeValue.equals("1")) {
             if(tsiUno == null){
                 traceHistoryMap = searchService.getTraceHistoryDeleteReqList(tracePage, traceKeyword);
             } else {
@@ -710,7 +698,6 @@ public class BaseController {
         modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap());
         modelAndView.addObject("searchKeyword", searchKeyword);
         modelAndView.addObject("searchInfoList",searchHistMap.get("searchInfoList"));
-        assert searchHistMap != null;
         modelAndView.addObject("searchInfoListCount", searchHistMap.get("totalElements"));
         modelAndView.addObject("searchNumber", searchHistMap.get("number"));
         modelAndView.addObject("maxPage", searchHistMap.get("maxPage"));
@@ -747,13 +734,7 @@ public class BaseController {
         ModelAndView modelAndView = new ModelAndView("html/monitoringDeleteComptList");
         log.info("monitoringDeleteComptList 진입 " + " manageType: "+manageType);
 
-        if(manageType.equals("전체")){
-            manageType = "0";
-        } else if(manageType.equals("검색어")) {
-            manageType = "1";
-        } else {
-            manageType = "2";
-        }
+        String manageTypeValue = setManageType(manageType);
 
         Map<String, Object> searchHistMap;
 
@@ -779,7 +760,7 @@ public class BaseController {
         Map<String, Object> traceHistoryMap;
 
         // 추적이력
-        if (manageType.equals("0") || manageType.equals("1")) {
+        if (manageTypeValue.equals("0") || manageTypeValue.equals("1")) {
             if(tsiUno == null){
                 traceHistoryMap = searchService.getTraceHistoryDeleteComptList(tracePage, traceKeyword);
             } else {
@@ -799,7 +780,6 @@ public class BaseController {
         modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap());
         modelAndView.addObject("searchKeyword", searchKeyword);
         modelAndView.addObject("searchInfoList",searchHistMap.get("searchInfoList"));
-        assert searchHistMap != null;
         modelAndView.addObject("searchInfoListCount", searchHistMap.get("totalElements"));
         modelAndView.addObject("searchNumber", searchHistMap.get("number"));
         modelAndView.addObject("maxPage", searchHistMap.get("maxPage"));
@@ -834,7 +814,7 @@ public class BaseController {
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("headerMenu", "userSearchHistory");
 
-        Map<String, Object> userSearchHistoryList = new HashMap<>();
+        Map<String, Object> userSearchHistoryList;
 
         userSearchHistoryList = searchService.getUserSearchHistoryList(searchPage, searchKeyword);
 
@@ -863,14 +843,8 @@ public class BaseController {
                                                  @RequestParam(required = false, defaultValue = "전체") String manageType) {
         ModelAndView modelAndView = new ModelAndView("html/allTimeMonitoringChkList");
         log.info("allTimeMonitoringChkLists 진입 " + " manageType: "+manageType);
-        
-        if(manageType.equals("전체")){
-            manageType = "0";
-        } else if(manageType.equals("검색어")) {
-            manageType = "1";
-        } else {
-            manageType = "2";
-        }
+
+        String manageTypeValue = setManageType(manageType);
 
         Map<String, Object> searchHistMap;
         log.info(" traceKeyword: " + traceKeyword + " searchKeyword: " + searchKeyword);
@@ -893,7 +867,7 @@ public class BaseController {
         Map<String, Object> traceHistoryMap;
 
         // 추적이력
-        if(manageType.equals("0") || manageType.equals("1")) {
+        if(manageTypeValue.equals("0") || manageTypeValue.equals("1")) {
             if(tsiUno == null){
                 traceHistoryMap = searchService.allTimeMonitoringList(tracePage, traceKeyword);
             } else {
@@ -913,7 +887,6 @@ public class BaseController {
         modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap());
         modelAndView.addObject("searchKeyword", searchKeyword);
         modelAndView.addObject("searchInfoList",searchHistMap.get("searchInfoList"));
-        assert searchHistMap != null;
         modelAndView.addObject("searchInfoListCount", searchHistMap.get("totalElements"));
         modelAndView.addObject("searchNumber", searchHistMap.get("number"));
         modelAndView.addObject("maxPage", searchHistMap.get("maxPage"));
@@ -951,6 +924,19 @@ public class BaseController {
         modelAndView.addObject("sessionInfo", sessionInfoDto);
 
         return modelAndView;
+    }
+
+    public String setManageType(String manageType) {
+        log.info("manageType: " + manageType);
+        String manage;
+        if(manageType.equals("전체")){
+            manage = "0";
+        } else if(manageType.equals("검색어")) {
+            manage = "1";
+        } else {
+            manage = "2";
+        }
+        return manage;
     }
 
 }

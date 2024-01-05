@@ -2,10 +2,9 @@ package com.nex.Chart.repo;
 
 import com.nex.Chart.dto.SearchInfoExcelDto;
 import com.nex.Chart.dto.SearchInfoHistDto;
-import com.nex.Chart.dto.SearchResultHistDto;
 import com.nex.Chart.entity.SearchInfoHistEntity;
-import com.nex.user.entity.*;
-import org.apache.poi.ss.formula.functions.Vlookup;
+import com.nex.user.entity.ResultListExcelDto;
+import com.nex.user.entity.SearchHistoryExcelDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

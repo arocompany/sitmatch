@@ -66,7 +66,7 @@ public class SearchTextImageThGoogleService {
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
-    public void search(SearchInfoEntity insertResult, String folder, SearchInfoDto searchInfoDto){
+    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
         String tsrSns = "11";
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();

@@ -13,10 +13,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface SearchResultRepository extends JpaRepository<SearchResultEntity, Long> {
-    Page<SearchResultEntity> findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(String keyword,Pageable pageable);
+    // Page<SearchResultEntity> findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(String keyword,Pageable pageable);
 
     Integer countByTrkStatCdNotNullAndTrkStatCd(String trkStatCd);
-    Integer countByMonitoringCd(String monitoringCd);
+    // Integer countByMonitoringCd(String monitoringCd);
 
     @Query(value = allTimeMonitoringCnt, nativeQuery = true, countQuery=allTimeMonitoringCnt)
     String allTimeMonitoringCnt();
@@ -58,6 +58,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " AND TSR.MONITORING_CD = '20' " +
             " ORDER BY tsr.MST_DML_DT DESC ";
 
+/*
     String keywordResultCntList = " SELECT COUNT(*) AS resultCnt " +
             " FROM tb_search_result tsr " +
             " LEFT OUTER JOIN tb_search_info tsi " +
@@ -65,6 +66,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " WHERE tsr.fst_dml_dt BETWEEN :fromDate AND :toDate " +
             " GROUP BY DATE_FORMAT(tsr.fst_dml_dt,'%Y%m%d') " +
             " ORDER BY tsr.fst_dml_dt asc";
+*/
 
     String from_5 = " from  tb_search_info TSI " +
             " INNER JOIN tb_search_result TSR ON TSR.TSI_UNO = TSI.TSI_UNO " +
@@ -78,6 +80,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
             " LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO ";
 
+/*
     String from_3 = " FROM TB_SEARCH_RESULT TSR " +
             "INNER JOIN TB_SEARCH_INFO TSI_2 ON TSR.TSI_UNO = TSI_2.TSI_UNO " +
             "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
@@ -86,7 +89,9 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, " +
             "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
             "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  ";
+*/
 
+/*
     String from_4 = " FROM TB_SEARCH_RESULT TSR " +
             "INNER JOIN TB_SEARCH_INFO TSI_2 ON TSR.TSI_UNO = TSI_2.TSI_UNO " +
             "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
@@ -95,6 +100,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, " +
             "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
             "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  ";
+*/
 
 
     String defaultQeury_2 = "SELECT TSR.TSR_UNO as tsrUno, TSI.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
@@ -120,7 +126,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 //                    "case when isnull(tmr.TMR_A_SCORE) || tmr.TMR_A_SCORE = 0 then 0 else 1 end + "+
             "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity";
 
-    String defaultQeury_4 = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
+    /*String defaultQeury_4 = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
             "tsr.TSR_IMG_EXT as tsrImgExt, tsr.TSR_DOWNLOAD_URL as tsrDownloadUrl, tsr.TSR_IMG_HEIGHT as tsrImgHeight, "+
             "tsr.TSR_IMG_WIDTH as tsrImgWidth, tsr.TSR_IMG_SIZE as tsrImgSize, tsr.TRK_STAT_CD as trkStatCd, " +
@@ -139,13 +145,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / "+
             "(case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end nn+ "+
             "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
-            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity";
+            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity";*/
 
     // String defaultQeury_3 = defaultQeury_2 + ", (SELECT count(*) from  tb_search_info TSI LEFT JOIN tb_search_result TSR ON TSR.TSI_UNO = TSI.TSI_UNO WHERE TSI.TSI_UNO = :tsiuno  ) as re_monitor_cnt ";
     String defaultQeury_3 = defaultQeury_2 + ", (SELECT count(*) from  tb_search_info TSI LEFT JOIN tb_search_result TSR ON TSR.TSI_UNO = TSI.TSI_UNO WHERE TSI.TSI_UNO = :tsiUno  ) as re_monitor_cnt ";
     String defaultQeury = defaultQeury_2 + ", pp.progressPercent as progressPercent ";
 
-    String defaultQeury2 = defaultQeury_4 + ", pp.progressPercent as progressPercent ";
+    // String defaultQeury2 = defaultQeury_4 + ", pp.progressPercent as progressPercent ";
 
 
     String defaultQeury_5 = "SELECT TSR.TSR_UNO as tsrUno, TSI.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
@@ -180,8 +186,10 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " when isnull(tmr.TMR_T_SCORE) then 0 " +
             " else 1 end)) * 100))),SIGNED) AS maxSimilarity ";
 
-    String defaultQeury_6 = "SELECT tsr.TSR_SITE_URL as tsrSiteUrl";
+    // String defaultQeury_6 = "SELECT tsr.TSR_SITE_URL as tsrSiteUrl";
 
+
+/*
     String defaultQeury_0 = defaultQeury2 +
             ", (SELECT COUNT(*) " +
             " FROM TB_SEARCH_RESULT TSR " +
@@ -211,73 +219,76 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt ";
+*/
 
-    String defaultQeury_10 = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
-            "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
-            "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
-            "tsr.TSR_IMG_EXT as tsrImgExt, tsr.TSR_DOWNLOAD_URL as tsrDownloadUrl, tsr.TSR_IMG_HEIGHT as tsrImgHeight, "+
-            "tsr.TSR_IMG_WIDTH as tsrImgWidth, tsr.TSR_IMG_SIZE as tsrImgSize, tsr.TRK_STAT_CD as trkStatCd, " +
-            "tsr.TRK_HIST_MEMO as trkHistMemo, tsr.DATA_STAT_CD as tsrDataStatCd, tsr.FST_DML_DT as tsrFstDmlDt, tsr.MST_DML_DT as mstDmlDt, "+
-            "tsi.TSI_TYPE as tsiType, tsi.TSI_GOOGLE as tsiGoogle, tsi.TSI_TWITTER as tsiTwitter, " +
-            "tsi.TSI_FACEBOOK as tsiFacebook, tsi.TSI_INSTAGRAM as tsiInstagram, tsi.TSI_KEYWORD as tsiKeyword, "+
-            "tsi.TSI_IMG_PATH as tsiImgPath, tsi.TSI_IMG_NAME as tsiImgName, tsi.TSI_IMG_EXT as tsiImgExt, "+
-            "tsi.TSI_IMG_HEIGHT as tsiImgHeight, tsi.TSI_IMG_WIDTH as tsiImgWidth, tsi.TSI_IMG_SIZE as tsiImgSize, "+
-            "tsi.TSI_STAT as tsiStat, tsi.TSI_DNA_PATH as tsiDnaPath, tsi.TSI_DNA_TEXT as tsiDnaText, "+
-            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, TSR.MONITORING_CD as monitoringCd, "+
-            "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
-            "tmr.TMR_STAT as tmrStat, tmr.TMR_MESSAGE as tmrMessage, tu.USER_ID as tuUserId, " +
-            "if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', "+
-            "ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + "+
-            "case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + "+
-            "case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / "+
-            "(case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + "+
-            "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
-            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity" +
-            ", pp.progressPercent as progressPercent " +
-            ", (SELECT COUNT(*) " +
-            " FROM TB_SEARCH_RESULT TSR2 " +
-            " INNER JOIN TB_SEARCH_INFO TSI_2 ON TSR2.TSI_UNO = TSI_2.TSI_UNO" +
-            " LEFT OUTER JOIN TB_SEARCH_JOB TSJ2 ON TSR2.TSR_UNO = TSJ2.TSR_UNO" +
-            " LEFT OUTER JOIN TB_MATCH_RESULT TMR2 ON TSR2.TSR_UNO = TMR2.TSR_UNO" +
-            " WHERE " +
-            " TSR2.TSI_UNO = TSI3.TSI_UNO " +
-            " AND " +
-            " if(TMR2.TMR_V_SCORE + TMR2.TMR_A_SCORE + TMR2.TMR_T_SCORE = 0, '0', ceiling(((case " +
-            "            when isnull(TMR2.TMR_V_SCORE) then 0 " +
-            "            else TMR2.TMR_V_SCORE " +
-            "        end + case " +
-            "            when isnull(TMR2.TMR_A_SCORE) then 0 " +
-            "            else TMR2.TMR_A_SCORE " +
-            "        end + case " +
-            "            when isnull(TMR2.TMR_T_SCORE) then 0 " +
-            "            else TMR2.TMR_T_SCORE " +
-            "        end) / (case " +
-            "            when isnull(TMR2.TMR_V_SCORE) then 0 " +
-            "            else 1 " +
-            "        end + case " +
-            "            when isnull(TMR2.TMR_A_SCORE) then 0 " +
-            "           else 1 " +
-            "        end + case " +
-            "            when isnull(TMR2.TMR_T_SCORE) then 0 " +
-            "            else 1 " +
-            "        end)) * 100)) > 0" +
-            "         ) as re_monitor_cnt, " +
-            "            (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
-            "            ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
-            "            WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            "            GROUP BY TSR9.TSR_UNO " +
-            "            ORDER BY TAM_UNO DESC) AS lastAlltimeHist,    "+
-            " TSI3.TSI_USER_FILE AS tsiUserFile "+
-            " FROM TB_SEARCH_RESULT TSR " +
-            "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
-            "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
-            "LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
-            "LEFT OUTER JOIN TB_SEARCH_INFO TSI ON TSI.TSI_UNO = TSR.TSI_UNO " +
-            "LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, " +
-            "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
-            "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
-            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') " +
-            " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
+    String defaultQeury_10 ="SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
+                            "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
+                            "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
+                            "tsr.TSR_IMG_EXT as tsrImgExt, tsr.TSR_DOWNLOAD_URL as tsrDownloadUrl, tsr.TSR_IMG_HEIGHT as tsrImgHeight, "+
+                            "tsr.TSR_IMG_WIDTH as tsrImgWidth, tsr.TSR_IMG_SIZE as tsrImgSize, tsr.TRK_STAT_CD as trkStatCd, " +
+                            "tsr.TRK_HIST_MEMO as trkHistMemo, tsr.DATA_STAT_CD as tsrDataStatCd, tsr.FST_DML_DT as tsrFstDmlDt, tsr.MST_DML_DT as mstDmlDt, "+
+                            "tsi.TSI_TYPE as tsiType, tsi.TSI_GOOGLE as tsiGoogle, tsi.TSI_TWITTER as tsiTwitter, " +
+                            "tsi.TSI_FACEBOOK as tsiFacebook, tsi.TSI_INSTAGRAM as tsiInstagram, tsi.TSI_KEYWORD as tsiKeyword, "+
+                            "tsi.TSI_IMG_PATH as tsiImgPath, tsi.TSI_IMG_NAME as tsiImgName, tsi.TSI_IMG_EXT as tsiImgExt, "+
+                            "tsi.TSI_IMG_HEIGHT as tsiImgHeight, tsi.TSI_IMG_WIDTH as tsiImgWidth, tsi.TSI_IMG_SIZE as tsiImgSize, "+
+                            "tsi.TSI_STAT as tsiStat, tsi.TSI_DNA_PATH as tsiDnaPath, tsi.TSI_DNA_TEXT as tsiDnaText, "+
+                            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, TSR.MONITORING_CD as monitoringCd, "+
+                            "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
+                            "tmr.TMR_STAT as tmrStat, tmr.TMR_MESSAGE as tmrMessage, tu.USER_ID as tuUserId, " +
+                            "if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', "+
+                            "ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + "+
+                            "case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + "+
+                            "case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / "+
+                            "(case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + "+
+                            "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
+                            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity" +
+                            ", pp.progressPercent as progressPercent " +
+                            ", (SELECT COUNT(*) " +
+                            " FROM TB_SEARCH_RESULT TSR2 " +
+                            " INNER JOIN TB_SEARCH_INFO TSI_2 ON TSR2.TSI_UNO = TSI_2.TSI_UNO" +
+                            " LEFT OUTER JOIN TB_SEARCH_JOB TSJ2 ON TSR2.TSR_UNO = TSJ2.TSR_UNO" +
+                            " LEFT OUTER JOIN TB_MATCH_RESULT TMR2 ON TSR2.TSR_UNO = TMR2.TSR_UNO" +
+                            " WHERE " +
+                            " TSR2.TSI_UNO = TSI3.TSI_UNO " +
+                            " AND " +
+                            " if(TMR2.TMR_V_SCORE + TMR2.TMR_A_SCORE + TMR2.TMR_T_SCORE = 0, '0', ceiling(((case " +
+                            "            when isnull(TMR2.TMR_V_SCORE) then 0 " +
+                            "            else TMR2.TMR_V_SCORE " +
+                            "        end + case " +
+                            "            when isnull(TMR2.TMR_A_SCORE) then 0 " +
+                            "            else TMR2.TMR_A_SCORE " +
+                            "        end + case " +
+                            "            when isnull(TMR2.TMR_T_SCORE) then 0 " +
+                            "            else TMR2.TMR_T_SCORE " +
+                            "        end) / (case " +
+                            "            when isnull(TMR2.TMR_V_SCORE) then 0 " +
+                            "            else 1 " +
+                            "        end + case " +
+                            "            when isnull(TMR2.TMR_A_SCORE) then 0 " +
+                            "           else 1 " +
+                            "        end + case " +
+                            "            when isnull(TMR2.TMR_T_SCORE) then 0 " +
+                            "            else 1 " +
+                            "        end)) * 100)) > 0" +
+                            "         ) as re_monitor_cnt, " +
+                            " (SELECT MAX(clkDmlDt) " +
+                            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+                            " FROM tb_alltime_monitoring_history TAM9 " +
+                            " LEFT OUTER JOIN tb_search_result TSR9 " +
+                            " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
+                            " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
+                            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist,"+
+                            " TSI3.TSI_USER_FILE AS tsiUserFile "+
+                            " FROM TB_SEARCH_RESULT TSR " +
+                            " LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
+                            " LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
+                            " LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
+                            " LEFT OUTER JOIN TB_SEARCH_INFO TSI ON TSI.TSI_UNO = TSR.TSI_UNO " +
+                            " LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, " +
+                            " CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
+                            " FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
+                            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') " +
+                            " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
 
     String traceUserFileList = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
@@ -329,11 +340,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            "            (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
-            "            ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
-            "            WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            "            GROUP BY TSR9.TSR_UNO " +
-            "            ORDER BY TAM_UNO DESC) AS lastAlltimeHist, " +
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
+            " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
+            " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -396,11 +409,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            "            (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
-            "            ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
-            "            WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            "            GROUP BY TSR9.TSR_UNO " +
-            "            ORDER BY TAM_UNO DESC) AS lastAlltimeHist,    "+
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
+            " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
+            " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile "+
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -464,11 +479,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            " (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
             " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            " GROUP BY TSR9.TSR_UNO " +
-            " ORDER BY TAM_UNO DESC) AS lastAlltimeHist, "+
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile "+
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -481,6 +498,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '10' AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') OR TSR.TSR_TITLE IS NULL)  AND TSR.TSI_UNO = :tsiUno " +
             " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
 
+    /*
     String traceHistoryMonitoringTsiUnoUserFileList = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
@@ -541,6 +559,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
             " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '10' AND TSI3.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno " +
             " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
+            */
 
     String traceHistoryMonitoringUserFileList = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
@@ -592,13 +611,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            "       (SELECT TAM9.CLK_DML_DT " +
-            "        FROM tb_search_result TSR9 " +
-            "        LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
-            "                ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
-            "        WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            "        GROUP BY TSR9.TSR_UNO " +
-            "        ORDER BY TAM_UNO DESC) AS lastAlltimeHist, " +
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
+            " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
+            " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             "      TSI3.TSI_USER_FILE AS tsiUserFile "+
             " FROM TB_SEARCH_RESULT TSR " +
             " LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -660,11 +679,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
                         " when isnull(TMR2.TMR_T_SCORE) then 0 " +
                         " else 1 " +
                         " end)) * 100)) > 0) as re_monitor_cnt, " +
-                        " (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
+                        " (SELECT MAX(clkDmlDt) " +
+                        " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+                        " FROM tb_alltime_monitoring_history TAM9 " +
+                        " LEFT OUTER JOIN tb_search_result TSR9 " +
                         " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
                         " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-                        " GROUP BY TSR9.TSR_UNO " +
-                        " ORDER BY TAM_UNO DESC) AS lastAlltimeHist, " +
+                        " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
                         " TSI3.TSI_USER_FILE AS tsiUserFile " +
                         " FROM TB_SEARCH_RESULT TSR " +
                         "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -726,11 +747,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            " (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
             " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            " GROUP BY TSR9.TSR_UNO " +
-            " ORDER BY TAM_UNO DESC) AS lastAlltimeHist, " +
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -792,11 +815,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            " (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
             " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            " GROUP BY TSR9.TSR_UNO " +
-            " ORDER BY TAM_UNO DESC) AS lastAlltimeHist, "+
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -859,11 +884,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            " (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
             " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            " GROUP BY TSR9.TSR_UNO " +
-            " ORDER BY TAM_UNO DESC) AS lastAlltimeHist, " +
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -925,11 +952,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            " (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
             " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            " GROUP BY TSR9.TSR_UNO " +
-            " ORDER BY TAM_UNO DESC) AS lastAlltimeHist, " +
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -991,11 +1020,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            " (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
             " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            " GROUP BY TSR9.TSR_UNO " +
-            " ORDER BY TAM_UNO DESC) AS lastAlltimeHist, " +
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -1057,11 +1088,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            " (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
             " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            " GROUP BY TSR9.TSR_UNO " +
-            " ORDER BY TAM_UNO DESC) AS lastAlltimeHist, "+
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -1124,11 +1157,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            " (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
             " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            " GROUP BY TSR9.TSR_UNO " +
-            " ORDER BY TAM_UNO DESC) AS lastAlltimeHist, "+
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -1191,11 +1226,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            " (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
             " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            " GROUP BY TSR9.TSR_UNO " +
-            " ORDER BY TAM_UNO DESC) AS lastAlltimeHist, " +
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -1258,11 +1295,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            " (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
             " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            " GROUP BY TSR9.TSR_UNO " +
-            " ORDER BY TAM_UNO DESC) AS lastAlltimeHist, " +
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -1325,11 +1364,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            " (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
             " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            " GROUP BY TSR9.TSR_UNO " +
-            " ORDER BY TAM_UNO DESC) AS lastAlltimeHist, " +
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -1392,11 +1433,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
-            " (SELECT TAM9.CLK_DML_DT FROM tb_search_result TSR9 LEFT OUTER JOIN tb_alltime_monitoring_history TAM9 " +
+            " (SELECT MAX(clkDmlDt) " +
+            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
+            " FROM tb_alltime_monitoring_history TAM9 " +
+            " LEFT OUTER JOIN tb_search_result TSR9 " +
             " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-            " GROUP BY TSR9.TSR_UNO " +
-            " ORDER BY TAM_UNO DESC) AS lastAlltimeHist, " +
+            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -1425,16 +1468,19 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "AND (tsr.TSR_SNS = :snsStatus01 OR tsr.TSR_SNS = :snsStatus02 OR tsr.TSR_SNS = :snsStatus03 OR tsr.TSR_SNS = :snsStatus04)" ;
 
 
-    String whereTsiUnoTsrTitleLikeTsrStatusIn3 =" WHERE TSI.TSI_UNO = :tsiUno AND TSR.TSR_IMG_PATH IS NULL ";
+    // String whereTsiUnoTsrTitleLikeTsrStatusIn3 =" WHERE TSI.TSI_UNO = :tsiUno AND TSR.TSR_IMG_PATH IS NULL ";
 
     String whereTsrUno = " WHERE TSR.TSR_UNO = :tsrUno";
 
     String whereNotice = " WHERE TSI.TSR_UNO is not null ";
-    String whereMonitoringCd = " WHERE TSR.MONITORING_CD = :monitoringCd";
+    // String whereMonitoringCd = " WHERE TSR.MONITORING_CD = :monitoringCd";
     String whereTrkStatCdNotNullAndTsrTitleContaining = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%')";
+    String setTrkStatCd20 =  " AND TSR.TRK_STAT_CD = '20' ";
+    String setTrkStatCd30 =  " AND TSR.TRK_STAT_CD = '30' ";
+    String setMonitoringCd20 = " AND TSR.MONITORING_CD = '20' ";
     String whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno ";
     String whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike = " WHERE TSR.DATA_STAT_CD = :tsrDataStatCd AND TSR.TRK_STAT_CD != :trkStatCd AND TSR.TRK_STAT_CD LIKE CONCAT('%',:trkStatCd2,'%') AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%')";
-    String whereSimilarity =" AND if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / (case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) >= :percent";
+    // String whereSimilarity =" AND if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / (case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) >= :percent";
     String whereSimilarity_2 = " AND " +
             "  if(TMR.TMR_V_SCORE + TMR.TMR_A_SCORE + TMR.TMR_T_SCORE = 0, '0', ceiling(((case " +
             "            when isnull(TMR.TMR_V_SCORE) then 0 " +
@@ -1470,12 +1516,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String orderByTmrSimilarityDesc_5 = " ORDER BY tmrVScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
     String orderByTmrSimilarityDesc_6 = " ORDER BY tmrVScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
 
-    String orderByTmrSimilarityAsc = " ORDER BY tmrSimilarity asc, tsrUno desc";
-    String orderByTsrUnoDesc = " ORDER BY tsrUno desc";
+    // String orderByTmrSimilarityAsc = " ORDER BY tmrSimilarity asc, tsrUno desc";
+    // String orderByTsrUnoDesc = " ORDER BY tsrUno desc";
 
-    String orderByTsrUnoDesc_trace = " ORDER BY tsiFstDmlDt desc, tsrUno desc";
+    // String orderByTsrUnoDesc_trace = " ORDER BY tsiFstDmlDt desc, tsrUno desc";
     String orderByTsrUnoDesc2_trace = " ORDER BY mstDmlDt desc, tsrUno desc";
 
+/*
     // 검색결과 관련 ORDER BY
     String orderByResult01 = " ORDER BY TMR.TSR_UNO DESC, TMR.TMR_V_SCORE DESC, TMR.TMR_A_SCORE DESC, TMR_T_SCORE DESC";
     String orderByResult02 = " ORDER BY TMR.TSR_UNO DESC, TMR.TMR_V_SCORE DESC, TMR.TMR_A_SCORE DESC";
@@ -1498,12 +1545,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String orderByResult19 = " ORDER BY tmrSimilarity ASC, TMR.TMR_V_SCORE DESC";
     String orderByResult20 = " ORDER BY tmrSimilarity ASC, TMR.TMR_A_SCORE DESC";
     String orderByResult21 = " ORDER BY tmrSimilarity ASC, TMR.TMR_T_SCORE DESC";
+*/
 
     String countQuery = "SELECT COUNT(TSR.TSR_UNO)";
     String countQuery2 = "SELECT DISTINCT(COUNT(TSR.TSR_UNO))";
 
     String countQuery3 = "SELECT COUNT(DISTINCT TSR.tsr_site_url) ";
-    String limit4 = " LIMIT 4";
+    String limit4 = " LIMIT 4 ";
 
     String InfoImgSrc = " select " +
             " s1_0.tsi_uno AS tsiUno, " +
@@ -1523,6 +1571,9 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " from tb_search_info s1_0 " +
             " where s1_0.tsi_uno = :tsiUno ";
 
+    String tsrUnoisNotNUll = " WHERE TSI.TSR_UNO IS NOT NULL ";
+    String setTmrStat11 = " AND TMR.TMR_STAT = '11' ";
+
     // 추적 이력
     @Query(value = defaultQeury_10, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining)
     Page<DefaultQueryDtoInterface> getTraceHistoryList(String keyword, Pageable pageable);
@@ -1536,48 +1587,49 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     @Query(value = defaultQeury_14, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno)
     Page<DefaultQueryDtoInterface> getTraceHistoryMonitoringTsiUnoList(String keyword, Pageable pageable, Integer tsiUno);
 
+/*
     @Query(value = defaultQeury_14, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno)
     Page<DefaultQueryDtoInterface> getTraceHistoryMonitoringTsiUnoUserFileList(String keyword, Pageable pageable, Integer tsiUno);
-
+*/
 
     @Query(value = traceHistoryMonitoringUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno)
     Page<DefaultQueryDtoInterface> getTraceHistoryMonitoringUserFileList(String keyword, Pageable pageable);
 
-    @Query(value = defaultQeury_12, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining + "AND TSR.TRK_STAT_CD = '20'")
+    @Query(value = defaultQeury_12, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining + setTrkStatCd20 )
     Page<DefaultQueryDtoInterface> getTraceHistoryDeleteReqList(String keyword, Pageable pageable);
 
 
-    @Query(value = traceHistoryDeleteReqUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining + "AND TSR.TRK_STAT_CD = '20'")
+    @Query(value = traceHistoryDeleteReqUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining + setTrkStatCd20 )
     Page<DefaultQueryDtoInterface> getTraceHistoryDeleteReqUserFileList(String keyword, Pageable pageable);
 
 
-    @Query(value = defaultQeury_15, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno + "AND TSR.TRK_STAT_CD = '20'")
+    @Query(value = defaultQeury_15, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno + setTrkStatCd20 )
     Page<DefaultQueryDtoInterface> getTraceHistoryDeleteReqTsiUnoList(String keyword, Pageable pageable, Integer tsiUno);
 
-    @Query(value = traceHistoryDeleteReqTsiUnoUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno + "AND TSR.TRK_STAT_CD = '20'")
+    @Query(value = traceHistoryDeleteReqTsiUnoUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno + setTrkStatCd20)
     Page<DefaultQueryDtoInterface> getTraceHistoryDeleteReqTsiUnoUserFileList(String keyword, Pageable pageable, Integer tsiUno);
 
-    @Query(value = defaultQeury_13, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining + "AND TSR.TRK_STAT_CD = '30'")
+    @Query(value = defaultQeury_13, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining + setTrkStatCd30)
     Page<DefaultQueryDtoInterface> getTraceHistoryDeleteComptList(String keyword, Pageable pageable);
 
-    @Query(value = traceHistoryDeleteComptUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining + "AND TSR.TRK_STAT_CD = '30'")
+    @Query(value = traceHistoryDeleteComptUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining + setTrkStatCd30)
     Page<DefaultQueryDtoInterface> getTraceHistoryDeleteComptUserFileList(String keyword, Pageable pageable);
-    @Query(value = defaultQeury_16, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno+ "AND TSR.TRK_STAT_CD = '30'")
+    @Query(value = defaultQeury_16, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno + setTrkStatCd30)
     Page<DefaultQueryDtoInterface> getTraceHistoryDeleteComptTsiUnoList(String keyword, Pageable pageable, Integer tsiUno);
     // getTraceHistoryDeleteComptTsiUnoUserFileList
-    @Query(value = traceHistoryDeleteComptTsiUnoUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno+ "AND TSR.TRK_STAT_CD = '30'")
+    @Query(value = traceHistoryDeleteComptTsiUnoUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno + setTrkStatCd30)
     Page<DefaultQueryDtoInterface> getTraceHistoryDeleteComptTsiUnoUserFileList(String keyword, Pageable pageable, Integer tsiUno);
-    @Query(value = defaultQeury_17, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno+ "AND TSR.MONITORING_CD = '20'")
+    @Query(value = defaultQeury_17, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno + setMonitoringCd20)
     Page<DefaultQueryDtoInterface> allTimeMonitoringTsiUnoList(String keyword, Pageable pageable, Integer tsiUno);
 
 
-    @Query(value = allTimeMonitoringTsiUnoUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno+ "AND TSR.MONITORING_CD = '20'")
+    @Query(value = allTimeMonitoringTsiUnoUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno + setMonitoringCd20)
     Page<DefaultQueryDtoInterface> allTimeMonitoringTsiUnoUserFileList(String keyword, Pageable pageable, Integer tsiUno);
 
-    @Query(value = defaultQeury_18, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining+ "AND TSR.MONITORING_CD = '20'")
+    @Query(value = defaultQeury_18, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining + setMonitoringCd20)
     Page<DefaultQueryDtoInterface> allTimeMonitoringList(String keyword, Pageable pageable);
 
-    @Query(value = allTimeMonitoringUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining+ "AND TSR.MONITORING_CD = '20'")
+    @Query(value = allTimeMonitoringUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContaining + setMonitoringCd20)
     Page<DefaultQueryDtoInterface> allTimeMonitoringUserFileList(String keyword, Pageable pageable);
 
 
@@ -1609,20 +1661,26 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_6(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
                                                                                String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
 
+/*
     @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityAsc, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn)
     Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityAsc(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
                                                                             String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, Pageable pageable);
+*/
 
+/*
     // 검색 결과 팝업
     @Query(value = defaultQeury+from+whereTsrUno, nativeQuery = true, countQuery = countQuery+from+whereTsrUno)
     DefaultQueryDtoInterface getResultInfo(Integer tsrUno);
+*/
 
     @Query(value = InfoImgSrc, nativeQuery = true)
     DefaultQueryDtoInterface getInfoList(Integer tsiUno);
 
+/*
     // index 추적대상 4개
     @Query(value = defaultQeury+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc_trace+limit4, nativeQuery = true, countQuery = countQuery+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+limit4)
     List<DefaultQueryDtoInterface> getTraceListByHome(String tsrDataStatCd, String trkStatCd, String trkStatCd2, String keyword);
+*/
 
     // 모니터링
     @Query(value = defaultQeury+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc2_trace, nativeQuery = true, countQuery = countQuery+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike)
@@ -1639,14 +1697,14 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     // 여기
     // AND TSJ.TSJ_STATUS = '11'
-    @Query(value = defaultQeury_2+from_2+" WHERE TSI.TSR_UNO IS NOT null  AND TMR.TMR_STAT = '11' "+whereSimilarity_3 , nativeQuery = true, countQuery = countQuery+from_2+whereNotice+" AND TMR.TMR_STAT = '11'"+whereSimilarity_3)
+    @Query(value = defaultQeury_2+from_2+tsrUnoisNotNUll+setTmrStat11+whereSimilarity_3 , nativeQuery = true, countQuery = countQuery+from_2+whereNotice+setTmrStat11+whereSimilarity_3)
     Page<DefaultQueryDtoInterface> getNoticeList(Pageable pageable);
 
-    @Query(value = defaultQeury_2+from_2+" WHERE TSI.TSR_UNO IS NOT null  AND TMR.TMR_STAT = '11' "+whereSimilarity_2+" limit 4", nativeQuery = true)
+    @Query(value = defaultQeury_2+from_2+tsrUnoisNotNUll+setTmrStat11+whereSimilarity_2+limit4, nativeQuery = true)
     List<DefaultQueryDtoInterface> getNoticeListMain(Integer percent);
 
     /*@Query(value = defaultQeury_3+from_5+" WHERE TSI.TSI_UNO = :tsiuno AND TSI.TSI_KEYWORD like :keyword AND TMR.TMR_STAT = '11' "+whereSimilarity_2 , nativeQuery = true, countQuery = countQuery+from_2+" WHERE TSI.TSI_UNO = :tsiuno AND TSI.TSI_KEYWORD=:keyword AND TMR.TMR_STAT = '11'"+whereSimilarity_2)*/
-    @Query(value = defaultQeury_3+from_5+"AND TMR.TMR_STAT = '11' "+whereSimilarity_3 , nativeQuery = true, countQuery = countQuery+from_5+" AND TMR.TMR_STAT = '11'"+whereSimilarity_3)
+    @Query(value = defaultQeury_3+from_5+setTmrStat11+whereSimilarity_3 , nativeQuery = true, countQuery = countQuery+from_5+setTmrStat11+whereSimilarity_3)
     Page<DefaultQueryDtoInterface> getNoticeSelList(Pageable pageable, Integer tsiUno, String tsiKeyword);
     //추적이력 삭제
     @Transactional
@@ -1672,6 +1730,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
      */
     List<SearchResultEntity> findByMonitoringCd(String monitoringCd);
 
+    /*
     @Query(value =
             """
             select sr
@@ -1687,9 +1746,12 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             """
     )
     SearchResultEntity findAllBy();
+    */
 
+/*
     @Query(value = keywordResultCntList, nativeQuery = true)
     List<String> keywordResultCntList(String fromDate, String toDate);
+*/
 
 }
 

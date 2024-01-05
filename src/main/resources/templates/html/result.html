@@ -106,7 +106,7 @@
                         <p>"<span th:text="${keyword}">sitting</span>"에 대한 검색 결과 입니다.</p>
                     </div>
                     <div style="margin-left:5px;">
-                        <p><span> | 상담사 : </span><span th:text="${userId}">상담사 아이디</span></p>
+                        <p><span> | 상담사ggg : </span><span th:text="${userId}">상담사 아이디</span></p>
                     </div>
                     <form action="/resultExcelList" method="get">
                         <input type="hidden" name="tsiKeyword" th:value="${tsiKeyword}">
@@ -214,7 +214,7 @@
 
 
             <!--      </span>-->
-            <section th:if="${searchResultListCount == 0}" style="width: 100%; text-align: center;">조회 결과가 없습니다.</section>
+            <section th:if="${searchResultListCount == 0}" style="width: 100%; text-align: center;">조회 결과가 없습니다ㅎㅎ.</section>
         </div>
     </seciton>
     <nav>
