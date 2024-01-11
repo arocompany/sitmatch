@@ -36,40 +36,25 @@ public class SearchImageCnService {
     @Autowired
     ResourceLoader resourceLoader;
 
-    @Value("${file.location2}")
-    private String fileLocation2;
-    @Value("${python.video.module}")
-    private String pythonVideoModule;
     @Value("${search.yandex.text.url}")
     private String textYandexUrl;
 
     @Value("${search.yandex.text.no_cache}")
     private String textYandexNocache;
-    @Value("${search.yandex.text.location}")
-    private String textYandexLocation;
-    @Value("${search.yandex.text.tbm}")
-    private String textYandexTbm;
     @Value("${search.yandex.text.api_key}")
     private String textYandexApikey;
-    @Value("${search.yandex.text.engine}")
-    private String textYandexEngine;
     @Value("${search.yandex.image.engine}")
     private String imageYandexEngine;
     @Value("${search.yandex.text.count.limit}")
     private String textYandexCountLimit;
-    @Value("${file.location1}")
-    private String fileLocation1;
     @Value("${file.location3}")
     private String fileLocation3;
-    @Value("${server.url}")
-    private String serverIp;
     @Value("${search.server.url}")
     private String serverIp2;
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
-    public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, byte tsiTwitter, String tsiType, SearchInfoEntity insertResult, String folder,
-                       SearchInfoDto searchInfoDto){
+    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
         log.info("== searchImageCnService 진입 ==");
         String tsrSns = "11";
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
@@ -85,10 +70,8 @@ public class SearchImageCnService {
         log.info("== searchSnsByImage 진입 ==");
         int index=0;
 
-        String textYandexGl = "cn";
-        String finalTextYandexGl1 = textYandexGl;
-
-        searchByImage(index, finalTextYandexGl1, searchImageUrl, searchInfoDto, tsrSns, insertResult);
+        String finalTextYandexGl = "cn";
+        searchByImage(index, finalTextYandexGl, searchImageUrl, searchInfoDto, tsrSns, insertResult);
     }
 
     public void searchByImage(int index, String finalTextYandexGl1, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
@@ -138,6 +121,7 @@ public class SearchImageCnService {
 
 
     public <INFO, RESULT> List<RESULT> searchYandex(int index, String finalTextYandexGl1, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+        log.debug("searchInfoDto: "+searchInfoDto +" tsrSns : "+tsrSns);
         String url = textYandexUrl
                 + "?gl=" + finalTextYandexGl1
                 + "&no_cache=" + textYandexNocache
@@ -145,12 +129,12 @@ public class SearchImageCnService {
                 + "&safe=off"
                 + "&filter=0"
                 + "&nfpr=0"
-                + "&start=" + String.valueOf(index * 10)
+                + "&start=" + index * 10
                 // + "&tbm=" + textYandexTbm
                 + "&engine=" + imageYandexEngine
                 + "&image_url=" + searchImageUrl;
 
-        log.info("searchYandex 진입");
+        log.debug("searchYandex 진입");
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
@@ -191,7 +175,6 @@ public class SearchImageCnService {
     public <RESULT> List<SearchResultEntity> saveYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
-        log.info("========= saveYandex 진입 =========");
 
         if (results == null) {
             log.info("result null");
@@ -240,6 +223,7 @@ public class SearchImageCnService {
         return sreList;
     }
 
+    /*
     public <RESULT> List<SearchResultEntity> saveGoogleReverseImageYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
@@ -291,6 +275,7 @@ public class SearchImageCnService {
 
         return sreList;
     }
+    */
 
     public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
         insertResult.setTsiStat("13");
@@ -299,12 +284,10 @@ public class SearchImageCnService {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
         // SearchInfoEntity updateResult = saveSearchInfo(insertResult);
-        SearchInfoEntity updateResult = searchService.saveSearchInfo_2(insertResult);
-
-        List<SearchResultEntity> searchResultEntity = result;
+        searchService.saveSearchInfo_2(insertResult);
 
         //SearchJobEntity sje = null;
-        for (SearchResultEntity sre : searchResultEntity) {
+        for (SearchResultEntity sre : result) {
             try {
                 SearchJobEntity sje = searchService.getSearchJobEntity(sre);
                 searchService.saveSearchJob(sje);

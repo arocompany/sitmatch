@@ -69,8 +69,7 @@ public class SearchImageUsService {
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
-    public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, byte tsiTwitter, String tsiType, SearchInfoEntity insertResult, String folder,
-                       SearchInfoDto searchInfoDto){
+    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
         String tsrSns = "11";
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);

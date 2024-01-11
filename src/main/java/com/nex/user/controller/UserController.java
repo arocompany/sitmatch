@@ -19,7 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
@@ -53,17 +52,12 @@ public class UserController {
         ModelAndView modelAndView = new ModelAndView();
 
         if (result.hasErrors()) {
-            modelAndView.addObject("errorMessage", "아이디와 비밀번호를 입력해주세요.");
+            modelAndView.addObject("errorMessage1", "아이디와 ");
+            modelAndView.addObject("errorMessage2", "비밀번호를 ");
+            modelAndView.addObject("errorMessage3", "입력해주세요.");
             modelAndView.setViewName("html/login");
             return modelAndView;
         }
-
-        /*
-        * 로그인 횟수 5번을 잰다.
-        * 5회 이상 틀리면 chk타임에 현재시간보다 10분 지난값을 넣음
-        * 로그인시 getChkLoginDt null이 아니고 현재시간보다 지나지 않았으면 조건1
-        *
-        * */
 
         if (userRepository.countByUserId(userLoginCheckDto.getLoginId()) > 0) { // 아이디가 있는지 확인
             UserEntity user = userRepository.findByUserId(userLoginCheckDto.getLoginId());
@@ -79,7 +73,8 @@ public class UserController {
                 if( !userChkLoginDt.before(currentDateTime) ){
                     log.info("5회 초과 현재시간이 더 커서 로그인 못함");
                     modelAndView.addObject("errorMessage1", userChkTime);
-                    modelAndView.addObject("errorMessage2", " 이후에 로그인 하실 수 있습니다.");
+                    modelAndView.addObject("errorMessage2", " 이후에 ");
+                    modelAndView.addObject("errorMessage3", "로그인 하실 수 있습니다.");
                     modelAndView.setViewName("html/login");
                 } else {
                     user.setChkYn("Y");
@@ -114,34 +109,13 @@ public class UserController {
 
                     // 로그인 성공 처리
                     // 세션이 있으면 있는 세션 반환, 없으면 신규 세션 설정
-                    HttpSession session = request.getSession();
-                    SessionInfoDto sessionInfo = SessionInfoDto.builder()
-                            .userUno(Math.toIntExact(user.getUserUno()))
-                            .userId(user.getUserId())
-                            .userNm(user.getUserNm())
-                            .crawling_limit(user.getCrawling_limit())
-                            .percent_limit(user.getPercent_limit())
-                            .build();
-
-                    if( user.getUserClfCd().equals("99") ) {
-                        sessionInfo.setAdmin(true);
-                        session.setAttribute(Consts.SESSION_IS_ADMIN, true);
-                    } else {
-                        sessionInfo.setAdmin(false);
-                        session.setAttribute(Consts.SESSION_IS_ADMIN, false);
-                    }
+                    setSession(request, user);
 
                     int userUno = Math.toIntExact(user.getUserUno());
                     String userId = user.getUserId();
                     log.info("userUno: "+userUno+" userId "+userId);
                     userService.loginHistInsert(userUno, userId);
 
-                    session.setAttribute(Consts.SESSION_USER_UNO, user.getUserUno());
-                    session.setAttribute(Consts.SESSION_USER_ID, user.getUserId());
-                    session.setAttribute(Consts.SESSION_USER_NM, user.getUserNm());
-                    session.setAttribute(Consts.SESSION_USER_CL, user.getCrawling_limit());
-                    session.setAttribute(Consts.SESSION_USER_PL, user.getPercent_limit());
-                    session.setAttribute(Consts.LOGIN_SESSION, sessionInfo);
                 } else {    // 로그인 실패
                     if (user.getUserChkCnt() >= 5) {
                         log.info("5번 넘으면 현재시간에서 10분 추가");
@@ -159,8 +133,11 @@ public class UserController {
                         user.setChkYn("N");
                         userRepository.save(user);
 
+                        String tenMinutesLaterTime = formatter.format(tenMinutesLaterTimestamp);
+
                         modelAndView.addObject("errorMessage1", "로그인 횟수를 초과하여 ");
-                        modelAndView.addObject("errorMessage2", tenMinutesLaterTimestamp + " 이후로 로그인 하실 수 있습니다.");
+                        modelAndView.addObject("errorMessage2", tenMinutesLaterTime + " 이후                           ");
+                        modelAndView.addObject("errorMessage3",  " 로그인 하실 수 있습니다.");
                         modelAndView.setViewName("html/login");
                     } else {
                         log.info("chkCnt만 추가");
@@ -168,7 +145,8 @@ public class UserController {
                         userRepository.save(user);
 
                         modelAndView.addObject("errorMessage1", "아이디");
-                        modelAndView.addObject("errorMessage2", " 또는 비밀번호를 다시 입력해주세요.");
+                        modelAndView.addObject("errorMessage2", " 또는 ");
+                        modelAndView.addObject("errorMessage3", "비밀번호를 다시 입력해주세요.");
                         modelAndView.setViewName("html/login");
                     }
                 }
@@ -177,7 +155,8 @@ public class UserController {
 
         } else {    // 로그인 실패
             modelAndView.addObject("errorMessage1", "아이디");
-            modelAndView.addObject("errorMessage2", " 또는 비밀번호를 다시 입력해주세요.");
+            modelAndView.addObject("errorMessage2", " 또는 ");
+            modelAndView.addObject("errorMessage3", "비밀번호를 다시 입력해주세요.");
             modelAndView.setViewName("html/login");
         }
         return modelAndView;
@@ -226,9 +205,7 @@ public class UserController {
         return modelAndView;
     }
 
-    /**
-     * 회원 정보 삭제
-     */
+    // 회원 정보 삭제
     @GetMapping("delete")
     public ModelAndView deleteCounselor(@RequestParam Optional<Long> userUno) {
         userUno.ifPresent(userService::deleteCounselor);
@@ -236,8 +213,8 @@ public class UserController {
     }
 
     @PostMapping("ajax_con_limit_update")
-    public void ajax_con_limit_update(@Valid UserLoginCheckDto userLoginCheckDto, BindingResult result, HttpServletRequest request) {
-        log.info("testtest////"+userLoginCheckDto.getUserUno()+'/'+userLoginCheckDto.getCrawling_limit()+'/'+userLoginCheckDto.getPercent_limit());
+    public void ajax_con_limit_update(@Valid UserLoginCheckDto userLoginCheckDto,  BindingResult result, HttpServletRequest request) {
+        log.info("testtest////"+userLoginCheckDto.getUserUno()+'/'+userLoginCheckDto.getCrawling_limit()+'/'+userLoginCheckDto.getPercent_limit()+result);
 
         if(userLoginCheckDto.getCrawling_limit().equals("무제한")){
             log.info("무제한임");
@@ -248,10 +225,12 @@ public class UserController {
             userRepository.ajax_con_limit_update(userLoginCheckDto.getUserUno(), userLoginCheckDto.getCrawling_limit(), userLoginCheckDto.getPercent_limit());
         }
 
-       // userRepository.ajax_con_limit_update(userLoginCheckDto.getUserUno(), userLoginCheckDto.getCrawling_limit(), userLoginCheckDto.getPercent_limit());
-        // userRepository.ajax_con_limit_update(userLoginCheckDto.getUserUno(), crawling_limit, userLoginCheckDto.getPercent_limit());
-
         UserEntity user = userRepository.findByUserUno(userLoginCheckDto.getUserUno());
+        setSession(request, user);
+
+    }
+
+    public void setSession(HttpServletRequest request, UserEntity user) {
         HttpSession session = request.getSession();
         SessionInfoDto sessionInfo = SessionInfoDto.builder()
                 .userUno(Math.toIntExact(user.getUserUno()))
@@ -276,4 +255,5 @@ public class UserController {
         session.setAttribute(Consts.LOGIN_SESSION, sessionInfo);
 
     }
+
 }

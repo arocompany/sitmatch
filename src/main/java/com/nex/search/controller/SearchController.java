@@ -134,16 +134,16 @@ public class SearchController {
         log.info("search진입 tsiKeyword "+searchInfoEntity.getTsiKeyword());
         // String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
         String tsiKeyword = searchInfoEntity.getTsiKeyword();
-        String tsiType = "";
+        String tsiType;
         byte tsiGoogle = searchInfoEntity.getTsiGoogle();
         byte tsiFacebook = searchInfoEntity.getTsiFacebook();
-        byte tsiTwitter = searchInfoEntity.getTsiTwitter();
+        // byte tsiTwitter = searchInfoEntity.getTsiTwitter();
         byte tsiInstagram = searchInfoEntity.getTsiInstagram();
         boolean isFile = !file.get().isEmpty();
 
         searchInfoEntity.setUserUno(sessionInfoDto.getUserUno());
         searchInfoEntity.setTsiStat("11");
-        SearchInfoEntity insertResult =  new SearchInfoEntity();
+        SearchInfoEntity insertResult;
 
         LocalDate now = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -224,20 +224,19 @@ public class SearchController {
         // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
 
         switch (tsiType) {
-            case "11": // 11:키워드
-                if(tsiGoogle == 1){
+            case "11" -> { // 11:키워드
+                if (tsiGoogle == 1) {
                     searchService.searchYandexYoutube("11", insertResult, searchInfoDto);
                     searchService.searchYandexText("11", insertResult, searchInfoDto);
-                    searchTextCnGoogleService.search(tsiGoogle, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextKrGoogleService.search(tsiGoogle, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextUsGoogleService.search(tsiGoogle, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextThGoogleService.search(tsiGoogle, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextRuGoogleService.search(tsiGoogle, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextVnGoogleService.search(tsiGoogle, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextNlGoogleService.search(tsiGoogle, tsiType, insertResult, folder, searchInfoDto);
+                    searchTextCnGoogleService.search(insertResult, searchInfoDto);
+                    searchTextKrGoogleService.search(insertResult, searchInfoDto);
+                    searchTextUsGoogleService.search(insertResult, searchInfoDto);
+                    searchTextThGoogleService.search(insertResult, searchInfoDto);
+                    searchTextRuGoogleService.search(insertResult, searchInfoDto);
+                    searchTextVnGoogleService.search(insertResult, searchInfoDto);
+                    searchTextNlGoogleService.search(insertResult, searchInfoDto);
                 }
-
-                if(tsiInstagram == 1){
+                if (tsiInstagram == 1) {
                     searchTextCnInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
                     searchTextKrInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
                     searchTextNlInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
@@ -246,74 +245,63 @@ public class SearchController {
                     searchTextUsInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
                     searchTextVnInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
                 }
-
-                if(tsiFacebook == 1) {
-                    searchTextCnFacebookService.search(tsiFacebook, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextKrFacebookService.search(tsiFacebook, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextNlFacebookService.search(tsiFacebook, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextRuFacebookService.search(tsiFacebook, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextThFacebookService.search(tsiFacebook, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextUsFacebookService.search(tsiFacebook, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextVnFacebookService.search(tsiFacebook, tsiType, insertResult, folder, searchInfoDto);
+                if (tsiFacebook == 1) {
+                    searchTextCnFacebookService.search(insertResult, searchInfoDto);
+                    searchTextKrFacebookService.search(insertResult, searchInfoDto);
+                    searchTextNlFacebookService.search(insertResult, searchInfoDto);
+                    searchTextRuFacebookService.search(insertResult, searchInfoDto);
+                    searchTextThFacebookService.search(insertResult, searchInfoDto);
+                    searchTextUsFacebookService.search(insertResult, searchInfoDto);
+                    searchTextVnFacebookService.search(insertResult, searchInfoDto);
                 }
-
-                break;
-            case "13": // 13:키워드+이미지
+            }
+            case "13" -> { // 13:키워드+이미지
                 searchImageGoogleLensService.searchYandexByGoogleLensImage("11", insertResult);
-                if(tsiGoogle == 1){
-                    searchTextImageCnGoogleService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageKrGoogleService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageNlGoogleService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageRuGoogleService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageThGoogleService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageUsGoogleService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageVnGoogleService.search(insertResult, folder, searchInfoDto);
+                if (tsiGoogle == 1) {
+                    searchTextImageCnGoogleService.search(insertResult, searchInfoDto);
+                    searchTextImageKrGoogleService.search(insertResult, searchInfoDto);
+                    searchTextImageNlGoogleService.search(insertResult, searchInfoDto);
+                    searchTextImageRuGoogleService.search(insertResult, searchInfoDto);
+                    searchTextImageThGoogleService.search(insertResult, searchInfoDto);
+                    searchTextImageUsGoogleService.search(insertResult, searchInfoDto);
+                    searchTextImageVnGoogleService.search(insertResult, searchInfoDto);
                 }
-
-                if(tsiInstagram == 1) {
-                    searchTextImageCnInstagramService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageKrInstagramService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageNlInstagramService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageRuInstagramService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageThInstagramService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageUsInstagramService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageVnInstagramService.search(insertResult, folder, searchInfoDto);
+                if (tsiInstagram == 1) {
+                    searchTextImageCnInstagramService.search(insertResult, searchInfoDto);
+                    searchTextImageKrInstagramService.search(insertResult, searchInfoDto);
+                    searchTextImageNlInstagramService.search(insertResult, searchInfoDto);
+                    searchTextImageRuInstagramService.search(insertResult, searchInfoDto);
+                    searchTextImageThInstagramService.search(insertResult, searchInfoDto);
+                    searchTextImageUsInstagramService.search(insertResult, searchInfoDto);
+                    searchTextImageVnInstagramService.search(insertResult, searchInfoDto);
                 }
-
-                if(tsiFacebook == 1) {
-                    searchTextImageCnFacebookService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageKrFacebookService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageNlFacebookService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageRuFacebookService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageThFacebookService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageUsFacebookService.search(insertResult, folder, searchInfoDto);
-                    searchTextImageVnFacebookService.search(insertResult, folder, searchInfoDto);
+                if (tsiFacebook == 1) {
+                    searchTextImageCnFacebookService.search(insertResult, searchInfoDto);
+                    searchTextImageKrFacebookService.search(insertResult, searchInfoDto);
+                    searchTextImageNlFacebookService.search(insertResult, searchInfoDto);
+                    searchTextImageRuFacebookService.search(insertResult, searchInfoDto);
+                    searchTextImageThFacebookService.search(insertResult, searchInfoDto);
+                    searchTextImageUsFacebookService.search(insertResult, searchInfoDto);
+                    searchTextImageVnFacebookService.search(insertResult, searchInfoDto);
                 }
-
-                break;
-            case "15": // 15:키워드+영상
-                searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
-
-                break;
-            case "17": // 17:이미지
+            }
+            case "15" -> // 15:키워드+영상
+                    searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
+            case "17" -> { // 17:이미지
                 log.info("== case17 진입 ==");
                 // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
 
                 searchImageGoogleLensService.searchYandexByGoogleLensImage("11", insertResult);
-
-                searchImageCnService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
-                searchImageKrService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
-                searchImageNlService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
-                searchImageRuService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
-                searchImageThService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
-                searchImageUsService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
-                searchImageVnService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
-
-                break;
-            case "19": // 19: 영상
-                searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
-                break;
-
+                searchImageCnService.search(insertResult, searchInfoDto);
+                searchImageKrService.search(insertResult, searchInfoDto);
+                searchImageNlService.search(insertResult, searchInfoDto);
+                searchImageRuService.search(insertResult, searchInfoDto);
+                searchImageThService.search(insertResult, searchInfoDto);
+                searchImageUsService.search(insertResult, searchInfoDto);
+                searchImageVnService.search(insertResult, searchInfoDto);
+            }
+            case "19" -> // 19: 영상
+                    searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
         }
 
        // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
@@ -454,8 +442,7 @@ public class SearchController {
     }
 
     @GetMapping("/deleteTsiUnos")
-    public String deleteSearchInfo(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
-                                  , @RequestParam(value="tsiUnosValue", required=false) List<Integer> tsiUnosValue) {
+    public String deleteSearchInfo(@RequestParam(value="tsiUnosValue", required=false) List<Integer> tsiUnosValue) {
         log.info("tsiUnos: "+tsiUnosValue);
         searchService.deleteTsiUnos(tsiUnosValue);
         return "success";
@@ -463,15 +450,13 @@ public class SearchController {
 
 
     @GetMapping("deleteSearchInfo")
-    public String deleteSearchInfo(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
-                                   @RequestParam Optional<Integer> tsiUno) {
+    public String deleteSearchInfo(@RequestParam Optional<Integer> tsiUno) {
         tsiUno.ifPresent(searchService::deleteSearchInfo);
         return "success";
     }
 
     @GetMapping("deleteMornitoringInfo")
-    public String deleteMornitoringInfo(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
-                                        @RequestParam Optional<Integer> tsrUno) {
+    public String deleteMornitoringInfo(@RequestParam Optional<Integer> tsrUno) {
         tsrUno.ifPresent(searchService::deleteMornitoringInfo);
         return "success";
     }
@@ -479,17 +464,17 @@ public class SearchController {
     @GetMapping("addTrkStat")
     public String addTrkStat(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                              @RequestParam Optional<Integer> tsrUno) {
-        int userUno = sessionInfoDto.getUserUno();
-        Integer tsrUno2 = tsrUno.get();
-        String userId = sessionInfoDto.getUserId();
-        searchService.addTrkStat(userUno,userId, tsrUno2);
+        if(tsrUno.isPresent()){
+            int userUno = sessionInfoDto.getUserUno();
+            String userId = sessionInfoDto.getUserId();
+            searchService.addTrkStat(userUno,userId, tsrUno.get());
+        }
         // tsrUno.ifPresent(searchService::addTrkStat);
         return "success";
     }
 
     @GetMapping("setTrkHistMemo")
-    public String setTrkHistMemo(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
-                                 @RequestParam Optional<Integer> tsrUno,
+    public String setTrkHistMemo(@RequestParam Optional<Integer> tsrUno,
                                  @RequestParam(required = false, defaultValue = "") String memo) {
         tsrUno.ifPresent(integer -> searchService.setTrkHistMemo(integer, memo));
         return "success";

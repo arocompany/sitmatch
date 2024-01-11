@@ -3,13 +3,10 @@ package com.nex.Chart.repo;
 import com.nex.Chart.dto.DeleteComptHistDto;
 import com.nex.Chart.dto.DeleteComptHistExcelDto;
 import com.nex.Chart.entity.DeleteComptHistEntity;
-import jakarta.persistence.*;
-import lombok.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 @Repository

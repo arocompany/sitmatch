@@ -68,8 +68,7 @@ public class SearchTextNlGoogleService {
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
-    public void search(byte tsiGoogle, String tsiType, SearchInfoEntity insertResult, String folder,
-                       SearchInfoDto searchInfoDto){
+    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
         String tsrSns = "11";
         // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
         searchSnsByText(tsrSns, insertResult, searchInfoDto);

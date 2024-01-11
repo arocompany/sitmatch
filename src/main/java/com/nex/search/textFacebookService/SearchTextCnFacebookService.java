@@ -37,41 +37,20 @@ public class SearchTextCnFacebookService {
     @Autowired
     ResourceLoader resourceLoader;
 
-    @Value("${file.location2}")
-    private String fileLocation2;
-    @Value("${python.video.module}")
-    private String pythonVideoModule;
     @Value("${search.yandex.text.url}")
     private String textYandexUrl;
-
     @Value("${search.yandex.text.no_cache}")
     private String textYandexNocache;
     @Value("${search.yandex.text.location}")
     private String textYandexLocation;
-    @Value("${search.yandex.text.tbm}")
-    private String textYandexTbm;
     @Value("${search.yandex.text.api_key}")
     private String textYandexApikey;
-    @Value("${search.yandex.text.engine}")
-    private String textYandexEngine;
-    @Value("${search.yandex.image.engine}")
-    private String imageYandexEngine;
     @Value("${search.yandex.text.count.limit}")
     private String textYandexCountLimit;
-    @Value("${file.location1}")
-    private String fileLocation1;
-    @Value("${file.location3}")
-    private String fileLocation3;
-    @Value("${server.url}")
-    private String serverIp;
-    @Value("${search.server.url}")
-    private String serverIp2;
-
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
-    public void search(byte tsiFacebook, String tsiType, SearchInfoEntity insertResult, String folder,
-                       SearchInfoDto searchInfoDto){
+    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
         String tsrSns = "17";
         // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
         searchSnsByText(tsrSns, insertResult, searchInfoDto);
@@ -80,8 +59,7 @@ public class SearchTextCnFacebookService {
     public void searchSnsByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) {
         int index=0;
 
-        String textYandexGl = "cn";
-        String finalTextYandexGl1 = textYandexGl;
+        String finalTextYandexGl1 ="cn";
 
         // String tsiKeywordHiddenValue = "인스타그램 "+searchInfoDto.getTsiKeywordHiddenValue();
         searchByText(index, finalTextYandexGl1, tsrSns, insertResult, searchInfoDto);
@@ -120,8 +98,7 @@ public class SearchTextCnFacebookService {
                         return null;
                     }
                 }).thenAccept((r) -> {
-                    try {
-                        // yandex검색을 통해 결과 db에 적재.
+                    try { // yandex검색을 통해 결과 db에 적재.
                         saveImgSearchYandex(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -137,8 +114,6 @@ public class SearchTextCnFacebookService {
     }
 
     public <INFO, RESULT> List<RESULT> searchTextYandex(int index, SearchInfoDto searchInfoDto, String tsrSns, String textYandexGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        log.info("============== searchTextYandex진입 =================");
-        log.info("============== searchTextYandex index: "+index+ " textYandexGl: "+textYandexGl + " tsrSns: "+tsrSns);
         String tsiKeywordHiddenValue = "페이스북 " + searchInfoDto.getTsiKeywordHiddenValue();
 
         String url = textYandexUrl
@@ -146,15 +121,15 @@ public class SearchTextCnFacebookService {
                 + "&gl=" + textYandexGl
                 + "&no_cache=" + textYandexNocache
                 + "&location=" + textYandexLocation
-                + "&start=" + String.valueOf(index * 10)
+                + "&start=" + index * 10
                 + "&api_key=" + textYandexApikey
                 + "&safe=off"
                 + "&filter=0"
                 + "&nfpr=0"
                 + "&engine=google";
 
-        log.info("tsiKeywordHiddenValue: " +tsiKeywordHiddenValue);
-        log.info("searchTextYandex url: " +url);
+        // log.info("tsiKeywordHiddenValue: " +tsiKeywordHiddenValue);
+        log.debug("searchTextYandex url: " +url);
 
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
@@ -172,12 +147,10 @@ public class SearchTextCnFacebookService {
             if (getErrorFn.apply(info) == null) {
                 results = getResultFn.apply(info);
             }
-            /*
-            log.info("mapper: "+ mapper);
-            log.info("jsonInString: "+ jsonInString);
-            log.info("info: "+ info);
-            */
-            log.info("searchTextYandex results: "+results);
+
+            // log.info("mapper: "+ mapper);
+            log.debug("jsonInString: "+ jsonInString);
+            log.debug("searchTextYandex results: "+results);
 
         }
 
@@ -193,7 +166,8 @@ public class SearchTextCnFacebookService {
     public <RESULT> List<SearchResultEntity> saveYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
-        log.info("=========== saveYandex 진입 ==============");
+        log.debug("=========== saveYandex 진입 ==============");
+
         if (results == null) {
             loop=false;
             return null;
@@ -245,10 +219,10 @@ public class SearchTextCnFacebookService {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
 
-        SearchInfoEntity updateResult = searchService.saveSearchInfo_2(insertResult);
-        List<SearchResultEntity> searchResultEntity = result;
+        searchService.saveSearchInfo_2(insertResult);
+        // List<SearchResultEntity> searchResultEntity = result;
 
-        for (SearchResultEntity sre : searchResultEntity) {
+        for (SearchResultEntity sre : result) {
             try {
                 SearchJobEntity sje = searchService.getSearchJobEntity(sre);
                 searchService.saveSearchJob(sje);
@@ -261,7 +235,6 @@ public class SearchTextCnFacebookService {
                 e.printStackTrace();
             }
         }
-
         return "저장 완료";
     }
 
@@ -323,10 +296,7 @@ public class SearchTextCnFacebookService {
                 } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-            } else {
-                return;
             }
-
         });
 
         // results.get();

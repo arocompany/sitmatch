@@ -38,39 +38,20 @@ public class SearchTextCnGoogleService {
     @Autowired
     ResourceLoader resourceLoader;
 
-    @Value("${file.location2}")
-    private String fileLocation2;
-    @Value("${python.video.module}")
-    private String pythonVideoModule;
     @Value("${search.yandex.text.url}")
     private String textYandexUrl;
-
     @Value("${search.yandex.text.no_cache}")
     private String textYandexNocache;
     @Value("${search.yandex.text.location}")
     private String textYandexLocation;
-    @Value("${search.yandex.text.tbm}")
-    private String textYandexTbm;
     @Value("${search.yandex.text.api_key}")
     private String textYandexApikey;
-    @Value("${search.yandex.text.engine}")
-    private String textYandexEngine;
-    @Value("${search.yandex.image.engine}")
-    private String imageYandexEngine;
     @Value("${search.yandex.text.count.limit}")
     private String textYandexCountLimit;
-    @Value("${file.location1}")
-    private String fileLocation1;
-    @Value("${file.location3}")
-    private String fileLocation3;
-    @Value("${server.url}")
-    private String serverIp;
-
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
-    public void search(byte tsiGoogle, String tsiType, SearchInfoEntity insertResult, String folder,
-                       SearchInfoDto searchInfoDto){
+    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
         String tsrSns = "11";
         // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
         searchSnsByText(tsrSns, insertResult, searchInfoDto);
@@ -80,10 +61,8 @@ public class SearchTextCnGoogleService {
         int index=0;
 
         String textYandexGl = "cn";
-        String finalTextYandexGl1 = textYandexGl;
+        searchByText(index, textYandexGl, tsrSns, insertResult, searchInfoDto);
 
-        String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
-        searchByText(index, finalTextYandexGl1, tsrSns, insertResult, searchInfoDto);
     }
 
     public void searchByText(int index, String finalTextYandexGl1, String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
@@ -136,32 +115,22 @@ public class SearchTextCnGoogleService {
     }
 
     public <INFO, RESULT> List<RESULT> searchTextYandex(int index, SearchInfoDto searchInfoDto, String tsrSns, String textYandexGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        log.info("============== searchTextYandex index: "+index+ " textYandexGl"+textYandexGl);
+        log.debug("============== searchTextYandex index: "+index+ " textYandexGl"+textYandexGl+" tsrSns: "+tsrSns);
         String tsiKeywordHiddenValue2 = searchInfoDto.getTsiKeywordHiddenValue();
-
-        //인스타
-        if ("15".equals(tsrSns)) {
-            tsiKeywordHiddenValue2 = "인스타그램 " + tsiKeywordHiddenValue2;
-        }
-        //페북
-        else if ("17".equals(tsrSns)) {
-            tsiKeywordHiddenValue2 = "페이스북 " + tsiKeywordHiddenValue2;
-        }
 
         String url = textYandexUrl
                 + "?q=" + tsiKeywordHiddenValue2
                 + "&gl=" + textYandexGl
                 + "&no_cache=" + textYandexNocache
                 + "&location=" + textYandexLocation
-                + "&start=" + String.valueOf(index * 10)
+                + "&start=" + index * 10
                 + "&api_key=" + textYandexApikey
                 + "&safe=off"
                 + "&filter=0"
                 + "&nfpr=0"
                 + "&engine=google";
 
-        log.info("tsiKeywordHiddenValue2" +tsiKeywordHiddenValue2);
-        log.info("searchTextYandex url: " +url);
+        log.debug("searchTextYandex url: " +url);
 
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
@@ -200,7 +169,7 @@ public class SearchTextCnGoogleService {
     public <RESULT> List<SearchResultEntity> saveYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
-        log.info("=========== saveYandex 진입 ==============");
+        log.debug("=========== saveYandex 진입 ==============");
         if (results == null) {
             loop=false;
             return null;
@@ -210,7 +179,6 @@ public class SearchTextCnGoogleService {
         List<SearchResultEntity> sreList = new ArrayList<>();
 
         for (RESULT result : results) {
-
             try {
                 String imageUrl = getOriginalFn.apply(result);
                 log.info("imageUrl1: "+imageUrl);
@@ -244,17 +212,15 @@ public class SearchTextCnGoogleService {
     }
 
     public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
-        log.info("==========saveImgSearchYandex 진입==========");
+        log.debug("==========saveImgSearchYandex 진입==========");
         insertResult.setTsiStat("13");
 
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
 
-        SearchInfoEntity updateResult = searchService.saveSearchInfo_2(insertResult);
-        List<SearchResultEntity> searchResultEntity = result;
-
-        for (SearchResultEntity sre : searchResultEntity) {
+        searchService.saveSearchInfo_2(insertResult);
+        for (SearchResultEntity sre : result) {
             try {
                 SearchJobEntity sje = searchService.getSearchJobEntity(sre);
                 searchService.saveSearchJob(sje);
@@ -272,7 +238,7 @@ public class SearchTextCnGoogleService {
     }
 
     public void CompletableFutureYandexByText(int index, String tsrSns, String textYandexGl, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) throws ExecutionException, InterruptedException {
-        log.info("--------------- CompletableFutureYandexByText index 값: " + index+ " textYandexGl: " + textYandexGl);
+        log.debug("--------------- CompletableFutureYandexByText index 값: " + index+ " textYandexGl: " + textYandexGl);
 
         index++;
         int finalIndex = index;
@@ -328,13 +294,8 @@ public class SearchTextCnGoogleService {
                 } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-            } else {
-                return;
             }
-
         });
-
-        // results.get();
 
     }
 

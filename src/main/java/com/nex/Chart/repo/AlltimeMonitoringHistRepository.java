@@ -4,13 +4,11 @@ import com.nex.Chart.dto.AllTimeCntDto;
 import com.nex.Chart.dto.AllTimeCntExcelDto;
 import com.nex.Chart.dto.AllTimeMonitoringHistDto;
 import com.nex.Chart.entity.AlltimeMonitoringHistEntity;
-import com.nex.Chart.entity.DeleteComptHistEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface AlltimeMonitoringHistRepository extends JpaRepository<AlltimeMonitoringHistEntity, Long> {

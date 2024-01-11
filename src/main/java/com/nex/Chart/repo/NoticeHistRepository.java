@@ -3,7 +3,6 @@ package com.nex.Chart.repo;
 import com.nex.Chart.dto.NoticeHistDto;
 import com.nex.Chart.dto.NoticeListExcelDto;
 import com.nex.Chart.entity.NoticeHistEntity;
-import com.nex.user.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
