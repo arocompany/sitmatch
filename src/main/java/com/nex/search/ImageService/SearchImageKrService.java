@@ -94,6 +94,7 @@ public class SearchImageKrService {
                         return searchYandex(index, finalTextYandexGl1,searchImageUrl,searchInfoDto, tsrSns, YandexByImageResult.class, YandexByImageResult::getError, YandexByImageResult::getInline_images);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
+                        loop = false;
                         return null;
                     }
                 }).thenApply((r) -> {
@@ -116,6 +117,7 @@ public class SearchImageKrService {
                     }
                 }).thenApplyAsync((r) -> {
                     try {// db에 적재.
+                        if(r == null){ return null; }
                         return saveImgSearchYandex(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -216,6 +218,7 @@ public class SearchImageKrService {
                         // text기반 yandex 검색
                         return searchYandex(finalIndex, finalTextYandexGl1, searchImageUrl, searchInfoDto,tsrSns, YandexByImageResult.class, YandexByImageResult::getError, YandexByImageResult::getInline_images);
                     } catch (Exception e) {
+                        loop = false;
                         log.error(e.getMessage(), e);
                         return null;
                     }
@@ -241,6 +244,7 @@ public class SearchImageKrService {
                 }).thenApplyAsync((r) -> {
                     try {
                         // yandex검색을 통해 결과 db에 적재.
+                        if(r==null){ return null; }
                         return saveImgSearchYandex(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
