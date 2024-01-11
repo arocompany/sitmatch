@@ -46,8 +46,16 @@ public class TrackingSearchInfoService {
         }
 
         searchInfoEntityByTsiUno.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
-        searchInfoEntityByTsiUno.setTsiAlltimeMonitoring(searchInfoEntityByTsiUno.getTsiAlltimeMonitoring()+monitoringAllTime);
 
+        log.info("Timestamp.valueOf(LocalDateTime.now()): "+Timestamp.valueOf(LocalDateTime.now()));
+
+        return searchInfoEntityByTsiUno;
+    }
+
+    public SearchInfoEntity getSearchInfoEntity3(SearchInfoEntity searchInfoEntityByTsiUno, SearchResultEntity searchResultEntity) {
+        log.info("getSearchInfoEntity3 진입" + searchInfoEntityByTsiUno.getTsiUno());
+
+        searchInfoEntityByTsiUno.setTsiAlltimeDt(Timestamp.valueOf(LocalDateTime.now()));
         log.info("Timestamp.valueOf(LocalDateTime.now()): "+Timestamp.valueOf(LocalDateTime.now()));
 
         return searchInfoEntityByTsiUno;

@@ -58,6 +58,9 @@ public class SearchInfoEntity {
     @Column(name = "LST_DML_DT")
     private Timestamp lstDmlDt;
     @Basic
+    @Column(name = "TSI_ALLTIME_DT")
+    private Timestamp tsiAlltimeDt;
+    @Basic
     @Column(name = "TSI_IMG_REAL_PATH")
     private String tsiImgRealPath;
     @Basic
@@ -218,6 +221,14 @@ public class SearchInfoEntity {
 
     public void setFstDmlDt(Timestamp fstDmlDt) {
         this.fstDmlDt = fstDmlDt;
+    }
+
+    public Timestamp getTsiAlltimeDt() {
+        return tsiAlltimeDt;
+    }
+
+    public void setTsiAlltimeDt(Timestamp tsiAlltimeDt) {
+        this.tsiAlltimeDt = tsiAlltimeDt;
     }
 
     public Timestamp getLstDmlDt() {

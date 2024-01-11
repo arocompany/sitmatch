@@ -38,4 +38,7 @@ public class AlltimeMonitoringHistEntity {
     @Column(name = "TAM_YN")
     private String tamYn;
 
+    // 필요한것
+    // tsiUno, 시간,
+
 }
