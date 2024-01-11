@@ -2951,8 +2951,8 @@ public class SearchService {
             // return searchResultRepository.getNoticeList(pageRequest, percent);
             return searchResultRepository.getNoticeList(pageRequest);
         } else {
+            return StringUtils.hasText(tsiKeyword) ? searchResultRepository.getNoticeSelList(pageRequest, tsiUno, tsiKeyword) : searchResultRepository.getNoticeSelListEmptyKeyword(pageRequest, tsiUno);
             // return searchResultRepository.getNoticeSelList(pageRequest, tsiUno, percent, tsiKeyword);
-            return searchResultRepository.getNoticeSelList(pageRequest, tsiUno, tsiKeyword);
         }
     }
 

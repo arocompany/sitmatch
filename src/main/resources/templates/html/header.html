@@ -36,7 +36,7 @@
                   <li>무제한</li>
                 </ul>
               </div>
-              <h2>유사도 가중치 설정</h2>
+              <h2>유사도 일치율 설정</h2>
               <div class="selection setUnity">
                 <button type="button" th:if="${sessionInfo.getPercent_limit() != 0}" th:text="${sessionInfo.getPercent_limit()}">500</button>
                 <input type="hidden" class="bor10 M-box-in" name="unity-set" id="unity-set" th:value="${sessionInfo.getPercent_limit()}">

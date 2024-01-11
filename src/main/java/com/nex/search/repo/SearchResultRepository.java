@@ -74,6 +74,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
             " LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO " +
             " WHERE TSI.TSI_UNO = :tsiUno AND TSI.TSI_KEYWORD LIKE CONCAT('%',:tsiKeyword,'%')  ";
+
+    String from_6 = " from  tb_search_info TSI " +
+            " INNER JOIN tb_search_result TSR ON TSR.TSI_UNO = TSI.TSI_UNO " +
+            " LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
+            " LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
+            " LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO " +
+            " WHERE TSI.TSI_UNO = :tsiUno ";
     String from_2 = " from  tb_search_info TSI " +
             " INNER JOIN tb_search_result TSR ON TSR.TSI_UNO = TSI.TSI_UNO " +
             " LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
@@ -1706,6 +1713,9 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     /*@Query(value = defaultQeury_3+from_5+" WHERE TSI.TSI_UNO = :tsiuno AND TSI.TSI_KEYWORD like :keyword AND TMR.TMR_STAT = '11' "+whereSimilarity_2 , nativeQuery = true, countQuery = countQuery+from_2+" WHERE TSI.TSI_UNO = :tsiuno AND TSI.TSI_KEYWORD=:keyword AND TMR.TMR_STAT = '11'"+whereSimilarity_2)*/
     @Query(value = defaultQeury_3+from_5+setTmrStat11+whereSimilarity_3 , nativeQuery = true, countQuery = countQuery+from_5+setTmrStat11+whereSimilarity_3)
     Page<DefaultQueryDtoInterface> getNoticeSelList(Pageable pageable, Integer tsiUno, String tsiKeyword);
+
+    @Query(value = defaultQeury_3+from_6+setTmrStat11+whereSimilarity_3 , nativeQuery = true, countQuery = countQuery+from_6+setTmrStat11+whereSimilarity_3)
+    Page<DefaultQueryDtoInterface> getNoticeSelListEmptyKeyword(Pageable pageable, Integer tsiUno);
     //추적이력 삭제
     @Transactional
     @Modifying

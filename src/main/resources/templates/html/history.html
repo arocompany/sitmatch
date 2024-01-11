@@ -214,7 +214,7 @@
             <a class="url" style="width:100%" th:href="${traceHistoryList.getTsrSiteUrl()}" target="_blank" th:text="${traceHistoryList.getTsrSiteUrl()}">url이 들어갑니다</a>
             <p class="content" th:text="${traceHistoryList.getTsrTitle()}">내용이 들어갑니다</p>
             <p class="detail"><span class="detail-info">검색정보 :
-              <th:block th:switch="${tsiTypeMap.get(traceHistoryList.getTsiUno())}">
+              <th:block th:switch="${traceHistoryList.getTsiType()}">
                 <span th:case="11">키워드</span>
                 <span th:case="13">키워드 + 사진</span>
                 <span th:case="15">키워드 + 영상</span>
@@ -222,11 +222,11 @@
                 <span th:case="19">영상</span>
               </th:block>
                /
-              <span th:text="${tsiKeyword.get(traceHistoryList.getTsiUno())}">키워드가 들어갑니다</span>
+              <span th:text="${traceHistoryList.tsiKeyword}">키워드가 들어갑니다</span>
               <span th:text="${traceHistoryList.tsrImgName}">파일명이 들어갑니다</span>
                 </span>
               <span class="detail-time">
-                  검색일 : <span th:text="${#dates.format(tsiFstDmlDt.get(traceHistoryList.getTsiUno()), 'yyyy.MM.dd')}">2022.01.12</span>
+                  검색일 : <span th:text="${#dates.format(traceHistoryList.getTsrFstDmlDt(), 'yyyy.MM.dd')}">2022.01.12</span>
                 <!--<p th:text="${#dates.format(traceInfo.getTsrFstDmlDt(), 'yyyy-MM-dd')}">2023-01-02</p>-->
               </span>
             </p>
@@ -247,7 +247,7 @@
               <span class="detail-info">
                 상담사 : <span th:text="${traceHistoryList.getTuUserId()}"></span>
               </span>
-              <span th:data-uno="${traceHistoryList.getTsrUno()}" class="detail-time mdTime" id="lastMonitoringChkTime" style="width: 410px;" th:if="${traceHistoryList.getLastAlltimeHist() != null}">
+              <span th:data-uno="${traceHistoryList.getTsrUno()}" class="detail-time mdTime" id="lastMonitoringChkTime" style="width: 410px; color: #e87728;" th:if="${traceHistoryList.getLastAlltimeHist() != null}">
                 마지막 모니터링 체크시간: <span  th:text="${#strings.replace(traceHistoryList.getLastAlltimeHist(),'.0','')}"></span>
               </span>
             </p>
@@ -681,8 +681,14 @@
   chkBtn.forEach((btn) => {
     btn.addEventListener('click', () => {
       if(btn.getAttribute("tsiUno")) {
+        let url = '/notice?tsiUno=' + btn.getAttribute("tsiUno");
         // window.location.href = '/notice?tsrUno=' + btn.value + '&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno");
-        window.location.href = '/notice?'+'tsiKeyword=' + btn.getAttribute("tsiKeyword") + '&tsiUno=' + btn.getAttribute("tsiUno");
+        if(btn.getAttribute("tsiKeyword") !== null){
+          url += '&tsiKeyword=' + btn.getAttribute("tsiKeyword");
+        }
+
+        // console.info(btn.getAttribute("tsiKeyword"));
+        window.location.href = url;
       }else{
         alert('조회대상이 없습니다.');
       }

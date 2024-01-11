@@ -226,9 +226,9 @@ public class BaseController {
         modelAndView.addObject("countDelCmpl", traceHistoryMap.get("countDelCmpl"));       // 삭제완료
         modelAndView.addObject("allTimeMonitoringCnt", traceHistoryMap.get("allTimeMonitoringCnt")); // 24시간 모니터링
 
-        modelAndView.addObject("tsiTypeMap", searchService.getTsiTypeMap());
-        modelAndView.addObject("tsiKeyword", searchService.getTsiKeywordMap());
-        modelAndView.addObject("tsiFstDmlDt", searchService.getTsiFstDmlDtMap());
+//        modelAndView.addObject("tsiTypeMap", searchService.getTsiTypeMap());
+//        modelAndView.addObject("tsiKeyword", searchService.getTsiKeywordMap());
+//        modelAndView.addObject("tsiFstDmlDt", searchService.getTsiFstDmlDtMap());
 
         return modelAndView;
     }
@@ -404,7 +404,7 @@ public class BaseController {
     @GetMapping("/notice")
     public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
             , @RequestParam(required = false, defaultValue = "0", value = "tsiUno") Integer tsiUno
-            , @RequestParam(required = false,  defaultValue = "0", value = "tsiKeyword") String tsiKeyword
+            , @RequestParam(required = false, value = "tsiKeyword") String tsiKeyword
             , @RequestParam (required = false, defaultValue = "0") Integer tsrUno
             , @RequestParam(required = false, defaultValue = "1") Integer page) {
         // , @RequestParam(required = false, defaultValue = "80") String tsjStatus
