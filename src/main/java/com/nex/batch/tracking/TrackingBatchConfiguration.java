@@ -133,18 +133,22 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
         };
     }
 
+    @Bean
+    public ItemProcessor<SearchResultEntity, SearchResultEntity> allTimeResultProcessor() {
+        log.info("allTimeResultProcessor 진입");
+        return findSearchResult -> {
+            SearchResultEntity findSearchResult2 = searchResultRepository.findById(Long.parseLong(findSearchResult.getTsrUno()+"")).orElseThrow();
+            return trackingSearchResultService.getSearchResultEntity2(findSearchResult2, findSearchResult);
+        };
+    }
 /*
     @Bean
-    public ItemProcessor<SearchResultEntity, SearchInfoEntity> allTimeInfoTimeUpdateProcessor() {
-        log.info("allTimeInfoTimeUpdateProcessor 진입");
-        return findSearchResult -> {
-            SearchInfoEntity findSearchInfo = searchInfoRepository.findById(findSearchResult.getTsiUno()).orElseThrow();
-            return trackingSearchInfoService.getSearchInfoEntity3(findSearchInfo, findSearchResult);
+    public ItemProcessor<SearchResultEntity, SearchResultEntity> allTimeMonitoringSetTime() {
+        log.info("allTimeInfoProcessor 진입");
+        return trackingSearchInfoService.getSearchResultEntity2();
         };
     }
 */
-
-
     @Bean
     public JpaItemWriter<SearchInfoEntity> searchInfoWriter() {
         log.info("searchInfoWriter 진입");
@@ -166,7 +170,6 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
     }
 
     //************************** searchInfo 관련 END **************************
-
     @Bean
     public Step allTimeInfoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         log.info("allTimeInfoStep 진입");
@@ -179,21 +182,31 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .build();
     }
 
+    @Bean
+    public Step searchInfoMonitoringStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        log.info("searchInfoMonitoringStep 진입");
+        return new StepBuilder("searchInfoMonitoringStep", jobRepository)
+                .allowStartIfComplete(true)
+                .<SearchResultEntity, SearchResultEntity>chunk(CHUNK_SIZE, transactionManager)
+                .reader(allTimeInfoReader())
+                .processor(allTimeResultProcessor())
+              //  .writer(searchResultWriter())
+                .build();
+    }
+
 /*
     @Bean
-    public Step allTimeInfoTimeUpdateStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        log.info("allTimeInfoStep 진입");
-        return new StepBuilder("allTimeInfoTimeUpdateStep", jobRepository)
+    public Step allTimeMonitoringSetTimeStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        log.info("allTimeMonitoringSetTimeStep 진입");
+        return new StepBuilder("allTimeMonitoringSetTimeStep", jobRepository)
                 .allowStartIfComplete(true)
                 .<SearchResultEntity, SearchInfoEntity>chunk(CHUNK_SIZE, transactionManager)
                 .reader(allTimeInfoReader())
-                .processor(allTimeInfoTimeUpdateProcessor())
+                .processor(allTimeMonitoringSetTimeProcessor())
                 .writer(searchInfoWriter())
                 .build();
     }
 */
-
-
     //************************** searchResult 관련 START **************************
     @Bean
     public ItemReader<List<YandexImagesResult>> searchResultReader() {
@@ -316,6 +329,8 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
         return new JobBuilder("trackingJob", jobRepository)
                 .start(allTimeInfoStep(jobRepository, transactionManager)) // 검색현황
+                .next(searchInfoMonitoringStep(jobRepository, transactionManager)) // 검색현황 시간
+                // .next(allTimeMonitoringSetTimeStep(jobRepository, transactionManager)) // 마지막 모니터링 체크시간
                 .next(searchInfoStep(jobRepository, transactionManager))
                 .next(searchResultStep(jobRepository, transactionManager))
                 .next(searchJobStep(jobRepository, transactionManager))

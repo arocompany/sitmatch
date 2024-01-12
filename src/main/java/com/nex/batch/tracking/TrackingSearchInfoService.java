@@ -1,7 +1,10 @@
 package com.nex.batch.tracking;
 
 import com.nex.search.entity.SearchInfoEntity;
+import com.nex.search.entity.SearchInfoMonitoringHistoryEntity;
 import com.nex.search.entity.SearchResultEntity;
+import com.nex.search.repo.NewKeywordRepository;
+import com.nex.search.repo.SearchInfoMonitoringRepository;
 import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +26,7 @@ import java.util.UUID;
 public class TrackingSearchInfoService {
 
     private final SearchService searchService;
+    private final SearchInfoMonitoringRepository repository;
 
     @Value("${file.location1}")
     private String fileLocation1;
@@ -46,14 +50,22 @@ public class TrackingSearchInfoService {
         }
 
         searchInfoEntityByTsiUno.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
-        searchInfoEntityByTsiUno.setTsiAlltimeMonitoring(searchInfoEntityByTsiUno.getTsiAlltimeMonitoring() + monitoringAllTime);
+        // searchInfoEntityByTsiUno.setTsiAlltimeMonitoring(searchInfoEntityByTsiUno.getTsiAlltimeMonitoring() + monitoringAllTime);
+        SearchInfoMonitoringHistoryEntity searchInfoMonitoringHistoryEntity = new SearchInfoMonitoringHistoryEntity();
+        searchInfoMonitoringHistoryEntity.setTsiUno(searchInfoEntityByTsiUno.getTsiUno());
+
+        repository.save(searchInfoMonitoringHistoryEntity);
 
         log.info("Timestamp.valueOf(LocalDateTime.now()): "+Timestamp.valueOf(LocalDateTime.now()));
 
         return searchInfoEntityByTsiUno;
     }
 
-    public SearchInfoEntity getSearchInfoEntity3(SearchInfoEntity searchInfoEntityByTsiUno, SearchResultEntity searchResultEntity) {
+    public SearchResultEntity getSearchResultEntity2(SearchResultEntity searchResultEntityByTsrUno){
+        return searchResultEntityByTsrUno;
+    }
+
+    public SearchInfoEntity getSearchInfoEntity3(SearchInfoEntity searchInfoEntityByTsiUno, SearchInfoMonitoringHistoryEntity searchInfoMonitoringHistoryEntity) {
         log.info("getSearchInfoEntity3 진입" + searchInfoEntityByTsiUno.getTsiUno());
 
         // searchInfoEntityByTsiUno.setTsiAlltimeDt(Timestamp.valueOf(LocalDateTime.now()));

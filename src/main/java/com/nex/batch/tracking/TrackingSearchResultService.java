@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.RestTemplateConfig;
 import com.nex.common.Consts;
-import com.nex.search.entity.SearchInfoEntity;
-import com.nex.search.entity.SearchJobEntity;
-import com.nex.search.entity.SearchResultEntity;
+import com.nex.search.entity.*;
+import com.nex.search.repo.SearchInfoMonitoringRepository;
+import com.nex.search.repo.SearchResultMonitoringRepository;
 import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +24,9 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +40,7 @@ import java.util.function.Function;
 public class TrackingSearchResultService{
 
     private final SearchService searchService;
+    private final SearchResultMonitoringRepository repository;
 
     @Value("${search.yandex.text.url}")
     private String textYandexUrl;
@@ -689,5 +693,24 @@ public class TrackingSearchResultService{
         return sie;
     }
     */
+    public SearchResultEntity getSearchResultEntity2(SearchResultEntity searchResultEntityByTsrUno, SearchResultEntity searchResultEntity) {
+        log.info("getSearchResultEntity2 진입" + searchResultEntityByTsrUno.getTsrUno());
 
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDateTime = currentDateTime.format(formatter);
+        String monitoringAllTime = formattedDateTime+"   ";
+
+        log.info("monitoringAllTime: "+monitoringAllTime);
+
+        // searchInfoEntityByTsiUno.setTsiAlltimeMonitoring(searchInfoEntityByTsiUno.getTsiAlltimeMonitoring() + monitoringAllTime);
+        SearchResultMonitoringHistoryEntity searchResultMonitoringHistoryEntity = new SearchResultMonitoringHistoryEntity();
+        searchResultMonitoringHistoryEntity.setTsrUno(searchResultEntityByTsrUno.getTsrUno());
+
+        repository.save(searchResultMonitoringHistoryEntity);
+
+        log.info("Timestamp.valueOf(LocalDateTime.now()): "+Timestamp.valueOf(LocalDateTime.now()));
+
+        return searchResultEntityByTsrUno;
+    }
 }
