@@ -38,12 +38,15 @@ public class UserService {
         if(userRepository.countByUserId(userInfo.getUserId()) > 0) { // 아이디 중복 여부 확인
             return "중복된 아이디 입니다.";
         }
+/*
         if(userRepository.countByEmail(userInfo.getEmailId(), userInfo.getEmailDomain()) > 0) { // 이메일 중복 여부 확인
             return "중복된 이메일 입니다.";
         }
         if(userRepository.countByPhoneNum(userInfo.getPhoneNum1(), userInfo.getPhoneNum2(), userInfo.getPhoneNum3()) > 0) { // 핸드폰 중복 여부 확인
             return "중복된 핸드폰 번호 입니다.";
         }
+*/
+
         final UserEntity user = UserEntity.builder()
                 .userId(userInfo.getUserId())
                 .userPw(encryptUtil.getEncrypt(userInfo.getUserPw(), encryptUtil.getSalt()))

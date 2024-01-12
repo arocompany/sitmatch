@@ -248,7 +248,7 @@
                 상담사 : <span th:text="${traceHistoryList.getTuUserId()}"></span>
               </span>
               <span th:data-uno="${traceHistoryList.getTsrUno()}" class="detail-time mdTime" id="lastMonitoringChkTime" style="width: 410px; color: #e87728;" th:if="${traceHistoryList.getLastAlltimeHist() != null}">
-                마지막 모니터링 체크시간: <span  th:text="${#strings.replace(traceHistoryList.getTsiAlltimeMonitoring(),'.0','')}"></span>
+                마지막 모니터링 체크시간: <span  th:text="${#strings.replace(traceHistoryList.getLastAlltimeHist(),'.0','')}"></span>
               </span>
             </p>
 

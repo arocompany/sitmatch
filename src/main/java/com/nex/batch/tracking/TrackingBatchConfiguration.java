@@ -143,14 +143,16 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
         };
     }
 
+/*
     @Bean
     public ItemProcessor<SearchResultEntity, SearchInfoEntity> allTimeInfoTimeUpdateProcessor() {
-        log.info("allTimeInfoProcessor 진입");
+        log.info("allTimeInfoTimeUpdateProcessor 진입");
         return findSearchResult -> {
             SearchInfoEntity findSearchInfo = searchInfoRepository.findById(findSearchResult.getTsiUno()).orElseThrow();
             return trackingSearchInfoService.getSearchInfoEntity3(findSearchInfo, findSearchResult);
         };
     }
+*/
 
 
     @Bean
@@ -187,6 +189,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .build();
     }
 
+/*
     @Bean
     public Step allTimeInfoTimeUpdateStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         log.info("allTimeInfoStep 진입");
@@ -198,6 +201,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .writer(searchInfoWriter())
                 .build();
     }
+*/
 
 
     //************************** searchResult 관련 START **************************
@@ -322,8 +326,6 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
         return new JobBuilder("trackingJob", jobRepository)
                 .start(allTimeInfoStep(jobRepository, transactionManager)) // 검색현황
-                .next(allTimeInfoTimeUpdateStep(jobRepository, transactionManager)) // 기존 tsiUno에 배치시간 set
-                .next(allTimeInfoStep(jobRepository, transactionManager)) // 배치시간 이력 테이블에 insert
                 .next(searchInfoStep(jobRepository, transactionManager))
                 .next(searchResultStep(jobRepository, transactionManager))
                 .next(searchJobStep(jobRepository, transactionManager))

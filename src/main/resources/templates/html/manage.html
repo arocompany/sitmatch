@@ -159,9 +159,6 @@
         const pinchk = document.querySelector(".pin-check");
         const change = document.querySelector(".reg");
 
-        const pattern1 = /2805/;
-        const pattern2 = phoneNum3;
-
         // 정규식 추가
         // const regExpId = /^[a-z]+[a-z0-9]{3,19}$/g;   // 영문자로 시작하는 영문자 또는 숫자 4~20자
         const regExpId = /^(?=.*[a-z0-9])[a-z0-9]{3,25}$/   // 3자 이상 25자 이하, 영어 또는 숫자로 구성
@@ -222,7 +219,8 @@
             change.classList.remove('active');
             change.disabled = true;
             pinchk.innerText = `*비밀번호가 불일치합니다.`;
-          } /*else if(pattern1.test(userPw.value)){
+          }
+          /* else if(pattern1.test(userPw.value)){
             change.classList.remove('active');
             change.disabled = true;
             pinchk.innerText = `*개인정보가 포함된 비밀번호는 사용할 수 없습니다.`;
@@ -233,8 +231,6 @@
           } */
 
         }
-
-
 
         const isValid = () => {
           orgNm.value = orgNm.value.trim();
@@ -253,7 +249,9 @@
           } else if (checkPw.value.length === 0 || checkPw.value.trim() === "") {
             alert("비밀번호 확인을 입력해주세요.");
             return false;
-          } else if (userNm.value.length === 0 || userNm.value.trim() === "") {
+          }
+          /*
+          else if (userNm.value.length === 0 || userNm.value.trim() === "") {
             alert("이름을 입력해주세요.");
             return false;
           } else if (phoneNum.value.length === 0 || phoneNum.value.trim() === "") {
@@ -285,11 +283,48 @@
             phoneNum3.value = phoneNumArr[2];
             return true;
           }
+          */
         }
 
         // 등록 버튼
         const reg = document.querySelector(".counselor-btn .reg");
+
         reg.onclick = () => {
+          if(userId.value.length === 0 || userId.value.trim() === "") {
+            alert("아이디를 입력해주세요.");
+            return false;
+          } else if (!regExpId.test(userId.value)) {
+            alert("3자 이상 25자 이하, 영어 또는 숫자를 입력해주세요.");
+            return false;
+          } else if (userPw.value.length === 0 || userPw.value.trim() === "") {
+            alert("비밀번호를 입력해주세요.");
+            return false;
+          } else if (checkPw.value.length === 0 || checkPw.value.trim() === "") {
+            alert("비밀번호 확인을 입력해주세요.");
+            return false;
+          } else {
+            const formData = new FormData(counselorAddForm);
+            const payload = new URLSearchParams(formData);
+            fetch('/user/signup', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+              },
+              body: payload,
+            }).then((response) => response.text())
+                    .then((text) => {
+                      if(text === 'success') {
+                        window.location.href = '/manage';
+                      } else {
+                        alert(text);
+                      }
+                    })
+                    .catch(error => console.log(error));
+          }
+
+
+
+          /*
           if ( isValid() ) {
             const formData = new FormData(counselorAddForm);
             const payload = new URLSearchParams(formData);
@@ -312,6 +347,7 @@
           } else {
             console.log("checkValidation false");
           }
+          */
         }
 
         // 취소 버튼
@@ -452,11 +488,23 @@
           }
 
           modifyBtn.onclick = () => {
+            if (new_pw.value.length === 0 || new_pw.value.trim() === "") {
+              alert("비밀번호를 입력해주세요.");
+              return false;
+            } else if (check_pw.value.length === 0 || check_pw.value.trim() === "") {
+             alert("비밀번호 확인을 입력해주세요.");
+             return false;
+           } else {
+             counselorForm.submit();
+           }
+
+            /*
             if ( checkValidation() ) {
               counselorForm.submit();
             } else {
               console.log("checkValidation false");
             }
+            */
           }
 
           // 취소 버튼
