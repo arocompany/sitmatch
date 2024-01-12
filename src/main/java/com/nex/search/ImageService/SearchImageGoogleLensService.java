@@ -224,6 +224,7 @@ public class SearchImageGoogleLensService {
                     }
                 }).thenApplyAsync((r) -> {
                     try { // 결과 db에 적재.
+                        if(r==null){ return null; }
                         return saveImgSearchGoogleLens(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -261,6 +262,7 @@ public class SearchImageGoogleLensService {
                     }
                 }).thenApplyAsync((r) -> {
                     try { // 결과 db에 적재.
+                        if(r==null){ return null; }
                         return saveImgSearchGoogleLens(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -298,6 +300,7 @@ public class SearchImageGoogleLensService {
                     }
                 }).thenApplyAsync((r) -> {
                     try { // 결과 db에 적재.
+                        if(r==null){ return null; }
                         return saveImgSearchGoogleLens(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -335,6 +338,7 @@ public class SearchImageGoogleLensService {
                     }
                 }).thenApplyAsync((r) -> {
                     try { // 결과 db에 적재.
+                        if(r==null){ return null; }
                         return saveImgSearchGoogleLens(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -372,6 +376,7 @@ public class SearchImageGoogleLensService {
                     }
                 }).thenApplyAsync((r) -> {
                     try { // 결과 db에 적재.
+                        if(r == null){ return null; }
                         return saveImgSearchGoogleLens(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -409,6 +414,7 @@ public class SearchImageGoogleLensService {
                     }
                 }).thenApplyAsync((r) -> {
                     try { // 결과 db에 적재.
+                        if(r == null) { return null; }
                         return saveImgSearchGoogleLens(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -850,17 +856,19 @@ public class SearchImageGoogleLensService {
         searchService.saveSearchInfo_2(insertResult);
         List<SearchResultEntity> searchResultEntity = result;
 
-        for (SearchResultEntity sre : searchResultEntity) {
-            try {
-                SearchJobEntity sje = searchService.getSearchJobEntity(sre);
-                searchService.saveSearchJob(sje);
-            } catch (JpaSystemException e) {
-                log.error(e.getMessage());
-                e.printStackTrace();
-                throw new JpaSystemException(e);
-            } catch (Exception e) {
-                log.error(e.getMessage());
-                e.printStackTrace();
+        if(searchResultEntity != null) {
+            for (SearchResultEntity sre : searchResultEntity) {
+                try {
+                    SearchJobEntity sje = searchService.getSearchJobEntity(sre);
+                    searchService.saveSearchJob(sje);
+                } catch (JpaSystemException e) {
+                    log.error(e.getMessage());
+                    e.printStackTrace();
+                    throw new JpaSystemException(e);
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                    e.printStackTrace();
+                }
             }
         }
         return "저장 완료";

@@ -10,7 +10,7 @@
         <span class="counselor">체크 유무</span>
       </h2>
 
-      <ul class="history-list history-search-list">
+      <ul class="history-list history-search-list" style="height: 200px; overflow: scroll;">
         <li class="btn-off bor10" style="margin-top: 10px; height: 35px;" th:each="list:${allTimeMonitoringHistList}">
           <p class="num" style="margin-left: 105px;" th:text="${#strings.replace(list.getClkDmlDt(),'.0','')}"></p>
           <p class="counselor" style="margin-right: 200px;" th:text="${list.getTamYn()}"></p>

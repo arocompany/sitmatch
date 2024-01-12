@@ -226,7 +226,7 @@ public class BaseController {
         modelAndView.addObject("countDelCmpl", traceHistoryMap.get("countDelCmpl"));       // 삭제완료
         modelAndView.addObject("allTimeMonitoringCnt", traceHistoryMap.get("allTimeMonitoringCnt")); // 24시간 모니터링
 
-//        modelAndView.addObject("tsiTypeMap", searchService.getTsiTypeMap());
+       modelAndView.addObject("tsiTypeMap", searchService.getTsiTypeMap());
 //        modelAndView.addObject("tsiKeyword", searchService.getTsiKeywordMap());
 //        modelAndView.addObject("tsiFstDmlDt", searchService.getTsiFstDmlDtMap());
 

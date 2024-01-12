@@ -144,6 +144,16 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
     }
 
     @Bean
+    public ItemProcessor<SearchResultEntity, SearchInfoEntity> allTimeInfoTimeUpdateProcessor() {
+        log.info("allTimeInfoProcessor 진입");
+        return findSearchResult -> {
+            SearchInfoEntity findSearchInfo = searchInfoRepository.findById(findSearchResult.getTsiUno()).orElseThrow();
+            return trackingSearchInfoService.getSearchInfoEntity3(findSearchInfo, findSearchResult);
+        };
+    }
+
+
+    @Bean
     public JpaItemWriter<SearchInfoEntity> searchInfoWriter() {
         log.info("searchInfoWriter 진입");
         JpaItemWriter<SearchInfoEntity> writer = new JpaItemWriter<>();
@@ -176,6 +186,19 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .writer(searchInfoWriter())
                 .build();
     }
+
+    @Bean
+    public Step allTimeInfoTimeUpdateStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        log.info("allTimeInfoStep 진입");
+        return new StepBuilder("allTimeInfoTimeUpdateStep", jobRepository)
+                .allowStartIfComplete(true)
+                .<SearchResultEntity, SearchInfoEntity>chunk(CHUNK_SIZE, transactionManager)
+                .reader(allTimeInfoReader())
+                .processor(allTimeInfoTimeUpdateProcessor())
+                .writer(searchInfoWriter())
+                .build();
+    }
+
 
     //************************** searchResult 관련 START **************************
     @Bean
@@ -298,7 +321,9 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
         log.info("trackingJob 진입");
 
         return new JobBuilder("trackingJob", jobRepository)
-                .start(allTimeInfoStep(jobRepository, transactionManager))
+                .start(allTimeInfoStep(jobRepository, transactionManager)) // 검색현황
+                .next(allTimeInfoTimeUpdateStep(jobRepository, transactionManager)) // 기존 tsiUno에 배치시간 set
+                .next(allTimeInfoStep(jobRepository, transactionManager)) // 배치시간 이력 테이블에 insert
                 .next(searchInfoStep(jobRepository, transactionManager))
                 .next(searchResultStep(jobRepository, transactionManager))
                 .next(searchJobStep(jobRepository, transactionManager))

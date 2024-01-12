@@ -57,5 +57,6 @@ public interface DefaultQueryDtoInterface {
 
     String getUserKeyword();
     String getTsiUserFile();
+    String getTsiAlltimeMonitoring();
 
 }
