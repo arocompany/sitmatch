@@ -2864,7 +2864,8 @@ public class SearchService {
     public static void setSearchInfoDefault(SearchInfoEntity sie) {
         sie.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sie.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
-        sie.setTsiAlltimeMonitoring(null);
+        sie.setTsiAlltimeMonitoring("");
+        sie.setTsiMonitoringCnt(0);
         // sie.setTsiAlltimeMonitoring(String.valueOf(Timestamp.valueOf(LocalDateTime.now())+"   "));
         sie.setDataStatCd("10");
         sie.setSearchValue("0");

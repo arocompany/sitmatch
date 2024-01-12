@@ -46,6 +46,7 @@ public class TrackingSearchInfoService {
         }
 
         searchInfoEntityByTsiUno.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        searchInfoEntityByTsiUno.setTsiAlltimeMonitoring(searchInfoEntityByTsiUno.getTsiAlltimeMonitoring() + monitoringAllTime);
 
         log.info("Timestamp.valueOf(LocalDateTime.now()): "+Timestamp.valueOf(LocalDateTime.now()));
 

@@ -80,16 +80,6 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                              select sr
                              from   SearchResultEntity sr
                              where  sr.monitoringCd = '20'
-                             and    exists (
-                                           select 1
-                                           from   SearchInfoEntity si
-                                           where  si.tsiUno = sr.tsiUno
-                                           )
-                             and    not exists (
-                                               select 1
-                                               from   SearchInfoEntity si
-                                               where  si.tsrUno = sr.tsrUno
-                                               )
                              """;
         return new JpaPagingItemReaderBuilder<SearchResultEntity>()
                 .name("allTimeInfoReader")
