@@ -53,10 +53,11 @@ public class TrackingSearchInfoService {
         // searchInfoEntityByTsiUno.setTsiAlltimeMonitoring(searchInfoEntityByTsiUno.getTsiAlltimeMonitoring() + monitoringAllTime);
         SearchInfoMonitoringHistoryEntity searchInfoMonitoringHistoryEntity = new SearchInfoMonitoringHistoryEntity();
         searchInfoMonitoringHistoryEntity.setTsiUno(searchInfoEntityByTsiUno.getTsiUno());
+        searchInfoMonitoringHistoryEntity.setTsimhCreateDate(Timestamp.valueOf(currentDateTime));
 
         repository.save(searchInfoMonitoringHistoryEntity);
 
-        log.info("Timestamp.valueOf(LocalDateTime.now()): "+Timestamp.valueOf(LocalDateTime.now()));
+        log.info("Timestamp.valueOf(LocalDateTime.now()): "+Timestamp.valueOf(currentDateTime));
 
         return searchInfoEntityByTsiUno;
     }

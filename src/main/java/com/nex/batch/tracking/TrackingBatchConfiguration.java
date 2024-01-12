@@ -2,6 +2,7 @@ package com.nex.batch.tracking;
 
 import com.nex.batch.JpaItemListWriter;
 import com.nex.search.entity.SearchInfoEntity;
+import com.nex.search.entity.SearchInfoMonitoringHistoryEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.repo.SearchInfoRepository;
@@ -182,18 +183,6 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .build();
     }
 
-    @Bean
-    public Step searchInfoMonitoringStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        log.info("searchInfoMonitoringStep 진입");
-        return new StepBuilder("searchInfoMonitoringStep", jobRepository)
-                .allowStartIfComplete(true)
-                .<SearchResultEntity, SearchResultEntity>chunk(CHUNK_SIZE, transactionManager)
-                .reader(allTimeInfoReader())
-                .processor(allTimeResultProcessor())
-              //  .writer(searchResultWriter())
-                .build();
-    }
-
 /*
     @Bean
     public Step allTimeMonitoringSetTimeStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
@@ -235,7 +224,6 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
             return null;
         };
     }
-
     @Bean
     public JpaItemListWriter<SearchResultEntity> searchResultWriter() {
         log.info("searchResultWriter 진입");
@@ -329,7 +317,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
         return new JobBuilder("trackingJob", jobRepository)
                 .start(allTimeInfoStep(jobRepository, transactionManager)) // 검색현황
-                .next(searchInfoMonitoringStep(jobRepository, transactionManager)) // 검색현황 시간
+//                .next(searchInfoMonitoringStep(jobRepository, transactionManager)) // 검색현황 시간
                 // .next(allTimeMonitoringSetTimeStep(jobRepository, transactionManager)) // 마지막 모니터링 체크시간
                 .next(searchInfoStep(jobRepository, transactionManager))
                 .next(searchResultStep(jobRepository, transactionManager))
