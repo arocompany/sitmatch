@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.Consts;
+import com.nex.search.entity.NationCodeEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.SearchResultMonitoringHistoryEntity;
+import com.nex.search.repo.NationCodeRepository;
 import com.nex.search.repo.SearchResultMonitoringRepository;
 import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
@@ -85,6 +87,7 @@ public class TrackingSearchResultService{
     private String serverIp2;
 
     private final RestTemplate restTemplate;
+    private final NationCodeRepository nationCodeRepository;
 
 
     /**
@@ -249,201 +252,46 @@ public class TrackingSearchResultService{
             , Function<INFO, List<RESULT>> getSubFn, BiConsumer<RESULT, Integer> setTsiUnoCn
             , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Boolean isText) throws JsonProcessingException {
         log.info("이미지 결과 목록 추출 getResults 진입, index : "+index);
-        boolean isFirst = index == 0;
-        boolean loop = true;
 
         List<CompletableFuture<List<RESULT>>> completableFutures = new ArrayList<>();
 
-        //기존 SearchService 에 있던 부분 활용
-        do {
-            String url = getUrl(tsiKeyword, index, isText, searchInfoEntity);
-            log.info(" ### url ### : {} ", url);
+        List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+        for(NationCodeEntity ncInfo : ncList){
+            //기존 SearchService 에 있던 부분 활용
+            boolean isFirst = index == 0;
+            boolean loop = true;
+            do {
+                String url = getUrl(tsiKeyword, index, isText, searchInfoEntity, ncInfo.getNcCode().toLowerCase());
+                log.info(" ### url ### : {} ", url);
 
-            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
-                    .supplyAsync(() -> {
-                        try {
-                            // text기반 yandex 검색
-                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
-                            return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
-                        } catch (Exception e) {
-                            log.debug(e.getMessage());
-                        }
-                        return null;
-                    });
+                CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
+                        .supplyAsync(() -> {
+                            try {
+                                // text기반 yandex 검색
+                                // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
+                                return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
+                            } catch (Exception e) {
+                                log.debug(e.getMessage());
+                            }
+                            return null;
+                        });
+                try {
+                    List<RESULT> res = listCompletableFuture.get();
+                    if(res == null || res.isEmpty() || res.get(0) == null){
+                        loop = false;
+                    }
+                }catch (Exception e){
+                    log.error(e.getMessage());
+                }
 
-            completableFutures.add(listCompletableFuture);
-
-            if (index >= textYandexCountLimit - 1) {
-                loop = false;
-            }
-
-            index++;
-
-        } while (loop);
-
-        // cn
-        do {
-            String url = getUrl(tsiKeyword, index, isText, searchInfoEntity);
-            log.info(" ### url ### : {} ", url);
-
-            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
-                    .supplyAsync(() -> {
-                        try {
-                            // text기반 yandex 검색
-                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
-                            return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
-                        } catch (Exception e) {
-                            log.debug(e.getMessage());
-                        }
-                        return null;
-                    });
-
-            completableFutures.add(listCompletableFuture);
-
-            if (index >= textYandexCountLimit - 1) {
-                loop = false;
-            }
-
-            index++;
-
-        } while (loop);
-
-        // kr
-        do {
-            String url = getUrl(tsiKeyword, index, isText, searchInfoEntity);
-            log.info(" ### url ### : {} ", url);
-
-            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
-                    .supplyAsync(() -> {
-                        try {
-                            // text기반 yandex 검색
-                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
-                            return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
-                        } catch (Exception e) {
-                            log.debug(e.getMessage());
-                        }
-                        return null;
-                    });
-
-            completableFutures.add(listCompletableFuture);
-
-            if (index >= textYandexCountLimit - 1) {
-                loop = false;
-            }
-
-            index++;
-
-        } while (loop);
-
-        // nl
-        do {
-            String url = getUrl(tsiKeyword, index, isText, searchInfoEntity);
-            log.info(" ### url ### : {} ", url);
-
-            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
-                    .supplyAsync(() -> {
-                        try {
-                            // text기반 yandex 검색
-                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
-                            return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
-                        } catch (Exception e) {
-                            log.debug(e.getMessage());
-                        }
-                        return null;
-                    });
-
-            completableFutures.add(listCompletableFuture);
-
-            if (index >= textYandexCountLimit - 1) {
-                loop = false;
-            }
-
-            index++;
-
-        } while (loop);
-
-        // ru
-        do {
-            String url = getUrl(tsiKeyword, index, isText, searchInfoEntity);
-            log.info(" ### url ### : {} ", url);
-
-            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
-                    .supplyAsync(() -> {
-                        try {
-                            // text기반 yandex 검색
-                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
-                            return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
-                        } catch (Exception e) {
-                            log.debug(e.getMessage());
-                        }
-                        return null;
-                    });
-
-            completableFutures.add(listCompletableFuture);
-
-            if (index >= textYandexCountLimit - 1) {
-                loop = false;
-            }
-
-            index++;
-
-        } while (loop);
-
-        // th
-        do {
-            String url = getUrl(tsiKeyword, index, isText, searchInfoEntity);
-            log.info(" ### url ### : {} ", url);
-
-            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
-                    .supplyAsync(() -> {
-                        try {
-                            // text기반 yandex 검색
-                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
-                            return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
-                        } catch (Exception e) {
-                            log.debug(e.getMessage());
-                        }
-                        return null;
-                    });
-
-            completableFutures.add(listCompletableFuture);
-
-            if (index >= textYandexCountLimit - 1) {
-                loop = false;
-            }
-
-            index++;
-
-        } while (loop);
-
-        // vn
-        do {
-            String url = getUrl(tsiKeyword, index, isText, searchInfoEntity);
-            log.info(" ### url ### : {} ", url);
-
-            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
-                    .supplyAsync(() -> {
-                        try {
-                            // text기반 yandex 검색
-                            // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
-                            return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
-                        } catch (Exception e) {
-                            log.debug(e.getMessage());
-                        }
-                        return null;
-                    });
-
-            completableFutures.add(listCompletableFuture);
-
-            if (index >= textYandexCountLimit - 1) {
-                loop = false;
-            }
-
-            index++;
-
-        } while (loop);
-
-
+                if (! loop || index >= textYandexCountLimit - 1) {
+                    loop = false;
+                }else{
+                    completableFutures.add(listCompletableFuture);
+                    index++;
+                }
+            } while (loop);
+        }
 
         //결과 값을 받아온다.
         List<RESULT> searchResults = completableFutures.stream().map(CompletableFuture::join).filter(Objects::nonNull).flatMap(s -> s.stream()).toList();
@@ -472,9 +320,10 @@ public class TrackingSearchResultService{
 
         //다음 페이지 조회 가능 여부
         //첫 검색시 결과가 모든 페이지에 100개 씩 있을 경우 or 첫 검색이 아니고 페이지에 100개 결과가 있을 경우
+        /*
         boolean isNextAble = (isFirst && size == index * 100) || (!isFirst && size == 100);
 
-        /*
+
         //결과 size 가 textYandexCountLimit * 100 보다 작고, 다음 페이지 조회 가능 여부가 true 이면 재검색
         if (textYandexCountLimit * textYandexCountPage > results.size() && isNextAble) {
             return getResults(
@@ -513,7 +362,7 @@ public class TrackingSearchResultService{
      * @param  searchInfoEntity (검색 정보 엔티티)
      * @return String           (URL)
      */
-    private String getUrl(String tsiKeyword, int index, Boolean isText, SearchInfoEntity searchInfoEntity) {
+    private String getUrl(String tsiKeyword, int index, Boolean isText, SearchInfoEntity searchInfoEntity, String lang) {
         log.info("getUrl 진입");
         String url;
 
@@ -523,7 +372,7 @@ public class TrackingSearchResultService{
             // yandex search url
              url = textYandexUrl
                     + "?q=" + tsiKeyword
-                    + "&gl=vn"
+                    + "&gl=" + lang
                     + "&no_cache=" + textYandexNocache
                     + "&location=" + textYandexLocation
                     + "&tbm=" + textYandexTbm

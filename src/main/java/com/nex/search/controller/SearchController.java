@@ -2,8 +2,10 @@ package com.nex.search.controller;
 
 import com.nex.common.Consts;
 import com.nex.search.ImageService.*;
+import com.nex.search.entity.NationCodeEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
+import com.nex.search.repo.NationCodeRepository;
 import com.nex.search.service.SearchService;
 import com.nex.search.textFacebookService.*;
 import com.nex.search.textGoogleService.*;
@@ -38,13 +40,15 @@ import java.util.concurrent.CompletableFuture;
 public class SearchController {
     private final SearchService searchService;
     private final SearchImageGoogleLensService searchImageGoogleLensService;
-    private final SearchTextUsGoogleService searchTextUsGoogleService;
-    private final SearchTextKrGoogleService searchTextKrGoogleService;
-    private final SearchTextCnGoogleService searchTextCnGoogleService;
-    private final SearchTextThGoogleService searchTextThGoogleService;
-    private final SearchTextRuGoogleService searchTextRuGoogleService;
-    private final SearchTextVnGoogleService searchTextVnGoogleService;
-    private final SearchTextNlGoogleService searchTextNlGoogleService;
+
+    private final SearchTextGoogleService searchTextGoogleService;
+//    private final SearchTextUsGoogleService searchTextUsGoogleService;
+//    private final SearchTextKrGoogleService searchTextKrGoogleService;
+//    private final SearchTextCnGoogleService searchTextCnGoogleService;
+//    private final SearchTextThGoogleService searchTextThGoogleService;
+//    private final SearchTextRuGoogleService searchTextRuGoogleService;
+//    private final SearchTextVnGoogleService searchTextVnGoogleService;
+//    private final SearchTextNlGoogleService searchTextNlGoogleService;
 
     private final SearchTextCnInstagramService searchTextCnInstagramService;
     private final SearchTextKrInstagramService searchTextKrInstagramService;
@@ -62,13 +66,7 @@ public class SearchController {
     private final SearchTextUsFacebookService searchTextUsFacebookService;
     private final SearchTextVnFacebookService searchTextVnFacebookService;
 
-    private final SearchImageCnService searchImageCnService;
-    private final SearchImageKrService searchImageKrService;
-    private final SearchImageNlService searchImageNlService;
-    private final SearchImageRuService searchImageRuService;
-    private final SearchImageThService searchImageThService;
-    private final SearchImageUsService searchImageUsService;
-    private final SearchImageVnService searchImageVnService;
+    private final SearchImageService searchImageService;
 
     private final SearchTextImageCnGoogleService searchTextImageCnGoogleService;
     private final SearchTextImageKrGoogleService searchTextImageKrGoogleService;
@@ -121,6 +119,7 @@ public class SearchController {
     private String serverIp;
     private String searchImageUrl;
     private Boolean loop = true;
+    private final NationCodeRepository nationCodeRepository;
 
 
     @PostMapping("")
@@ -290,6 +289,11 @@ public class SearchController {
                 // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
 
                 searchImageGoogleLensService.searchYandexByGoogleLensImage("11", insertResult);
+
+                List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+                for(NationCodeEntity ncInfo : ncList) {
+                    searchImageService.search(insertResult, searchInfoDto, ncInfo.getNcCode().toLowerCase());
+                }
                 /*
                 searchImageCnService.search(insertResult, searchInfoDto);
                 searchImageKrService.search(insertResult, searchInfoDto);

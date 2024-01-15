@@ -28,6 +28,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
@@ -36,7 +39,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -52,6 +58,7 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -64,6 +71,7 @@ import static com.nex.common.CmnUtil.execPython;
 
 @Slf4j
 @Service
+@Configuration
 @RequiredArgsConstructor
 public class SearchService {
     private final SearchInfoRepository searchInfoRepository;
@@ -108,7 +116,28 @@ public class SearchService {
     private String serverIp2;
 
     private Boolean loop = true;
-    private final RestTemplate restTemplate;
+//    private final RestTemplate restTemplate;
+
+    @Bean
+    public RestTemplate customRestTemplate() {
+        return new RestTemplateBuilder()
+                .setConnectTimeout(Duration.ofSeconds(5))
+                .setReadTimeout(Duration.ofSeconds(5))
+                .additionalInterceptors(clientHttpRequestInterceptor())
+                .build();
+    }
+
+    public ClientHttpRequestInterceptor clientHttpRequestInterceptor() {
+        return (request, body, execution) -> {
+            RetryTemplate retryTemplate = new RetryTemplate();
+            retryTemplate.setRetryPolicy(new SimpleRetryPolicy(3));
+            try {
+                return retryTemplate.execute(context -> execution.execute(request, body));
+            } catch (Throwable throwable) {
+                throw new RuntimeException(throwable);
+            }
+        };
+    }
 
     /*
     @Value("${server.url}")
@@ -827,7 +856,7 @@ public class SearchService {
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-        ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        ResponseEntity<?> resultMap = customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
         List<SearchResultEntity> sreList = new ArrayList<SearchResultEntity>();
         if (resultMap.getStatusCodeValue() == 200) {
 
@@ -894,7 +923,7 @@ public class SearchService {
                             }
 
 
-                            byte[] imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
+                            byte[] imageBytes = customRestTemplate().getForObject(imageUrl, byte[].class);
                             File destdir = new File(fileLocation2 + folder + File.separator + insertResult.getTsiUno());
                             if (!destdir.exists()) {
                                 destdir.mkdirs();
@@ -1394,7 +1423,7 @@ public class SearchService {
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-        ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        ResponseEntity<?> resultMap = customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
         List<SearchResultEntity> sreList = new ArrayList<SearchResultEntity>();
         if (resultMap.getStatusCodeValue() == 200) {
 
@@ -1453,7 +1482,7 @@ public class SearchService {
                             }
 
 
-                            byte[] imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
+                            byte[] imageBytes = customRestTemplate().getForObject(imageUrl, byte[].class);
                             File destdir = new File(fileLocation2 + folder + File.separator + insertResult.getTsiUno());
                             if (!destdir.exists()) {
                                 destdir.mkdirs();
@@ -1538,8 +1567,8 @@ public class SearchService {
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-        // ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-        ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        // ResponseEntity<?> resultMap = new customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        ResponseEntity<?> resultMap = customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
         List<RESULT> results = null;
 
         log.info("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
@@ -1582,8 +1611,8 @@ public class SearchService {
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-        // ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-        ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        // ResponseEntity<?> resultMap = new customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        ResponseEntity<?> resultMap = customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
 
         List<RESULT> results = null;
 
@@ -1608,7 +1637,7 @@ public class SearchService {
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        ResponseEntity<?> resultMap = customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
 
         List<RESULT> results = null;
 
@@ -1634,7 +1663,7 @@ public class SearchService {
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        ResponseEntity<?> resultMap = customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
 
         List<RESULT> results = null;
 
@@ -1709,7 +1738,7 @@ public class SearchService {
                     log.info("getThumbnailFn: "+getThumbnailFn);
 
                     //이미지 파일 저장
-                    saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
+                    saveImageFile(insertResult.getTsiUno(), customRestTemplate(), sre, result, getOriginalFn, getThumbnailFn);
                     saveSearchResult(sre);
 
                     sreList.add(sre);
@@ -1753,7 +1782,7 @@ public class SearchService {
                 }
 
                 //이미지 파일 저장
-                saveYoutubeImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getThumnailFn);
+                saveYoutubeImageFile(insertResult.getTsiUno(), customRestTemplate(), sre, result, getThumnailFn);
                 saveSearchResult(sre);
 
                 sreList.add(sre);

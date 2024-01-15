@@ -9,15 +9,15 @@ import lombok.Data;
 public class NationCodeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "nc_uno", nullable = false)
+    @Column(name = "NC_UNO", nullable = false)
     private int ncUno;
     @Basic
-    @Column(name = "nc_name", nullable = true)
+    @Column(name = "NC_NAME", nullable = true)
     private String ncName;
     @Basic
-    @Column(name = "nc_code", nullable = true)
+    @Column(name = "NC_CODE", nullable = true)
     private String ncCode;
     @Basic
-    @Column(name = "nc_is_active", nullable = true)
+    @Column(name = "NC_IS_ACTIVE", nullable = true)
     private int ncIsActive;
 }

@@ -11,7 +11,6 @@ import com.nex.search.entity.result.YandexByTextResult;
 import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ResourceLoader;
@@ -36,7 +35,7 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 @Lazy
-public class SearchTextKrGoogleService {
+public class SearchTextGoogleService {
     private final SearchService searchService;
     private final ResourceLoader resourceLoader;
 

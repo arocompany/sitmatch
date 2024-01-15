@@ -35,11 +35,11 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 @Lazy
-public class SearchImageKrService {
+public class SearchImageService {
     private final SearchService searchService;
+    private final ResourceLoader resourceLoader;
 
-    @Autowired
-    ResourceLoader resourceLoader;
+    private String nationCode = "";
 
     @Value("${file.location2}")
     private String fileLocation2;
@@ -74,19 +74,19 @@ public class SearchImageKrService {
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
-    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
+    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
         String tsrSns = "11";
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+
+        this.nationCode = nationCode;
         searchSnsByImage(searchImageUrl, searchInfoDto, tsrSns, insertResult);
     }
 
     public void searchSnsByImage(String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
         int index=0;
 
-        String textYandexGl = "kr";
-        String finalTextYandexGl1 = textYandexGl;
-
+        String finalTextYandexGl1 = this.nationCode;
         searchByImage(index, finalTextYandexGl1, searchImageUrl, searchInfoDto, tsrSns, insertResult);
     }
 
