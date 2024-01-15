@@ -1,12 +1,10 @@
 package com.nex.search.repo;
 
-import com.nex.search.entity.ProgressPercentDto;
 import com.nex.search.entity.SearchJobEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-import java.util.Map;
 
 public interface SearchJobRepository extends JpaRepository<SearchJobEntity, Long> {
     @Query("select CEILING(count(TMR.tsjUno)/count(TSJ.tsjUno)*100) from SearchJobEntity AS TSJ LEFT OUTER JOIN MatchResultEntity AS TMR ON TSJ.tsjUno = TMR.tsjUno WHERE TSJ.tsiUno = :tsiUno")

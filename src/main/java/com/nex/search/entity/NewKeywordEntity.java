@@ -1,16 +1,13 @@
 package com.nex.search.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Entity
 @Table(name = "tb_new_keyword", schema = "sittest", catalog = "")
-@Getter
-@Setter
+@Data
 public class NewKeywordEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -29,6 +26,4 @@ public class NewKeywordEntity {
     @Basic
     @Column(name = "KEYWORD_STUS")
     private String keywordStus;
-
-
 }

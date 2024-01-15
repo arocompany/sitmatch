@@ -1,15 +1,10 @@
 package com.nex;
 
 
-import java.io.IOException;
-
 import lombok.extern.slf4j.Slf4j;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
-import org.jasypt.registry.AlgorithmRegistry;
-import org.jasypt.salt.StringFixedSaltGenerator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
 
 @Slf4j
 public class test {

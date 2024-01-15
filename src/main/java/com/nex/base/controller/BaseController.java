@@ -3,7 +3,7 @@ package com.nex.base.controller;
 import com.nex.Chart.dto.AllTimeMonitoringHistDto;
 import com.nex.Chart.repo.AlltimeMonitoringHistRepository;
 import com.nex.common.Consts;
-import com.nex.search.entity.DefaultQueryDtoInterface;
+import com.nex.search.entity.dto.DefaultQueryDtoInterface;
 import com.nex.search.repo.NewKeywordRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.service.SearchService;

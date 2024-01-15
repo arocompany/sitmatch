@@ -1,10 +1,12 @@
 package com.nex.search.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.sql.Timestamp;
 
 @Entity
+@Data
 @Table(name = "tb_search_info_monitoring_history", schema = "sittest", catalog = "")
 public class SearchInfoMonitoringHistoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,28 +19,4 @@ public class SearchInfoMonitoringHistoryEntity {
     @Basic
     @Column(name = "TSIMH_CREATE_DATE")
     private Timestamp tsimhCreateDate;
-
-    public int getTsimhUno() {
-        return tsimhUno;
-    }
-
-    public int getTsiUno() {
-        return tsiUno;
-    }
-
-    public Timestamp getTsimhCreateDate() {
-        return tsimhCreateDate;
-    }
-
-    public void setTsimhUno(int tsimhUno) {
-        this.tsimhUno = tsimhUno;
-    }
-
-    public void setTsiUno(int tsiUno) {
-        this.tsiUno = tsiUno;
-    }
-
-    public void setTsimhCreateDate(Timestamp tsimhCreateDate) {
-        this.tsimhCreateDate = tsimhCreateDate;
-    }
 }

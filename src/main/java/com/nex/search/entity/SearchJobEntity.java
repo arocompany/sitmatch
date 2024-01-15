@@ -1,11 +1,13 @@
 package com.nex.search.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
+@Data
 @Table(name = "tb_search_job", schema = "sittest", catalog = "")
 public class SearchJobEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,70 +39,6 @@ public class SearchJobEntity {
     @Column(name = "TSJ_STATUS", nullable = false, length = 10)
     private String tsjStatus;
 
-    public int getTsjUno() {
-        return tsjUno;
-    }
-
-    public void setTsjUno(int tsjUno) {
-        this.tsjUno = tsjUno;
-    }
-
-    public int getTsiUno() {
-        return tsiUno;
-    }
-
-    public void setTsiUno(int tsiUno) {
-        this.tsiUno = tsiUno;
-    }
-
-    public int getTsrUno() {
-        return tsrUno;
-    }
-
-    public void setTsrUno(int tsrUno) {
-        this.tsrUno = tsrUno;
-    }
-
-    public String getTsrImgPath() {
-        return tsrImgPath;
-    }
-
-    public void setTsrImgPath(String tsrImgPath) {
-        this.tsrImgPath = tsrImgPath;
-    }
-
-    public String getTsrImgName() {
-        return tsrImgName;
-    }
-
-    public void setTsrImgName(String tsrImgName) {
-        this.tsrImgName = tsrImgName;
-    }
-
-    public String getTsrImgExt() {
-        return tsrImgExt;
-    }
-
-    public void setTsrImgExt(String tsrImgExt) {
-        this.tsrImgExt = tsrImgExt;
-    }
-
-    public Timestamp getFstDmlDt() {
-        return fstDmlDt;
-    }
-
-    public void setFstDmlDt(Timestamp fstDmlDt) {
-        this.fstDmlDt = fstDmlDt;
-    }
-
-    public Timestamp getLstDmlDt() {
-        return lstDmlDt;
-    }
-
-    public void setLstDmlDt(Timestamp lstDmlDt) {
-        this.lstDmlDt = lstDmlDt;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -112,13 +50,5 @@ public class SearchJobEntity {
     @Override
     public int hashCode() {
         return Objects.hash(tsjUno, tsiUno, tsrUno, tsrImgPath, tsrImgName, tsrImgExt, fstDmlDt, lstDmlDt);
-    }
-
-    public String getTsjStatus() {
-        return tsjStatus;
-    }
-
-    public void setTsjStatus(String tsjStatus) {
-        this.tsjStatus = tsjStatus;
     }
 }

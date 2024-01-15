@@ -1,11 +1,13 @@
 package com.nex.search.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
+@Data
 @Table(name = "tb_video_info", schema = "sittest", catalog = "")
 public class VideoInfoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,54 +29,6 @@ public class VideoInfoEntity {
     @Basic
     @Column(name = "LST_DML_DT")
     private Timestamp lstDmlDt;
-
-    public int getTviUno() {
-        return tviUno;
-    }
-
-    public void setTviUno(int tviUno) {
-        this.tviUno = tviUno;
-    }
-
-    public int getTsiUno() {
-        return tsiUno;
-    }
-
-    public void setTsiUno(int tsiUno) {
-        this.tsiUno = tsiUno;
-    }
-
-    public String getTviImgRealPath() {
-        return tviImgRealPath;
-    }
-
-    public void setTviImgRealPath(String tviImgRealPath) {
-        this.tviImgRealPath = tviImgRealPath;
-    }
-
-    public String getTviImgName() {
-        return tviImgName;
-    }
-
-    public void setTviImgName(String tviImgName) {
-        this.tviImgName = tviImgName;
-    }
-
-    public Timestamp getFstDmlDt() {
-        return fstDmlDt;
-    }
-
-    public void setFstDmlDt(Timestamp fstDmlDt) {
-        this.fstDmlDt = fstDmlDt;
-    }
-
-    public Timestamp getLstDmlDt() {
-        return lstDmlDt;
-    }
-
-    public void setLstDmlDt(Timestamp lstDmlDt) {
-        this.lstDmlDt = lstDmlDt;
-    }
 
     @Override
     public boolean equals(Object o) {

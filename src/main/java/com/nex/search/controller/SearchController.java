@@ -2,8 +2,8 @@ package com.nex.search.controller;
 
 import com.nex.common.Consts;
 import com.nex.search.ImageService.*;
-import com.nex.search.entity.SearchInfoDto;
 import com.nex.search.entity.SearchInfoEntity;
+import com.nex.search.entity.dto.SearchInfoDto;
 import com.nex.search.service.SearchService;
 import com.nex.search.textFacebookService.*;
 import com.nex.search.textGoogleService.*;
@@ -38,8 +38,6 @@ import java.util.concurrent.CompletableFuture;
 public class SearchController {
     private final SearchService searchService;
     private final SearchImageGoogleLensService searchImageGoogleLensService;
-
-
     private final SearchTextUsGoogleService searchTextUsGoogleService;
     private final SearchTextKrGoogleService searchTextKrGoogleService;
     private final SearchTextCnGoogleService searchTextCnGoogleService;

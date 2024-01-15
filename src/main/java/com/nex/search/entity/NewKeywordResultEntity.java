@@ -1,16 +1,14 @@
 package com.nex.search.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
 @Table(name = "tb_newkeyword_result", schema = "sittest")
-@Getter
-@Setter
+@Data
 public class NewKeywordResultEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -73,20 +71,6 @@ public class NewKeywordResultEntity {
     @Basic
     @Column(name = "NKR_IMG_SIZE")
     private String nkrImgSize;
-
-    /*
-    @Basic
-    @Column(name = "re_monitor_cnt")
-    private String re_monitor_cnt;
-
-    public String getRe_monitor_cnt() {
-        return re_monitor_cnt;
-    }
-
-    public void setRe_monitor_cnt(String re_monitor_cnt) {
-        this.re_monitor_cnt = re_monitor_cnt;
-    }
-     */
 
     @Override
     public boolean equals(Object o) {

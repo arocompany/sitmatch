@@ -3,7 +3,6 @@ package com.nex.batch.tracking;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchInfoMonitoringHistoryEntity;
 import com.nex.search.entity.SearchResultEntity;
-import com.nex.search.repo.NewKeywordRepository;
 import com.nex.search.repo.SearchInfoMonitoringRepository;
 import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;

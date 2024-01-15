@@ -1,4 +1,4 @@
-package com.nex.search.entity;
+package com.nex.search.entity.result;
 
 import lombok.Data;
 

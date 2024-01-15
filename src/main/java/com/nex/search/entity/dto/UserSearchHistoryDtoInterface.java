@@ -1,6 +1,4 @@
-package com.nex.search.entity;
-
-import java.sql.Timestamp;
+package com.nex.search.entity.dto;
 
 public interface UserSearchHistoryDtoInterface {
     Integer getTsiUno();

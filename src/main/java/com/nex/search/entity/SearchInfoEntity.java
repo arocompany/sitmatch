@@ -1,11 +1,13 @@
 package com.nex.search.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
+@Data
 @Table(name = "tb_search_info", schema = "sittest", catalog = "")
 public class SearchInfoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -96,166 +98,6 @@ public class SearchInfoEntity {
     @Column(name = "TSI_MONITORING_CNT")
     private Integer tsiMonitoringCnt;
 
-    public int getTsiMonitoringCnt() {
-        return tsiMonitoringCnt;
-    }
-
-    public void setTsiMonitoringCnt(int tsiMonitoringCnt) {
-        this.tsiMonitoringCnt = tsiMonitoringCnt;
-    }
-
-    public int getTsiUno() {
-        return tsiUno;
-    }
-
-    public void setTsiUno(int tsiUno) {
-        this.tsiUno = tsiUno;
-    }
-
-    public String getTsiType() {
-        return tsiType;
-    }
-
-    public void setTsiType(String tsiType) {
-        this.tsiType = tsiType;
-    }
-
-    public byte getTsiGoogle() {
-        return tsiGoogle;
-    }
-
-    public void setTsiGoogle(byte tsiGoogle) {
-        this.tsiGoogle = tsiGoogle;
-    }
-
-    public byte getTsiTwitter() {
-        return tsiTwitter;
-    }
-
-    public void setTsiTwitter(byte tsiTwitter) {
-        this.tsiTwitter = tsiTwitter;
-    }
-
-    public byte getTsiFacebook() {
-        return tsiFacebook;
-    }
-
-    public void setTsiFacebook(byte tsiFacebook) {
-        this.tsiFacebook = tsiFacebook;
-    }
-
-    public byte getTsiInstagram() {
-        return tsiInstagram;
-    }
-
-    public void setTsiInstagram(byte tsiInstagram) {
-        this.tsiInstagram = tsiInstagram;
-    }
-
-    public String getTsiKeyword() {
-        return tsiKeyword;
-    }
-
-    public void setTsiKeyword(String tsiKeyword) {
-        this.tsiKeyword = tsiKeyword;
-    }
-
-    public String getTsiImgPath() {
-        return tsiImgPath;
-    }
-
-    public void setTsiImgPath(String tsiImgPath) {
-        this.tsiImgPath = tsiImgPath;
-    }
-
-    public String getTsiImgName() {
-        return tsiImgName;
-    }
-
-    public void setTsiImgName(String tsiImgName) {
-        this.tsiImgName = tsiImgName;
-    }
-
-    public String getTsiImgExt() {
-        return tsiImgExt;
-    }
-
-    public void setTsiImgExt(String tsiImgExt) {
-        this.tsiImgExt = tsiImgExt;
-    }
-
-    public String getTsiStat() {
-        return tsiStat;
-    }
-
-    public void setTsiStat(String tsiStat) {
-        this.tsiStat = tsiStat;
-    }
-
-    public String getTsiDnaPath() {
-        return tsiDnaPath;
-    }
-
-    public void setTsiDnaPath(String tsiDnaPath) {
-        this.tsiDnaPath = tsiDnaPath;
-    }
-
-    public String getTsiDnaText() {
-        return tsiDnaText;
-    }
-
-    public void setTsiDnaText(String tsiDnaText) {
-        this.tsiDnaText = tsiDnaText;
-    }
-
-    public int getUserUno() {
-        return userUno;
-    }
-
-    public void setUserUno(int userUno) {
-        this.userUno = userUno;
-    }
-
-    public Timestamp getFstDmlDt() {
-        return fstDmlDt;
-    }
-
-    public void setFstDmlDt(Timestamp fstDmlDt) {
-        this.fstDmlDt = fstDmlDt;
-    }
-
-/*
-    public Timestamp getTsiAlltimeDt() {
-        return tsiAlltimeDt;
-    }
-
-    public void setTsiAlltimeDt(Timestamp tsiAlltimeDt) {
-        this.tsiAlltimeDt = tsiAlltimeDt;
-    }
-*/
-
-    public Timestamp getLstDmlDt() {
-        return lstDmlDt;
-    }
-
-    public void setLstDmlDt(Timestamp lstDmlDt) {
-        this.lstDmlDt = lstDmlDt;
-    }
-
-    public String getSearchValue() {
-        return searchValue;
-    }
-
-    public void setSearchValue(String searchValue) {
-        this.searchValue = searchValue;
-    }
-
-    public String getTsiAlltimeMonitoring(){ return tsiAlltimeMonitoring;}
-
-    public void setTsiAlltimeMonitoring(String tsiAlltimeMonitoring) {this.tsiAlltimeMonitoring = tsiAlltimeMonitoring;}
-
-    public String getTsiUserFile(){return tsiUserFile;}
-    public void setTsiUserFile(String tsiUserFile){this.tsiUserFile=tsiUserFile;}
 
     @Override
     public boolean equals(Object o) {
@@ -269,53 +111,4 @@ public class SearchInfoEntity {
     public int hashCode() {
         return Objects.hash(tsiUno, tsiType, tsiGoogle, tsiTwitter, tsiFacebook, tsiInstagram, tsiKeyword, tsiImgPath, tsiImgName, tsiImgExt, tsiStat, tsiDnaPath, tsiDnaText, userUno, fstDmlDt, lstDmlDt);
     }
-
-    public String getTsiImgRealPath() {
-        return tsiImgRealPath;
-    }
-
-    public void setTsiImgRealPath(String tsiImgRealPath) {
-        this.tsiImgRealPath = tsiImgRealPath;
-    }
-
-    public String getDataStatCd() {
-        return dataStatCd;
-    }
-
-    public void setDataStatCd(String dataStatCd) {
-        this.dataStatCd = dataStatCd;
-    }
-
-    public String getTsiImgHeight() {
-        return tsiImgHeight;
-    }
-
-    public void setTsiImgHeight(String tsiImgHeight) {
-        this.tsiImgHeight = tsiImgHeight;
-    }
-
-    public String getTsiImgWidth() {
-        return tsiImgWidth;
-    }
-
-    public void setTsiImgWidth(String tsiImgWidth) {
-        this.tsiImgWidth = tsiImgWidth;
-    }
-
-    public String getTsiImgSize() {
-        return tsiImgSize;
-    }
-
-    public void setTsiImgSize(String tsiImgSize) {
-        this.tsiImgSize = tsiImgSize;
-    }
-
-    public Integer getTsrUno() {
-        return tsrUno;
-    }
-
-    public void setTsrUno(Integer tsrUno) {
-        this.tsrUno = tsrUno;
-    }
-
 }

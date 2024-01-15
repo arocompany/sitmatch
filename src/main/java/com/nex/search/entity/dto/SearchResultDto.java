@@ -1,5 +1,6 @@
-package com.nex.search.entity;
+package com.nex.search.entity.dto;
 
+import com.nex.search.entity.SearchResultEntity;
 import lombok.Getter;
 import lombok.Setter;
 

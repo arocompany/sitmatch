@@ -5,7 +5,7 @@ import com.nex.newKeyword.service.NewKeywordService;
 import com.nex.search.entity.NewKeywordEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.repo.NewKeywordRepository;
-import com.nex.search.service.*;
+import com.nex.search.service.SearchService;
 import com.nex.user.entity.NewKeywordDto;
 import com.nex.user.entity.SearchKeywordDto;
 import com.nex.user.entity.SessionInfoDto;

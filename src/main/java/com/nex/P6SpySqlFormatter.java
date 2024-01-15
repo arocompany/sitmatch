@@ -34,13 +34,16 @@ public class P6SpySqlFormatter implements MessageFormattingStrategy {
 
     private String formatSql(String category, String sql) {
         if (sql != null && !sql.trim().isEmpty() && Category.STATEMENT.getName().equals(category)) {
+
             String trimmedSQL = sql.trim().toLowerCase(Locale.ROOT);
             if (trimmedSQL.startsWith("create") || trimmedSQL.startsWith("alter") || trimmedSQL.startsWith("comment")) {
                 sql = FormatStyle.DDL.getFormatter().format(sql);
             } else {
                 sql = FormatStyle.BASIC.getFormatter().format(sql);
             }
-            return sql;
+            sql = sql.replaceAll("\n", "");
+            sql = sql.replaceAll("\r", "");
+            return "\r\n" + sql;
         }
 
         return sql;
@@ -66,9 +69,8 @@ public class P6SpySqlFormatter implements MessageFormattingStrategy {
             sb.append("\n\t\t" + (order++) + "." + callStack.pop());
         }
 
-        return new StringBuffer().append("\n\n\tConnection ID:").append(connectionId).append(" | Excution Time:")
-                .append(elapsed).append(" ms\n").append("\n\tExcution Time:").append(elapsed).append(" ms\n")
-                .append("\n\tCall Stack :").append(sb).append("\n").append("\n--------------------------------------")
+        return new StringBuffer().append("\n\tConnection ID:").append(connectionId).append(" | Execution Time:")
+                .append(elapsed).append(" ms").append(" | Call Stack :").append(sb).append("\n")
                 .toString();
     }
 }

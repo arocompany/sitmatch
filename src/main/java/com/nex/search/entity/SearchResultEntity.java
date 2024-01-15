@@ -1,11 +1,13 @@
 package com.nex.search.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
+@Data
 @Table(name = "tb_search_result", schema = "sittest", catalog = "")
 public class SearchResultEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,107 +76,6 @@ public class SearchResultEntity {
     @Column(name = "TSR_SEARCH_VALUE")
     private String tsrSearchValue;
 
-    /*
-    @Basic
-    @Column(name = "re_monitor_cnt")
-    private String re_monitor_cnt;
-
-    public String getRe_monitor_cnt() {
-        return re_monitor_cnt;
-    }
-
-    public void setRe_monitor_cnt(String re_monitor_cnt) {
-        this.re_monitor_cnt = re_monitor_cnt;
-    }
-     */
-
-    public int getTsrUno() {
-        return tsrUno;
-    }
-
-    public void setTsrUno(int tsrUno) {
-        this.tsrUno = tsrUno;
-    }
-
-    public int getTsiUno() {
-        return tsiUno;
-    }
-
-    public void setTsiUno(int tsiUno) {
-        this.tsiUno = tsiUno;
-    }
-
-    public String getTsrJson() {
-        return tsrJson;
-    }
-
-    public void setTsrJson(String tsrJson) {
-        this.tsrJson = tsrJson;
-    }
-
-
-
-    public String getTsrImgPath() {
-        return tsrImgPath;
-    }
-
-    public void setTsrImgPath(String tsrImgPath) {
-        this.tsrImgPath = tsrImgPath;
-    }
-
-    public String getTsrImgName() {
-        return tsrImgName;
-    }
-
-    public void setTsrImgName(String tsrImgName) {
-        this.tsrImgName = tsrImgName;
-    }
-
-    public String getTsrImgExt() {
-        return tsrImgExt;
-    }
-
-    public void setTsrImgExt(String tsrImgExt) {
-        this.tsrImgExt = tsrImgExt;
-    }
-
-    public String getTsrDownloadUrl() {
-        return tsrDownloadUrl;
-    }
-
-    public void setTsrDownloadUrl(String tsrDownloadUrl) {
-        this.tsrDownloadUrl = tsrDownloadUrl;
-    }
-
-    public String getTsrSearchValue() {
-        return tsrSearchValue;
-    }
-
-    public void setTsrSearchValue(String tsrSearchValue) { this.tsrSearchValue = tsrSearchValue; }
-
-    public Timestamp getFstDmlDt() {
-        return fstDmlDt;
-    }
-
-    public void setFstDmlDt(Timestamp fstDmlDt) {
-        this.fstDmlDt = fstDmlDt;
-    }
-
-    public Timestamp getLstDmlDt() {
-        return lstDmlDt;
-    }
-
-    public void setLstDmlDt(Timestamp lstDmlDt) {
-        this.lstDmlDt = lstDmlDt;
-    }
-
-    public Timestamp getMstDmlDt() {
-        return mstDmlDt;
-    }
-
-    public void setMstDmlDt(Timestamp mstDmlDt) {
-        this.mstDmlDt = mstDmlDt;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -187,85 +88,5 @@ public class SearchResultEntity {
     @Override
     public int hashCode() {
         return Objects.hash(tsrUno, tsiUno, tsrJson, tsrImgPath, tsrImgName, tsrImgExt, tsrDownloadUrl, fstDmlDt, lstDmlDt);
-    }
-
-    public String getTrkStatCd() {
-        return trkStatCd;
-    }
-
-    public void setTrkStatCd(String trkStatCd) {
-        this.trkStatCd = trkStatCd;
-    }
-
-    public String getDataStatCd() {
-        return dataStatCd;
-    }
-
-    public void setDataStatCd(String dataStatCd) {
-        this.dataStatCd = dataStatCd;
-    }
-
-    public String getMonitoringCd() {
-        return monitoringCd;
-    }
-
-    public void setMonitoringCd(String monitoringCd) {
-        this.monitoringCd = monitoringCd;
-    }
-
-    public String getTrkHistMemo() {
-        return trkHistMemo;
-    }
-
-    public void setTrkHistMemo(String trkHistMemo) {
-        this.trkHistMemo = trkHistMemo;
-    }
-
-    public String getTsrTitle() {
-        return tsrTitle;
-    }
-
-    public void setTsrTitle(String tsrTitle) {
-        this.tsrTitle = tsrTitle;
-    }
-
-    public String getTsrSns() {
-        return tsrSns;
-    }
-
-    public void setTsrSns(String tsrSns) {
-        this.tsrSns = tsrSns;
-    }
-
-    public String getTsrSiteUrl() {
-        return tsrSiteUrl;
-    }
-
-    public void setTsrSiteUrl(String tsrSiteUrl) {
-        this.tsrSiteUrl = tsrSiteUrl;
-    }
-
-    public String getTsrImgHeight() {
-        return tsrImgHeight;
-    }
-
-    public void setTsrImgHeight(String tsrImgHeight) {
-        this.tsrImgHeight = tsrImgHeight;
-    }
-
-    public String getTsrImgWidth() {
-        return tsrImgWidth;
-    }
-
-    public void setTsrImgWidth(String tsrImgWidth) {
-        this.tsrImgWidth = tsrImgWidth;
-    }
-
-    public String getTsrImgSize() {
-        return tsrImgSize;
-    }
-
-    public void setTsrImgSize(String tsrImgSize) {
-        this.tsrImgSize = tsrImgSize;
     }
 }

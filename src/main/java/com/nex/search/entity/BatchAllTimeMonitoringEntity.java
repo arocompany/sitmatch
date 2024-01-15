@@ -1,14 +1,11 @@
 package com.nex.search.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.sql.Timestamp;
-
-@Getter
-@Setter
 @Entity
+@Data
 @Table(name = "batch_alltime_monitoring_history", schema = "sittest", catalog = "")
 public class BatchAllTimeMonitoringEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

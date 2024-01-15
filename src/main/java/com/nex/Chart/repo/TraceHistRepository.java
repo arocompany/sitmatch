@@ -1,8 +1,8 @@
 package com.nex.Chart.repo;
 
 import com.nex.Chart.dto.TraceHistDto;
-import com.nex.Chart.entity.TraceHistEntity;
 import com.nex.Chart.dto.TraceHistExcelDto;
+import com.nex.Chart.entity.TraceHistEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

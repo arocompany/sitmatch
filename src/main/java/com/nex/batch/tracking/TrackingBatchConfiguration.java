@@ -2,7 +2,6 @@ package com.nex.batch.tracking;
 
 import com.nex.batch.JpaItemListWriter;
 import com.nex.search.entity.SearchInfoEntity;
-import com.nex.search.entity.SearchInfoMonitoringHistoryEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.repo.SearchInfoRepository;

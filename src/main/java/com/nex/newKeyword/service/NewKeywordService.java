@@ -3,8 +3,14 @@ package com.nex.newKeyword.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.Consts;
-import com.nex.search.entity.*;
-import com.nex.search.repo.*;
+import com.nex.search.entity.NewKeywordEntity;
+import com.nex.search.entity.SearchInfoEntity;
+import com.nex.search.entity.SearchJobEntity;
+import com.nex.search.entity.SearchResultEntity;
+import com.nex.search.entity.result.Images_resultsByText;
+import com.nex.search.entity.result.YandexByTextResult;
+import com.nex.search.repo.NewKeywordRepository;
+import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.service.SearchService;
 import com.nex.user.entity.SessionInfoDto;
 import lombok.RequiredArgsConstructor;
@@ -44,8 +50,7 @@ public class NewKeywordService {
     private final SearchService searchService;
     private final NewKeywordRepository newKeywordRepository;
 
-    @Autowired
-    ResourceLoader resourceLoader;
+    private final ResourceLoader resourceLoader;
 
     @Value("${file.location2}")
     private String fileLocation2;

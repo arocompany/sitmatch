@@ -6,7 +6,12 @@ import com.nex.Chart.repo.NoticeHistRepository;
 import com.nex.Chart.repo.SearchInfoHistRepository;
 import com.nex.Chart.repo.SearchResultHistRepository;
 import com.nex.Chart.repo.TraceHistRepository;
-import com.nex.search.entity.*;
+import com.nex.search.entity.SearchInfoEntity;
+import com.nex.search.entity.SearchJobEntity;
+import com.nex.search.entity.SearchResultEntity;
+import com.nex.search.entity.dto.SearchInfoDto;
+import com.nex.search.entity.result.Images_resultsByText;
+import com.nex.search.entity.result.YandexByTextResult;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
@@ -113,7 +118,7 @@ public class SearchTextVnInstagramService {
                     try {
                         // text기반 yandex 검색
                         // return searchTextYandex(index, searchInfoDto, tsrSns, finalTextYandexGl1, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
-                        return searchTextYandex(index, searchInfoDto, tsrSns, finalTextYandexGl1,YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                        return searchTextYandex(index, searchInfoDto, tsrSns, finalTextYandexGl1, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;

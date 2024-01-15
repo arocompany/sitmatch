@@ -1,7 +1,7 @@
 package com.nex.search.repo;
 
-import com.nex.search.entity.DefaultQueryDtoInterface;
 import com.nex.search.entity.SearchResultEntity;
+import com.nex.search.entity.dto.DefaultQueryDtoInterface;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
