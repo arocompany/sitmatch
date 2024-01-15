@@ -290,6 +290,7 @@ public class SearchController {
                 // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
 
                 searchImageGoogleLensService.searchYandexByGoogleLensImage("11", insertResult);
+                /*
                 searchImageCnService.search(insertResult, searchInfoDto);
                 searchImageKrService.search(insertResult, searchInfoDto);
                 searchImageNlService.search(insertResult, searchInfoDto);
@@ -297,6 +298,7 @@ public class SearchController {
                 searchImageThService.search(insertResult, searchInfoDto);
                 searchImageUsService.search(insertResult, searchInfoDto);
                 searchImageVnService.search(insertResult, searchInfoDto);
+                */
             }
             case "19" -> // 19: 영상
                     searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiType, insertResult, folder, searchInfoDto);

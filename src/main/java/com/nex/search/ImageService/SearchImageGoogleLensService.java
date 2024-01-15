@@ -81,27 +81,11 @@ public class SearchImageGoogleLensService {
         // test용 이미지
         // searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20231129/f7497f8d-4784-4841-8897-e213a878cca3.jpg"; // 조세호
         // searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20231021/563ca536-01dd-4931-a7f8-9b93cc1dbd54.jpg"; // 아청물
-
+        
+        searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20240102/e89c63da-d7ed-48b6-a9a3-056fe582b6b2.jpg"; //고양이
+        
         log.info("searchImageUrl: "+searchImageUrl);
         // CompletableFutureGoogleLensByImage(searchImageUrl, tsrSns, insertResult);
-
-        try {
-            log.info("== cn 시작 ==");
-            String url = textYandexUrl
-                    + "?engine=google_lens"
-                    + "&url=" + searchImageUrl
-                    + "&country=cn"
-                    + "&api_key="+textYandexApikey;
-
-            log.info("url: " + url);
-
-            CompletableFutureGoogleLensByCnImage(url, tsrSns, insertResult);
-
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-
         try {
             log.info("== kr 시작 ==");
             String url = textYandexUrl
@@ -113,6 +97,23 @@ public class SearchImageGoogleLensService {
             log.info("url: " + url);
 
             CompletableFutureGoogleLensByKrImage(url, tsrSns, insertResult);
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        /*
+        try {
+            log.info("== cn 시작 ==");
+            String url = textYandexUrl
+                    + "?engine=google_lens"
+                    + "&url=" + searchImageUrl
+                    + "&country=cn"
+                    + "&api_key="+textYandexApikey;
+
+            log.info("url: " + url);
+
+            CompletableFutureGoogleLensByCnImage(url, tsrSns, insertResult);
 
         } catch (Exception e){
             e.printStackTrace();
@@ -197,7 +198,7 @@ public class SearchImageGoogleLensService {
         } catch (Exception e){
             e.printStackTrace();
         }
-
+        */
     }
 
     public void CompletableFutureGoogleLensByCnImage(String url, String tsrSns, SearchInfoEntity insertResult) {

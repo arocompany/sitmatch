@@ -539,8 +539,9 @@ public class TrackingSearchResultService{
         else {
             log.info("이미지검색 getUrl 진입");
             String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
-            searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+            // searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
             // searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
+            searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20240102/e89c63da-d7ed-48b6-a9a3-056fe582b6b2.jpg"; //고양이
 
             url = textYandexUrl
                     + "?gl=vn"
@@ -583,6 +584,7 @@ public class TrackingSearchResultService{
             String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
             searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
             // searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
+            searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20240102/e89c63da-d7ed-48b6-a9a3-056fe582b6b2.jpg"; //고양이
 
             url = textYandexUrl
                     + "?engine=google_lens"
