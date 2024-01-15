@@ -1,18 +1,13 @@
 package com.nex.search.controller;
 
 import com.nex.common.Consts;
-import com.nex.search.ImageService.*;
+import com.nex.search.ImageService.SearchImageGoogleLensService;
+import com.nex.search.ImageService.SearchImageService;
 import com.nex.search.entity.NationCodeEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
 import com.nex.search.repo.NationCodeRepository;
-import com.nex.search.service.SearchService;
-import com.nex.search.textFacebookService.*;
-import com.nex.search.textGoogleService.*;
-import com.nex.search.textImageFacebookService.*;
-import com.nex.search.textImageGoogleService.*;
-import com.nex.search.textImageInstagramService.*;
-import com.nex.search.textInstagramService.*;
+import com.nex.search.service.*;
 import com.nex.user.entity.SessionInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,8 +44,6 @@ public class SearchController {
     private final SearchTextImageGoogleService searchTextImageGoogleService;
     private final SearchTextImageInstagramService searchTextImageInstagramService;
     private final SearchTextImageFacebookService searchTextImageFacebookService;
-
-
 
     @Value("${search.yandex.text.url}")
     private String textYandexUrl;

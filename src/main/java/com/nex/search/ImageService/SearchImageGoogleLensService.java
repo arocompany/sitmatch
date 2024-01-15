@@ -82,7 +82,8 @@ public class SearchImageGoogleLensService {
         // searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20231129/f7497f8d-4784-4841-8897-e213a878cca3.jpg"; // 조세호
         // searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20231021/563ca536-01dd-4931-a7f8-9b93cc1dbd54.jpg"; // 아청물
         
-        searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20240102/e89c63da-d7ed-48b6-a9a3-056fe582b6b2.jpg"; //고양이
+//        searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20240102/e89c63da-d7ed-48b6-a9a3-056fe582b6b2.jpg"; //고양이
+        searchImageUrl= "http://106.254.235.202:9091/imagePath/requests/20240115/05b9343c-b1d2-48c6-ae3a-27dfd3bae972.jpg";
         
         log.info("searchImageUrl: "+searchImageUrl);
         // CompletableFutureGoogleLensByImage(searchImageUrl, tsrSns, insertResult);

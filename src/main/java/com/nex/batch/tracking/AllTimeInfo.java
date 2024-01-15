@@ -21,6 +21,18 @@ public class AllTimeInfo {
 
     private final EntityManagerFactory em;
     private final int CHUNK_SIZE = 100;
+
+    /*
+        Notice : 꼭 명시해야할 것
+                Table to Table / 어떤 테이블에 어떤 행을 몇개?를 리스트업 하여,
+                               / 어떤 테이블에 어떻게 행을 삽입 또는 Update하는지?
+                                                        Update한다면,,??
+                                                         어떤 테이블에 어떤 키값을 가진 행을?
+        Reader :
+        Processor :
+        Writer :
+
+     */
     @Bean
     public JpaPagingItemReader<SearchResultEntity> allTimeInfoReader() {
         log.info("allTimeInfoReader 진입");

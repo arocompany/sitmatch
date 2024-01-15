@@ -1,14 +1,23 @@
-package com.nex.search.textGoogleService;
+package com.nex.search.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nex.Chart.repo.NoticeHistRepository;
+import com.nex.Chart.repo.SearchInfoHistRepository;
+import com.nex.Chart.repo.SearchResultHistRepository;
+import com.nex.Chart.repo.TraceHistRepository;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
 import com.nex.search.entity.result.Images_resultsByText;
 import com.nex.search.entity.result.YandexByTextResult;
+import com.nex.search.repo.SearchInfoRepository;
+import com.nex.search.repo.SearchJobRepository;
+import com.nex.search.repo.SearchResultRepository;
+import com.nex.search.repo.VideoInfoRepository;
 import com.nex.search.service.SearchService;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +45,22 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 @Lazy
-public class SearchTextKrGoogleService {
-    private final SearchService searchService;
-    private final ResourceLoader resourceLoader;
+public class SearchTextInstagramService {
 
-    private String nationCode = "";
+    private final EntityManager em;
+    private final SearchInfoRepository searchInfoRepository;
+    private final SearchResultRepository searchResultRepository;
+    private final VideoInfoRepository videoInfoRepository;
+    private final SearchJobRepository searchJobRepository;
+
+    private final SearchInfoHistRepository searchInfoHistRepository;
+    private final TraceHistRepository traceHistRepository;
+    private final SearchResultHistRepository searchResultHistRepository;
+    private final NoticeHistRepository noticeHistRepository;
+    private final SearchService searchService;
+
+    @Autowired
+    ResourceLoader resourceLoader;
 
     @Value("${file.location2}")
     private String fileLocation2;
@@ -69,24 +89,26 @@ public class SearchTextKrGoogleService {
     private String fileLocation3;
     @Value("${server.url}")
     private String serverIp;
+    private String nationCode = "";
 
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
-    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
-        String tsrSns = "11";
-        this.nationCode = nationCode;
+    public void search(byte tsiInstagram, String tsiType, SearchInfoEntity insertResult, String folder, SearchInfoDto searchInfoDto, String nationCode){
+        String tsrSns = "15";
         // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
-        searchSnsByText(tsrSns, insertResult, searchInfoDto);
+
+        searchSnsByText(tsrSns, insertResult, searchInfoDto, nationCode);
     }
 
-    public void searchSnsByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) {
+    public void searchSnsByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode) {
         int index=0;
+        loop = true;
 
-        String textYandexGl = this.nationCode;
-        String finalTextYandexGl1 = textYandexGl;
+        // String textYandexGl = "cn";
+        String finalTextYandexGl1 = this.nationCode = nationCode;
 
-        String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
+        // String tsiKeywordHiddenValue = "인스타그램 "+searchInfoDto.getTsiKeywordHiddenValue();
         searchByText(index, finalTextYandexGl1, tsrSns, insertResult, searchInfoDto);
     }
 
@@ -104,7 +126,7 @@ public class SearchTextKrGoogleService {
                     }
                 }).thenApply((r) -> {
                     try {
-                        log.info("R" + r);
+                        log.info("R: " + r);
 
                         // 결과 저장.(이미지)
                         return saveYandex(
@@ -140,20 +162,11 @@ public class SearchTextKrGoogleService {
     }
 
     public <INFO, RESULT> List<RESULT> searchTextYandex(int index, SearchInfoDto searchInfoDto, String tsrSns, String textYandexGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        log.info("============== searchTextYandex index: "+index+ " textYandexGl"+textYandexGl);
-        String tsiKeywordHiddenValue2 = searchInfoDto.getTsiKeywordHiddenValue();
-
-        //인스타
-        if ("15".equals(tsrSns)) {
-            tsiKeywordHiddenValue2 = "인스타그램 " + tsiKeywordHiddenValue2;
-        }
-        //페북
-        else if ("17".equals(tsrSns)) {
-            tsiKeywordHiddenValue2 = "페이스북 " + tsiKeywordHiddenValue2;
-        }
+        log.info("============== searchTextYandex index: "+index+ " textYandexGl: "+textYandexGl + " tsrSns: "+tsrSns);
+        String tsiKeywordHiddenValue = "인스타그램 " + searchInfoDto.getTsiKeywordHiddenValue();
 
         String url = textYandexUrl
-                + "?q=" + tsiKeywordHiddenValue2
+                + "?q=" + tsiKeywordHiddenValue
                 + "&gl=" + textYandexGl
                 + "&no_cache=" + textYandexNocache
                 + "&location=" + textYandexLocation
@@ -164,7 +177,7 @@ public class SearchTextKrGoogleService {
                 + "&nfpr=0"
                 + "&engine=google";
 
-        log.info("tsiKeywordHiddenValue2" +tsiKeywordHiddenValue2);
+        log.info("tsiKeywordHiddenValue: " +tsiKeywordHiddenValue);
         log.info("searchTextYandex url: " +url);
 
         HttpHeaders header = new HttpHeaders();
@@ -197,7 +210,6 @@ public class SearchTextKrGoogleService {
         }
 
         // if(index >1){ loop=false;}
-
         return results != null ? results : new ArrayList<>();
     }
 
@@ -214,17 +226,20 @@ public class SearchTextKrGoogleService {
         List<SearchResultEntity> sreList = new ArrayList<>();
 
         for (RESULT result : results) {
+            log.info("results: " + results);
 
             try {
                 String imageUrl = getOriginalFn.apply(result);
-                log.info("imageUrl1: "+imageUrl);
+
                 if(imageUrl == null) {
                     imageUrl = getThumbnailFn.apply(result);
                 }
-                log.info("imageUrl2: "+imageUrl);
+                log.info("imageUrl: "+imageUrl);
 
                 if(imageUrl != null) {
+                    //검색 결과 엔티티 추출
                     SearchResultEntity sre = searchService.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+
                     if (!tsrSns.equals(sre.getTsrSns())) {
                         continue;
                     }
@@ -276,7 +291,8 @@ public class SearchTextKrGoogleService {
     }
 
     public void CompletableFutureYandexByText(int index, String tsrSns, String textYandexGl, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) throws ExecutionException, InterruptedException {
-        log.info("--------------- CompletableFutureYandexByText index 값: " + index+ " textYandexGl: " + textYandexGl);
+        log.info("--------------- CompletableFutureYandexByText 진입 ----------------");
+        log.info("--------------- index 값2: " + index+ " textYandexGl " + textYandexGl);
 
         index++;
         int finalIndex = index;
@@ -295,7 +311,7 @@ public class SearchTextKrGoogleService {
                     log.info("텍스트검색 r == null 진입");
                     loop = false;
                 }
-                log.info(" --------------- loop 값 --------------- " + loop + " textYandexGl "+textYandexGl);
+                log.info(" --------------- loop값 --------------- " + loop + " textYandexGl "+textYandexGl);
                 // 결과 저장.(이미지)
                 return saveYandex(
                         r
@@ -324,7 +340,7 @@ public class SearchTextKrGoogleService {
             }
         }).thenRun(()->{
             log.info("thenRun loop값: "+loop);
-            if(loop == true){
+            if(loop==true){
                 try {
                     log.info("loop==true 진입:" + loop);
                     log.info("==== thenRun 진입 ==== index값: " + finalIndex+" textYandexGl "+textYandexGl);

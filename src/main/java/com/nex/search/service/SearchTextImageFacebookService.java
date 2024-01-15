@@ -1,4 +1,4 @@
-package com.nex.search.textImageFacebookService;
+package com.nex.search.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,7 +37,7 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 @Lazy
-public class SearchTextImageNlFacebookService {
+public class SearchTextImageFacebookService {
     private final SearchService searchService;
 
     @Autowired
@@ -73,19 +73,22 @@ public class SearchTextImageNlFacebookService {
 
     private Boolean loop = true;
     private final RestTemplate restTemplate;
+    private String nationCode = "";
 
-    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
+    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
         String tsrSns = "17";
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
-        searchSnsByImage(searchImageUrl, tsiKeywordHiddenValue, searchInfoDto, tsrSns, insertResult);
+
+        this.nationCode = nationCode;
+        searchSnsByImage(searchImageUrl, tsiKeywordHiddenValue, searchInfoDto, tsrSns, insertResult, nationCode);
 
     }
 
-    public void searchSnsByImage(String searchImageUrl, String tsiKeywordHiddenValue, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
+    public void searchSnsByImage(String searchImageUrl, String tsiKeywordHiddenValue, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult, String nationCode) {
         int index=0;
-        String textYandexGl = "nl";
+        String textYandexGl = this.nationCode;
 
         searchByImage(index, textYandexGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
         searchByText(index, textYandexGl,tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);

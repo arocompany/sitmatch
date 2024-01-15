@@ -78,7 +78,7 @@ public class SearchImageService {
         String tsrSns = "11";
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
-
+        searchImageUrl= "http://106.254.235.202:9091/imagePath/requests/20240115/05b9343c-b1d2-48c6-ae3a-27dfd3bae972.jpg";
         this.nationCode = nationCode;
         searchSnsByImage(searchImageUrl, searchInfoDto, tsrSns, insertResult, nationCode);
     }

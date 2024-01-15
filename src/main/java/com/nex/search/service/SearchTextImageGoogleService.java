@@ -1,4 +1,4 @@
-package com.nex.search.textImageInstagramService;
+package com.nex.search.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,7 +37,7 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 @Lazy
-public class SearchTextImageRuInstagramService {
+public class SearchTextImageGoogleService {
     private final SearchService searchService;
 
     @Autowired
@@ -70,23 +70,28 @@ public class SearchTextImageRuInstagramService {
     private String fileLocation3;
     @Value("${search.server.url}")
     private String serverIp;
+
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
-    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
-        String tsrSns = "15";
+    private String nationCode = "";
+
+    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
+        String tsrSns = "11";
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
-        searchSnsByImage(searchImageUrl, tsiKeywordHiddenValue, searchInfoDto, tsrSns, insertResult);
+
+        this.nationCode = nationCode;
+        searchSnsByImage(searchImageUrl, tsiKeywordHiddenValue, searchInfoDto, tsrSns, insertResult, nationCode);
 
     }
 
-    public void searchSnsByImage(String searchImageUrl, String tsiKeywordHiddenValue, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
+    public void searchSnsByImage(String searchImageUrl, String tsiKeywordHiddenValue, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult, String nationCode) {
         int index=0;
-        String textYandexGl = "ru";
+        String textYandexGl = this.nationCode;
 
-        searchByImage(index, textYandexGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
+        searchByImage(index, textYandexGl,tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
         searchByText(index, textYandexGl,tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
     }
 
@@ -101,7 +106,7 @@ public class SearchTextImageRuInstagramService {
                     }
                 }).thenApply((r) -> {
                     try { // 결과 저장.(이미지)
-                        return saveImageYandex(
+                        return saveYandex(
                                 r
                                 , tsrSns
                                 , insertResult
@@ -132,8 +137,6 @@ public class SearchTextImageRuInstagramService {
     }
 
     public <INFO, RESULT> List<RESULT> searchYandex(int index, String textYandexGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue;
-
         String url = textYandexUrl
                 + "?gl=" + textYandexGl
                 + "&no_cache=" + textYandexNocache
@@ -204,7 +207,7 @@ public class SearchTextImageRuInstagramService {
                 log.info("imageUrl2: "+imageUrl);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = searchService.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = searchService.getSearchResultEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {
@@ -274,7 +277,7 @@ public class SearchTextImageRuInstagramService {
                 })
                 .thenApply((r) -> {
                     try { // 결과 저장.(이미지)
-                        return saveImageYandex(
+                        return saveYandex(
                                 r
                                 , tsrSns
                                 , insertResult
@@ -390,59 +393,5 @@ public class SearchTextImageRuInstagramService {
                 });
 
     }
-
-
-    public <RESULT> List<SearchResultEntity> saveImageYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
-            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
-        log.info("========= saveYandex 진입 =========");
-
-        if (results == null) {
-            log.info("result null");
-            return null;
-        }
-
-        // RestTemplate restTemplate = new RestTemplate();
-        List<SearchResultEntity> sreList = new ArrayList<>();
-
-        //SearchResultEntity sre = null;
-        for (RESULT result : results) {
-            log.info("results: " + results);
-
-            try {
-                String imageUrl = getOriginalFn.apply(result) ;
-                log.info("imageUrl1: "+imageUrl);
-                if(imageUrl == null) {
-                    imageUrl = getThumbnailFn.apply(result);
-                }
-                log.info("imageUrl2: "+imageUrl);
-                if(imageUrl != null) {
-                    //검색 결과 엔티티 추출
-                    SearchResultEntity sre = searchService.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
-
-                    //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
-                    if (!tsrSns.equals(sre.getTsrSns())) {
-                        continue;
-                    }
-
-                    log.info("getThumbnailFn: "+getThumbnailFn);
-
-                    //이미지 파일 저장
-                    searchService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
-                    searchService.saveSearchResult(sre);
-
-                    sreList.add(sre);
-                }
-            } catch (IOException e) { // IOException 의 경우 해당 Thread 를 종료하도록 처리.
-                log.error(e.getMessage());
-                throw new IOException(e);
-            } catch (Exception e) {
-                log.error(e.getMessage());
-            }
-        }
-
-        return sreList;
-    }
-
 
 }
