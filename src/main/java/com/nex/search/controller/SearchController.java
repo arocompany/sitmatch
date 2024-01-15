@@ -42,55 +42,14 @@ public class SearchController {
     private final SearchImageGoogleLensService searchImageGoogleLensService;
 
     private final SearchTextGoogleService searchTextGoogleService;
-//    private final SearchTextUsGoogleService searchTextUsGoogleService;
-//    private final SearchTextKrGoogleService searchTextKrGoogleService;
-//    private final SearchTextCnGoogleService searchTextCnGoogleService;
-//    private final SearchTextThGoogleService searchTextThGoogleService;
-//    private final SearchTextRuGoogleService searchTextRuGoogleService;
-//    private final SearchTextVnGoogleService searchTextVnGoogleService;
-//    private final SearchTextNlGoogleService searchTextNlGoogleService;
-
-    private final SearchTextCnInstagramService searchTextCnInstagramService;
-    private final SearchTextKrInstagramService searchTextKrInstagramService;
-    private final SearchTextNlInstagramService searchTextNlInstagramService;
-    private final SearchTextRuInstagramService searchTextRuInstagramService;
-    private final SearchTextThInstagramService searchTextThInstagramService;
-    private final SearchTextUsInstagramService searchTextUsInstagramService;
-    private final SearchTextVnInstagramService searchTextVnInstagramService;
-
-    private final SearchTextCnFacebookService searchTextCnFacebookService;
-    private final SearchTextKrFacebookService searchTextKrFacebookService;
-    private final SearchTextNlFacebookService searchTextNlFacebookService;
-    private final SearchTextRuFacebookService searchTextRuFacebookService;
-    private final SearchTextThFacebookService searchTextThFacebookService;
-    private final SearchTextUsFacebookService searchTextUsFacebookService;
-    private final SearchTextVnFacebookService searchTextVnFacebookService;
+    private final SearchTextInstagramService searchTextInstagramService;
+    private final SearchTextFacebookService searchTextFacebookService;
 
     private final SearchImageService searchImageService;
+    private final SearchTextImageGoogleService searchTextImageGoogleService;
+    private final SearchTextImageInstagramService searchTextImageInstagramService;
+    private final SearchTextImageFacebookService searchTextImageFacebookService;
 
-    private final SearchTextImageCnGoogleService searchTextImageCnGoogleService;
-    private final SearchTextImageKrGoogleService searchTextImageKrGoogleService;
-    private final SearchTextImageNlGoogleService searchTextImageNlGoogleService;
-    private final SearchTextImageRuGoogleService searchTextImageRuGoogleService;
-    private final SearchTextImageThGoogleService searchTextImageThGoogleService;
-    private final SearchTextImageUsGoogleService searchTextImageUsGoogleService;
-    private final SearchTextImageVnGoogleService searchTextImageVnGoogleService;
-
-    private final SearchTextImageCnInstagramService searchTextImageCnInstagramService;
-    private final SearchTextImageKrInstagramService searchTextImageKrInstagramService;
-    private final SearchTextImageNlInstagramService searchTextImageNlInstagramService;
-    private final SearchTextImageRuInstagramService searchTextImageRuInstagramService;
-    private final SearchTextImageThInstagramService searchTextImageThInstagramService;
-    private final SearchTextImageUsInstagramService searchTextImageUsInstagramService;
-    private final SearchTextImageVnInstagramService searchTextImageVnInstagramService;
-
-    private final SearchTextImageCnFacebookService searchTextImageCnFacebookService;
-    private final SearchTextImageKrFacebookService searchTextImageKrFacebookService;
-    private final SearchTextImageNlFacebookService searchTextImageNlFacebookService;
-    private final SearchTextImageRuFacebookService searchTextImageRuFacebookService;
-    private final SearchTextImageThFacebookService searchTextImageThFacebookService;
-    private final SearchTextImageUsFacebookService searchTextImageUsFacebookService;
-    private final SearchTextImageVnFacebookService searchTextImageVnFacebookService;
 
 
     @Value("${search.yandex.text.url}")
@@ -224,62 +183,44 @@ public class SearchController {
             case "11" -> { // 11:키워드
                 if (tsiGoogle == 1) {
                     searchService.searchYandexYoutube("11", insertResult, searchInfoDto);
-                    searchService.searchYandexText("11", insertResult, searchInfoDto);
-                    searchTextCnGoogleService.search(insertResult, searchInfoDto);
-                    searchTextKrGoogleService.search(insertResult, searchInfoDto);
-                    searchTextUsGoogleService.search(insertResult, searchInfoDto);
-                    searchTextThGoogleService.search(insertResult, searchInfoDto);
-                    searchTextRuGoogleService.search(insertResult, searchInfoDto);
-                    searchTextVnGoogleService.search(insertResult, searchInfoDto);
-                    searchTextNlGoogleService.search(insertResult, searchInfoDto);
+                    List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+                    for(NationCodeEntity ncInfo : ncList) {
+                        searchTextGoogleService.search(insertResult, searchInfoDto, ncInfo.getNcCode().toLowerCase());
+                    }
                 }
                 if (tsiInstagram == 1) {
-                    searchTextCnInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextKrInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextNlInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextRuInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextThInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextUsInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
-                    searchTextVnInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
+                    List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+                    for(NationCodeEntity ncInfo : ncList) {
+                        searchTextInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto, ncInfo.getNcCode().toLowerCase());
+                    }
                 }
                 if (tsiFacebook == 1) {
-                    searchTextCnFacebookService.search(insertResult, searchInfoDto);
-                    searchTextKrFacebookService.search(insertResult, searchInfoDto);
-                    searchTextNlFacebookService.search(insertResult, searchInfoDto);
-                    searchTextRuFacebookService.search(insertResult, searchInfoDto);
-                    searchTextThFacebookService.search(insertResult, searchInfoDto);
-                    searchTextUsFacebookService.search(insertResult, searchInfoDto);
-                    searchTextVnFacebookService.search(insertResult, searchInfoDto);
+                    List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+                    for(NationCodeEntity ncInfo : ncList) {
+                        searchTextFacebookService.search(insertResult, searchInfoDto, ncInfo.getNcCode().toLowerCase());
+                    }
                 }
             }
             case "13" -> { // 13:키워드+이미지
                 searchImageGoogleLensService.searchYandexByGoogleLensImage("11", insertResult);
                 if (tsiGoogle == 1) {
-                    searchTextImageCnGoogleService.search(insertResult, searchInfoDto);
-                    searchTextImageKrGoogleService.search(insertResult, searchInfoDto);
-                    searchTextImageNlGoogleService.search(insertResult, searchInfoDto);
-                    searchTextImageRuGoogleService.search(insertResult, searchInfoDto);
-                    searchTextImageThGoogleService.search(insertResult, searchInfoDto);
-                    searchTextImageUsGoogleService.search(insertResult, searchInfoDto);
-                    searchTextImageVnGoogleService.search(insertResult, searchInfoDto);
+                    List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+                    for(NationCodeEntity ncInfo : ncList) {
+                        searchTextImageGoogleService.search(insertResult, searchInfoDto, ncInfo.getNcCode().toLowerCase());
+                    }
                 }
+
                 if (tsiInstagram == 1) {
-                    searchTextImageCnInstagramService.search(insertResult, searchInfoDto);
-                    searchTextImageKrInstagramService.search(insertResult, searchInfoDto);
-                    searchTextImageNlInstagramService.search(insertResult, searchInfoDto);
-                    searchTextImageRuInstagramService.search(insertResult, searchInfoDto);
-                    searchTextImageThInstagramService.search(insertResult, searchInfoDto);
-                    searchTextImageUsInstagramService.search(insertResult, searchInfoDto);
-                    searchTextImageVnInstagramService.search(insertResult, searchInfoDto);
+                    List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+                    for(NationCodeEntity ncInfo : ncList) {
+                        searchTextImageInstagramService.search(insertResult, searchInfoDto, ncInfo.getNcCode().toLowerCase());
+                    }
                 }
                 if (tsiFacebook == 1) {
-                    searchTextImageCnFacebookService.search(insertResult, searchInfoDto);
-                    searchTextImageKrFacebookService.search(insertResult, searchInfoDto);
-                    searchTextImageNlFacebookService.search(insertResult, searchInfoDto);
-                    searchTextImageRuFacebookService.search(insertResult, searchInfoDto);
-                    searchTextImageThFacebookService.search(insertResult, searchInfoDto);
-                    searchTextImageUsFacebookService.search(insertResult, searchInfoDto);
-                    searchTextImageVnFacebookService.search(insertResult, searchInfoDto);
+                    List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+                    for(NationCodeEntity ncInfo : ncList) {
+                        searchTextImageFacebookService.search(insertResult, searchInfoDto, ncInfo.getNcCode().toLowerCase());
+                    }
                 }
             }
             case "15" -> // 15:키워드+영상
