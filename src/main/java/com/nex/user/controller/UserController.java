@@ -42,12 +42,12 @@ public class UserController {
         }
     }
 
-    @GetMapping("login")
+    @GetMapping("/login")
     public ModelAndView login() {
         return new ModelAndView("html/login");
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public ModelAndView login(@Valid UserLoginCheckDto userLoginCheckDto, BindingResult result, HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView();
 

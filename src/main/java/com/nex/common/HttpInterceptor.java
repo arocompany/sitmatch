@@ -15,18 +15,17 @@ public class HttpInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-//        return HandlerInterceptor.super.preHandle(request, response, handler);
-        log.debug("[preHandle]");
-
 //        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
 //        response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
 //        response.setHeader("Expires", "0"); // Proxies.
 
-        HttpSession session = request.getSession(false);
+//        HttpSession session = request.getSession(false);
 //        HttpSession session = getTempSession(request);      ////////////////////////////////////////////////////// commit 반영안할것
+        SessionInfoDto session = getSession(request);
+
+//        log.info(request.getRequestURI());
 
         if(session == null) {
-            log.debug("response.sendRedirect(\"/user/login\")");
             response.sendRedirect("/user/login");
             return false;
         } else {
@@ -46,10 +45,11 @@ public class HttpInterceptor implements HandlerInterceptor {
 //        log.debug("[afterCompletion]");
     }
 
-    private HttpSession getTempSession(HttpServletRequest request) {
+    private SessionInfoDto getSession(HttpServletRequest request) {
         HttpSession session = request.getSession();
-        SessionInfoDto sessionInfoDto = SessionInfoDto.builder().userId("admin").userNm("홍길동").isAdmin(true).build();
-        session.setAttribute("LOGIN_SESSION", sessionInfoDto);
-        return session;
+//        SessionInfoDto sessionInfoDto = SessionInfoDto.builder().userId("admin").userNm("홍길동").isAdmin(true).build();
+//        session.setAttribute("LOGIN_SESSION", sessionInfoDto);
+        SessionInfoDto sessionInfo = (SessionInfoDto) session.getAttribute(Consts.LOGIN_SESSION);
+        return sessionInfo;
     }
 }

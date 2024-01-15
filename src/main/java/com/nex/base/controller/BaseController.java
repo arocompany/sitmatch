@@ -42,7 +42,6 @@ public class BaseController {
         ModelAndView modelAndView = new ModelAndView("html/index");
         modelAndView.addObject("headerMenu", "index");
 
-        modelAndView.addObject("sessionInfo", sessionInfoDto);
         List<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getNoticeListMain(0);
         modelAndView.addObject("traceInfoList", defaultQueryDtoInterface);
 
