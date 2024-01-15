@@ -1,14 +1,17 @@
 package com.nex.batch.tracking;
 
+import com.nex.batch.JpaItemListWriter;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchResultRepository;
+import jakarta.persistence.EntityManagerFactory;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.NonTransientResourceException;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.UnexpectedInputException;
+import org.springframework.batch.item.*;
+import org.springframework.batch.item.database.JpaItemWriter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,26 +20,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class SearchResultReader implements ItemReader<List<YandexImagesResult>> {
-
+@Configuration
+@RequiredArgsConstructor
+public class SearchResult implements ItemReader<List<YandexImagesResult>> {
     private final TrackingSearchResultService trackingSearchResultService;
-
     private final SearchInfoRepository searchInfoRepository;
-
     private final SearchResultRepository searchResultRepository;
-
-    public SearchResultReader(TrackingSearchResultService trackingSearchResultService, SearchInfoRepository searchInfoRepository, SearchResultRepository searchResultRepository) {
-        this.trackingSearchResultService = trackingSearchResultService;
-        this.searchInfoRepository = searchInfoRepository;
-        this.searchResultRepository = searchResultRepository;
-    }
-
+    private final EntityManagerFactory em;
     private int page = 0;
-
 
     @Override
     public List<YandexImagesResult> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        log.info("read() 진입");
+        log.info("read() 진입 123123123123123123123");
         log.info("page1: "+page);
 
         //한번만 실행
@@ -103,4 +98,41 @@ public class SearchResultReader implements ItemReader<List<YandexImagesResult>> 
         return results;
     }
 
+    @Bean
+    public ItemReader<List<YandexImagesResult>> searchResultReader() {
+        log.info("searchResultReader 진입");
+        return this;
+    }
+    @Bean
+    public ItemProcessor<List<YandexImagesResult>, List<SearchResultEntity>> searchResultProcessor() {
+        log.info("searchResultProcessor 진입");
+        return imagesResults -> {
+            if (!imagesResults.isEmpty()) {
+                //결과를 검색 결과 엔티티로 변환
+                return trackingSearchResultService.resultsToSearchResultEntity(
+                        imagesResults
+                        , YandexImagesResult::getTsiUno
+                        , YandexImagesResult::getOriginal
+                        , YandexImagesResult::getThumbnail
+                        , YandexImagesResult::getTitle
+                        , YandexImagesResult::getLink
+                        , YandexImagesResult::isFacebook
+                        , YandexImagesResult::isInstagram
+                );
+            }
+
+            return null;
+        };
+    }
+
+    @Bean
+    public JpaItemListWriter<SearchResultEntity> searchResultWriter() {
+        log.info("searchResultWriter 진입");
+        JpaItemWriter<SearchResultEntity> writer = new JpaItemWriter<>();
+        writer.setEntityManagerFactory(em);
+
+        JpaItemListWriter<SearchResultEntity> listWriter = new JpaItemListWriter<>(writer);
+        listWriter.setEntityManagerFactory(em);
+        return listWriter;
+    }
 }
