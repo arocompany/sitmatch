@@ -38,9 +38,10 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 // .next(allTimeMonitoringSetTimeStep(jobRepository, transactionManager)) // 마지막 모니터링 체크시간
                 .next(searchInfoStep(jobRepository, transactionManager))
                 .next(searchResultStep(jobRepository, transactionManager))
-                .next(searchJobStep(jobRepository, transactionManager))
+                // .next(searchJobStep(jobRepository, transactionManager))
                 .build();
     }
+
 //
 //    /*
 //    Reader : tb_search_result에 monitoring_cd 값이 20인 데이터를 load
@@ -113,6 +114,8 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .writer(searchJob.searchJobWriter())
                 .build();
     }
+
+
 
 /*
     @Bean
