@@ -12,7 +12,6 @@ import com.nex.user.repo.AutoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -21,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/")
 public class BaseController {
@@ -33,19 +32,20 @@ public class BaseController {
 
 
     @GetMapping("/")
-    public String index(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto, Model model) {
-        model.addAttribute("headerMenu", "index");
+    public ModelAndView index(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
+        ModelAndView mv = new ModelAndView("html/index");
+        mv.addObject("headerMenu", "index");
         List<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getNoticeListMain(0);
-        model.addAttribute("traceInfoList", defaultQueryDtoInterface);
-        model.addAttribute("sessionInfo", sessionInfoDto);
-
-        return "html/index";
+        mv.addObject("traceInfoList", defaultQueryDtoInterface);
+        mv.addObject("sessionInfo", sessionInfoDto);
+        return mv;
     }
 
     @GetMapping("/password")
-    public String password(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto, Model model) {
-        model.addAttribute("sessionInfo", sessionInfoDto);
-        return "html/password";
+    public ModelAndView password(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto, Model model) {
+        ModelAndView mv = new ModelAndView("html/password");
+        mv.addObject("sessionInfo", sessionInfoDto);
+        return mv;
     }
 
     // 카운트
@@ -63,28 +63,28 @@ public class BaseController {
 
 
     @GetMapping("/notice")
-    public String notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto , @ModelAttribute ReqNotice param, Model model) {
+    public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto , @ModelAttribute ReqNotice param, Model model) {
+        ModelAndView mv = new ModelAndView("html/notice");
         searchService.noticeHistInsert(sessionInfoDto.getUserUno(), sessionInfoDto.getUserId());
         Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getNoticeList(param.getPage(), param.getTsiUno(), param.getTsiKeyword());
 
-        model.addAttribute("sessionInfo", sessionInfoDto);
-        model.addAttribute("searchResultList", defaultQueryDtoInterface);
-        model.addAttribute("tsrUno", param.getTsrUno());
+        mv.addObject("sessionInfo", sessionInfoDto);
+        mv.addObject("searchResultList", defaultQueryDtoInterface);
+        mv.addObject("tsrUno", param.getTsrUno());
         assert defaultQueryDtoInterface != null;
-        model.addAttribute("searchResultListCount", defaultQueryDtoInterface.getTotalElements());
-        model.addAttribute("number", defaultQueryDtoInterface.getNumber());
-        model.addAttribute("maxPage", Consts.MAX_PAGE);
-        model.addAttribute("totalPages", defaultQueryDtoInterface.getTotalPages());
+        mv.addObject("searchResultListCount", defaultQueryDtoInterface.getTotalElements());
+        mv.addObject("number", defaultQueryDtoInterface.getNumber());
+        mv.addObject("maxPage", Consts.MAX_PAGE);
+        mv.addObject("totalPages", defaultQueryDtoInterface.getTotalPages());
 
-        model.addAttribute("tsrUno", param.getTsrUno());
-        model.addAttribute("tsiUno", param.getTsiUno());
-        model.addAttribute("imgSrc", searchService.getSearchInfoImgUrl(param.getTsiUno())); //tsi
-        model.addAttribute("tsiType", searchService.getSearchInfoTsiType(param.getTsiUno())); //tsi
-        model.addAttribute("userId", searchService.getUserIdByTsiUnoMap().get(param.getTsiUno())); //tsi
-        model.addAttribute("tsiKeyword", param.getTsiKeyword());
+        mv.addObject("tsrUno", param.getTsrUno());
+        mv.addObject("tsiUno", param.getTsiUno());
+        mv.addObject("imgSrc", searchService.getSearchInfoImgUrl(param.getTsiUno())); //tsi
+        mv.addObject("tsiType", searchService.getSearchInfoTsiType(param.getTsiUno())); //tsi
+        mv.addObject("userId", searchService.getUserIdByTsiUnoMap().get(param.getTsiUno())); //tsi
+        mv.addObject("tsiKeyword", param.getTsiKeyword());
 
-
-        return "html/notice";
+        return mv;
     }
 
     @GetMapping("/loading")

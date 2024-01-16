@@ -3,7 +3,6 @@ package com.nex.batch.tracking;
 import com.nex.batch.JpaItemListWriter;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
-import com.nex.search.entity.SearchResultMonitoringHistoryEntity;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchResultMonitoringRepository;
 import com.nex.search.repo.SearchResultRepository;
@@ -15,8 +14,6 @@ import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +33,7 @@ public class SearchResult implements ItemReader<List<YandexImagesResult>> {
 
     @Override
     public List<YandexImagesResult> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        log.info("read() 진입 123123123123123123123");
+        log.info("read() 진입");
         log.info("page1: "+page);
 
         //한번만 실행
@@ -51,16 +48,6 @@ public class SearchResult implements ItemReader<List<YandexImagesResult>> {
 
         //24시간 모니터링 코드 값이 20 (모니터링) 인 데이터 조회
         List<SearchResultEntity> dtoList = searchResultRepository.findByMonitoringCd("20");
-
-//        for(SearchResultEntity searchResultEntity:dtoList) {
-//            SearchResultMonitoringHistoryEntity searchResultMonitoringHistoryEntity = new SearchResultMonitoringHistoryEntity();
-//            log.info("dtoList.get(dtoList.indexOf(searchResultEntity)).getTsrUno(): "+dtoList.get(dtoList.indexOf(searchResultEntity)).getTsrUno());
-//
-//            searchResultMonitoringHistoryEntity.setTsrUno(dtoList.get(dtoList.indexOf(searchResultEntity)).getTsrUno());
-//            searchResultMonitoringHistoryEntity.setTsrmhCreateDate(Timestamp.valueOf(LocalDateTime.now()));
-//
-//            searchResultMonitoringRepository.save(searchResultMonitoringHistoryEntity);
-//        }
 
         //검색 정보 테이블의 PK List
         List<Integer> tsiUnoList = dtoList.stream().map(SearchResultEntity::getTsiUno).toList();

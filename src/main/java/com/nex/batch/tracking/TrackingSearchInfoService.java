@@ -3,8 +3,10 @@ package com.nex.batch.tracking;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchInfoMonitoringHistoryEntity;
 import com.nex.search.entity.SearchResultEntity;
+import com.nex.search.entity.SearchResultMonitoringHistoryEntity;
 import com.nex.search.repo.SearchInfoMonitoringRepository;
 import com.nex.search.repo.SearchInfoRepository;
+import com.nex.search.repo.SearchResultMonitoringRepository;
 import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ public class TrackingSearchInfoService {
     private final SearchService searchService;
     private final SearchInfoRepository siRepository;
     private final SearchInfoMonitoringRepository repository;
+    private final SearchResultMonitoringRepository searchResultMonitoringRepository;
 
     @Value("${file.location1}")
     private String fileLocation1;
@@ -55,10 +58,12 @@ public class TrackingSearchInfoService {
         SearchInfoMonitoringHistoryEntity searchInfoMonitoringHistoryEntity = new SearchInfoMonitoringHistoryEntity();
         searchInfoMonitoringHistoryEntity.setTsiUno(searchInfoEntityByTsiUno.getTsiUno());
         searchInfoMonitoringHistoryEntity.setTsimhCreateDate(Timestamp.valueOf(currentDateTime));
-
         repository.save(searchInfoMonitoringHistoryEntity);
 
-        log.info("Timestamp.valueOf(LocalDateTime.now()): "+Timestamp.valueOf(currentDateTime));
+        SearchResultMonitoringHistoryEntity searchResultMonitoringHistoryEntity = new SearchResultMonitoringHistoryEntity();
+        searchResultMonitoringHistoryEntity.setTsrUno(searchResultEntity.getTsrUno());
+        searchResultMonitoringHistoryEntity.setTsrmhCreateDate(Timestamp.valueOf(LocalDateTime.now()));
+        searchResultMonitoringRepository.save(searchResultMonitoringHistoryEntity);
 
         return searchInfoEntityByTsiUno;
     }
