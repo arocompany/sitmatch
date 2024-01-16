@@ -4,6 +4,7 @@ import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchInfoMonitoringHistoryEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.repo.SearchInfoMonitoringRepository;
+import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import java.util.UUID;
 public class TrackingSearchInfoService {
 
     private final SearchService searchService;
+    private final SearchInfoRepository siRepository;
     private final SearchInfoMonitoringRepository repository;
 
     @Value("${file.location1}")
@@ -84,6 +86,13 @@ public class TrackingSearchInfoService {
      */
     public SearchInfoEntity getSearchInfoEntity(SearchInfoEntity searchInfoEntityByTsiUno, SearchResultEntity searchResultEntity) {
         log.info("getSearchInfoEntity 진입" + searchInfoEntityByTsiUno.getTsiUno());
+
+        boolean isSuccess = increaseMonitoringCnt(searchInfoEntityByTsiUno);
+
+        if(! isSuccess){
+            log.info("increaseMonitoringCnt("+searchInfoEntityByTsiUno.getTsiUno()+")의 결과값이 " + isSuccess);
+            return null;
+        }
         SearchInfoEntity searchInfoEntity = new SearchInfoEntity();
 
         searchInfoEntity.setUserUno(1);
@@ -158,4 +167,43 @@ public class TrackingSearchInfoService {
     }
 */
 
+    private boolean increaseMonitoringCnt(SearchInfoEntity param){
+        try {
+
+
+            log.info("getSearchInfoEntity2 진입" + param.getTsiUno());
+
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String formattedDateTime = currentDateTime.format(formatter);
+            String monitoringAllTime = formattedDateTime + "   ";
+
+            log.info("monitoringAllTime: " + monitoringAllTime);
+
+            if (param.getTsiMonitoringCnt() != 0) {
+                log.info("!= 0 searchInfoEntityByTsiUno.getTsiMonitoringCnt(): " + param.getTsiMonitoringCnt());
+                param.setTsiMonitoringCnt(param.getTsiMonitoringCnt() + 1);
+            } else {
+                log.info("== 0 searchInfoEntityByTsiUno.getTsiMonitoringCnt(): " + param.getTsiMonitoringCnt());
+                param.setTsiMonitoringCnt(1);
+            }
+
+            param.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+            // searchInfoEntityByTsiUno.setTsiAlltimeMonitoring(searchInfoEntityByTsiUno.getTsiAlltimeMonitoring() + monitoringAllTime);
+            SearchInfoMonitoringHistoryEntity searchInfoMonitoringHistoryEntity = new SearchInfoMonitoringHistoryEntity();
+            searchInfoMonitoringHistoryEntity.setTsiUno(param.getTsiUno());
+            searchInfoMonitoringHistoryEntity.setTsimhCreateDate(Timestamp.valueOf(currentDateTime));
+
+            repository.save(searchInfoMonitoringHistoryEntity);
+
+            log.info("Timestamp.valueOf(LocalDateTime.now()): " + Timestamp.valueOf(currentDateTime));
+
+            siRepository.save(param);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 }

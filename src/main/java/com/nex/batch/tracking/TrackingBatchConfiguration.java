@@ -33,32 +33,32 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
         log.info("trackingJob 진입");
 
         return new JobBuilder("trackingJob", jobRepository)
-                .start(allTimeInfoStep(jobRepository, transactionManager)) // 검색현황
+//                .start(allTimeInfoStep(jobRepository, transactionManager)) // 검색현황
 //                .next(searchInfoMonitoringStep(jobRepository, transactionManager)) // 검색현황 시간
                 // .next(allTimeMonitoringSetTimeStep(jobRepository, transactionManager)) // 마지막 모니터링 체크시간
-                .next(searchInfoStep(jobRepository, transactionManager))
+                .start(searchInfoStep(jobRepository, transactionManager))
                 .next(searchResultStep(jobRepository, transactionManager))
                 .next(searchJobStep(jobRepository, transactionManager))
                 .build();
     }
-
-    /* 
-    Reader : tb_search_result에 monitoring_cd 값이 20인 데이터 갯수를 read
-    Processor : monitoring_cd가 20인 데이터의 tsi_uno값 출력하여 기존 tsi_uno에 tsiMonitoringCnt값 update
-                tb_search_info_monitoring_history에 setTsiUno, setTsimhCreateDate 삽입
-    Writer : 위에 set한 값을 writer처리
-    */
-    @Bean
-    public Step allTimeInfoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        log.info("allTimeInfoStep 진입");
-        return new StepBuilder("allTimeInfoStep", jobRepository)
-                .allowStartIfComplete(true)
-                .<SearchResultEntity, SearchInfoEntity>chunk(CHUNK_SIZE, transactionManager)
-                .reader(allTimeInfo.allTimeInfoReader())
-                .processor(allTimeInfo.allTimeInfoProcessor())
-                .writer(searchInfo.searchInfoWriter())
-                .build();
-    }
+//
+//    /*
+//    Reader : tb_search_result에 monitoring_cd 값이 20인 데이터를 load
+//    Processor : load 한 데이터의 tsi_uno값 기준 tsi_monitoring_cnt 값 증가 처리
+//                tb_search_info_monitoring_history에 적재
+//    Writer : 위에 셋팅한 데이터를 트랜잭션 처리
+//    */
+//    @Bean
+//    public Step allTimeInfoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+//        log.info("allTimeInfoStep 진입");
+//        return new StepBuilder("allTimeInfoStep", jobRepository)
+//                .allowStartIfComplete(true)
+//                .<SearchResultEntity, SearchInfoEntity>chunk(CHUNK_SIZE, transactionManager)
+//                .reader(allTimeInfo.allTimeInfoReader())
+//                .processor(allTimeInfo.allTimeInfoProcessor())
+//                .writer(searchInfo.searchInfoWriter())
+//                .build();
+//    }
 
     /*
     Reader : tb_search_result 테이블에 monitoring_cd=20인 값이면서
