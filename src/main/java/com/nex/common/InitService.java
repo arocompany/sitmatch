@@ -1,20 +1,16 @@
 package com.nex.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nex.SitMatchApplication;
 import com.nex.batch.ScheduleTasks;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.sl.usermodel.ObjectMetaData;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Slf4j
 @Component
