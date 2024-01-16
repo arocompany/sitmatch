@@ -37,10 +37,13 @@ public class ScheduleTasks {
     }
 
     public void startScheduler() {
-        scheduler = new ThreadPoolTaskScheduler();
-        scheduler.initialize();
-        // 스케쥴러가 시작되는 부분
-        scheduler.schedule(getRunnable(), getTrigger());
+        Integer batchCycleByHour = ConfigDataManager.getInstance().getDefaultConfig().getBatchCycleByHour();
+        if(batchCycleByHour != null && batchCycleByHour > 0) {
+            scheduler = new ThreadPoolTaskScheduler();
+            scheduler.initialize();
+            // 스케쥴러가 시작되는 부분
+            scheduler.schedule(getRunnable(), getTrigger(batchCycleByHour));
+        }
     }
 
     private Runnable getRunnable(){
@@ -49,14 +52,10 @@ public class ScheduleTasks {
         };
     }
 
-    private Trigger getTrigger() {
+    private Trigger getTrigger(int batchCycleByHour) {
         // 작업 주기 설정
-        Integer batchCycleByHour = ConfigDataManager.getInstance().getDefaultConfig().getBatchCycleByHour();
-        if(batchCycleByHour != null && batchCycleByHour > 0) {
-            log.info("Scheduled Cycle Setting by " + batchCycleByHour + " hours");
-            return new PeriodicTrigger(batchCycleByHour, TimeUnit.HOURS);
-        }
-        return null;
+        log.info("Scheduled Cycle Setting by " + batchCycleByHour + " hours");
+        return new PeriodicTrigger(batchCycleByHour, TimeUnit.HOURS);
     }
 
     //@Scheduled(cron = "${batch.schedule.tracking.cron}", zone = "Asia/Seoul")
