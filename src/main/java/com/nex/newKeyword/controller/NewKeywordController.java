@@ -30,6 +30,19 @@ public class NewKeywordController {
     private final NewKeywordService newKeywordService;
     private final NewKeywordRepository newKeywordRepository;
 
+    @GetMapping("/")
+    public ModelAndView keyword(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
+        ModelAndView modelAndView = new ModelAndView("html/keyword");
+        log.info("========= keyword 페이지 진입 ========");
+
+        List<NewKeywordDto> newKeywordList = newKeywordRepository.keywordList();
+
+        modelAndView.addObject("newKeywordList", newKeywordList);
+        modelAndView.addObject("sessionInfo", sessionInfoDto);
+
+        return modelAndView;
+    }
+
     // 신조어 이력관리
     @GetMapping("/newKeyword")
     public ModelAndView newKeyword(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto

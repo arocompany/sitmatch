@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //XMLHttpRequest 객체 생성
     var xhr = new XMLHttpRequest();
     //요청을 보낼 방식, 주소, 비동기여부 설정
-    xhr.open('GET', '/keyword', true);
+    xhr.open('GET', '/keyword/', true);
     //요청 전송
     xhr.send(null);
     //통신후 작업
