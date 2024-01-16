@@ -42,6 +42,12 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .build();
     }
 
+    /* 
+    Reader : tb_search_result에 monitoring_cd 값이 20인 데이터 갯수를 read
+    Processor : monitoring_cd가 20인 데이터의 tsi_uno값 출력하여 기존 tsi_uno에 tsiMonitoringCnt값 update
+                tb_search_info_monitoring_history에 setTsiUno, setTsimhCreateDate 삽입
+    Writer : 위에 set한 값을 writer처리
+    */
     @Bean
     public Step allTimeInfoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         log.info("allTimeInfoStep 진입");
@@ -54,6 +60,13 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .build();
     }
 
+    /*
+    Reader : tb_search_result 테이블에 monitoring_cd=20인 값이면서
+            monitoring_cd=20인 해당 tsr_uno 값이 tb_search_info의 tsr_uno컬럼에 없는 데이터들을 read
+    Processor : 새로운 tsi_uno값을 생성 후 해당 tsr_uno컬럼에  monitoring_cd=20이였던 tsr_uno 값을 update
+               기존 searchResult 이미지 파일 복사 후 각 컬럼에 set
+    Writer : 위에서 처리한 데이터를 write처리
+    */
     @Bean
     public Step searchInfoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         log.info("searchInfoStep 진입");
@@ -66,6 +79,12 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .build();
     }
 
+    /*
+    Reader : tb_search_result의 monitoring_cd값이 20인 기존 tsruno를 갖고와서 출력 후 tb_search_info에 해당 tsruno의 이미지경로를 찾아 url을 생성 후 serpAPI에 전송 후
+             json값을 받아 DB에 저장 되어 있지 않은 url 필터링하여 result를 return
+    Processor : reutrn받은 값을 tb_search_result에 tsr_uno를 생성하여 set처리
+    Writer : 위에서 처리한 데이터를 write처리
+    */
     @Bean
     public Step searchResultStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         log.info("searchResultStep 진입");
@@ -78,6 +97,11 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .build();
     }
 
+    /*
+    Reader : search_info에 tsrUno IS NOT NULL이면서 search_job에 해당 tsrUno값이 없는 데이터를 read
+    Processor : 위에 tsrUno값이 searchJob에 없으면 tsjUno를 생성하여 set처리
+    Writer : 위에서 처리한 데이터를 write처리
+    */
     @Bean
     public Step searchJobStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         log.info("searchJobStep 진입");
