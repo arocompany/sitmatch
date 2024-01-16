@@ -22,6 +22,21 @@ public class SearchInfo {
 
     private final EntityManagerFactory em;
     private final int CHUNK_SIZE = 100;
+
+        /*
+        Notice : 꼭 명시해야할 것
+                Table to Table / 어떤 테이블에 어떤 행을 몇개?를 리스트업 하여,
+                               / 어떤 테이블에 어떻게 행을 삽입 또는 Update하는지?
+                                                        Update한다면,,??
+                                                         어떤 테이블에 어떤 키값을 가진 행을?
+
+        Reader : tb_search_result에 monitoring_cd=20인 값이면서
+                 monitoring_cd=20인 해당 tsr_uno 값이 tb_search_info의 tsr_uno컬럼에 없는 데이터들을 read
+        Processor : 새로운 tsi_uno값을 생성 후 해당 tsr_uno컬럼에  monitoring_cd=20이였던 tsr_uno 값을 삽입
+                    기존 searchResult 이미지 파일 복사 후 각 컬럼에 set
+        Writer : 위에 set한 데이터를 write처리
+        */
+
     @Bean
     public JpaPagingItemReader<SearchResultEntity> searchInfoReader() {
         log.info("searchInfoReader 진입");
