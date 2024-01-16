@@ -1,7 +1,6 @@
 package com.nex.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nex.batch.ScheduleTasks;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,6 @@ import java.io.IOException;
 public class InitService {
     private String location;
     private final ServletWebServerApplicationContext context;
-    private final ScheduleTasks scheduleTasks;
 
     @PostConstruct
     public void init(){
@@ -83,9 +81,6 @@ public class InitService {
 
             ConfigDataManager.getInstance().setDefaultConfig(loadedConfig);
             log.info("Config loaded from file: " + loadedConfig);
-
-            scheduleTasks.stopScheduler();
-            scheduleTasks.startScheduler();
         } catch (IOException e) {
             e.printStackTrace();
         }
