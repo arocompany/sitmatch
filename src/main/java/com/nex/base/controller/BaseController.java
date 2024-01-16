@@ -5,27 +5,20 @@ import com.nex.Chart.repo.AlltimeMonitoringHistRepository;
 import com.nex.common.Consts;
 import com.nex.request.ReqNotice;
 import com.nex.search.entity.dto.DefaultQueryDtoInterface;
-import com.nex.search.repo.NewKeywordRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.service.SearchService;
-import com.nex.user.entity.NewKeywordDto;
 import com.nex.user.entity.SessionInfoDto;
 import com.nex.user.repo.AutoRepository;
-import com.nex.user.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 @Controller

@@ -10,7 +10,6 @@ import com.nex.search.entity.result.Images_resultsByImage;
 import com.nex.search.entity.result.Images_resultsByText;
 import com.nex.search.entity.result.YandexByImageResult;
 import com.nex.search.entity.result.YandexByTextResult;
-import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
