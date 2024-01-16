@@ -87,12 +87,12 @@ public class TrackingSearchInfoService {
     public SearchInfoEntity getSearchInfoEntity(SearchInfoEntity searchInfoEntityByTsiUno, SearchResultEntity searchResultEntity) {
         log.info("getSearchInfoEntity 진입" + searchInfoEntityByTsiUno.getTsiUno());
 
-        boolean isSuccess = increaseMonitoringCnt(searchInfoEntityByTsiUno);
-
-        if(! isSuccess){
-            log.info("increaseMonitoringCnt("+searchInfoEntityByTsiUno.getTsiUno()+")의 결과값이 " + isSuccess);
-            return null;
-        }
+//        boolean isSuccess = increaseMonitoringCnt(searchInfoEntityByTsiUno);
+//
+//        if(! isSuccess){
+//            log.info("increaseMonitoringCnt("+searchInfoEntityByTsiUno.getTsiUno()+")의 결과값이 " + isSuccess);
+//            return null;
+//        }
         SearchInfoEntity searchInfoEntity = new SearchInfoEntity();
 
         searchInfoEntity.setUserUno(1);
@@ -167,10 +167,9 @@ public class TrackingSearchInfoService {
     }
 */
 
+    //@Deprecated
     private boolean increaseMonitoringCnt(SearchInfoEntity param){
         try {
-
-
             log.info("getSearchInfoEntity2 진입" + param.getTsiUno());
 
             LocalDateTime currentDateTime = LocalDateTime.now();

@@ -33,10 +33,10 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
         log.info("trackingJob 진입");
 
         return new JobBuilder("trackingJob", jobRepository)
-//                .start(allTimeInfoStep(jobRepository, transactionManager)) // 검색현황
+                .start(allTimeInfoStep(jobRepository, transactionManager)) // 검색현황
 //                .next(searchInfoMonitoringStep(jobRepository, transactionManager)) // 검색현황 시간
                 // .next(allTimeMonitoringSetTimeStep(jobRepository, transactionManager)) // 마지막 모니터링 체크시간
-                .start(searchInfoStep(jobRepository, transactionManager))
+                .next(searchInfoStep(jobRepository, transactionManager))
                 .next(searchResultStep(jobRepository, transactionManager))
                 .next(searchJobStep(jobRepository, transactionManager))
                 .build();
@@ -48,17 +48,17 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 //                tb_search_info_monitoring_history에 적재
 //    Writer : 위에 셋팅한 데이터를 트랜잭션 처리
 //    */
-//    @Bean
-//    public Step allTimeInfoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-//        log.info("allTimeInfoStep 진입");
-//        return new StepBuilder("allTimeInfoStep", jobRepository)
-//                .allowStartIfComplete(true)
-//                .<SearchResultEntity, SearchInfoEntity>chunk(CHUNK_SIZE, transactionManager)
-//                .reader(allTimeInfo.allTimeInfoReader())
-//                .processor(allTimeInfo.allTimeInfoProcessor())
-//                .writer(searchInfo.searchInfoWriter())
-//                .build();
-//    }
+    @Bean
+    public Step allTimeInfoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        log.info("allTimeInfoStep 진입");
+        return new StepBuilder("allTimeInfoStep", jobRepository)
+                .allowStartIfComplete(true)
+                .<SearchResultEntity, SearchInfoEntity>chunk(CHUNK_SIZE, transactionManager)
+                .reader(allTimeInfo.allTimeInfoReader())
+                .processor(allTimeInfo.allTimeInfoProcessor())
+                .writer(searchInfo.searchInfoWriter())
+                .build();
+    }
 
     /*
     Reader : tb_search_result 테이블에 monitoring_cd=20인 값이면서
