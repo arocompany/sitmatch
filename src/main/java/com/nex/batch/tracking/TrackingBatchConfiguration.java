@@ -42,64 +42,6 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .build();
     }
 
-    /*
-    @Bean
-    public Job trackingJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        log.info("trackingJob 진입");
-        return new JobBuilder("trackingJob", jobRepository)
-                .start(searchInfoStep(jobRepository, transactionManager))
-                .next(searchResultStep(jobRepository, transactionManager))
-                .next(searchJobStep(jobRepository, transactionManager))
-                .build();
-    }
-    */
-
-
-//    @Bean
-//    public JpaPagingItemReader<SearchResultEntity> searchResultAllTimeReader() {
-//        log.info("searchResultAllTimeReader 진입");
-//        String queryString = """
-//                             select sr
-//                             from   SearchResultEntity sr
-//                             where  sr.monitoringCd = '20'
-//                             and    exists (
-//                                           select 1
-//                                           from   SearchInfoEntity si
-//                                           where  si.tsiUno = sr.tsiUno
-//                                           )
-//                             and    not exists (
-//                                               select 1
-//                                               from   SearchInfoEntity si
-//                                               where  si.tsrUno = sr.tsrUno
-//                                               )
-//                             """;
-//        return new JpaPagingItemReaderBuilder<SearchResultEntity>()
-//                .name("searchResultAllTimeReader")
-//                .pageSize(CHUNK_SIZE)
-//                .entityManagerFactory(em)
-//                .queryString(queryString)
-//                .build();
-//    }
-
-
-
-//    @Bean
-//    public ItemProcessor<SearchResultEntity, SearchResultEntity> allTimeResultProcessor() {
-//        log.info("allTimeResultProcessor 진입");
-//        return findSearchResult -> {
-//            SearchResultEntity findSearchResult2 = searchResultRepository.findById(Long.parseLong(findSearchResult.getTsrUno()+"")).orElseThrow();
-//            return trackingSearchResultService.getSearchResultEntity2(findSearchResult2, findSearchResult);
-//        };
-//    }
-/*
-    @Bean
-    public ItemProcessor<SearchResultEntity, SearchResultEntity> allTimeMonitoringSetTime() {
-        log.info("allTimeInfoProcessor 진입");
-        return trackingSearchInfoService.getSearchResultEntity2();
-        };
-    }
-*/
-
     @Bean
     public Step allTimeInfoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         log.info("allTimeInfoStep 진입");

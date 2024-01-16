@@ -28,11 +28,14 @@ public class AllTimeInfo {
                                / 어떤 테이블에 어떻게 행을 삽입 또는 Update하는지?
                                                         Update한다면,,??
                                                          어떤 테이블에 어떤 키값을 가진 행을?
-        Reader :
-        Processor :
-        Writer :
 
+        Reader : tb_search_result에 monitoring_cd 값이 20인 데이터 갯수를 read
+        Processor : monitoring_cd가 20인 데이터의 tsi_uno값 출력하여 기존 tsi_uno에 tsiMonitoringCnt값 삽입
+                    tb_search_info_monitoring_history에 setTsiUno, setTsimhCreateDate 삽입
+
+        Writer : 위에 set한 값을 writer처리
      */
+
     @Bean
     public JpaPagingItemReader<SearchResultEntity> allTimeInfoReader() {
         log.info("allTimeInfoReader 진입");
