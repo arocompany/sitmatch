@@ -120,12 +120,12 @@ public class SearchTextFacebookService {
 
     }
 
-    public <INFO, RESULT> List<RESULT> searchTextYandex(int index, SearchInfoDto searchInfoDto, String tsrSns, String textYandexGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+    public <INFO, RESULT> List<RESULT> searchTextYandex(int index, SearchInfoDto searchInfoDto, String tsrSns, String finalTextYandexGl1, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
         String tsiKeywordHiddenValue = "페이스북 " + searchInfoDto.getTsiKeywordHiddenValue();
 
         String url = textYandexUrl
                 + "?q=" + tsiKeywordHiddenValue
-                + "&gl=" + textYandexGl
+                + "&gl=" + finalTextYandexGl1
                 + "&no_cache=" + textYandexNocache
                 + "&location=" + textYandexLocation
                 + "&start=" + index * 10
@@ -245,9 +245,9 @@ public class SearchTextFacebookService {
         return "저장 완료";
     }
 
-    public void CompletableFutureYandexByText(int index, String tsrSns, String textYandexGl, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) throws ExecutionException, InterruptedException {
+    public void CompletableFutureYandexByText(int index, String tsrSns, String finalTextYandexGl1, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) throws ExecutionException, InterruptedException {
         log.info("--------------- CompletableFutureYandexByText 진입 ----------------");
-        log.info("--------------- index 값2: " + index+ " textYandexGl " + textYandexGl);
+        log.info("--------------- index 값2: " + index+ " textYandexGl " + finalTextYandexGl1);
 
         index++;
         int finalIndex = index;
@@ -255,7 +255,7 @@ public class SearchTextFacebookService {
         CompletableFuture.supplyAsync(() -> {
             try {
                 // text기반 yandex 검색
-                return searchTextYandex(finalIndex, searchInfoDto, tsrSns,textYandexGl, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                return searchTextYandex(finalIndex, searchInfoDto, tsrSns,finalTextYandexGl1, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 return null;
@@ -266,7 +266,7 @@ public class SearchTextFacebookService {
                     log.info("텍스트검색 r == null 진입");
                     loop = false;
                 }
-                log.info(" --------------- loop값 --------------- " + loop + " textYandexGl "+textYandexGl);
+                log.info(" --------------- loop값 --------------- " + loop + " textYandexGl "+finalTextYandexGl1);
                 // 결과 저장.(이미지)
                 return saveYandex(
                         r
@@ -285,7 +285,7 @@ public class SearchTextFacebookService {
             }
         }).thenAccept((r) -> {
             try {
-                log.info("==== thenAccept 진입 ===="+" textYandexGl "+textYandexGl);
+                log.info("==== thenAccept 진입 ===="+" textYandexGl "+finalTextYandexGl1);
                 if (r != null) {
                     // yandex검색을 통해 결과 db에 적재.
                     saveImgSearchYandex(r, insertResult);
@@ -298,8 +298,8 @@ public class SearchTextFacebookService {
             if(loop==true){
                 try {
                     log.info("loop==true 진입:" + loop);
-                    log.info("==== thenRun 진입 ==== index값: " + finalIndex+" textYandexGl "+textYandexGl);
-                    CompletableFutureYandexByText(finalIndex, tsrSns, textYandexGl, insertResult,searchInfoDto);
+                    log.info("==== thenRun 진입 ==== index값: " + finalIndex+" textYandexGl "+finalTextYandexGl1);
+                    CompletableFutureYandexByText(finalIndex, tsrSns, finalTextYandexGl1, insertResult,searchInfoDto);
                 } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }

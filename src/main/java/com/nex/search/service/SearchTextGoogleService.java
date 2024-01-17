@@ -74,28 +74,24 @@ public class SearchTextGoogleService {
     public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
         String tsrSns = "11";
         this.nationCode = nationCode;
+        String textYandexGl = this.nationCode;
         // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
-        searchSnsByText(tsrSns, insertResult, searchInfoDto);
+        searchSnsByText(tsrSns, insertResult, searchInfoDto, textYandexGl);
     }
 
-    public void searchSnsByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) {
+    public void searchSnsByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String textYandexGl) {
         int index=0;
 
-        String textYandexGl = this.nationCode;
-        String finalTextYandexGl1 = textYandexGl;
-
-        String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
-        searchByText(index, finalTextYandexGl1, tsrSns, insertResult, searchInfoDto);
+        searchByText(index, textYandexGl, tsrSns, insertResult, searchInfoDto);
     }
 
-    public void searchByText(int index, String finalTextYandexGl1, String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
-
+    public void searchByText(int index, String textYandexGl, String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
         CompletableFuture
                 .supplyAsync(() -> {
                     try {
                         // text기반 yandex 검색
                         // return searchTextYandex(index, searchInfoDto, tsrSns, finalTextYandexGl1, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
-                        return searchTextYandex(index, searchInfoDto, tsrSns, finalTextYandexGl1, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                        return searchTextYandex(index, searchInfoDto, tsrSns, textYandexGl, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -129,7 +125,7 @@ public class SearchTextGoogleService {
                     }
                 }).thenRun(()-> {
                     try {
-                        CompletableFutureYandexByText(index, tsrSns, finalTextYandexGl1, insertResult,searchInfoDto);
+                        CompletableFutureYandexByText(index, tsrSns, textYandexGl, insertResult,searchInfoDto);
                     } catch (ExecutionException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -140,15 +136,6 @@ public class SearchTextGoogleService {
     public <INFO, RESULT> List<RESULT> searchTextYandex(int index, SearchInfoDto searchInfoDto, String tsrSns, String textYandexGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
         log.info("============== searchTextYandex index: "+index+ " textYandexGl"+textYandexGl);
         String tsiKeywordHiddenValue2 = searchInfoDto.getTsiKeywordHiddenValue();
-
-        //인스타
-        if ("15".equals(tsrSns)) {
-            tsiKeywordHiddenValue2 = "인스타그램 " + tsiKeywordHiddenValue2;
-        }
-        //페북
-        else if ("17".equals(tsrSns)) {
-            tsiKeywordHiddenValue2 = "페이스북 " + tsiKeywordHiddenValue2;
-        }
 
         String url = textYandexUrl
                 + "?q=" + tsiKeywordHiddenValue2

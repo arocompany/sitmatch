@@ -177,7 +177,7 @@ public class SearchService {
         } else {
             if (tsiType.equals("11")) {
                 String tsrSns = "11";
-                searchYandexYoutube(tsrSns, insertResult, searchInfoDto);
+                // searchYandexYoutube(tsrSns, insertResult, searchInfoDto);
                 searchYandexText(tsrSns, insertResult, searchInfoDto);
             }
 
@@ -4214,7 +4214,7 @@ public class SearchService {
     }
 */
 
-    public void searchYandexYoutube(String tsrSns,SearchInfoEntity insertResult,SearchInfoDto searchInfoDto){
+    public void searchYandexYoutube(String tsrSns,SearchInfoEntity insertResult,SearchInfoDto searchInfoDto, String nationCode){
         log.info("========= searchYandexYoutube 진입 =========");
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
@@ -4222,41 +4222,13 @@ public class SearchService {
             String url = textYandexUrl
                     + "?engine=youtube"
                     + "&search_query=" + tsiKeywordHiddenValue
-                    + "&gl=" + textYandexGl
+                    + "&gl=" + nationCode
                     + "&api_key=" + textYandexApikey;
 
             CompletableFutureYoutubeByResult(url, tsrSns, insertResult);
-
         } catch (Exception e){
             log.debug("Exception: "+e);
         }
-
-        try {
-            String url = textYandexUrl
-                    + "?engine=youtube"
-                    + "&search_query=" + tsiKeywordHiddenValue
-                    + "&gl=cn"
-                    + "&api_key=" + textYandexApikey;
-
-            CompletableFutureYoutubeByResult(url, tsrSns, insertResult);
-
-        } catch (Exception e){
-            log.debug("Exception: "+e);
-        }
-
-        try {
-            String url = textYandexUrl
-                    + "?engine=youtube"
-                    + "&search_query=" + tsiKeywordHiddenValue
-                    + "&gl=kr"
-                    + "&api_key=" + textYandexApikey;
-
-            CompletableFutureYoutubeByResult(url, tsrSns, insertResult);
-
-        } catch (Exception e){
-            log.debug("Exception: "+e);
-        }
-
     }
 
     public void deleteTsrUno(Integer tsrUno) {

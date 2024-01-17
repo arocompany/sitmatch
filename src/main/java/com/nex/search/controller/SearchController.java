@@ -171,46 +171,42 @@ public class SearchController {
         insertResult = searchService.saveSearchInfo(searchInfoEntity);
 
         // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
-
         switch (tsiType) {
             case "11" -> { // 11:키워드
+                List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
                 if (tsiGoogle == 1) {
-                    searchService.searchYandexYoutube("11", insertResult, searchInfoDto);
-                    List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
                     for(NationCodeEntity ncInfo : ncList) {
+                        searchService.searchYandexYoutube("11", insertResult, searchInfoDto, ncInfo.getNcCode().toLowerCase());
                         searchTextGoogleService.search(insertResult, searchInfoDto, ncInfo.getNcCode().toLowerCase());
                     }
                 }
                 if (tsiInstagram == 1) {
-                    List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
                     for(NationCodeEntity ncInfo : ncList) {
                         searchTextInstagramService.search(tsiInstagram, tsiType, insertResult, folder, searchInfoDto, ncInfo.getNcCode().toLowerCase());
                     }
                 }
                 if (tsiFacebook == 1) {
-                    List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
                     for(NationCodeEntity ncInfo : ncList) {
                         searchTextFacebookService.search(insertResult, searchInfoDto, ncInfo.getNcCode().toLowerCase());
                     }
                 }
             }
             case "13" -> { // 13:키워드+이미지
-                searchImageGoogleLensService.searchYandexByGoogleLensImage("11", insertResult);
-                if (tsiGoogle == 1) {
-                    List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+                List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+                for(NationCodeEntity ncInfo : ncList){
+                    searchImageGoogleLensService.searchYandexByGoogleLensImage("11", insertResult, ncInfo.getNcCode().toLowerCase());
+                }
+                if(tsiGoogle ==1){
                     for(NationCodeEntity ncInfo : ncList) {
                         searchTextImageGoogleService.search(insertResult, searchInfoDto, ncInfo.getNcCode().toLowerCase());
                     }
                 }
-
-                if (tsiInstagram == 1) {
-                    List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+                if(tsiInstagram == 1){
                     for(NationCodeEntity ncInfo : ncList) {
                         searchTextImageInstagramService.search(insertResult, searchInfoDto, ncInfo.getNcCode().toLowerCase());
                     }
                 }
-                if (tsiFacebook == 1) {
-                    List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+                if(tsiFacebook == 1){
                     for(NationCodeEntity ncInfo : ncList) {
                         searchTextImageFacebookService.search(insertResult, searchInfoDto, ncInfo.getNcCode().toLowerCase());
                     }
@@ -222,21 +218,11 @@ public class SearchController {
                 log.info("== case17 진입 ==");
                 // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
 
-                searchImageGoogleLensService.searchYandexByGoogleLensImage("11", insertResult);
-
                 List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
                 for(NationCodeEntity ncInfo : ncList) {
+                    searchImageGoogleLensService.searchYandexByGoogleLensImage("11", insertResult, ncInfo.getNcCode().toLowerCase());
                     searchImageService.search(insertResult, searchInfoDto, ncInfo.getNcCode().toLowerCase());
                 }
-                /*
-                searchImageCnService.search(insertResult, searchInfoDto);
-                searchImageKrService.search(insertResult, searchInfoDto);
-                searchImageNlService.search(insertResult, searchInfoDto);
-                searchImageRuService.search(insertResult, searchInfoDto);
-                searchImageThService.search(insertResult, searchInfoDto);
-                searchImageUsService.search(insertResult, searchInfoDto);
-                searchImageVnService.search(insertResult, searchInfoDto);
-                */
             }
             case "19" -> // 19: 영상
                     searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiType, insertResult, folder, searchInfoDto);
