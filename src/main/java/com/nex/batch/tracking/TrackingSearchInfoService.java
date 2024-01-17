@@ -103,7 +103,6 @@ public class TrackingSearchInfoService {
         searchInfoEntity.setUserUno(1);
         searchInfoEntity.setTsiStat("11");
         searchInfoEntity.setTsiMonitoringCnt(1);
-        searchInfoEntity.setTsiAlltimeMonitoring(String.valueOf(Timestamp.valueOf(LocalDateTime.now())));
 
         log.info("String.valueOf(Timestamp.valueOf(LocalDateTime.now())): "+String.valueOf(Timestamp.valueOf(LocalDateTime.now())));
         log.info("searchInfoEntity.getTsiMonitoringCnt(): "+ searchInfoEntity.getTsiMonitoringCnt());

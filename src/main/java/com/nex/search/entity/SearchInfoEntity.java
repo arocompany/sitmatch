@@ -88,9 +88,6 @@ public class SearchInfoEntity {
     private String searchValue;
 
     @Basic
-    @Column(name = "TSI_ALLTIME_MONITORING")
-    private String tsiAlltimeMonitoring;
-    @Basic
     @Column(name = "TSI_USER_FILE")
     private String tsiUserFile;
 

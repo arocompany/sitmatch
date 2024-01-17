@@ -242,7 +242,6 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             " ELSE 'N' " +
             " END ) AS allDayMonitoringYn, " +
             " tsi.tsi_monitoring_cnt AS allTimeCnt,  " +
-            " tsi.TSI_ALLTIME_MONITORING AS resultMonitoringTime, " +
             " (SELECT COUNT(tsr8.tsr_uno) " +
             " FROM  tb_search_result tsr8 " +
             " WHERE tsr8.tsi_uno = tsi.tsi_uno " +
