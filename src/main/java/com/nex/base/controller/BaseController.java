@@ -4,8 +4,11 @@ import com.nex.Chart.dto.AllTimeMonitoringHistDto;
 import com.nex.Chart.repo.AlltimeMonitoringHistRepository;
 import com.nex.common.Consts;
 import com.nex.request.ReqNotice;
+import com.nex.search.entity.SearchResultMonitoringHistoryEntity;
 import com.nex.search.entity.dto.DefaultQueryDtoInterface;
+import com.nex.search.entity.dto.SearchResultMonitoringHistoryDto;
 import com.nex.search.repo.SearchJobRepository;
+import com.nex.search.repo.SearchResultMonitoringRepository;
 import com.nex.search.service.SearchService;
 import com.nex.user.entity.SessionInfoDto;
 import com.nex.user.repo.AutoRepository;
@@ -29,6 +32,7 @@ public class BaseController {
     private final AutoRepository autoRepository;
     private final SearchJobRepository searchJobRepository;
     private final AlltimeMonitoringHistRepository alltimeMonitoringHistRepository;
+    private final SearchResultMonitoringRepository searchResultMonitoringRepository;
 
 
     @GetMapping("/")
@@ -484,13 +488,13 @@ public class BaseController {
 
     @GetMapping("/allTimeMonitoringHist")
     public ModelAndView allTimeMonitoringHist(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
-                                                @RequestParam String tsrUno) {
+                                                @RequestParam int tsrUno) {
         log.info(" === allTimeMonitoringHist 진입 === " + tsrUno);
         ModelAndView modelAndView = new ModelAndView("html/allTimeMonitoringHist");
 
-        List<AllTimeMonitoringHistDto> allTimeMonitoringHistList = alltimeMonitoringHistRepository.allTimeMonitoringList(String.valueOf(tsrUno));
+        List<SearchResultMonitoringHistoryDto> searchResultMonitoringHistoryList = searchResultMonitoringRepository.searchResultMonitoringHistoryList(tsrUno);
 
-        modelAndView.addObject("allTimeMonitoringHistList", allTimeMonitoringHistList);
+        modelAndView.addObject("searchResultMonitoringHistoryList", searchResultMonitoringHistoryList);
         modelAndView.addObject("sessionInfo", sessionInfoDto);
 
         return modelAndView;

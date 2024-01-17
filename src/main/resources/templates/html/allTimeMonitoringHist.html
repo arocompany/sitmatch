@@ -5,18 +5,18 @@
   <h3 class="title" style="color: #E87728; margin-bottom: 30px;" >모니터링 체크 시간</h3>
   <section class="manage-list bor10 L-box-up">
     <section style="padding: 20px 20px 20px 20px; height: 260px;"> <!-- padding: 50px 20px 20px; -->
-      <h2 class="list-tit" style=" width: 300px; margin-left: 160px;">
-        <span class="time">시간</span>
-        <span class="counselor">체크 유무</span>
+      <h2 class="list-tit" style=" width: 300px; margin: auto;">
+        <span class="time" style="margin: auto;">24시간 모니터링 이력</span>
+        <!--<span class="counselor">체크 유무</span>-->
       </h2>
-
+      <!-- margin-top: 10px; margin-left: 115px; margin-bottom: 10px; -->
       <ul class="history-list history-search-list" style="height: 200px; overflow: scroll;">
-        <li class="btn-off bor10" style="margin-top: 10px; height: 35px;" th:each="list:${allTimeMonitoringHistList}">
-          <p class="num" style="margin-left: 105px;" th:text="${#strings.replace(list.getClkDmlDt(),'.0','')}"></p>
-          <p class="counselor" style="margin-right: 200px;" th:text="${list.getTamYn()}"></p>
+        <li class="btn-off bor10" style="margin: 10px 0 10px 115px; height: 35px; width: 350px;" th:each="list:${searchResultMonitoringHistoryList}">
+          <p class="num" style="margin: auto;" th:text="${#strings.replace(list.getTsrmhCreateDate,'.0','')}"></p>
+          <!--<p class="counselor" style="margin-right: 200px;" th:text="${list.getTamYn()}"></p>-->
         </li>
       </ul>
-      </textarea>
+      <!--</textarea>-->
   </section>
 
 
