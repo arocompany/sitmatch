@@ -23,44 +23,18 @@ public class InitService {
         log.info("init Service -- start");
 
         try{
+            CommonStaticUtil.getUploadPath();
+            CommonStaticUtil.getLogPath();
+            location = CommonStaticUtil.getConfigPath();
 
-            String osName = System.getProperty("os.name").toLowerCase();
-
-            // 플랫폼에 따른 루트 디렉토리 결정
-            String rootDir;
-            if (osName.contains("win")) {
-                // Windows일 경우
-                rootDir = "C:/";
-            } else if (osName.contains("nix") || osName.contains("nux") || osName.contains("mac")) {
-                // Unix 또는 macOS일 경우
-                rootDir = "/";
-            } else {
-                // 다른 플랫폼에 대한 처리
-                rootDir = "Unknown";
-            }
-
-            String applicationName = context.getApplicationName();
-            if(!StringUtils.hasText(applicationName)){
-                applicationName = "/temp";
-            }
-
-            String filePath = "app/{applicationName}/config";
-            String configName = "/app.config";
-            filePath = rootDir + filePath.replaceAll("/\\{applicationName}", applicationName);
-
-            location = filePath + configName;
-
-            // 파일이 존재하는지 확인
-            File configFile = new File(filePath);
-            if (configFile.exists() && configFile.isDirectory()) {
-
+            File configFile = new File(location);
+            if (configFile.exists()) {
                 // 파일이 존재하면 파일에서 읽어와서 Config 클래스에 바인딩
                 readConfigFromFile();
             } else {
                 // 파일이 존재하지 않으면 Config 클래스의 속성 값을 사용하여 파일 생성 후 바인딩
-                if(configFile.mkdirs()) {
-                    createConfigFile();
-                }
+                createConfigFile();
+
             }
         }catch (Exception e){
             e.printStackTrace();
