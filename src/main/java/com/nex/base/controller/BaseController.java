@@ -1,10 +1,8 @@
 package com.nex.base.controller;
 
-import com.nex.Chart.dto.AllTimeMonitoringHistDto;
 import com.nex.Chart.repo.AlltimeMonitoringHistRepository;
 import com.nex.common.Consts;
 import com.nex.request.ReqNotice;
-import com.nex.search.entity.SearchResultMonitoringHistoryEntity;
 import com.nex.search.entity.dto.DefaultQueryDtoInterface;
 import com.nex.search.entity.dto.SearchResultMonitoringHistoryDto;
 import com.nex.search.repo.SearchJobRepository;
@@ -391,6 +389,8 @@ public class BaseController {
         Map<String, Object> userSearchHistoryList;
 
         userSearchHistoryList = searchService.getUserSearchHistoryList(searchPage, searchKeyword);
+
+
 
         modelAndView.addObject("userCount", searchService.getUserIdMap());
         modelAndView.addObject("userIdMap", searchService.getUserIdMap());

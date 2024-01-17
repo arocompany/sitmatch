@@ -213,6 +213,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
     String userSearchHistoryList =  " SELECT " +
             " tsi.tsi_uno AS tsiUno, " +
             " tsi.tsi_user_file AS tsiUserFile, " +
+            " (SELECT group_concat(TSIMH_CREATE_DATE ORDER BY TSIMH_CREATE_DATE DESC SEPARATOR '   ') FROM tb_search_info_monitoring_history WHERE tsi_uno = tsi.tsi_uno) tsimhCreateDate, " +
             " (SELECT COUNT(tsr3.tsr_uno) " +
             " FROM tb_search_result tsr3 " +
             " inner JOIN tb_search_info tsi3 " +

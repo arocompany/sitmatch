@@ -93,7 +93,7 @@
         <button class="deleteCompt" th:tsiUno="${userSearchHistoryList.getTsiUno()}"  th:text="${userSearchHistoryList.getDeleteConfirmCnt()}"></button> <!-- 삭제완료 -->
         <p class="con1" th:text="${userSearchHistoryList.getAllDayMonitoringYn()}"></p> <!-- 모니터링 유무 -->
         <p class="time" th:text="${userSearchHistoryList.getAllTimeCnt()}"></p> <!-- 24시 모니터링 횟수 -->
-        <textarea id="monitoringTime" class="dot-wrap progress" th:text="${userSearchHistoryList.getResultMonitoringTime()}"></textarea>
+        <textarea id="monitoringTime" class="dot-wrap progress" th:text="${userSearchHistoryList.getTsimhCreateDate()}"></textarea>
         <button class="social allTimeResultCnt" th:tsiUno="${userSearchHistoryList.getTsiUno()}" th:text="${userSearchHistoryList.getReDsmnCnt()}"></button> <!-- 24시 모니터링 재유포 건수 -->
         <p th:text="${userSearchHistoryList.getResultCnt()}"></p> <!-- 총 검색결과 수-->
       </li>

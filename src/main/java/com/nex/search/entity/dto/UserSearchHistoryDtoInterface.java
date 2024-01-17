@@ -11,6 +11,5 @@ public interface UserSearchHistoryDtoInterface {
     String getResultMonitoringTime(); // 24시 모니터링 시간
     String getReDsmnCnt();      // 24시 모니터링 재유포 건수
     String getResultCnt();      // 총 검색 결과 수
-
-
+    String getTsimhCreateDate();
 }
