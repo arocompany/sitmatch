@@ -54,7 +54,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " ON TSI.USER_UNO = TU.USER_UNO " +
             " WHERE TSR.TRK_STAT_CD IS NOT NULL " +
             " AND TRK_STAT_CD IS NOT NULL " +
-            " AND TSR.TSR_TITLE LIKE CONCAT('%','','%') " +
+            " AND TSR.TSR_TITLE LIKE CONCAT('%','','%') OR TSR.TSR_TITLE IS NULL" +
             " AND TSR.MONITORING_CD = '20' " +
             " ORDER BY tsr.MST_DML_DT DESC ";
 
@@ -278,13 +278,12 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
                             "            else 1 " +
                             "        end)) * 100)) > 0" +
                             "         ) as re_monitor_cnt, " +
-                            " (SELECT MAX(clkDmlDt) " +
-                            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
-                            " FROM tb_alltime_monitoring_history TAM9 " +
-                            " LEFT OUTER JOIN tb_search_result TSR9 " +
-                            " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
-                            " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
-                            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist,"+
+                            "(SELECT MAX(clkDmlDt) " +
+                            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+                            " FROM tb_search_result_monitoring_history TMH " +
+                            " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
+                            " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
+                            " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, " +
                             " TSI3.TSI_USER_FILE AS tsiUserFile "+
                             " FROM TB_SEARCH_RESULT TSR " +
                             " LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
@@ -295,7 +294,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
                             " CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
                             " FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
                             " WHERE TSR.TRK_STAT_CD IS NOT NULL " +
-                            " AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') OR TSR.TSR_TITLE IS NULL) " +
+                            " AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%')) " +
                             " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
     String traceUserFileList = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, tsi.tsi_alltime_monitoring AS tsiAlltimeMonitoring, "+
             "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
@@ -348,11 +347,10 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM ( SELECT tsr9.tsr_uno AS tsrUno, TAM9.CLK_DML_DT AS clkDmlDt " +
-            " FROM tb_alltime_monitoring_history TAM9 " +
-            " LEFT OUTER JOIN tb_search_result TSR9 " +
-            " ON TAM9.TSR_UNO = TSR9.TSR_UNO " +
-            " WHERE TAM9.TSR_UNO = TSR.TSR_UNO " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM tb_search_result_monitoring_history TMH " +
+            " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
+            " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
             " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, "+
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " FROM TB_SEARCH_RESULT TSR " +
@@ -417,7 +415,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
             " FROM tb_search_result_monitoring_history TMH " +
             " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
@@ -486,7 +484,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
             " FROM tb_search_result_monitoring_history TMH " +
             " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
@@ -617,7 +615,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
             " FROM tb_search_result_monitoring_history TMH " +
             " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
@@ -684,7 +682,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
                         " else 1 " +
                         " end)) * 100)) > 0) as re_monitor_cnt, " +
                         " (SELECT MAX(clkDmlDt) " +
-                        " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+                        " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
                         " FROM tb_search_result_monitoring_history TMH " +
                         " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
                         " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
@@ -751,7 +749,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
             " FROM tb_search_result_monitoring_history TMH " +
             " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
@@ -818,7 +816,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
             " FROM tb_search_result_monitoring_history TMH " +
             " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
@@ -886,7 +884,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
             " FROM tb_search_result_monitoring_history TMH " +
             " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
@@ -953,7 +951,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
             " FROM tb_search_result_monitoring_history TMH " +
             " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
@@ -1020,7 +1018,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
             " FROM tb_search_result_monitoring_history TMH " +
             " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
@@ -1087,7 +1085,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
             " FROM tb_search_result_monitoring_history TMH " +
             " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
@@ -1155,7 +1153,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
             " FROM tb_search_result_monitoring_history TMH " +
             " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
@@ -1223,7 +1221,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
             " FROM tb_search_result_monitoring_history TMH " +
             " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
@@ -1291,7 +1289,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
             " FROM tb_search_result_monitoring_history TMH " +
             " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
@@ -1359,7 +1357,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
             " FROM tb_search_result_monitoring_history TMH " +
             " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
@@ -1427,7 +1425,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt, " +
             " (SELECT MAX(clkDmlDt) " +
-            " FROM SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
+            " FROM (SELECT TMH.TSRMH_CREATE_DATE AS clkDmlDt " +
             " FROM tb_search_result_monitoring_history TMH " +
             " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
