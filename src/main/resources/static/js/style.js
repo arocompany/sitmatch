@@ -198,10 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
                       }
                     });
                   }
-
                 });
-
-
               }, error: function (e){
                 console.log("error", e)
               }
@@ -209,7 +206,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         });
 
-        $(".search").click(function (){
+        $(".searchKeyword").click(function (){
           if((confirm("검색 하시겠습니까?"))) {
             var obj = $("[name=newKeyword]");
 
