@@ -113,7 +113,7 @@ public class SearchService {
     @Value("${search.server.url}") private String serverIp2;
 
     private Boolean loop = true;
-//    private final RestTemplate restTemplate;
+
 
     @Bean
     public RestTemplate customRestTemplate() {
@@ -161,43 +161,17 @@ public class SearchService {
 
     // Facebook, Instagram 도 Google 로 검색, 링크로 Facebook, Instagram 판별
     // byte tsiTwitter,
-    public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, String tsiType, SearchInfoEntity insertResult, String folder,
-                       SearchInfoDto searchInfoDto) throws Exception {
-        if (tsiType.equals("17")) {
-            log.info("이미지만 검색시");
-            String tsrSns = "11";
-            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
-
-        } else if(tsiType.equals("19")){
-            String tsrSns = "11";
-            searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
-        } else {
-            if (tsiType.equals("11")) {
-                String tsrSns = "11";
+//    public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, String tsiType, SearchInfoEntity insertResult, String folder, SearchInfoDto searchInfoDto) throws Exception {
+    public void search(SearchInfoEntity param, String folder, SearchInfoDto searchInfoDto) throws Exception {
+        if(param.getTsiType() != CommonCode.searchTypeImage && param.getTsiType() != CommonCode.searchTypeVideo){
+            if (param.getTsiType().equals(CommonCode.searchTypeKeyword)) {
                 // searchYandexYoutube(tsrSns, insertResult, searchInfoDto);
-                searchYandexText(tsrSns, insertResult, searchInfoDto);
+                searchYandexText(CommonCode.snsTypeGoogle, param, searchInfoDto);
             }
-
-            if (tsiGoogle == 1) {
-                String tsrSns = "11";
-                searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
-            }
-
-            if (tsiFacebook == 1) {
-                String tsrSns = "17";
-                searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
-            }
-
-            if (tsiInstagram == 1) {
-                String tsrSns = "15";
-                searchGoogle(tsiType, insertResult, folder, tsrSns, searchInfoDto);
-            }
-
-            /*
-            if (tsiTwitter == 1) {
-                // Twitter 검색기능 구현
-            }
-            */
+            if (param.getTsiGoogle() == 1) { searchGoogle(param.getTsiType(), param, folder, CommonCode.snsTypeGoogle, searchInfoDto); }
+            if (param.getTsiFacebook() == 1) { searchGoogle(param.getTsiType(), param, folder, CommonCode.snsTypeFacebook, searchInfoDto); }
+            if (param.getTsiInstagram() == 1) { searchGoogle(param.getTsiType(), param, folder, CommonCode.snsTypeInstagram, searchInfoDto); }
+            searchGoogle(param.getTsiType(), param, folder, CommonCode.snsTypeGoogle, searchInfoDto);
         }
     }
 
@@ -4197,14 +4171,14 @@ public class SearchService {
                             }
                     }
                     case CommonCode.searchTypeKeywordVideo -> // 15:키워드+영상
-                            search(param.getTsiGoogle(), param.getTsiFacebook(), param.getTsiInstagram(), param.getTsiType(), param, folder, siDto);
+                            search(param, folder, siDto);
                     case CommonCode.searchTypeImage -> { // 17:이미지
                         // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
                         searchImageGoogleLensService.searchYandexByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
                         searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
                     }
                     case CommonCode.searchTypeVideo -> {// 19: 영상
-                        search(param.getTsiGoogle(), param.getTsiFacebook(), param.getTsiInstagram(), param.getTsiType(), param, folder, siDto);
+                        search(param, folder, siDto);
                     }
                 }
                 // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
