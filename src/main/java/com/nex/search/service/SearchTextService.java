@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 @Slf4j
@@ -128,66 +127,59 @@ public class SearchTextService {
                         log.error(e.getMessage(), e);
                     }
                 }).thenRun(()-> {
-                    try {
-                        CompletableFutureYandexByText(index, tsrSns, textYandexGl, insertResult, searchInfoDto);
-                    } catch (ExecutionException | InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+
+                        if(loop == true) {
+                            CompletableFutureYandexByText(index, tsrSns, textYandexGl, insertResult, searchInfoDto);
+                        }else{
+                            log.info("==== CompletableFutureYandexByText 함수 종료 ==== index 값: {} sns 값: {} textYandexGl {}", index, tsrSns, textYandexGl);
+                        }
+
                 });
 
     }
 
     public <INFO, RESULT> List<RESULT> searchTextYandex(int index, SearchInfoDto searchInfoDto, String tsrSns, String textYandexGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        log.info("============== searchTextYandex index: {} textYandexGl {}", index ,textYandexGl);
-        String tsiKeywordHiddenValue2 = searchInfoDto.getTsiKeywordHiddenValue();
+        log.info("============== searchTextYandex index: {} sns: {} textYandexGl {}", index, tsrSns, textYandexGl);
+        String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
-        String url = textYandexUrl
-                + "?q=" + tsiKeywordHiddenValue2
-                + "&gl=" + textYandexGl
-                + "&no_cache=" + textYandexNocache
-                + "&location=" + textYandexLocation
-                + "&start=" + String.valueOf(index * 10)
-                + "&api_key=" + textYandexApikey
-                + "&safe=off"
-                + "&filter=0"
-                + "&nfpr=0"
-                + "&engine=google";
+        try {
+            String url = CommonStaticSearchUtil.getSerpApiUrlForGoogle(textYandexUrl, tsiKeywordHiddenValue, textYandexGl, textYandexNocache, textYandexLocation, (index * 10), textYandexApikey);
+            log.info("keyword === {}", tsiKeywordHiddenValue);
+            log.info("url === {} " + url);
 
-        log.info("tsiKeywordHiddenValue2" +tsiKeywordHiddenValue2);
-        log.info("searchTextYandex url: " +url);
+            HttpHeaders header = new HttpHeaders();
+            HttpEntity<?> entity = new HttpEntity<>(header);
+            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+            // ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+            ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+            List<RESULT> results = null;
 
-        HttpHeaders header = new HttpHeaders();
-        HttpEntity<?> entity = new HttpEntity<>(header);
-        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-        // ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-        ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-        List<RESULT> results = null;
+            log.info("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+            if (resultMap.getStatusCodeValue() == 200) {
+                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "images_results");
+                INFO info = mapper.readValue(jsonInString, infoClass);
 
-        log.info("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
-        if (resultMap.getStatusCodeValue() == 200) {
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "images_results");
-            INFO info = mapper.readValue(jsonInString, infoClass);
+                if (getErrorFn.apply(info) == null) {
+                    results = getResultFn.apply(info);
+                }
+                /*
+                log.info("mapper: "+ mapper);
+                log.info("jsonInString: "+ jsonInString);
+                log.info("info: "+ info);
+                */
+                log.info("searchTextYandex results: " + results);
 
-            if (getErrorFn.apply(info) == null) {
-                results = getResultFn.apply(info);
             }
-            /*
-            log.info("mapper: "+ mapper);
-            log.info("jsonInString: "+ jsonInString);
-            log.info("info: "+ info);
-            */
-            log.info("searchTextYandex results: "+results);
 
+            if (results == null || index >= Integer.parseInt(textYandexCountLimit) - 1) {
+                loop = false;
+            }
+            return results != null ? results : new ArrayList<>();
+        }catch(Exception e){
+            log.error(e.getMessage());
         }
-
-        if(results == null || index >= Integer.parseInt(textYandexCountLimit) - 1) {
-            loop=false;
-        }
-
-        // if(index >1){ loop=false;}
-
-        return results != null ? results : new ArrayList<>();
+        return null;
     }
 
     public <RESULT> List<SearchResultEntity> saveYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
@@ -274,8 +266,8 @@ public class SearchTextService {
         return "저장 완료";
     }
 
-    public void CompletableFutureYandexByText(int index, String tsrSns, String textYandexGl, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) throws ExecutionException, InterruptedException {
-        log.info("==== CompletableFutureYandexByText(재귀 함수 진입 ==== index 값: {} textYandexGl {}", index, textYandexGl);
+    public void CompletableFutureYandexByText(int index, String tsrSns, String textYandexGl, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
+        log.info("==== CompletableFutureYandexByText(재귀 함수 진입 ==== index 값: {} sns 값: {} textYandexGl {}", index, tsrSns, textYandexGl);
         if(!loop){
             return;
         }
@@ -327,14 +319,10 @@ public class SearchTextService {
         }).thenRun(()->{
             log.info("thenRun loop값: "+loop);
             if(loop == true){
-                try {
-                    log.info("loop==true 진입:" + loop);
-                    CompletableFutureYandexByText(finalIndex, tsrSns, textYandexGl, insertResult,searchInfoDto);
-                } catch (ExecutionException | InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                return;
+                log.info("loop==true 진입:" + loop);
+                CompletableFutureYandexByText(finalIndex, tsrSns, textYandexGl, insertResult,searchInfoDto);
+            }else{
+                log.info("==== CompletableFutureYandexByText(재귀 함수 종료 ==== index 값: {} sns 값: {} textYandexGl {}", finalIndex, tsrSns, textYandexGl);
             }
 
         });
