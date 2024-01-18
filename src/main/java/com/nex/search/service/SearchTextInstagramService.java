@@ -93,7 +93,8 @@ public class SearchTextInstagramService {
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
-    public void search(byte tsiInstagram, String tsiType, SearchInfoEntity insertResult, String folder, SearchInfoDto searchInfoDto, String nationCode){
+    public void
+    search(byte tsiInstagram, String tsiType, SearchInfoEntity insertResult, String folder, SearchInfoDto searchInfoDto, String nationCode){
         String tsrSns = "15";
         // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
 
