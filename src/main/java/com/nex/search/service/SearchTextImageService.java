@@ -11,6 +11,8 @@ import com.nex.search.entity.result.Images_resultsByImage;
 import com.nex.search.entity.result.Images_resultsByText;
 import com.nex.search.entity.result.YandexByImageResult;
 import com.nex.search.entity.result.YandexByTextResult;
+import com.nex.search.repo.SearchInfoRepository;
+import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,11 +39,11 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 @Lazy
-public class SearchTextImageInstagramService {
-    private final SearchService searchService;
-
+public class SearchTextImageService {
     private final ImageService imageService;
+    private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
+    private final SearchJobRepository searchJobRepository;
 
     private final ResourceLoader resourceLoader;
 
@@ -77,8 +79,8 @@ public class SearchTextImageInstagramService {
     private final RestTemplate restTemplate;
     private String nationCode = "";
 
-    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
-        String tsrSns = "15";
+    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode, String tsrSns){
+//        String tsrSns = "17";
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
@@ -137,7 +139,7 @@ public class SearchTextImageInstagramService {
     }
 
     public <INFO, RESULT> List<RESULT> searchYandex(int index, String textYandexGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue;
+        tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
 
         String url = textYandexUrl
                 + "?gl=" + textYandexGl
@@ -209,7 +211,7 @@ public class SearchTextImageInstagramService {
                 log.info("imageUrl2: "+imageUrl);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = searchService.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {
@@ -219,7 +221,7 @@ public class SearchTextImageInstagramService {
                     log.info("getThumbnailFn: "+getThumbnailFn);
 
                     //이미지 파일 저장
-                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn,false);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
                     searchResultRepository.save(sre);
 //                    searchService.saveSearchResult(sre);
@@ -244,7 +246,9 @@ public class SearchTextImageInstagramService {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
         // SearchInfoEntity updateResult = saveSearchInfo(insertResult);
-        SearchInfoEntity updateResult = searchService.saveSearchInfo_2(insertResult);
+//        SearchInfoEntity updateResult = searchService.saveSearchInfo_2(insertResult);
+        CommonStaticSearchUtil.setSearchInfoDefault_2(insertResult);
+        searchInfoRepository.save(insertResult);
 
         List<SearchResultEntity> searchResultEntity = result;
 
@@ -252,7 +256,9 @@ public class SearchTextImageInstagramService {
         for (SearchResultEntity sre : searchResultEntity) {
             try {
                 SearchJobEntity sje = CommonStaticSearchUtil.getSearchJobEntity(sre);
-                searchService.saveSearchJob(sje);
+//                searchService.saveSearchJob(sje);
+                CommonStaticSearchUtil.setSearchJobDefault(sje);
+                searchJobRepository.save(sje);
             } catch (JpaSystemException e) {
                 log.error(e.getMessage());
                 e.printStackTrace();
@@ -435,7 +441,7 @@ public class SearchTextImageInstagramService {
                     log.info("getThumbnailFn: "+getThumbnailFn);
 
                     //이미지 파일 저장
-                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn,false);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
                     searchResultRepository.save(sre);
 //                    searchService.saveSearchResult(sre);
@@ -452,6 +458,4 @@ public class SearchTextImageInstagramService {
 
         return sreList;
     }
-
-
 }

@@ -506,7 +506,7 @@ public class TrackingSearchResultService{
 
                             try {
                                 //이미지 파일 저장
-                                imageService.saveImageFile(getTsiUnoFn.apply(result), restTemplate, searchResultEntity, result, getOriginalFn, getThumbnailFn);
+                                imageService.saveImageFile(getTsiUnoFn.apply(result), restTemplate, searchResultEntity, result, getOriginalFn, getThumbnailFn, false);
                             } catch (IOException e) {
                                 log.error(e.getMessage(), e);
                                 throw new RuntimeException(e);

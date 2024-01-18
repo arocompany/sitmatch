@@ -6,12 +6,8 @@ import com.nex.Chart.entity.*;
 import com.nex.Chart.repo.*;
 import com.nex.common.CommonStaticSearchUtil;
 import com.nex.common.Consts;
-import com.nex.search.ImageService.SearchImageGoogleLensService;
-import com.nex.search.ImageService.SearchImageService;
-import com.nex.search.entity.SearchInfoEntity;
-import com.nex.search.entity.SearchJobEntity;
-import com.nex.search.entity.SearchResultEntity;
-import com.nex.search.entity.VideoInfoEntity;
+import com.nex.common.CommonCode;
+import com.nex.search.entity.*;
 import com.nex.search.entity.dto.*;
 import com.nex.search.entity.result.*;
 import com.nex.search.repo.*;
@@ -79,16 +75,11 @@ import static com.nex.common.CmnUtil.execPython;
 @RequiredArgsConstructor
 public class SearchService {
     private final ImageService imageService;
+
     private final SearchImageService searchImageService;
     private final SearchImageGoogleLensService searchImageGoogleLensService;
-
-    private final SearchTextGoogleService searchTextGoogleService;
-    private final SearchTextInstagramService searchTextInstagramService;
-    private final SearchTextFacebookService searchTextFacebookService;
-
-    private final SearchTextImageGoogleService searchTextImageGoogleService;
-    private final SearchTextImageInstagramService searchTextImageInstagramService;
-    private final SearchTextImageFacebookService searchTextImageFacebookService;
+    private final SearchTextService searchTextService;
+    private final SearchTextImageService searchTextImageService;
 
     private final NationCodeRepository nationCodeRepository;
 
@@ -980,47 +971,7 @@ public class SearchService {
      * @return RESULT        (결과)
      */
 
-    public <RESULT> SearchResultEntity getSearchResultGoogleLensEntity(int tsiUno, String tsrSns, RESULT result
-            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws IOException {
-        // log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
 
-        /*
-        String imageUrl = getOriginalFn.apply(result);
-        log.info("getSearchResultGoogleLensEntity imageUrl: "+imageUrl);
-
-        try {
-            imageUrl = googleLensImageFile(imageUrl).toString();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        log.info("imageUrl: " + imageUrl);
-*/
-
-        SearchResultEntity sre = new SearchResultEntity();
-        sre.setTsiUno(tsiUno);
-        sre.setTsrJson(result.toString());
-        sre.setTsrDownloadUrl(getOriginalFn.apply(result));
-        // sre.setTsrImgName(imageUrl);
-        sre.setTsrTitle(getTitleFn.apply(result));
-        sre.setTsrSiteUrl(getLinkFn.apply(result));
-        sre.setTsrSearchValue("1");
-
-        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
-        //sre.setTsrSns("11");
-
-        //Facebook 검색이고, source 값이 Facebook 인 경우
-        if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
-            sre.setTsrSns("17");
-        } else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
-            sre.setTsrSns("15");
-        } else {
-            sre.setTsrSns("11");
-        }
-
-        return sre;
-    }
 
     public <RESULT> SearchResultEntity getSearchResultEntity(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
@@ -1257,13 +1208,16 @@ public class SearchService {
         }
         // SearchInfoEntity updateResult = saveSearchInfo(insertResult);
         // SearchInfoEntity updateResult = saveSearchInfo_2(insertResult);
-        saveSearchInfo_2(insertResult);
+//        saveSearchInfo_2(insertResult);
+        CommonStaticSearchUtil.setSearchInfoDefault_2(insertResult);
+        searchInfoRepository.save(insertResult);
         List<SearchResultEntity> searchResultEntity = result;
 
         for (SearchResultEntity sre : searchResultEntity) {
             try {
                 SearchJobEntity sje = CommonStaticSearchUtil.getSearchJobEntity(sre);
-                saveSearchJob(sje);
+                CommonStaticSearchUtil.setSearchJobDefault(sje);
+                searchJobRepository.save(sje);
             } catch (JpaSystemException e) {
                 log.error(e.getMessage());
                 e.printStackTrace();
@@ -1634,7 +1588,7 @@ public class SearchService {
                     log.info("getThumbnailFn: "+getThumbnailFn);
 
                     //이미지 파일 저장
-                    imageService.saveImageFile(insertResult.getTsiUno(), customRestTemplate(), sre, result, getOriginalFn, getThumbnailFn);
+                    imageService.saveImageFile(insertResult.getTsiUno(), customRestTemplate(), sre, result, getOriginalFn, getThumbnailFn, false);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
                     searchResultRepository.save(sre);
                     sreList.add(sre);
@@ -2762,20 +2716,20 @@ public class SearchService {
 
     }
 
-    public SearchJobEntity saveSearchJob(SearchJobEntity sje) {
-        CommonStaticSearchUtil.setSearchJobDefault(sje);
-        return searchJobRepository.save(sje);
-    }
+//    public SearchJobEntity saveSearchJob(SearchJobEntity sje) {
+//        CommonStaticSearchUtil.setSearchJobDefault(sje);
+//        return searchJobRepository.save(sje);
+//    }
 
     public SearchInfoEntity saveSearchInfo(SearchInfoEntity sie) {
         CommonStaticSearchUtil.setSearchInfoDefault(sie);
         return searchInfoRepository.save(sie);
     }
 
-    public SearchInfoEntity saveSearchInfo_2(SearchInfoEntity sie) {
-        CommonStaticSearchUtil.setSearchInfoDefault_2(sie);
-        return searchInfoRepository.save(sie);
-    }
+//    public SearchInfoEntity saveSearchInfo_2(SearchInfoEntity sie) {
+//        CommonStaticSearchUtil.setSearchInfoDefault_2(sie);
+//        return searchInfoRepository.save(sie);
+//    }
 
 
     public VideoInfoEntity saveVideoInfo(VideoInfoEntity vie) {
@@ -4154,164 +4108,6 @@ public class SearchService {
 
     */
 
-    public String generateRandomFileName(int length) {
-        String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder randomFileName = new StringBuilder();
-
-        Random random = new Random();
-        for (int i = 0; i < length; i++) {
-            int index = random.nextInt(characters.length());
-            randomFileName.append(characters.charAt(index));
-        }
-
-        randomFileName.append(".jpg");
-        log.info("randomFileName: " + randomFileName.toString());
-
-        return randomFileName.toString();
-    }
-
-
-    public <RESULT> SearchResultEntity getSearchResultTextEntity(int tsiUno, String tsrSns, RESULT result
-            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
-        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
-        SearchResultEntity sre = new SearchResultEntity();
-        sre.setTsiUno(tsiUno);
-        sre.setTsrJson(result.toString());
-        sre.setTsrDownloadUrl(getOriginalFn.apply(result));
-        sre.setTsrTitle(getTitleFn.apply(result));
-        sre.setTsrSiteUrl(getLinkFn.apply(result));
-        sre.setTsrSearchValue("2");
-
-        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
-        //sre.setTsrSns("11");
-
-        //Facebook 검색이고, source 값이 Facebook 인 경우
-        if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
-            sre.setTsrSns("17");
-        } else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
-            sre.setTsrSns("15");
-        } else {
-            sre.setTsrSns("11");
-        }
-
-        return sre;
-    }
-
-
-    public <RESULT> void saveGoogleLensImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
-            , RESULT result, Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn) throws IOException {
-        // Resource resource = resourceLoader.getResource(imageUrl);
-        // String imageUrl = "11".equals(sre.getTsrSns()) ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
-        // imageUrl = imageUrl != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
-
-        String imageUrl = getOriginalFn.apply(result);
-        imageUrl = imageUrl != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
-        log.info("saveImageFile imageUrl: "+imageUrl);
-
-        String fileName = generateRandomFileName(30);
-        // FileOutputStream aa = googleLensImageFile(imageUrl, fileName);
-        log.info("saveImageFile fileName: "+fileName);
-
-        byte[] imageBytes;
-        if (imageUrl != null) {
-            Resource resource = resourceLoader.getResource(imageUrl);
-            try {
-                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
-            } catch (Exception e) {
-                imageUrl = getThumbnailFn.apply(result);
-                resource = resourceLoader.getResource(imageUrl);
-                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
-            }
-
-            if (imageBytes == null) {
-                imageUrl = getThumbnailFn.apply(result);
-                resource = resourceLoader.getResource(imageUrl);
-                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
-            }
-
-            if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("") && imageBytes != null) {
-                LocalDate now = LocalDate.now();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-                String folder = now.format(formatter);
-                String restrictChars = "|\\\\?*<\":>/";
-                String regExpr = "[" + restrictChars + "]+";
-                // String uuid = UUID.randomUUID().toString();
-                String extension = "";
-                String extension_ = "";
-
-                if (resource.getFilename().indexOf(".") > 0) {
-                    extension = resource.getFilename().substring(resource.getFilename().lastIndexOf("."));
-                    extension = extension.replaceAll(regExpr, "").substring(0, Math.min(extension.length(), 10));
-
-                    // extension_ = fileName.substring(fileName.length()-3);
-                }
-
-                if(fileName.indexOf(".") > 0){
-                    extension_ = fileName.substring(fileName.length()-3);
-                }
-
-                File destdir = new File(fileLocation2 + folder + File.separator + tsiUno);
-                if (!destdir.exists()) {
-                    destdir.mkdirs();
-                }
-
-                Files.write(Paths.get(destdir + File.separator + fileName), imageBytes);
-                /*
-                sre.setTsrImgExt(extension_);
-                sre.setTsrImgName(uuid + extension);
-                */
-                sre.setTsrImgExt(extension_);
-                sre.setTsrImgName(fileName);
-                sre.setTsrImgPath((destdir + File.separator).replaceAll("\\\\", "/"));
-
-                // Image img = new ImageIcon(destdir + File.separator + uuid + extension).getImage();
-                Image img = new ImageIcon(destdir + File.separator + fileName).getImage();
-                sre.setTsrImgHeight(String.valueOf(img.getHeight(null)));
-                sre.setTsrImgWidth(String.valueOf(img.getWidth(null)));
-                sre.setTsrImgSize(String.valueOf(destdir.length() / 1024));
-                img.flush();
-            }
-
-/*
-            if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("") && imageBytes != null) {
-                LocalDate now = LocalDate.now();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-                String folder = now.format(formatter);
-                String restrictChars = "|\\\\?*<\":>/";
-                String regExpr = "[" + restrictChars + "]+";
-                String uuid = UUID.randomUUID().toString();
-                String extension = "";
-                String extension_ = "";
-                if (resource.getFilename().indexOf(".") > 0) {
-                    extension = resource.getFilename().substring(resource.getFilename().lastIndexOf("."));
-                    extension = extension.replaceAll(regExpr, "").substring(0, Math.min(extension.length(), 10));
-                    extension_ = extension.substring(1);
-                }
-
-                File destdir = new File(fileLocation2 + folder + File.separator + tsiUno);
-                if (!destdir.exists()) {
-                    destdir.mkdirs();
-                }
-
-                Files.write(Paths.get(destdir + File.separator + uuid + extension), imageBytes);
-
-                sre.setTsrImgExt(extension_);
-                sre.setTsrImgName(uuid + extension);
-                sre.setTsrImgPath((destdir + File.separator).replaceAll("\\\\", "/"));
-
-                Image img = new ImageIcon(destdir + File.separator + uuid + extension).getImage();
-                sre.setTsrImgHeight(String.valueOf(img.getHeight(null)));
-                sre.setTsrImgWidth(String.valueOf(img.getWidth(null)));
-                sre.setTsrImgSize(String.valueOf(destdir.length() / 1024));
-                img.flush();
-            }
-            */
-        } else {
-
-        }
-
-    }
     public SearchInfoEntity insertSearchInfo(MultipartFile uploadFile, SearchInfoEntity param, String folder){
         boolean isFile = ! uploadFile.isEmpty();
 
@@ -4370,55 +4166,54 @@ public class SearchService {
         return saveSearchInfo(param);
     }
 
-//    public void search(SearchInfoEntity param, SearchInfoDto siDto, String folder){
-//        try {
-//            List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
-//            for (NationCodeEntity ncInfo : ncList) {
-//                // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19:영상
-//                switch (param.getTsiType()) {
-//                    case "11" -> { // 11:키워드
-//                        if (param.getTsiGoogle() == 1) {
-//                            searchYandexYoutube("11", param, siDto, ncInfo.getNcCode().toLowerCase());
-//                            searchTextGoogleService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
-//                        }
-//                        if (param.getTsiInstagram() == 1) {
-//                            searchTextInstagramService.search(param.getTsiInstagram(), param.getTsiType(), param, siDto, ncInfo.getNcCode().toLowerCase());
-//                        }
-//                        if (param.getTsiFacebook() == 1) {
-//                            searchTextFacebookService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
-//                        }
-//                    }
-//                    case "13" -> { // 13:키워드+이미지
-//                            searchImageGoogleLensService.searchYandexByGoogleLensImage("11", param, ncInfo.getNcCode().toLowerCase());
-//                            if (param.getTsiGoogle() == 1) {
-//                                searchTextImageGoogleService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
-//                            }
-//                            if (param.getTsiInstagram() == 1) {
-//                                searchTextImageInstagramService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
-//                            }
-//                            if (param.getTsiFacebook() == 1) {
-//                                searchTextImageFacebookService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
-//                            }
-//                    }
-//                    case "15" -> // 15:키워드+영상
-//                            search(param.getTsiGoogle(), param.getTsiFacebook(), param.getTsiInstagram(), param.getTsiType(), param, folder, siDto);
-//                    case "17" -> { // 17:이미지
-//                        log.info("== case17 진입 ==");
-//                        // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
-//                        searchImageGoogleLensService.searchYandexByGoogleLensImage("11", param, ncInfo.getNcCode().toLowerCase());
-//                        searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
-//                    }
-//                    case "19" -> {// 19: 영상
-//                        search(param.getTsiGoogle(), param.getTsiFacebook(), param.getTsiInstagram(), param.getTsiType(), param, folder, siDto);
-//                    }
-//                }
-//                // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
-//            }
-//
-//            log.info("====== search 끝 ======");
-//        }catch (Exception e){
-//            e.printStackTrace();
-//            log.error(e.getMessage());
-//        }
-//    }
+    public void search(SearchInfoEntity param, SearchInfoDto siDto, String folder){
+        try {
+            List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+            for (NationCodeEntity ncInfo : ncList) {
+                // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19:영상
+                switch (param.getTsiType()) {
+                    case CommonCode.searchTypeKeyword -> { // 11:키워드
+                        if (param.getTsiGoogle() == 1) {
+                            searchYandexYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
+                            searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                        }
+                        if (param.getTsiInstagram() == 1) {
+                            searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                        }
+                        if (param.getTsiFacebook() == 1) {
+                            searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                        }
+                    }
+                    case CommonCode.searchTypeKeywordImage -> { // 13:키워드+이미지
+                            searchImageGoogleLensService.searchYandexByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
+                            if (param.getTsiGoogle() == 1) {
+                                searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                            }
+                            if (param.getTsiInstagram() == 1) {
+                                searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                            }
+                            if (param.getTsiFacebook() == 1) {
+                                searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                            }
+                    }
+                    case CommonCode.searchTypeKeywordVideo -> // 15:키워드+영상
+                            search(param.getTsiGoogle(), param.getTsiFacebook(), param.getTsiInstagram(), param.getTsiType(), param, folder, siDto);
+                    case CommonCode.searchTypeImage -> { // 17:이미지
+                        // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+                        searchImageGoogleLensService.searchYandexByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
+                        searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
+                    }
+                    case CommonCode.searchTypeVideo -> {// 19: 영상
+                        search(param.getTsiGoogle(), param.getTsiFacebook(), param.getTsiInstagram(), param.getTsiType(), param, folder, siDto);
+                    }
+                }
+                // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+            }
+
+            log.info("====== search 끝 ======");
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+        }
+    }
 }

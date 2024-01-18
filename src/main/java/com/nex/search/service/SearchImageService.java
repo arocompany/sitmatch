@@ -1,4 +1,4 @@
-package com.nex.search.ImageService;
+package com.nex.search.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +12,6 @@ import com.nex.search.entity.result.YandexByImageResult;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
-import com.nex.search.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -304,7 +303,7 @@ public class SearchImageService {
                     log.info("getThumbnailFn: "+getThumbnailFn);
 
                     //이미지 파일 저장
-                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn,false);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
                     searchResultRepository.save(sre);
 

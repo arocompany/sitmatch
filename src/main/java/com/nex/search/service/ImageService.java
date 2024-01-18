@@ -1,5 +1,6 @@
 package com.nex.search.service;
 
+import com.nex.common.CommonStaticSearchUtil;
 import com.nex.search.entity.SearchResultEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,15 @@ public class ImageService {
     @Value("${file.location2}") private String fileLocation2;
 
     public <RESULT> void saveImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
-            , RESULT result, Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn) throws IOException {
+            , RESULT result, Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, boolean isForGoogleLens) throws IOException {
+
+        String fileName = "";
+
+        if(isForGoogleLens){
+            fileName = CommonStaticSearchUtil.generateRandomFileName(30);
+        }else{
+            fileName = UUID.randomUUID().toString();
+        }
 
         String imageUrl = getOriginalFn.apply(result);
         imageUrl = imageUrl != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
@@ -43,20 +52,11 @@ public class ImageService {
             try {
                 imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
             } catch (Exception e) {
-                //구글인 경우 IGNORE
-//                if ("11".equals(sre.getTsrSns())) {
                 imageUrl = getThumbnailFn.apply(result);
                 resource = resourceLoader.getResource(imageUrl);
                 imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
-//                }
-//                else {
-//                    log.error(e.getMessage(), e);
-//                    System.out.println("catch else e"+e.getMessage());
-//                    throw new RuntimeException(e);
-//                }
             }
 
-            // 에러가 안나도 imageBytes 가 null 일 때가 있음
             if (imageBytes == null) {
                 imageUrl = getThumbnailFn.apply(result);
                 resource = resourceLoader.getResource(imageUrl);
@@ -69,34 +69,37 @@ public class ImageService {
                 String folder = now.format(formatter);
                 String restrictChars = "|\\\\?*<\":>/";
                 String regExpr = "[" + restrictChars + "]+";
-                String uuid = UUID.randomUUID().toString();
                 String extension = "";
                 String extension_ = "";
                 if (resource.getFilename().indexOf(".") > 0) {
                     extension = resource.getFilename().substring(resource.getFilename().lastIndexOf("."));
                     extension = extension.replaceAll(regExpr, "").substring(0, Math.min(extension.length(), 10));
+                }
+
+                if(fileName.indexOf(".") > 0){
+                    extension_ = fileName.substring(fileName.length()-3);
+                }else{
                     extension_ = extension.substring(1);
                 }
 
-                File destdir = new File(fileLocation2 + folder + File.separator + tsiUno);
-                if (!destdir.exists()) {
-                    destdir.mkdirs();
+                File destDir = new File(fileLocation2 + folder + File.separator + tsiUno);
+                if (!destDir.exists()) {
+                    destDir.mkdirs();
                 }
 
-                Files.write(Paths.get(destdir + File.separator + uuid + extension), imageBytes);
+                Files.write(Paths.get(destDir + File.separator + fileName + extension), imageBytes);
                 sre.setTsrImgExt(extension_);
-                sre.setTsrImgName(uuid + extension);
-                sre.setTsrImgPath((destdir + File.separator).replaceAll("\\\\", "/"));
+                sre.setTsrImgName(fileName + extension);
+                sre.setTsrImgPath((destDir + File.separator).replaceAll("\\\\", "/"));
 
-                Image img = new ImageIcon(destdir + File.separator + uuid + extension).getImage();
+                Image img = new ImageIcon(destDir + File.separator + fileName + extension).getImage();
                 sre.setTsrImgHeight(String.valueOf(img.getHeight(null)));
                 sre.setTsrImgWidth(String.valueOf(img.getWidth(null)));
-                sre.setTsrImgSize(String.valueOf(destdir.length() / 1024));
+                sre.setTsrImgSize(String.valueOf(destDir.length() / 1024));
                 img.flush();
             }
         } else {
 
         }
-
     }
 }

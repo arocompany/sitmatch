@@ -12,6 +12,7 @@ import com.nex.search.entity.result.Images_resultsByText;
 import com.nex.search.entity.result.YandexByTextResult;
 import com.nex.search.repo.NewKeywordRepository;
 import com.nex.search.repo.SearchInfoRepository;
+import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
 import com.nex.search.service.ImageService;
 import com.nex.search.service.SearchService;
@@ -50,6 +51,7 @@ import java.util.function.Function;
 public class NewKeywordService {
     private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
+    private final SearchJobRepository searchJobRepository;
     private final SearchService searchService;
     private final ImageService imageService;
     private final NewKeywordRepository newKeywordRepository;
@@ -248,7 +250,7 @@ public class NewKeywordService {
                     log.info("getThumbnailFn: "+getThumbnailFn);
 
                     //이미지 파일 저장
-                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn,false);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
                     searchResultRepository.save(sre);
 
@@ -272,7 +274,9 @@ public class NewKeywordService {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
         // SearchInfoEntity updateResult = saveSearchInfo(insertResult);
-        SearchInfoEntity updateResult = searchService.saveSearchInfo_2(insertResult);
+//        SearchInfoEntity updateResult = searchService.saveSearchInfo_2(insertResult);
+        CommonStaticSearchUtil.setSearchInfoDefault_2(insertResult);
+        searchInfoRepository.save(insertResult);
 
         List<SearchResultEntity> searchResultEntity = result;
 
@@ -281,7 +285,8 @@ public class NewKeywordService {
         for (SearchResultEntity sre : searchResultEntity) {
             try {
                 SearchJobEntity sje = CommonStaticSearchUtil.getSearchJobEntity(sre);
-                searchService.saveSearchJob(sje);
+                CommonStaticSearchUtil.setSearchJobDefault(sje);
+                searchJobRepository.save(sje);
             } catch (JpaSystemException e) {
                 log.error(e.getMessage());
                 e.printStackTrace();

@@ -6,8 +6,10 @@ import com.nex.search.entity.SearchResultEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.function.Function;
 @Slf4j
 public class CommonStaticSearchUtil {
@@ -94,5 +96,90 @@ public class CommonStaticSearchUtil {
         sje.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sje.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sje.setTsjStatus("00");
+    }
+
+    public static String generateRandomFileName(int length) {
+        String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder randomFileName = new StringBuilder();
+
+        Random random = new Random();
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            randomFileName.append(characters.charAt(index));
+        }
+
+        randomFileName.append(".jpg");
+        log.info("randomFileName: " + randomFileName.toString());
+
+        return randomFileName.toString();
+    }
+
+    public static <RESULT> SearchResultEntity getSearchResultGoogleLensEntity(int tsiUno, String tsrSns, RESULT result
+            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws IOException {
+        // log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
+
+        /*
+        String imageUrl = getOriginalFn.apply(result);
+        log.info("getSearchResultGoogleLensEntity imageUrl: "+imageUrl);
+
+        try {
+            imageUrl = googleLensImageFile(imageUrl).toString();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        log.info("imageUrl: " + imageUrl);
+*/
+
+        SearchResultEntity sre = new SearchResultEntity();
+        sre.setTsiUno(tsiUno);
+        sre.setTsrJson(result.toString());
+        sre.setTsrDownloadUrl(getOriginalFn.apply(result));
+        // sre.setTsrImgName(imageUrl);
+        sre.setTsrTitle(getTitleFn.apply(result));
+        sre.setTsrSiteUrl(getLinkFn.apply(result));
+        sre.setTsrSearchValue("1");
+
+        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
+        //sre.setTsrSns("11");
+
+        //Facebook 검색이고, source 값이 Facebook 인 경우
+        if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
+            sre.setTsrSns("17");
+        } else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
+            sre.setTsrSns("15");
+        } else {
+            sre.setTsrSns("11");
+        }
+
+        return sre;
+    }
+
+    public static <RESULT> SearchResultEntity getSearchResultTextEntity(int tsiUno, String tsrSns, RESULT result
+            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
+        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
+        SearchResultEntity sre = new SearchResultEntity();
+        sre.setTsiUno(tsiUno);
+        sre.setTsrJson(result.toString());
+        sre.setTsrDownloadUrl(getOriginalFn.apply(result));
+        sre.setTsrTitle(getTitleFn.apply(result));
+        sre.setTsrSiteUrl(getLinkFn.apply(result));
+        sre.setTsrSearchValue("2");
+
+        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
+        //sre.setTsrSns("11");
+
+        //Facebook 검색이고, source 값이 Facebook 인 경우
+        if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
+            sre.setTsrSns("17");
+        } else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
+            sre.setTsrSns("15");
+        } else {
+            sre.setTsrSns("11");
+        }
+
+        return sre;
     }
 }

@@ -7,7 +7,6 @@ import com.nex.search.service.SearchService;
 import com.nex.user.entity.SessionInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,17 +18,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@RestController // JSON 형태 결과값을 반환해줌 (@ResponseBody가 필요없음)
-@RequiredArgsConstructor // final 객체를 Constructor Injection 해줌. (Autowired 역할)
+@RestController
+@RequiredArgsConstructor
 @RequestMapping("/search")
 public class SearchController {
     private final SearchService searchService;
-//    private String searchImageUrl;
-
-    @Value("${file.location1}") private String fileLocation1;
-    @Value("${file.location3}") private String fileLocation3;
-    @Value("${server.url}") private String serverIp;
-
 
     @PostMapping()
     public String search(@RequestParam("file") Optional<MultipartFile> file, SearchInfoEntity searchInfoEntity
@@ -53,7 +46,7 @@ public class SearchController {
         SearchInfoEntity resultEntity = searchService.insertSearchInfo(file.get(), searchInfoEntity, folder);
 
         if(resultEntity != null) {
-//            searchService.search(resultEntity, searchInfoDto, folder);
+            searchService.search(resultEntity, searchInfoDto, folder);
         }else{
             return "redirect:/";
         }

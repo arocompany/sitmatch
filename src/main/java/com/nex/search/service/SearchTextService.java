@@ -9,6 +9,8 @@ import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
 import com.nex.search.entity.result.Images_resultsByText;
 import com.nex.search.entity.result.YandexByTextResult;
+import com.nex.search.repo.SearchInfoRepository;
+import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,59 +38,74 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 @Lazy
-public class SearchTextFacebookService {
-    private final SearchService searchService;
-    private final ImageService imageService;
+public class SearchTextService {
     private final ResourceLoader resourceLoader;
 
+    private final ImageService imageService;
+    private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
+    private final SearchJobRepository searchJobRepository;
+    private String nationCode = "";
 
+    @Value("${file.location2}")
+    private String fileLocation2;
+    @Value("${python.video.module}")
+    private String pythonVideoModule;
     @Value("${search.yandex.text.url}")
     private String textYandexUrl;
+
     @Value("${search.yandex.text.no_cache}")
     private String textYandexNocache;
     @Value("${search.yandex.text.location}")
     private String textYandexLocation;
+    @Value("${search.yandex.text.tbm}")
+    private String textYandexTbm;
     @Value("${search.yandex.text.api_key}")
     private String textYandexApikey;
+    @Value("${search.yandex.text.engine}")
+    private String textYandexEngine;
+    @Value("${search.yandex.image.engine}")
+    private String imageYandexEngine;
     @Value("${search.yandex.text.count.limit}")
     private String textYandexCountLimit;
+    @Value("${file.location1}")
+    private String fileLocation1;
+    @Value("${file.location3}")
+    private String fileLocation3;
+    @Value("${server.url}")
+    private String serverIp;
+
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
-    private String nationCode = "";
-
-    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
-        String tsrSns = "17";
-
-        // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
-        searchSnsByText(tsrSns, insertResult, searchInfoDto, nationCode);
-    }
-
-    public void searchSnsByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode) {
-        int index=0;
+    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode, String tsrSns){
+//        String tsrSns = "11";
         this.nationCode = nationCode;
-        String finalTextYandexGl1 =this.nationCode;
-
-        // String tsiKeywordHiddenValue = "인스타그램 "+searchInfoDto.getTsiKeywordHiddenValue();
-        searchByText(index, finalTextYandexGl1, tsrSns, insertResult, searchInfoDto);
+        String textYandexGl = this.nationCode;
+        // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
+        searchSnsByText(tsrSns, insertResult, searchInfoDto, textYandexGl);
     }
 
-    public void searchByText(int index, String finalTextYandexGl1, String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
+    public void searchSnsByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String textYandexGl) {
+        int index=0;
 
+        searchByText(index, textYandexGl, tsrSns, insertResult, searchInfoDto);
+    }
+
+    public void searchByText(int index, String textYandexGl, String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
         CompletableFuture
                 .supplyAsync(() -> {
                     try {
                         // text기반 yandex 검색
                         // return searchTextYandex(index, searchInfoDto, tsrSns, finalTextYandexGl1, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
-                        return searchTextYandex(index, searchInfoDto, tsrSns, finalTextYandexGl1, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                        return searchTextYandex(index, searchInfoDto, tsrSns, textYandexGl, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
                     }
                 }).thenApply((r) -> {
                     try {
-                        log.info("R: " + r);
+                        log.info("R" + r);
 
                         // 결과 저장.(이미지)
                         return saveYandex(
@@ -107,14 +124,15 @@ public class SearchTextFacebookService {
                         return null;
                     }
                 }).thenAccept((r) -> {
-                    try { // yandex검색을 통해 결과 db에 적재.
+                    try {
+                        // yandex검색을 통해 결과 db에 적재.
                         saveImgSearchYandex(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
                 }).thenRun(()-> {
                     try {
-                        CompletableFutureYandexByText(index, tsrSns, finalTextYandexGl1, insertResult,searchInfoDto);
+                        CompletableFutureYandexByText(index, tsrSns, textYandexGl, insertResult,searchInfoDto);
                     } catch (ExecutionException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -122,23 +140,24 @@ public class SearchTextFacebookService {
 
     }
 
-    public <INFO, RESULT> List<RESULT> searchTextYandex(int index, SearchInfoDto searchInfoDto, String tsrSns, String finalTextYandexGl1, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        String tsiKeywordHiddenValue = "페이스북 " + searchInfoDto.getTsiKeywordHiddenValue();
+    public <INFO, RESULT> List<RESULT> searchTextYandex(int index, SearchInfoDto searchInfoDto, String tsrSns, String textYandexGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+        log.info("============== searchTextYandex index: "+index+ " textYandexGl"+textYandexGl);
+        String tsiKeywordHiddenValue2 = searchInfoDto.getTsiKeywordHiddenValue();
 
         String url = textYandexUrl
-                + "?q=" + tsiKeywordHiddenValue
-                + "&gl=" + finalTextYandexGl1
+                + "?q=" + tsiKeywordHiddenValue2
+                + "&gl=" + textYandexGl
                 + "&no_cache=" + textYandexNocache
                 + "&location=" + textYandexLocation
-                + "&start=" + index * 10
+                + "&start=" + String.valueOf(index * 10)
                 + "&api_key=" + textYandexApikey
                 + "&safe=off"
                 + "&filter=0"
                 + "&nfpr=0"
                 + "&engine=google";
 
-        // log.info("tsiKeywordHiddenValue: " +tsiKeywordHiddenValue);
-        log.debug("searchTextYandex url: " +url);
+        log.info("tsiKeywordHiddenValue2" +tsiKeywordHiddenValue2);
+        log.info("searchTextYandex url: " +url);
 
         HttpHeaders header = new HttpHeaders();
         HttpEntity<?> entity = new HttpEntity<>(header);
@@ -156,10 +175,12 @@ public class SearchTextFacebookService {
             if (getErrorFn.apply(info) == null) {
                 results = getResultFn.apply(info);
             }
-
-            // log.info("mapper: "+ mapper);
-            log.debug("jsonInString: "+ jsonInString);
-            log.debug("searchTextYandex results: "+results);
+            /*
+            log.info("mapper: "+ mapper);
+            log.info("jsonInString: "+ jsonInString);
+            log.info("info: "+ info);
+            */
+            log.info("searchTextYandex results: "+results);
 
         }
 
@@ -175,8 +196,7 @@ public class SearchTextFacebookService {
     public <RESULT> List<SearchResultEntity> saveYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
-        log.debug("=========== saveYandex 진입 ==============");
-
+        log.info("=========== saveYandex 진입 ==============");
         if (results == null) {
             loop=false;
             return null;
@@ -186,7 +206,7 @@ public class SearchTextFacebookService {
         List<SearchResultEntity> sreList = new ArrayList<>();
 
         for (RESULT result : results) {
-            log.info("results: " + results);
+
             try {
                 String imageUrl = getOriginalFn.apply(result);
                 log.info("imageUrl1: "+imageUrl);
@@ -194,16 +214,15 @@ public class SearchTextFacebookService {
                     imageUrl = getThumbnailFn.apply(result);
                 }
                 log.info("imageUrl2: "+imageUrl);
-                if(imageUrl != null) {
-                    //검색 결과 엔티티 추출
-                    SearchResultEntity sre = searchService.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
 
+                if(imageUrl != null) {
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
                     if (!tsrSns.equals(sre.getTsrSns())) {
                         continue;
                     }
 
                     //이미지 파일 저장
-                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn,false);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
                     searchResultRepository.save(sre);
 //                    searchService.saveSearchResult(sre);
@@ -230,13 +249,16 @@ public class SearchTextFacebookService {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
 
-        searchService.saveSearchInfo_2(insertResult);
-        // List<SearchResultEntity> searchResultEntity = result;
+//        SearchInfoEntity updateResult = searchService.saveSearchInfo_2(insertResult);
+        CommonStaticSearchUtil.setSearchInfoDefault_2(insertResult);
+        searchInfoRepository.save(insertResult);
+        List<SearchResultEntity> searchResultEntity = result;
 
-        for (SearchResultEntity sre : result) {
+        for (SearchResultEntity sre : searchResultEntity) {
             try {
                 SearchJobEntity sje = CommonStaticSearchUtil.getSearchJobEntity(sre);
-                searchService.saveSearchJob(sje);
+                CommonStaticSearchUtil.setSearchJobDefault(sje);
+                searchJobRepository.save(sje);
             } catch (JpaSystemException e) {
                 log.error(e.getMessage());
                 e.printStackTrace();
@@ -246,12 +268,12 @@ public class SearchTextFacebookService {
                 e.printStackTrace();
             }
         }
+
         return "저장 완료";
     }
 
-    public void CompletableFutureYandexByText(int index, String tsrSns, String finalTextYandexGl1, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) throws ExecutionException, InterruptedException {
-        log.info("--------------- CompletableFutureYandexByText 진입 ----------------");
-        log.info("--------------- index 값2: " + index+ " textYandexGl " + finalTextYandexGl1);
+    public void CompletableFutureYandexByText(int index, String tsrSns, String textYandexGl, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) throws ExecutionException, InterruptedException {
+        log.info("--------------- CompletableFutureYandexByText index 값: " + index+ " textYandexGl: " + textYandexGl);
 
         index++;
         int finalIndex = index;
@@ -259,7 +281,7 @@ public class SearchTextFacebookService {
         CompletableFuture.supplyAsync(() -> {
             try {
                 // text기반 yandex 검색
-                return searchTextYandex(finalIndex, searchInfoDto, tsrSns,finalTextYandexGl1, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                return searchTextYandex(finalIndex, searchInfoDto, tsrSns,textYandexGl, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 return null;
@@ -270,7 +292,7 @@ public class SearchTextFacebookService {
                     log.info("텍스트검색 r == null 진입");
                     loop = false;
                 }
-                log.info(" --------------- loop값 --------------- " + loop + " textYandexGl "+finalTextYandexGl1);
+                log.info(" --------------- loop 값 --------------- " + loop + " textYandexGl "+textYandexGl);
                 // 결과 저장.(이미지)
                 return saveYandex(
                         r
@@ -289,7 +311,7 @@ public class SearchTextFacebookService {
             }
         }).thenAccept((r) -> {
             try {
-                log.info("==== thenAccept 진입 ===="+" textYandexGl "+finalTextYandexGl1);
+                log.info("==== thenAccept 진입 ===="+" textYandexGl "+textYandexGl);
                 if (r != null) {
                     // yandex검색을 통해 결과 db에 적재.
                     saveImgSearchYandex(r, insertResult);
@@ -299,19 +321,21 @@ public class SearchTextFacebookService {
             }
         }).thenRun(()->{
             log.info("thenRun loop값: "+loop);
-            if(loop==true){
+            if(loop == true){
                 try {
                     log.info("loop==true 진입:" + loop);
-                    log.info("==== thenRun 진입 ==== index값: " + finalIndex+" textYandexGl "+finalTextYandexGl1);
-                    CompletableFutureYandexByText(finalIndex, tsrSns, finalTextYandexGl1, insertResult,searchInfoDto);
+                    log.info("==== thenRun 진입 ==== index값: " + finalIndex+" textYandexGl "+textYandexGl);
+                    CompletableFutureYandexByText(finalIndex, tsrSns, textYandexGl, insertResult,searchInfoDto);
                 } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
+            } else {
+                return;
             }
+
         });
 
         // results.get();
 
     }
-
 }

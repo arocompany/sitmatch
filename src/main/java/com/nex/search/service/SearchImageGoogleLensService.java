@@ -1,4 +1,4 @@
-package com.nex.search.ImageService;
+package com.nex.search.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -10,11 +10,11 @@ import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.result.GoogleLensImagesByImageResult;
 import com.nex.search.entity.result.Images_resultsByGoogleLens;
+import com.nex.search.repo.SearchInfoRepository;
+import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
-import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ResourceLoader;
@@ -39,8 +39,11 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 @Lazy
 public class SearchImageGoogleLensService {
-    private final SearchService searchService;
+    private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
+    private final SearchJobRepository searchJobRepository;
+
+    private final ImageService imageService;
 
     private final ResourceLoader resourceLoader;
 
@@ -211,7 +214,7 @@ public class SearchImageGoogleLensService {
                 log.info("imageUrl1: "+imageUrl);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = searchService.getSearchResultGoogleLensEntity(insertResult.getTsiUno(), tsrSns, result, getThumbnailFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleLensEntity(insertResult.getTsiUno(), tsrSns, result, getThumbnailFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {
@@ -221,7 +224,7 @@ public class SearchImageGoogleLensService {
                     log.info("getThumbnailFn: "+getThumbnailFn);
 
                     //이미지 파일 저장
-                    searchService.saveGoogleLensImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getThumbnailFn, getThumbnailFn);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getThumbnailFn, getThumbnailFn, true);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
                     searchResultRepository.save(sre);
 //                    searchService.saveSearchResult(sre);
@@ -248,14 +251,18 @@ public class SearchImageGoogleLensService {
         }
         // SearchInfoEntity updateResult = saveSearchInfo(insertResult);
         // SearchInfoEntity updateResult = saveSearchInfo_2(insertResult);
-        searchService.saveSearchInfo_2(insertResult);
+//        searchService.saveSearchInfo_2(insertResult);
+        CommonStaticSearchUtil.setSearchInfoDefault_2(insertResult);
+        searchInfoRepository.save(insertResult);
+
         List<SearchResultEntity> searchResultEntity = result;
 
         if(searchResultEntity != null) {
             for (SearchResultEntity sre : searchResultEntity) {
                 try {
                     SearchJobEntity sje = CommonStaticSearchUtil.getSearchJobEntity(sre);
-                    searchService.saveSearchJob(sje);
+                    CommonStaticSearchUtil.setSearchJobDefault(sje);
+                    searchJobRepository.save(sje);
                 } catch (JpaSystemException e) {
                     log.error(e.getMessage());
                     e.printStackTrace();
