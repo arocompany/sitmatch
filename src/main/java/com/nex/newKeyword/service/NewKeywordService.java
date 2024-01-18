@@ -2,6 +2,7 @@ package com.nex.newKeyword.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nex.common.CommonStaticSearchUtil;
 import com.nex.common.Consts;
 import com.nex.search.entity.NewKeywordEntity;
 import com.nex.search.entity.SearchInfoEntity;
@@ -11,6 +12,8 @@ import com.nex.search.entity.result.Images_resultsByText;
 import com.nex.search.entity.result.YandexByTextResult;
 import com.nex.search.repo.NewKeywordRepository;
 import com.nex.search.repo.SearchInfoRepository;
+import com.nex.search.repo.SearchResultRepository;
+import com.nex.search.service.ImageService;
 import com.nex.search.service.SearchService;
 import com.nex.user.entity.SessionInfoDto;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +49,9 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class NewKeywordService {
     private final SearchInfoRepository searchInfoRepository;
+    private final SearchResultRepository searchResultRepository;
     private final SearchService searchService;
+    private final ImageService imageService;
     private final NewKeywordRepository newKeywordRepository;
 
     private final ResourceLoader resourceLoader;
@@ -243,8 +248,9 @@ public class NewKeywordService {
                     log.info("getThumbnailFn: "+getThumbnailFn);
 
                     //이미지 파일 저장
-                    searchService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
-                    searchService.saveSearchResult(sre);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
+                    CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    searchResultRepository.save(sre);
 
                     sreList.add(sre);
                 }
@@ -274,7 +280,7 @@ public class NewKeywordService {
         //SearchJobEntity sje = null;
         for (SearchResultEntity sre : searchResultEntity) {
             try {
-                SearchJobEntity sje = searchService.getSearchJobEntity(sre);
+                SearchJobEntity sje = CommonStaticSearchUtil.getSearchJobEntity(sre);
                 searchService.saveSearchJob(sje);
             } catch (JpaSystemException e) {
                 log.error(e.getMessage());

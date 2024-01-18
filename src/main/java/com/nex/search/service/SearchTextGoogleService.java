@@ -2,12 +2,14 @@ package com.nex.search.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nex.common.CommonStaticSearchUtil;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
 import com.nex.search.entity.result.Images_resultsByText;
 import com.nex.search.entity.result.YandexByTextResult;
+import com.nex.search.repo.SearchResultRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +40,8 @@ public class SearchTextGoogleService {
     private final SearchService searchService;
     private final ResourceLoader resourceLoader;
 
+    private final ImageService imageService;
+    private final SearchResultRepository searchResultRepository;
     private String nationCode = "";
 
     @Value("${file.location2}")
@@ -215,8 +219,10 @@ public class SearchTextGoogleService {
                     }
 
                     //이미지 파일 저장
-                    searchService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
-                    searchService.saveSearchResult(sre);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
+                    CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    searchResultRepository.save(sre);
+//                    searchService.saveSearchResult(sre);
 
                     sreList.add(sre);
                 }
@@ -245,7 +251,7 @@ public class SearchTextGoogleService {
 
         for (SearchResultEntity sre : searchResultEntity) {
             try {
-                SearchJobEntity sje = searchService.getSearchJobEntity(sre);
+                SearchJobEntity sje = CommonStaticSearchUtil.getSearchJobEntity(sre);
                 searchService.saveSearchJob(sje);
             } catch (JpaSystemException e) {
                 log.error(e.getMessage());

@@ -2,6 +2,7 @@ package com.nex.search.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nex.common.CommonStaticSearchUtil;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -10,9 +11,9 @@ import com.nex.search.entity.result.Images_resultsByImage;
 import com.nex.search.entity.result.Images_resultsByText;
 import com.nex.search.entity.result.YandexByImageResult;
 import com.nex.search.entity.result.YandexByTextResult;
+import com.nex.search.repo.SearchResultRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ResourceLoader;
@@ -39,8 +40,10 @@ import java.util.function.Function;
 public class SearchTextImageFacebookService {
     private final SearchService searchService;
 
-    @Autowired
-    ResourceLoader resourceLoader;
+    private final ImageService imageService;
+    private final SearchResultRepository searchResultRepository;
+
+    private final ResourceLoader resourceLoader;
 
     @Value("${file.location2}")
     private String fileLocation2;
@@ -217,8 +220,10 @@ public class SearchTextImageFacebookService {
                     log.info("getThumbnailFn: "+getThumbnailFn);
 
                     //이미지 파일 저장
-                    searchService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
-                    searchService.saveSearchResult(sre);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
+                    CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    searchResultRepository.save(sre);
+//                    searchService.saveSearchResult(sre);
 
                     sreList.add(sre);
                 }
@@ -247,7 +252,7 @@ public class SearchTextImageFacebookService {
         //SearchJobEntity sje = null;
         for (SearchResultEntity sre : searchResultEntity) {
             try {
-                SearchJobEntity sje = searchService.getSearchJobEntity(sre);
+                SearchJobEntity sje = CommonStaticSearchUtil.getSearchJobEntity(sre);
                 searchService.saveSearchJob(sje);
             } catch (JpaSystemException e) {
                 log.error(e.getMessage());
@@ -421,7 +426,7 @@ public class SearchTextImageFacebookService {
                 log.info("imageUrl2: "+imageUrl);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = searchService.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {
@@ -431,8 +436,10 @@ public class SearchTextImageFacebookService {
                     log.info("getThumbnailFn: "+getThumbnailFn);
 
                     //이미지 파일 저장
-                    searchService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
-                    searchService.saveSearchResult(sre);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
+                    CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    searchResultRepository.save(sre);
+//                    searchService.saveSearchResult(sre);
 
                     sreList.add(sre);
                 }

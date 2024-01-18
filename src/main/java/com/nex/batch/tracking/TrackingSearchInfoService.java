@@ -1,5 +1,6 @@
 package com.nex.batch.tracking;
 
+import com.nex.common.CommonStaticSearchUtil;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchInfoMonitoringHistoryEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -153,7 +154,7 @@ public class TrackingSearchInfoService {
         searchInfoEntity.setTsrUno(searchResultEntity.getTsrUno());
 
         //검색 정보 엔티티 기본값 세팅
-        searchService.setSearchInfoDefault(searchInfoEntity);
+        CommonStaticSearchUtil.setSearchInfoDefault(searchInfoEntity);
 
         return searchInfoEntity;
     }

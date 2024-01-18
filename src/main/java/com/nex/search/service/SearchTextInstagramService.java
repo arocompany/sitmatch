@@ -6,6 +6,7 @@ import com.nex.Chart.repo.NoticeHistRepository;
 import com.nex.Chart.repo.SearchInfoHistRepository;
 import com.nex.Chart.repo.SearchResultHistRepository;
 import com.nex.Chart.repo.TraceHistRepository;
+import com.nex.common.CommonStaticSearchUtil;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -58,8 +59,9 @@ public class SearchTextInstagramService {
     private final NoticeHistRepository noticeHistRepository;
     private final SearchService searchService;
 
-    @Autowired
-    ResourceLoader resourceLoader;
+    private final ImageService imageService;
+
+    private final ResourceLoader resourceLoader;
 
     @Value("${file.location2}")
     private String fileLocation2;
@@ -93,7 +95,7 @@ public class SearchTextInstagramService {
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
-    public void search(byte tsiInstagram, String tsiType, SearchInfoEntity insertResult, String folder, SearchInfoDto searchInfoDto, String nationCode){
+    public void search(byte tsiInstagram, String tsiType, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
         String tsrSns = "15";
         // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
 
@@ -243,8 +245,10 @@ public class SearchTextInstagramService {
                     }
 
                     //이미지 파일 저장
-                    searchService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
-                    searchService.saveSearchResult(sre);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
+                    CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    searchResultRepository.save(sre);
+//                    searchService.saveSearchResult(sre);
 
                     sreList.add(sre);
                 }

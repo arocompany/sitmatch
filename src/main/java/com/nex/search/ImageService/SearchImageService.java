@@ -2,18 +2,21 @@ package com.nex.search.ImageService;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nex.common.CommonStaticSearchUtil;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
 import com.nex.search.entity.result.Images_resultsByImage;
 import com.nex.search.entity.result.YandexByImageResult;
-import com.nex.search.service.SearchService;
+import com.nex.search.repo.SearchInfoRepository;
+import com.nex.search.repo.SearchJobRepository;
+import com.nex.search.repo.SearchResultRepository;
+import com.nex.search.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,8 +38,10 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 @Lazy
 public class SearchImageService {
-    private final SearchService searchService;
-    private final ResourceLoader resourceLoader;
+    private final SearchInfoRepository searchInfoRepository;
+    private final SearchResultRepository searchResultRepository;
+    private final SearchJobRepository searchJobRepository;
+    private final ImageService imageService;
 
     private String nationCode = "";
 
@@ -189,8 +194,9 @@ public class SearchImageService {
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
-        // SearchInfoEntity updateResult = saveSearchInfo(insertResult);
-        SearchInfoEntity updateResult = searchService.saveSearchInfo_2(insertResult);
+
+        CommonStaticSearchUtil.setSearchInfoDefault_2(insertResult);
+        SearchInfoEntity updateResult = searchInfoRepository.save(insertResult);
 
         List<SearchResultEntity> searchResultEntity = result;
 
@@ -198,8 +204,8 @@ public class SearchImageService {
         //SearchJobEntity sje = null;
         for (SearchResultEntity sre : searchResultEntity) {
             try {
-                SearchJobEntity sje = searchService.getSearchJobEntity(sre);
-                searchService.saveSearchJob(sje);
+                SearchJobEntity sje = CommonStaticSearchUtil.getSearchJobEntity(sre);
+                searchJobRepository.save(sje);
             } catch (JpaSystemException e) {
                 log.error(e.getMessage());
                 e.printStackTrace();
@@ -288,7 +294,7 @@ public class SearchImageService {
                 log.info("imageUrl2: "+imageUrl);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = searchService.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {
@@ -298,8 +304,9 @@ public class SearchImageService {
                     log.info("getThumbnailFn: "+getThumbnailFn);
 
                     //이미지 파일 저장
-                    searchService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
-                    searchService.saveSearchResult(sre);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn);
+                    CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    searchResultRepository.save(sre);
 
                     sreList.add(sre);
                 }

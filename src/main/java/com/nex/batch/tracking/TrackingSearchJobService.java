@@ -1,5 +1,6 @@
 package com.nex.batch.tracking;
 
+import com.nex.common.CommonStaticSearchUtil;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.service.SearchService;
@@ -23,10 +24,10 @@ public class TrackingSearchJobService {
     public SearchJobEntity searchResultEntityToSearchJobEntity(SearchResultEntity searchResultEntity) {
         log.info(" searchResultEntityToSearchJobEntity 진입 ");
         //검색 작업 엔티티 추출
-        SearchJobEntity searchJobEntity = searchService.getSearchJobEntity(searchResultEntity);
+        SearchJobEntity searchJobEntity = CommonStaticSearchUtil.getSearchJobEntity(searchResultEntity);
 
         //검색 작업 엔티티 기본값 세팅
-        searchService.setSearchJobDefault(searchJobEntity);
+        CommonStaticSearchUtil.setSearchJobDefault(searchJobEntity);
 
         return searchJobEntity;
     }

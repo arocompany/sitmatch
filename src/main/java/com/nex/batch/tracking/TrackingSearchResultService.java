@@ -4,11 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nex.common.CommonStaticSearchUtil;
 import com.nex.common.Consts;
 import com.nex.search.entity.NationCodeEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.repo.NationCodeRepository;
+import com.nex.search.service.ImageService;
 import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,7 @@ import java.util.function.Function;
 public class TrackingSearchResultService{
 
     private final SearchService searchService;
+    private final ImageService imageService;
 
     @Value("${search.yandex.text.url}")
     private String textYandexUrl;
@@ -503,14 +506,14 @@ public class TrackingSearchResultService{
 
                             try {
                                 //이미지 파일 저장
-                                searchService.saveImageFile(getTsiUnoFn.apply(result), restTemplate, searchResultEntity, result, getOriginalFn, getThumbnailFn);
+                                imageService.saveImageFile(getTsiUnoFn.apply(result), restTemplate, searchResultEntity, result, getOriginalFn, getThumbnailFn);
                             } catch (IOException e) {
                                 log.error(e.getMessage(), e);
                                 throw new RuntimeException(e);
                             }
 
                             //검색 결과 엔티티 기본값 세팅
-                            searchService.setSearchResultDefault(searchResultEntity);
+                            CommonStaticSearchUtil.setSearchResultDefault(searchResultEntity);
 
                             return searchResultEntity;
                         } catch (Exception e) {
