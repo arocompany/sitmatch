@@ -25,13 +25,14 @@ public class SearchController {
     private final SearchService searchService;
 
     @PostMapping()
-    public String search(@RequestParam("file") Optional<MultipartFile> file, SearchInfoEntity searchInfoEntity
+    public ModelAndView search(@RequestParam("file") Optional<MultipartFile> file, SearchInfoEntity searchInfoEntity
                                 ,@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
                                 ,SearchInfoDto searchInfoDto, Model model) throws Exception {
-        ModelAndView modelAndView = new ModelAndView("redirect:/history");
+        ModelAndView mv = new ModelAndView("redirect:/history");
 
         if(searchInfoEntity.getTsiKeyword() == null){
-            return "redirect:/";
+            mv = new ModelAndView("redirect:/");
+            return mv;
         }
 
         log.info("search진입 tsiKeyword {}", searchInfoEntity.getTsiKeyword());
@@ -48,11 +49,12 @@ public class SearchController {
         if(resultEntity != null) {
             searchService.search(resultEntity, searchInfoDto, folder);
         }else{
-            return "redirect:/";
+            mv = new ModelAndView("redirect:/");
+            return mv;
         }
 
 
-        return "redirect:/history";
+        return mv;
     }
 
     @GetMapping("/deleteTsiUnos")

@@ -79,7 +79,6 @@ public class SearchTextService {
     private final RestTemplate restTemplate;
 
     public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode, String tsrSns){
-//        String tsrSns = "11";
         this.nationCode = nationCode;
         String textYandexGl = this.nationCode;
         // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
@@ -96,8 +95,7 @@ public class SearchTextService {
         CompletableFuture
                 .supplyAsync(() -> {
                     try {
-                        // text기반 yandex 검색
-                        // return searchTextYandex(index, searchInfoDto, tsrSns, finalTextYandexGl1, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                        //serpApi를 통하여 검색
                         return searchTextYandex(index, searchInfoDto, tsrSns, textYandexGl, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -106,8 +104,7 @@ public class SearchTextService {
                 }).thenApply((r) -> {
                     try {
                         log.info("R" + r);
-
-                        // 결과 저장.(이미지)
+                        //검색 결과를 SearchResult Table에 저장 및 이미지 저장
                         return saveYandex(
                                 r
                                 , tsrSns
@@ -125,14 +122,14 @@ public class SearchTextService {
                     }
                 }).thenAccept((r) -> {
                     try {
-                        // yandex검색을 통해 결과 db에 적재.
+                        // 검색 결과 상태값을 완료로 변경 및 SearchJob Table에 Insert
                         saveImgSearchYandex(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
                 }).thenRun(()-> {
                     try {
-                        CompletableFutureYandexByText(index, tsrSns, textYandexGl, insertResult,searchInfoDto);
+                        CompletableFutureYandexByText(index, tsrSns, textYandexGl, insertResult, searchInfoDto);
                     } catch (ExecutionException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -141,7 +138,7 @@ public class SearchTextService {
     }
 
     public <INFO, RESULT> List<RESULT> searchTextYandex(int index, SearchInfoDto searchInfoDto, String tsrSns, String textYandexGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        log.info("============== searchTextYandex index: "+index+ " textYandexGl"+textYandexGl);
+        log.info("============== searchTextYandex index: {} textYandexGl {}", index ,textYandexGl);
         String tsiKeywordHiddenValue2 = searchInfoDto.getTsiKeywordHiddenValue();
 
         String url = textYandexUrl
@@ -198,7 +195,7 @@ public class SearchTextService {
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
         log.info("=========== saveYandex 진입 ==============");
         if (results == null) {
-            loop=false;
+            loop = false;
             return null;
         }
 
@@ -243,6 +240,11 @@ public class SearchTextService {
 
     public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
         log.info("==========saveImgSearchYandex 진입==========");
+        if (result == null) {
+            loop=false;
+            return null;
+        }
+
         insertResult.setTsiStat("13");
 
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
@@ -273,7 +275,10 @@ public class SearchTextService {
     }
 
     public void CompletableFutureYandexByText(int index, String tsrSns, String textYandexGl, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) throws ExecutionException, InterruptedException {
-        log.info("--------------- CompletableFutureYandexByText index 값: " + index+ " textYandexGl: " + textYandexGl);
+        log.info("==== CompletableFutureYandexByText(재귀 함수 진입 ==== index 값: {} textYandexGl {}", index, textYandexGl);
+        if(!loop){
+            return;
+        }
 
         index++;
         int finalIndex = index;
@@ -281,7 +286,7 @@ public class SearchTextService {
         CompletableFuture.supplyAsync(() -> {
             try {
                 // text기반 yandex 검색
-                return searchTextYandex(finalIndex, searchInfoDto, tsrSns,textYandexGl, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                return searchTextYandex(finalIndex, searchInfoDto, tsrSns, textYandexGl, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 return null;
@@ -324,7 +329,6 @@ public class SearchTextService {
             if(loop == true){
                 try {
                     log.info("loop==true 진입:" + loop);
-                    log.info("==== thenRun 진입 ==== index값: " + finalIndex+" textYandexGl "+textYandexGl);
                     CompletableFutureYandexByText(finalIndex, tsrSns, textYandexGl, insertResult,searchInfoDto);
                 } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);

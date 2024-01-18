@@ -7,6 +7,7 @@ import com.nex.Chart.repo.*;
 import com.nex.common.CommonCode;
 import com.nex.common.CommonStaticSearchUtil;
 import com.nex.common.Consts;
+import com.nex.common.SitProperties;
 import com.nex.search.entity.*;
 import com.nex.search.entity.dto.*;
 import com.nex.search.entity.result.*;
@@ -98,6 +99,7 @@ public class SearchService {
     private final NoticeHistRepository noticeHistRepository;
 
     private final ResourceLoader resourceLoader;
+    private final SitProperties sitProperties;
 
     @Value("${file.location2}") private String fileLocation2;
     @Value("${python.video.module}") private String pythonVideoModule;
@@ -163,7 +165,7 @@ public class SearchService {
     // byte tsiTwitter,
 //    public void search(byte tsiGoogle, byte tsiFacebook, byte tsiInstagram, String tsiType, SearchInfoEntity insertResult, String folder, SearchInfoDto searchInfoDto) throws Exception {
     public void search(SearchInfoEntity param, String folder, SearchInfoDto searchInfoDto) throws Exception {
-        if(param.getTsiType() != CommonCode.searchTypeImage && param.getTsiType() != CommonCode.searchTypeVideo){
+        if(param.getTsiType() != CommonCode.searchTypeImage && param.getTsiType() != CommonCode.searchTypeVideo) {
             if (param.getTsiType().equals(CommonCode.searchTypeKeyword)) {
                 // searchYandexYoutube(tsrSns, insertResult, searchInfoDto);
                 searchYandexText(CommonCode.snsTypeGoogle, param, searchInfoDto);
@@ -171,41 +173,33 @@ public class SearchService {
             if (param.getTsiGoogle() == 1) { searchGoogle(param.getTsiType(), param, folder, CommonCode.snsTypeGoogle, searchInfoDto); }
             if (param.getTsiFacebook() == 1) { searchGoogle(param.getTsiType(), param, folder, CommonCode.snsTypeFacebook, searchInfoDto); }
             if (param.getTsiInstagram() == 1) { searchGoogle(param.getTsiType(), param, folder, CommonCode.snsTypeInstagram, searchInfoDto); }
+        }else{
             searchGoogle(param.getTsiType(), param, folder, CommonCode.snsTypeGoogle, searchInfoDto);
         }
     }
-
-    /**
-     * 구글 검색
-     *
-     * @param tsiType      (검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19: 영상)
-     * @param insertResult (검색 이력 Entity)
-     * @param folder       (저장 폴더)
-     * @param tsrSns       (SNS 아이콘(11 : 구글, 13 : 트위터, 15 : 인스타, 17 : 페북))
-     */
-
-    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String folder, String tsrSns, SearchInfoDto searchInfoDto) throws Exception {
-        switch (tsiType) { // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
-            case "11":
+    private void searchGoogle(String tsiType, SearchInfoEntity insertResult, String path, String tsrSns, SearchInfoDto searchInfoDto) throws Exception {
+        // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지
+        switch (tsiType) {
+            case CommonCode.searchTypeKeyword -> {
                 log.info("키워드 검색");
                 searchYandexByText(tsrSns, insertResult, searchInfoDto);
-                break;
-            case "13":
+            }
+            case CommonCode.searchTypeKeywordImage -> {
                 log.info("키워드/이미지 검색");
                 searchYandexByTextImage(tsrSns, insertResult, searchInfoDto);
-                break;
-            case "15":
+            }
+            case CommonCode.searchTypeKeywordVideo-> {
                 log.info("키워드/영상 검색");
-                searchYandexByTextVideo(tsrSns, insertResult, searchInfoDto, fileLocation3, folder);
-                break;
-            case "17":
+                searchYandexByTextVideo(tsrSns, insertResult, searchInfoDto, path);
+            }
+            case CommonCode.searchTypeImage-> {
                 log.info("이미지 검색");
                 searchYandexByImage(tsrSns, insertResult);
-                break;
-            case "19":
+            }
+            case CommonCode.searchTypeVideo-> {
                 log.info("영상 검색");
-                searchYandexByVideo(tsrSns, insertResult, fileLocation3, folder);
-                break;
+                searchYandexByVideo(tsrSns, insertResult, path);
+            }
         }
     }
 
@@ -216,198 +210,33 @@ public class SearchService {
      * @param insertResult (검색 이력 Entity)
      */
 
-    public void searchYandexByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) {
-        int index=0;
+    public void searchYandexByText(String tsrSns, SearchInfoEntity param, SearchInfoDto searchInfoDto) {
+        int index = 0;
 
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
-        if ("15".equals(tsrSns)) {
-            tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue;
-        } else if ("17".equals(tsrSns)) {
-            tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
+        switch (tsrSns){
+            case CommonCode.snsTypeGoogle -> {}
+            case CommonCode.snsTypeInstagram ->tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue;
+            case CommonCode.snsTypeFacebook -> tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
         }
 
-        do {
-            String url = textYandexUrl
-                    + "?q=" + tsiKeywordHiddenValue
-                    + "&gl=" + textYandexGl
-                    + "&no_cache=" + textYandexNocache
-                    + "&location=" + textYandexLocation
-//                    + "&tbm=" + textYandexTbm
-                    + "&start=" + (index * 10)
-                    + "&api_key=" + textYandexApikey
-                    + "&safe=off"
-                    + "&filter=0"
-                    + "&nfpr=0"
-                    + "&engine=google";
+        List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+        for(NationCodeEntity ncInfo : ncList) {
+            do {
+                String url = CommonStaticSearchUtil.getSerpApiUrlForGoogle(textYandexUrl, tsiKeywordHiddenValue, ncInfo.getNcCode(), textYandexNocache, textYandexLocation, (index * 10), textYandexApikey);
+                CompletableFutureYandexByText(url, tsrSns, param);
 
-            CompletableFutureYandexByText(url, tsrSns, insertResult);
+                if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
 
-            if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
+                    loop = false;
+                }
                 log.info("index: " + index);
-                loop = false;
-            }
-
-            index++;
-        } while (loop);
-
-        index=0;
-        loop=true;
-
-        do {
-            String url = textYandexUrl
-                    + "?q=" + tsiKeywordHiddenValue
-                    + "&gl=cn"
-                    + "&no_cache=" + textYandexNocache
-                    + "&location=" + textYandexLocation
-                    + "&start=" + (index * 10)
-                    + "&api_key=" + textYandexApikey
-                    + "&safe=off"
-                    + "&filter=0"
-                    + "&nfpr=0"
-                    + "&engine=google";
-
-            CompletableFutureYandexByText(url, tsrSns, insertResult);
-
-            if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
-                log.info("index: " + index);
-                loop = false;
-            }
-
-            index++;
-        } while (loop);
-
-        index=0;
-        loop=true;
-
-        do {
-            String url = textYandexUrl
-                    + "?q=" + tsiKeywordHiddenValue
-                    + "&gl=kr"
-                    + "&no_cache=" + textYandexNocache
-                    + "&location=" + textYandexLocation
-                    + "&start=" + (index * 10)
-                    + "&api_key=" + textYandexApikey
-                    + "&safe=off"
-                    + "&filter=0"
-                    + "&nfpr=0"
-                    + "&engine=google";
-
-            CompletableFutureYandexByText(url, tsrSns, insertResult);
-
-            if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
-                log.info("index: " + index);
-                loop = false;
-            }
-
-            index++;
-        } while (loop);
-
-        index=0;
-        loop=true;
-
-        do {
-            String url = textYandexUrl
-                    + "?q=" + tsiKeywordHiddenValue
-                    + "&gl=th"
-                    + "&no_cache=" + textYandexNocache
-                    + "&location=" + textYandexLocation
-                    + "&start=" + (index * 10)
-                    + "&api_key=" + textYandexApikey
-                    + "&safe=off"
-                    + "&filter=0"
-                    + "&nfpr=0"
-                    + "&engine=google";
-
-            CompletableFutureYandexByText(url, tsrSns, insertResult);
-
-            if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
-                log.info("index: " + index);
-                loop = false;
-            }
-
-            index++;
-        } while (loop);
-
-        index=0;
-        loop=true;
-
-        do {
-            String url = textYandexUrl
-                    + "?q=" + tsiKeywordHiddenValue
-                    + "&gl=ru"
-                    + "&no_cache=" + textYandexNocache
-                    + "&location=" + textYandexLocation
-                    + "&start=" + (index * 10)
-                    + "&api_key=" + textYandexApikey
-                    + "&safe=off"
-                    + "&filter=0"
-                    + "&nfpr=0"
-                    + "&engine=google";
-
-            CompletableFutureYandexByText(url, tsrSns, insertResult);
-
-            if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
-                log.info("index: " + index);
-                loop = false;
-            }
-
-            index++;
-        } while (loop);
-
-        index=0;
-        loop=true;
-
-        do {
-            String url = textYandexUrl
-                    + "?q=" + tsiKeywordHiddenValue
-                    + "&gl=vn"
-                    + "&no_cache=" + textYandexNocache
-                    + "&location=" + textYandexLocation
-                    + "&start=" + (index * 10)
-                    + "&api_key=" + textYandexApikey
-                    + "&safe=off"
-                    + "&filter=0"
-                    + "&nfpr=0"
-                    + "&engine=google";
-
-            CompletableFutureYandexByText(url, tsrSns, insertResult);
-
-            if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
-                log.info("index: " + index);
-                loop = false;
-            }
-
-            index++;
-        } while (loop);
-
-        index=0;
-        loop=true;
-
-        do {
-            String url = textYandexUrl
-                    + "?q=" + tsiKeywordHiddenValue
-                    + "&gl=nl"
-                    + "&no_cache=" + textYandexNocache
-                    + "&location=" + textYandexLocation
-                    + "&start=" + (index * 10)
-                    + "&api_key=" + textYandexApikey
-                    + "&safe=off"
-                    + "&filter=0"
-                    + "&nfpr=0"
-                    + "&engine=google";
-
-            CompletableFutureYandexByText(url, tsrSns, insertResult);
-
-            if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
-                log.info("index: " + index);
-                loop = false;
-            }
-
-            index++;
-        } while (loop);
+                index++;
+            } while (loop);
 
 
+        }
     }
 
     /**
@@ -2144,7 +1973,7 @@ public class SearchService {
     */
 
     @Async
-    public void searchYandexByVideo(String tsrSns, SearchInfoEntity insertResult, String folder, String location3) throws Exception {
+    public void searchYandexByVideo(String tsrSns, SearchInfoEntity insertResult, String path) throws Exception {
         List<String> files = processVideo(insertResult);
 
         for(int i=0; i<files.size(); i++) {
@@ -2157,7 +1986,7 @@ public class SearchService {
 
         try {
             for (int i = 0; i < files.size(); i++) {
-                String searchImageUrl = serverIp2 + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
+                String searchImageUrl = serverIp2 + sitProperties.getFileLocation3() + "/" + path + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
                 // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
                 // searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
 
@@ -2412,7 +2241,7 @@ public class SearchService {
 
     // 키워드+영상
     @Async
-    public void searchYandexByTextVideo(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String folder, String location3) throws Exception {
+    public void searchYandexByTextVideo(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String path) throws Exception {
         List<String> files = processVideo(insertResult);
 
         for(int i=0; i<files.size(); i++) {
@@ -2433,7 +2262,7 @@ public class SearchService {
 
         try {
             for (int i = 0; i < files.size(); i++) {
-                String searchImageUrl = serverIp2 + folder + "/" + location3 + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
+                String searchImageUrl = serverIp2 + sitProperties.getFileLocation3() + "/" + path + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
                 // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
                 // searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
 
@@ -4148,7 +3977,7 @@ public class SearchService {
                 switch (param.getTsiType()) {
                     case CommonCode.searchTypeKeyword -> { // 11:키워드
                         if (param.getTsiGoogle() == 1) {
-                            searchYandexYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
+//                            searchYandexYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
                             searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
                         }
                         if (param.getTsiInstagram() == 1) {

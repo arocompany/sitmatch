@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -181,5 +184,37 @@ public class CommonStaticSearchUtil {
         }
 
         return sre;
+    }
+
+    public static String getSerpApiUrlForGoogle(String url, String keyword, String country, String noCache, String location, Integer pageNo, String key){
+
+        StringBuilder queryString = new StringBuilder();
+        try {
+
+            appendQueryParam(queryString, "q", keyword);
+            appendQueryParam(queryString, "gl", country);
+            appendQueryParam(queryString, "no_cache", noCache);
+            appendQueryParam(queryString, "location", location);
+            appendQueryParam(queryString, "start", String.valueOf(pageNo * 10));
+            appendQueryParam(queryString, "api_key", key);
+            appendQueryParam(queryString, "safe", "off");
+            appendQueryParam(queryString, "filter", "0");
+            appendQueryParam(queryString, "nfpr", "0");
+            appendQueryParam(queryString, "engine", "google");
+        } catch (UnsupportedEncodingException e) {
+            // 예외 처리 로직 추가
+            e.printStackTrace();
+        }
+        return url + "?" + queryString;
+
+    }
+
+    public static void appendQueryParam(StringBuilder queryString, String key, String value) throws UnsupportedEncodingException {
+        if (queryString.length() > 0) {
+            queryString.append("&");
+        }
+        queryString.append(URLEncoder.encode(key, StandardCharsets.UTF_8.toString()));
+        queryString.append("=");
+        queryString.append(URLEncoder.encode(value, StandardCharsets.UTF_8.toString()));
     }
 }
