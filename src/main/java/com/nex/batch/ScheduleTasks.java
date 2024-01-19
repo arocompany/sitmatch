@@ -14,6 +14,7 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.stereotype.Component;
 
@@ -45,7 +46,8 @@ public class ScheduleTasks {
                 scheduler = new ThreadPoolTaskScheduler();
                 scheduler.initialize();
                 // 스케쥴러가 시작되는 부분
-                scheduler.schedule(getRunnable(), getTrigger(batchCycleByHour));
+                // scheduler.schedule(getRunnable(), getTrigger(batchCycleByHour));
+                scheduler.schedule(getRunnable(), new CronTrigger(String.format("0 0 */%s * * *", batchCycleByHour + "")));
             }
         }
     }
