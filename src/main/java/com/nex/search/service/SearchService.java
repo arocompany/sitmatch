@@ -180,7 +180,7 @@ public class SearchService {
                         searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
                     }
                     case CommonCode.searchTypeVideo -> {// 19: 영상
-                        searchVideoService.searchYandexByTextVideo(CommonCode.snsTypeInstagram, param, siDto, folder, ncInfo.getNcCode().toLowerCase());
+                        searchVideoService.searchYandexByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());
                     }
                 }
                 // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);

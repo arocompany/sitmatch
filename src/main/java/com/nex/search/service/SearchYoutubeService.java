@@ -96,6 +96,7 @@ public class SearchYoutubeService {
                 })
                 .thenApplyAsync((r) -> {
                     try {
+                        if(r == null) return null;
                         // yandex검색을 통해 결과 db에 적재.
                         return saveImgSearchYandex(r, insertResult);
                     } catch (Exception e) {
