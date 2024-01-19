@@ -5,6 +5,7 @@ import org.apache.catalina.util.ServerInfo;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.time.LocalDateTime;
 
 @Slf4j
 public class CommonStaticUtil {
@@ -86,5 +87,11 @@ public class CommonStaticUtil {
         if(! locationUploadPath.exists()){
             locationUploadPath.mkdirs();
         }
+    }
+
+    public static LocalDateTime getCurrent() {
+        // 실제로 사용하는 방법에 따라 현재 시간을 가져오는 로직을 작성해야 합니다.
+        // 예를 들어, java.time.LocalDateTime.now().getHour() 등을 사용할 수 있습니다.
+        return java.time.LocalDateTime.now();
     }
 }

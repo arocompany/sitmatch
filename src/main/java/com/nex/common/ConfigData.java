@@ -20,4 +20,20 @@ public class ConfigData {
 
 //
 //    private String externalLocation;
+
+    @Override
+    public String toString(){
+        return "ConfigData{" +
+                "isBatchFlag=" + isBatchFlag +
+                ", batchCycleByHour=" + batchCycleByHour +
+                ", driverClassName='" + driverClassName + '\'' +
+                ", url='" + url + '\'' +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", serverUrl='" + serverUrl + '\'' +
+                ", pythonVideoModule='" + pythonVideoModule + '\'' +
+                ", searchServerUrl='" + searchServerUrl + '\'' +
+                ", searchYandexTextApiKey='" + searchYandexTextApiKey + '\'' +
+                '}';
+    }
 }

@@ -23,7 +23,6 @@ public class SitMatchApplication implements ApplicationListener<ContextRefreshed
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         log.info("application is boot up!");
-        scheduleTasks.stopScheduler();
-        scheduleTasks.startScheduler();
+        scheduleTasks.reStartScheduler();
     }
 }

@@ -1,10 +1,10 @@
 package com.nex.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nex.batch.ScheduleTasks;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -15,7 +15,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class InitService {
     private String location;
-    private final ServletWebServerApplicationContext context;
 
     @PostConstruct
     public void init(){
@@ -53,7 +52,7 @@ public class InitService {
             // 나머지 속성들도 동일하게 설정
 
             ConfigDataManager.getInstance().setDefaultConfig(loadedConfig);
-            log.info("Config loaded from file: " + loadedConfig);
+            log.info("Config loaded from file: {}", loadedConfig.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,10 +76,23 @@ public class InitService {
 
     public void saveConfig(ConfigData config){
         try{
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writeValue(new File(location), config);
+            ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
-            log.info("Config file created: " + config);
+            if(config.getIsBatchFlag() != null) configData.setIsBatchFlag(config.getIsBatchFlag());
+            if(config.getBatchCycleByHour() != null) configData.setBatchCycleByHour(config.getBatchCycleByHour());
+            if(config.getDriverClassName() != null) configData.setDriverClassName(config.getDriverClassName());
+            if(config.getUrl() != null) configData.setUrl(config.getUrl());
+            if(config.getUserName() != null) configData.setUserName(config.getUserName());
+            if(config.getPassword() != null) configData.setPassword(config.getPassword());
+            if(config.getServerUrl() != null) configData.setServerUrl(config.getServerUrl());
+            if(config.getPythonVideoModule() != null) configData.setPythonVideoModule(config.getPythonVideoModule());
+            if(config.getSearchServerUrl() != null) configData.setSearchServerUrl(config.getSearchServerUrl());
+            if(config.getSearchYandexTextApiKey() != null) configData.setSearchYandexTextApiKey(config.getSearchYandexTextApiKey());
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.writeValue(new File(location), configData);
+
+            log.info("Config file created: " + configData);
             readConfigFromFile();
         } catch (IOException e) {
             e.printStackTrace();
