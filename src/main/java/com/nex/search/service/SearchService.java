@@ -8,10 +8,11 @@ import com.nex.common.CommonCode;
 import com.nex.common.CommonStaticSearchUtil;
 import com.nex.common.Consts;
 import com.nex.common.RestTemplateConfig;
-import com.nex.search.entity.*;
+import com.nex.search.entity.NationCodeEntity;
+import com.nex.search.entity.SearchInfoEntity;
+import com.nex.search.entity.SearchResultEntity;
+import com.nex.search.entity.VideoInfoEntity;
 import com.nex.search.entity.dto.*;
-import com.nex.search.entity.result.YoutubeByResult;
-import com.nex.search.entity.result.Youtube_resultsByText;
 import com.nex.search.repo.*;
 import com.nex.user.entity.ResultListExcelDto;
 import com.nex.user.entity.SearchHistoryExcelDto;
@@ -33,7 +34,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,7 +49,6 @@ import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 @Slf4j
@@ -57,7 +56,6 @@ import java.util.function.Function;
 @Configuration
 @RequiredArgsConstructor
 public class SearchService {
-    private final ImageService imageService;
     private final RestTemplateConfig restTemplateConfig;
 
     private final SearchImageService searchImageService;
@@ -65,6 +63,7 @@ public class SearchService {
     private final SearchTextService searchTextService;
     private final SearchTextImageService searchTextImageService;
     private final SearchVideoService searchVideoService;
+    private final SearchYoutubeService searchYoutubeService;
 
     private final NationCodeRepository nationCodeRepository;
 
@@ -150,7 +149,7 @@ public class SearchService {
                 switch (param.getTsiType()) {
                     case CommonCode.searchTypeKeyword -> { // 11:키워드
                         if (param.getTsiGoogle() == 1) {
-                            searchYandexYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
+                            searchYoutubeService.searchYandexYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
                             searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
                         }
                         if (param.getTsiInstagram() == 1) {
