@@ -30,7 +30,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new HttpInterceptor())
                 .addPathPatterns("/**")
-                .excludePathPatterns("/error", "/favicon.ico", "/user/login", "/css/**", "/js/**", "/img/**", "/props/**");
+                .excludePathPatterns("/error", "/favicon.ico", "/user/login", "/css/**", "/js/**", "/img/**", "/props/**", "/imagePath/**");
     }
 
     @Bean
