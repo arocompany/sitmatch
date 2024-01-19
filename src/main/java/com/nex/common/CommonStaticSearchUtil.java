@@ -3,9 +3,8 @@ package com.nex.common;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
+import com.nex.search.entity.dto.DefaultQueryDtoInterface;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
-import org.hibernate.internal.util.StringHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
 
@@ -252,7 +251,7 @@ public class CommonStaticSearchUtil {
         queryString.append(URLEncoder.encode(value, StandardCharsets.UTF_8.toString()));
     }
 
-    public static void setOutMap(Map<String, Object> map, Page page){
+    public static void setOutMap(Map<String, Object> map, Page<DefaultQueryDtoInterface> page){
         map.put("traceHistoryList", page);
         map.put("totalPages", page.getTotalPages());
         map.put("number", page.getNumber());

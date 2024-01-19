@@ -3,6 +3,7 @@ package com.nex.search.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.CommonStaticSearchUtil;
+import com.nex.common.SitProperties;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -14,7 +15,6 @@ import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -43,44 +43,14 @@ public class SearchImageService {
     private final ImageService imageService;
 
     private String nationCode = "";
-
-    @Value("${file.location2}")
-    private String fileLocation2;
-    @Value("${python.video.module}")
-    private String pythonVideoModule;
-    @Value("${search.yandex.text.url}")
-    private String textYandexUrl;
-
-    @Value("${search.yandex.text.no_cache}")
-    private String textYandexNocache;
-    @Value("${search.yandex.text.location}")
-    private String textYandexLocation;
-    @Value("${search.yandex.text.tbm}")
-    private String textYandexTbm;
-    @Value("${search.yandex.text.api_key}")
-    private String textYandexApikey;
-    @Value("${search.yandex.text.engine}")
-    private String textYandexEngine;
-    @Value("${search.yandex.image.engine}")
-    private String imageYandexEngine;
-    @Value("${search.yandex.text.count.limit}")
-    private String textYandexCountLimit;
-    @Value("${file.location1}")
-    private String fileLocation1;
-    @Value("${file.location3}")
-    private String fileLocation3;
-    @Value("${server.url}")
-    private String serverIp;
-    @Value("${search.server.url}")
-    private String serverIp2;
-
+    private final SitProperties sitProperties;
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
     public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
         String tsrSns = "11";
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
-        searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+        searchImageUrl = sitProperties.getServerIp() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
         // searchImageUrl= "http://106.254.235.202:9091/imagePath/requests/20240115/05b9343c-b1d2-48c6-ae3a-27dfd3bae972.jpg";
         this.nationCode = nationCode;
 
@@ -141,53 +111,62 @@ public class SearchImageService {
     }
 
     public <INFO, RESULT> List<RESULT> searchYandex(int index,String finalTextYandexGl1, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        String url = textYandexUrl
-                + "?gl=" + finalTextYandexGl1
-                + "&no_cache=" + textYandexNocache
-                + "&api_key=" + textYandexApikey
-                + "&safe=off"
-                + "&filter=0"
-                + "&nfpr=0"
-                + "&start=" + String.valueOf(index * 10)
-                // + "&tbm=" + textYandexTbm
-                + "&engine=" + imageYandexEngine
-                + "&image_url=" + searchImageUrl;
+        try {
+            String url = sitProperties.getTextYandexUrl()
+                    + "?gl=" + finalTextYandexGl1
+                    + "&no_cache=" + sitProperties.getTextYandexNocache()
+                    + "&api_key=" + sitProperties.getTextYandexApikey()
+                    + "&safe=off"
+                    + "&filter=0"
+                    + "&nfpr=0"
+                    + "&start=" + String.valueOf(index * 10)
+                    // + "&tbm=" + textYandexTbm
+                    + "&engine=" + sitProperties.getImageYandexEngine()
+                    + "&image_url=" + searchImageUrl;
 
-        log.info("searchYandex 진입");
-        HttpHeaders header = new HttpHeaders();
-        HttpEntity<?> entity = new HttpEntity<>(header);
-        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+            log.info("searchYandex 진입");
+            HttpHeaders header = new HttpHeaders();
+            HttpEntity<?> entity = new HttpEntity<>(header);
+            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+            ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
 
-        List<RESULT> results = null;
+            List<RESULT> results = null;
 
-        log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
 
-        if (resultMap.getStatusCodeValue() == 200) {
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "images_results");
-            INFO info = mapper.readValue(jsonInString, infoClass);
+            if (resultMap.getStatusCodeValue() == 200) {
+                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "images_results");
+                INFO info = mapper.readValue(jsonInString, infoClass);
 
-            if (getErrorFn.apply(info) == null) {
-                results = getResultFn.apply(info);
+                if (getErrorFn.apply(info) == null) {
+                    results = getResultFn.apply(info);
+                }
             }
+
+
+            if (results == null || index >= sitProperties.getTextYandexCountLimit() - 1) {
+                loop = false;
+            }
+
+            // if(index >1){ loop=false;}
+
+            log.info("results: " + results);
+            log.debug("searchYandex loop: " + loop);
+
+            return results != null ? results : new ArrayList<>();
+        }catch(Exception e){
+            log.error(e.getMessage());
         }
-
-
-        if(results == null || index >= Integer.parseInt(textYandexCountLimit) - 1) {
-            loop=false;
-        }
-
-        // if(index >1){ loop=false;}
-
-        log.info("results: " + results);
-        log.debug("searchYandex loop: " + loop);
-
-        return results != null ? results : new ArrayList<>();
+        return null;
     }
 
 
     public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
+        if (result == null) {
+            loop = false;
+            return null;
+        }
         insertResult.setTsiStat("13");
 
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
@@ -218,6 +197,11 @@ public class SearchImageService {
     }
 
     public void CompletableFutureYandexByImage(int index, String finalTextYandexGl1, String searchImageUrl,SearchInfoDto searchInfoDto,  String tsrSns, SearchInfoEntity insertResult) {
+        log.info("==== CompletableFutureYandexByImage(재귀 함수 진입 ==== index 값: {} sns 값: {} textYandexGl {}", index, tsrSns, finalTextYandexGl1);
+        if(!loop){
+            return;
+        }
+
         index++;
         int finalIndex = index;
 
@@ -235,6 +219,9 @@ public class SearchImageService {
                 })
                 .thenApply((r) -> {
                     try {
+                        if (r == null) {
+                            loop = false;
+                        }
                         // 결과 저장.(이미지)
                         return saveYandex(
                                 r

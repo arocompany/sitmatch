@@ -6,6 +6,7 @@ import lombok.Data;
 public class ConfigData {
     private Boolean isBatchFlag;
     private Integer batchCycleByHour;
+
     private String driverClassName;
     private String url;
     private String userName;

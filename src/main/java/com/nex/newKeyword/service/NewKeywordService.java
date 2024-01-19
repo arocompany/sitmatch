@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.CommonStaticSearchUtil;
 import com.nex.common.Consts;
+import com.nex.common.SitProperties;
 import com.nex.search.entity.NewKeywordEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
@@ -15,12 +16,9 @@ import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
 import com.nex.search.service.ImageService;
-import com.nex.search.service.SearchService;
 import com.nex.user.entity.SessionInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
@@ -52,41 +50,9 @@ public class NewKeywordService {
     private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
     private final SearchJobRepository searchJobRepository;
-    private final SearchService searchService;
     private final ImageService imageService;
     private final NewKeywordRepository newKeywordRepository;
-
-    private final ResourceLoader resourceLoader;
-
-    @Value("${file.location2}")
-    private String fileLocation2;
-    @Value("${python.video.module}")
-    private String pythonVideoModule;
-    @Value("${search.yandex.text.url}")
-    private String textYandexUrl;
-    @Value("${search.yandex.text.gl}")
-    private String textYandexGl;
-    @Value("${search.yandex.text.no_cache}")
-    private String textYandexNocache;
-    @Value("${search.yandex.text.location}")
-    private String textYandexLocation;
-    @Value("${search.yandex.text.tbm}")
-    private String textYandexTbm;
-    @Value("${search.yandex.text.api_key}")
-    private String textYandexApikey;
-    @Value("${search.yandex.text.engine}")
-    private String textYandexEngine;
-    @Value("${search.yandex.image.engine}")
-    private String imageYandexEngine;
-    @Value("${search.yandex.text.count.limit}")
-    private String textYandexCountLimit;
-    @Value("${file.location1}")
-    private String fileLocation1;
-    @Value("${file.location3}")
-    private String fileLocation3;
-    @Value("${server.url}")
-    private String serverIp;
-
+    private final SitProperties sitProperties;
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
@@ -119,14 +85,14 @@ public class NewKeywordService {
         // String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
         do {
-            String url = textYandexUrl
+            String url = sitProperties.getTextYandexUrl()
                     + "?q=" + newKeyword
-                    + "&gl=" + textYandexGl
-                    + "&no_cache=" + textYandexNocache
-                    + "&location=" + textYandexLocation
+                    + "&gl=" + sitProperties.getTextYandexGl()
+                    + "&no_cache=" + sitProperties.getTextYandexNocache()
+                    + "&location=" + sitProperties.getTextYandexLocation()
 //                    + "&tbm=" + textYandexTbm
                     + "&start=" + String.valueOf(index * 10)
-                    + "&api_key=" + textYandexApikey
+                    + "&api_key=" + sitProperties.getTextYandexApikey()
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
@@ -134,7 +100,7 @@ public class NewKeywordService {
 
             CompletableFutureYandexByText(url, tsrSns, insertResult);
 
-            if (index >= Integer.parseInt(textYandexCountLimit) - 1) {
+            if (index >= sitProperties.getTextYandexCountLimit() - 1) {
                 log.info("index: " + index);
                 loop = false;
             }
@@ -187,31 +153,36 @@ public class NewKeywordService {
     }
 
     public <INFO, RESULT> List<RESULT> searchTextYandex(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        // HttpHeaders header = new HttpHeaders();
-        HttpHeaders header = new HttpHeaders();
-        HttpEntity<?> entity = new HttpEntity<>(header);
-        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-        // ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-        ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-        List<RESULT> results = null;
+        try {
+            // HttpHeaders header = new HttpHeaders();
+            HttpHeaders header = new HttpHeaders();
+            HttpEntity<?> entity = new HttpEntity<>(header);
+            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+            // ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+            ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+            List<RESULT> results = null;
 
-        log.info("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
-        if (resultMap.getStatusCodeValue() == 200) {
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "images_results");
-            // String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "organic_results");
-            INFO info = mapper.readValue(jsonInString, infoClass);
+            log.info("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+            if (resultMap.getStatusCodeValue() == 200) {
+                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "images_results");
+                // String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "organic_results");
+                INFO info = mapper.readValue(jsonInString, infoClass);
 
-            if (getErrorFn.apply(info) == null) {
-                results = getResultFn.apply(info);
+                if (getErrorFn.apply(info) == null) {
+                    results = getResultFn.apply(info);
+                }
+                log.info("mapper: " + mapper);
+                log.info("jsonInString: " + jsonInString);
+                log.info("info: " + info);
+                log.info("result: " + results);
+
             }
-            log.info("mapper: "+ mapper);
-            log.info("jsonInString: "+ jsonInString);
-            log.info("info: "+ info);
-            log.info("result: "+results);
-
+            return results != null ? results : new ArrayList<>();
+        }catch (Exception e){
+            log.error(e.getMessage());
         }
-        return results != null ? results : new ArrayList<>();
+        return null;
     }
 
     public <RESULT> List<SearchResultEntity> saveYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult

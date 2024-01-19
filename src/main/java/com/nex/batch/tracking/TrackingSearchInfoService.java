@@ -1,6 +1,7 @@
 package com.nex.batch.tracking;
 
 import com.nex.common.CommonStaticSearchUtil;
+import com.nex.common.SitProperties;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchInfoMonitoringHistoryEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -12,7 +13,6 @@ import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -33,8 +33,7 @@ public class TrackingSearchInfoService {
     private final SearchInfoMonitoringRepository repository;
     private final SearchResultMonitoringRepository searchResultMonitoringRepository;
 
-    @Value("${file.location1}")
-    private String fileLocation1;
+    private final SitProperties sitProperties;
 
     public SearchInfoEntity getSearchInfoEntity2(SearchInfoEntity searchInfoEntityByTsiUno, SearchResultEntity searchResultEntity) {
         log.info("getSearchInfoEntity2 진입" + searchInfoEntityByTsiUno.getTsiUno());
@@ -126,7 +125,7 @@ public class TrackingSearchInfoService {
 
         //기존 searchResult 이미지 파일 복사
         String folder = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String filePath = fileLocation1 + folder;
+        String filePath = sitProperties.getFileLocation1() + folder;
         String uuid = UUID.randomUUID().toString();
         String extension = searchResultEntity.getTsrImgExt();
         File destdir = new File(filePath);

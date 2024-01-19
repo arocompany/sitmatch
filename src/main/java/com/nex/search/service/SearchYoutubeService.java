@@ -4,50 +4,41 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.CommonStaticSearchUtil;
 import com.nex.common.RestTemplateConfig;
+import com.nex.common.SitProperties;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
 import com.nex.search.entity.result.YoutubeByResult;
+import com.nex.search.entity.result.Youtube_resultsByText;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.awt.*;
-import java.io.File;
 import java.io.IOException;
-import org.springframework.http.HttpHeaders;
-
-import javax.swing.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 @Slf4j
 @Service
+@Configuration
 @RequiredArgsConstructor
 public class SearchYoutubeService {
+    private final ImageService imageService;
 
     private final RestTemplateConfig restTemplateConfig;
 
@@ -55,40 +46,18 @@ public class SearchYoutubeService {
     private final SearchResultRepository searchResultRepository;
     private final SearchJobRepository searchJobRepository;
 
-    private final ResourceLoader resourceLoader;
+    private final SitProperties sitProperties;
 
-    @Value("${file.location2}")
-    private String fileLocation2;
-    @Value("${python.video.module}")
-    private String pythonVideoModule;
-    @Value("${search.yandex.text.url}")
-    private String textYandexUrl;
-    @Value("${search.yandex.text.gl}")
-    private String textYandexGl;
-    @Value("${search.yandex.text.no_cache}")
-    private String textYandexNocache;
-    @Value("${search.yandex.text.location}")
-    private String textYandexLocation;
-    @Value("${search.yandex.text.api_key}")
-    private String textYandexApikey;
-    @Value("${search.yandex.image.engine}")
-    private String imageYandexEngine;
-    @Value("${search.yandex.text.count.limit}")
-    private String textYandexCountLimit;
-    @Value("${file.location3}")
-    private String fileLocation3;
-    @Value("${search.server.url}")
-    private String serverIp2;
     public void searchYandexYoutube(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
         log.info("========= searchYandexYoutube 진입 =========");
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
         try {
-            String url = textYandexUrl
+            String url = sitProperties.getTextYandexUrl()
                     + "?engine=youtube"
                     + "&search_query=" + tsiKeywordHiddenValue
                     + "&gl=" + nationCode
-                    + "&api_key=" + textYandexApikey;
+                    + "&api_key=" + sitProperties.getTextYandexApikey();
 
             CompletableFutureYoutubeByResult(url, tsrSns, insertResult);
         } catch (Exception e){
@@ -138,45 +107,48 @@ public class SearchYoutubeService {
 
     // 유튜브
     public <INFO, RESULT> List<RESULT> searchByYoutube(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        log.info("searchByYoutube 진입");
-        HttpHeaders header = new HttpHeaders();
-        HttpEntity<?> entity = new HttpEntity<>(header);
-        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-        ResponseEntity<?> resultMap = restTemplateConfig.customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        try {
+            log.info("searchByYoutube 진입");
+            HttpHeaders header = new HttpHeaders();
+            HttpEntity<?> entity = new HttpEntity<>(header);
+            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+            ResponseEntity<?> resultMap = restTemplateConfig.customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
 
-        List<RESULT> results = null;
+            List<RESULT> results = null;
 
-        log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
 
-        if (resultMap.getStatusCodeValue() == 200) {
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            // String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "video_results");
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody());
-            log.info("jsonInString "+jsonInString);
-            INFO info = mapper.readValue(jsonInString, infoClass);
+            if (resultMap.getStatusCodeValue() == 200) {
+                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                // String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "video_results");
+                String jsonInString = mapper.writeValueAsString(resultMap.getBody());
+                log.info("jsonInString " + jsonInString);
+                INFO info = mapper.readValue(jsonInString, infoClass);
 
-            log.info("info: "+info);
-            if (getErrorFn.apply(info) == null) {
-                results = getResultFn.apply(info);
+                log.info("info: " + info);
+                if (getErrorFn.apply(info) == null) {
+                    results = getResultFn.apply(info);
+                }
             }
-        }
 
-        log.debug("results: " + results);
-        return results != null ? results : new ArrayList<>();
+            log.debug("results: " + results);
+            return results != null ? results : new ArrayList<>();
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return null;
     }
 
     // ,Function<RESULT, String> getThumnailFn
     public <RESULT> List<SearchResultEntity> saveYoutube(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getPositionFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn ,Function<RESULT, Map<String,String>> getThumnailFn) throws Exception {
         log.info("========= saveYandex 진입 =========");
-
-        log.info("getThumbnailFn: " + getThumnailFn);
-
         if (results == null) {
             log.info("result null");
             return null;
         }
 
+        log.info("getThumbnailFn: " + getThumnailFn);
         // RestTemplate restTemplate = new RestTemplate();
         List<SearchResultEntity> sreList = new ArrayList<>();
 
@@ -193,7 +165,7 @@ public class SearchYoutubeService {
                 }
 
                 //이미지 파일 저장
-                saveYoutubeImageFile(insertResult.getTsiUno(), restTemplateConfig.customRestTemplate(), sre, result, getThumnailFn);
+                imageService.saveYoutubeImageFile(insertResult.getTsiUno(), restTemplateConfig.customRestTemplate(), sre, result, getThumnailFn);
                 saveSearchResult(sre);
 
                 sreList.add(sre);
@@ -218,6 +190,9 @@ public class SearchYoutubeService {
      * @return String       (저장 결과)
      */
     public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
+        if (result == null) {
+            return null;
+        }
         insertResult.setTsiStat("13");
 
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
@@ -264,88 +239,6 @@ public class SearchYoutubeService {
         CommonStaticSearchUtil.setSearchResultDefault(sre);
         return searchResultRepository.save(sre);
     }
-
-    public <RESULT> void saveYoutubeImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
-            , RESULT result, Function<RESULT, Map<String,String>> getThumnailFn) throws IOException {
-        // Function<RESULT, String> getPositionFn,
-        log.info("saveYoutubeImageFile 진입 ===============");
-        log.info("getThumbnailFn: " + getThumnailFn);
-        // Map<String, String> imageUrl = "11".equals(sre.getTsrSns()) ? getPositionFn.apply(result) : getThumnailFn.apply(result);
-        String imageUrl = getThumnailFn.apply(result).get("static");
-        // imageUrl = imageUrl.replace("%7Bstatic%3Dhttps","https");
-
-        log.info("imageUrl: "+imageUrl);
-        // imageUrl = imageUrl != null ? getPositionFn.apply(result) : getThumnailFn.apply(result);
-
-        //2023-03-26 에러 나는 url 처리
-        byte[] imageBytes = null;
-        if (imageUrl != null) { // .toString()
-            Resource resource = resourceLoader.getResource(imageUrl);
-            try {
-                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
-            } catch (Exception e) {
-                //구글인 경우 IGNORE
-//                if ("11".equals(sre.getTsrSns())) {
-                imageUrl = getThumnailFn.apply(result).toString();
-                imageUrl = imageUrl.replace("%7Bstatic%3Dhttps","https");
-                resource = resourceLoader.getResource(imageUrl);
-                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
-//                }
-//                else {
-//                    log.error(e.getMessage(), e);
-//                    System.out.println("catch else e"+e.getMessage());
-//                    throw new RuntimeException(e);
-//                }
-            }
-
-            // 에러가 안나도 imageBytes 가 null 일 때가 있음
-            if (imageBytes == null) {
-                imageUrl = getThumnailFn.apply(result).toString();
-                log.debug("imageUrl: "+imageUrl);
-
-                resource = resourceLoader.getResource(imageUrl);
-                log.debug("resource: " + resource);
-                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
-                log.debug("imageBytes: "+  restTemplate.getForObject(imageUrl, byte[].class) );
-            }
-
-            if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("") && imageBytes != null) {
-                LocalDate now = LocalDate.now();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-                String folder = now.format(formatter);
-                String restrictChars = "|\\\\?*<\":>/";
-                String regExpr = "[" + restrictChars + "]+";
-                String uuid = UUID.randomUUID().toString();
-                String extension = "";
-                String extension_ = "";
-                if (resource.getFilename().indexOf(".") > 0) {
-                    extension = resource.getFilename().substring(resource.getFilename().lastIndexOf("."));
-                    extension = extension.replaceAll(regExpr, "").substring(0, Math.min(extension.length(), 10));
-                    extension_ = extension.substring(1);
-                }
-
-                File destdir = new File(fileLocation2 + folder + File.separator + tsiUno);
-                if (!destdir.exists()) {
-                    destdir.mkdirs();
-                }
-
-                Files.write(Paths.get(destdir + File.separator + uuid + extension), imageBytes);
-                sre.setTsrImgExt(extension_);
-                sre.setTsrImgName(uuid + extension);
-                sre.setTsrImgPath((destdir + File.separator).replaceAll("\\\\", "/"));
-
-                Image img = new ImageIcon(destdir + File.separator + uuid + extension).getImage();
-                sre.setTsrImgHeight(String.valueOf(img.getHeight(null)));
-                sre.setTsrImgWidth(String.valueOf(img.getWidth(null)));
-                sre.setTsrImgSize(String.valueOf(destdir.length() / 1024));
-                img.flush();
-            }
-        } else {
-
-        }
-
-    }
-
     public SearchInfoEntity saveSearchInfo_2(SearchInfoEntity sie) {
         CommonStaticSearchUtil.setSearchInfoDefault_2(sie);
         return searchInfoRepository.save(sie);

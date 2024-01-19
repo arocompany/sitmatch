@@ -2,7 +2,9 @@ package com.nex.search.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nex.common.CommonCode;
 import com.nex.common.CommonStaticSearchUtil;
+import com.nex.common.SitProperties;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -16,9 +18,7 @@ import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -44,52 +44,22 @@ public class SearchTextImageService {
     private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
     private final SearchJobRepository searchJobRepository;
-
-    private final ResourceLoader resourceLoader;
-
-    @Value("${file.location2}")
-    private String fileLocation2;
-    @Value("${python.video.module}")
-    private String pythonVideoModule;
-    @Value("${search.yandex.text.url}")
-    private String textYandexUrl;
-
-    @Value("${search.yandex.text.no_cache}")
-    private String textYandexNocache;
-    @Value("${search.yandex.text.location}")
-    private String textYandexLocation;
-    @Value("${search.yandex.text.tbm}")
-    private String textYandexTbm;
-    @Value("${search.yandex.text.api_key}")
-    private String textYandexApikey;
-    @Value("${search.yandex.text.engine}")
-    private String textYandexEngine;
-    @Value("${search.yandex.image.engine}")
-    private String imageYandexEngine;
-    @Value("${search.yandex.text.count.limit}")
-    private String textYandexCountLimit;
-    @Value("${file.location1}")
-    private String fileLocation1;
-    @Value("${file.location3}")
-    private String fileLocation3;
-    @Value("${search.server.url}")
-    private String serverIp;
-
     private Boolean loop = true;
     private final RestTemplate restTemplate;
     private String nationCode = "";
+    private final SitProperties sitProperties;
 
     public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode, String tsrSns){
 //        String tsrSns = "17";
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
-        searchImageUrl = serverIp + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+        searchImageUrl = sitProperties.getServerIp() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
         this.nationCode = nationCode;
-        searchSnsByImage(searchImageUrl, tsiKeywordHiddenValue, searchInfoDto, tsrSns, insertResult, nationCode);
+        searchSnsByImage(searchImageUrl, tsiKeywordHiddenValue, searchInfoDto, tsrSns, insertResult);
 
     }
 
-    public void searchSnsByImage(String searchImageUrl, String tsiKeywordHiddenValue, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult, String nationCode) {
+    public void searchSnsByImage(String searchImageUrl, String tsiKeywordHiddenValue, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
         int index=0;
         String textYandexGl = this.nationCode;
 
@@ -125,6 +95,7 @@ public class SearchTextImageService {
                     }
                 }).thenApplyAsync((r) -> {
                     try { // db에 적재.
+                        if(r == null) { return null; }
                         return saveImgSearchYandex(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -139,50 +110,56 @@ public class SearchTextImageService {
     }
 
     public <INFO, RESULT> List<RESULT> searchYandex(int index, String textYandexGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
+        try {
+            if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
+            else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
 
-        String url = textYandexUrl
-                + "?gl=" + textYandexGl
-                + "&no_cache=" + textYandexNocache
-                + "&q=" + tsiKeywordHiddenValue
-                + "&api_key=" + textYandexApikey
-                + "&safe=off"
-                + "&filter=0"
-                + "&nfpr=0"
-                + "&start=" + String.valueOf(index * 10)
-                // + "&tbm=" + textYandexTbm
-                + "&engine=" + imageYandexEngine
-                + "&image_url=" + searchImageUrl;
+            String url = sitProperties.getTextYandexUrl()
+                    + "?gl=" + textYandexGl
+                    + "&no_cache=" + sitProperties.getTextYandexNocache()
+                    + "&q=" + tsiKeywordHiddenValue
+                    + "&api_key=" + sitProperties.getTextYandexApikey()
+                    + "&safe=off"
+                    + "&filter=0"
+                    + "&nfpr=0"
+                    + "&start=" + String.valueOf(index * 10)
+                    // + "&tbm=" + textYandexTbm
+                    + "&engine=" + sitProperties.getImageYandexEngine()
+                    + "&image_url=" + searchImageUrl;
 
-        log.info("searchYandex 진입");
-        HttpHeaders header = new HttpHeaders();
-        HttpEntity<?> entity = new HttpEntity<>(header);
-        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-        ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+            log.info("searchYandex 진입");
+            HttpHeaders header = new HttpHeaders();
+            HttpEntity<?> entity = new HttpEntity<>(header);
+            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+            ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
 
-        List<RESULT> results = null;
+            List<RESULT> results = null;
 
-        log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
 
-        if (resultMap.getStatusCodeValue() == 200) {
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "images_results");
-            INFO info = mapper.readValue(jsonInString, infoClass);
+            if (resultMap.getStatusCodeValue() == 200) {
+                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "images_results");
+                INFO info = mapper.readValue(jsonInString, infoClass);
 
-            if (getErrorFn.apply(info) == null) {
-                results = getResultFn.apply(info);
+                if (getErrorFn.apply(info) == null) {
+                    results = getResultFn.apply(info);
+                }
             }
+
+            if (results == null || index >= sitProperties.getTextYandexCountLimit() - 1) {
+                loop = false;
+            }
+            //        if(index>2){ loop=false; }
+
+            log.info("results: " + results);
+            log.debug("searchYandex loop: " + loop);
+
+            return results != null ? results : new ArrayList<>();
+        }catch (Exception e){
+            log.error(e.getMessage());
         }
-
-        if(results == null || index >= Integer.parseInt(textYandexCountLimit) - 1){
-            loop = false;
-        }
-//        if(index>2){ loop=false; }
-
-        log.info("results: " + results);
-        log.debug("searchYandex loop: " + loop);
-
-        return results != null ? results : new ArrayList<>();
+        return null;
     }
 
     public <RESULT> List<SearchResultEntity> saveYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
@@ -241,6 +218,11 @@ public class SearchTextImageService {
 
     public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
         insertResult.setTsiStat("13");
+
+        if (result == null) {
+            loop = false;
+            return null;
+        }
 
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
@@ -304,6 +286,7 @@ public class SearchTextImageService {
                     }
                 }).thenApplyAsync((r) -> {
                     try { // yandex검색을 통해 결과 db에 적재.
+                        if(r == null) return null;
                         return saveImgSearchYandex(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -361,6 +344,11 @@ public class SearchTextImageService {
     }
 
     public void CompletableFutureText(int index, String textYandexGl, String tsiKeywordHiddenValue,String searchImageUrl,SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
+        log.info("==== CompletableFutureText(재귀 함수 진입 ==== index 값: {} sns 값: {} textYandexGl {}", index, tsrSns, textYandexGl);
+        if(!loop){
+            return;
+        }
+
         index++;
         int finalIndex = index;
 

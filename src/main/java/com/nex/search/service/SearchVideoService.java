@@ -19,7 +19,6 @@ import com.nex.search.repo.SearchResultRepository;
 import com.nex.search.repo.VideoInfoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -55,19 +54,6 @@ public class SearchVideoService {
     private final VideoInfoRepository videoInfoRepository;
     private final SitProperties sitProperties;
 
-    @Value("${file.location2}") private String fileLocation2;
-    @Value("${python.video.module}") private String pythonVideoModule;
-    @Value("${search.yandex.text.url}") private String textYandexUrl;
-    @Value("${search.yandex.text.gl}") private String textYandexGl;
-    @Value("${search.yandex.text.no_cache}") private String textYandexNocache;
-    @Value("${search.yandex.text.location}") private String textYandexLocation;
-    @Value("${search.yandex.text.api_key}") private String textYandexApikey;
-    @Value("${search.yandex.image.engine}") private String imageYandexEngine;
-    @Value("${search.yandex.text.count.limit}") private String textYandexCountLimit;
-    @Value("${file.location1}") private String fileLocation1;
-    @Value("${file.location3}") private String fileLocation3;
-    @Value("${search.server.url}") private String serverIp2;
-
     @Async
     public void searchYandexByTextVideo(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String path, String nationCode) throws Exception {
         List<String> files = processVideo(insertResult);
@@ -89,7 +75,7 @@ public class SearchVideoService {
 
         try {
             for (int i = 0; i < files.size(); i++) {
-                String searchImageUrl = serverIp2 + sitProperties.getFileLocation3() + "/" + path + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
+                String searchImageUrl = sitProperties.getServerIp() + sitProperties.getFileLocation3() + "/" + path + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
                 // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
                 // searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
 
@@ -105,7 +91,7 @@ public class SearchVideoService {
 //                            + "&nfpr=0"
 //                            + "&image_url=" + searchImageUrl;
 
-                    String url = CommonStaticSearchUtil.getSerpApiUrlForGoogle(textYandexUrl, tsiKeywordHiddenValue, nationCode, textYandexNocache, textYandexLocation, null, textYandexApikey, searchImageUrl, imageYandexEngine);
+                    String url = CommonStaticSearchUtil.getSerpApiUrlForGoogle(sitProperties.getTextYandexUrl(), tsiKeywordHiddenValue, nationCode, sitProperties.getTextYandexNocache(), sitProperties.getTextYandexLocation(), null, sitProperties.getTextYandexApikey(), searchImageUrl, sitProperties.getImageYandexEngine());
 
                     CompletableFuture
                             .supplyAsync(() -> {
@@ -157,28 +143,33 @@ public class SearchVideoService {
     }
 
     public <INFO, RESULT> List<RESULT> searchYandex(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        log.info("searchYandex 진입");
-        HttpHeaders header = new HttpHeaders();
-        HttpEntity<?> entity = new HttpEntity<>(header);
-        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-        ResponseEntity<?> resultMap = restTemplateConfig.customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+        try {
+            log.info("searchYandex 진입");
+            HttpHeaders header = new HttpHeaders();
+            HttpEntity<?> entity = new HttpEntity<>(header);
+            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+            ResponseEntity<?> resultMap = restTemplateConfig.customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
 
-        List<RESULT> results = null;
+            List<RESULT> results = null;
 
-        log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
 
-        if (resultMap.getStatusCodeValue() == 200) {
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "images_results");
-            INFO info = mapper.readValue(jsonInString, infoClass);
+            if (resultMap.getStatusCodeValue() == 200) {
+                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "images_results");
+                INFO info = mapper.readValue(jsonInString, infoClass);
 
-            if (getErrorFn.apply(info) == null) {
-                results = getResultFn.apply(info);
+                if (getErrorFn.apply(info) == null) {
+                    results = getResultFn.apply(info);
+                }
             }
-        }
 
-        log.debug("results: " + results);
-        return results != null ? results : new ArrayList<>();
+            log.debug("results: " + results);
+            return results != null ? results : new ArrayList<>();
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return null;
     }
 
     public <RESULT> List<SearchResultEntity> saveYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
@@ -241,7 +232,7 @@ public class SearchVideoService {
         String[] command = new String[4];
         //python C:/utils/extract_keyframes.py C:/utils/input_Vid.mp4 C:/data/requests/20230312
         command[0] = "python";
-        command[1] = pythonVideoModule;
+        command[1] = sitProperties.getPythonVideoModule();
         command[2] = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         command[3] = insertResult.getTsiImgPath() + insertResult.getTsiUno();
         try {

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.CommonStaticSearchUtil;
 import com.nex.common.Consts;
+import com.nex.common.SitProperties;
 import com.nex.search.entity.NationCodeEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -15,7 +16,6 @@ import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -41,48 +41,7 @@ public class TrackingSearchResultService{
     private final SearchService searchService;
     private final ImageService imageService;
 
-    @Value("${search.yandex.text.url}")
-    private String textYandexUrl;
-
-    @Value("${search.yandex.text.gl}")
-    private String textYandexGl;
-
-    @Value("${search.yandex.text.no_cache}")
-    private String textYandexNocache;
-
-    @Value("${search.yandex.text.location}")
-    private String textYandexLocation;
-
-    @Value("${search.yandex.text.tbm}")
-    private String textYandexTbm;
-
-    @Value("${search.yandex.text.api_key}")
-    private String textYandexApikey;
-
-    @Value("${search.yandex.text.engine}")
-    private String textYandexEngine;
-
-    @Value("${search.yandex.image.engine}")
-    private String imageYandexEngine;
-
-    @Value("${search.yandex.text.count.limit}")
-    private Integer textYandexCountLimit;
-
-    @Value("${search.yandex.text.count.page}")
-    private Integer textYandexCountPage;
-
-    @Value("${file.location1}")
-    private String fileLocation1;
-
-    @Value("${file.location3}")
-    private String fileLocation3;
-
-    @Value("${server.url}")
-    private String serverIp;
-
-    @Value("${search.server.url}")
-    private String serverIp2;
-
+    private final SitProperties sitProperties;
     private final RestTemplate restTemplate;
     private final NationCodeRepository nationCodeRepository;
 
@@ -281,7 +240,7 @@ public class TrackingSearchResultService{
                     log.error(e.getMessage());
                 }
 
-                if (! loop || index >= textYandexCountLimit - 1) {
+                if (! loop || index >= sitProperties.getTextYandexCountLimit() - 1) {
                     loop = false;
                 }else{
                     completableFutures.add(listCompletableFuture);
@@ -367,37 +326,37 @@ public class TrackingSearchResultService{
         if (isText) {
             log.info("텍스트검색 getUrl 진입");
             // yandex search url
-             url = textYandexUrl
+             url = sitProperties.getTextYandexUrl()
                     + "?q=" + tsiKeyword
                     + "&gl=" + lang
-                    + "&no_cache=" + textYandexNocache
-                    + "&location=" + textYandexLocation
-                    + "&tbm=" + textYandexTbm
+                    + "&no_cache=" + sitProperties.getTextYandexNocache()
+                    + "&location=" + sitProperties.getTextYandexLocation()
+                    + "&tbm=" + sitProperties.getTextYandexTbm()
                     + "&start=" + String.valueOf(index*10)
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
-                    + "&api_key=" + textYandexApikey
-                    + "&engine=" + textYandexEngine;
+                    + "&api_key=" + sitProperties.getTextYandexApikey()
+                    + "&engine=" + sitProperties.getTextYandexEngine();
 
         }
         //이미지 검색
         else {
             log.info("이미지검색 getUrl 진입");
             String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
-            searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+            searchImageUrl = sitProperties.getServerIp() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
             // searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
             // searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20240102/e89c63da-d7ed-48b6-a9a3-056fe582b6b2.jpg"; //고양이
 
-            url = textYandexUrl
+            url = sitProperties.getTextYandexUrl()
                     + "&gl=" + lang
-                    + "&no_cache=" + textYandexNocache
-                    + "&api_key=" + textYandexApikey
+                    + "&no_cache=" + sitProperties.getTextYandexNocache()
+                    + "&api_key=" + sitProperties.getTextYandexApikey()
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
                     + "&start=" + String.valueOf(index*10)
-                    + "&engine=" + imageYandexEngine
+                    + "&engine=" + sitProperties.getImageYandexEngine()
                     + "&image_url=" + searchImageUrl;
         }
 
@@ -412,31 +371,31 @@ public class TrackingSearchResultService{
         if (isText) {
             log.info("텍스트검색 getGoogleLensUrl 진입");
             // yandex search url
-            url = textYandexUrl
+            url = sitProperties.getTextYandexUrl()
                     + "?q=" + tsiKeyword
-                    + "&gl=" + textYandexGl
-                    + "&no_cache=" + textYandexNocache
-                    + "&location=" + textYandexLocation
-                    + "&tbm=" + textYandexTbm
+                    + "&gl=" + sitProperties.getTextYandexGl()
+                    + "&no_cache=" + sitProperties.getTextYandexNocache()
+                    + "&location=" + sitProperties.getTextYandexLocation()
+                    + "&tbm=" + sitProperties.getTextYandexTbm()
                     + "&start=" + String.valueOf(index*10)
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
-                    + "&api_key=" + textYandexApikey
-                    + "&engine=" + textYandexEngine;
+                    + "&api_key=" + sitProperties.getTextYandexApikey()
+                    + "&engine=" + sitProperties.getTextYandexEngine();
 
         } else { //이미지 검색
             log.info("이미지검색 getGoogleLensUrl 진입");
             String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
-            searchImageUrl = serverIp2 + searchImageUrl.substring(searchImageUrl.indexOf("/" + fileLocation3) + 1);
+            searchImageUrl = sitProperties.getServerIp() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
             // searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
             // searchImageUrl= "http://106.254.235.202:9091/imagePath/requests/20240115/05b9343c-b1d2-48c6-ae3a-27dfd3bae972.jpg";
 
-            url = textYandexUrl
+            url = sitProperties.getTextYandexUrl()
                     + "?engine=google_lens"
                     + "&url=" + searchImageUrl
-                    + "&country="+textYandexGl
-                    + "&api_key=" + textYandexApikey;
+                    + "&country="+ sitProperties.getTextYandexGl()
+                    + "&api_key=" + sitProperties.getTextYandexApikey();
 
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
@@ -450,12 +409,12 @@ public class TrackingSearchResultService{
 
             System.out.println("배치 pageToken: " + pageToken);
 
-            url2 = textYandexUrl
+            url2 = sitProperties.getTextYandexUrl()
                     + "?engine=google_lens_image_sources"
                     + "&page_token=" + pageToken
-                    + "&country="+textYandexGl
+                    + "&country="+sitProperties.getTextYandexGl()
                     + "&safe=off"
-                    + "&api_key=" + textYandexApikey;
+                    + "&api_key=" + sitProperties.getTextYandexApikey();
 
         }
 

@@ -1,10 +1,10 @@
 package com.nex.search.service;
 
 import com.nex.common.CommonStaticSearchUtil;
+import com.nex.common.SitProperties;
 import com.nex.search.entity.SearchResultEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -27,8 +27,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class ImageService {
     private final ResourceLoader resourceLoader;
-
-    @Value("${file.location2}") private String fileLocation2;
+    private final SitProperties sitProperties;
 
     public <RESULT> void saveImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
             , RESULT result, Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, boolean isForGoogleLens) throws IOException {
@@ -83,7 +82,7 @@ public class ImageService {
                     extension_ = extension.substring(1);
                 }
 
-                File destDir = new File(fileLocation2 + folder + File.separator + tsiUno);
+                File destDir = new File(sitProperties.getFileLocation2() + folder + File.separator + tsiUno);
                 if (!destDir.exists()) {
                     destDir.mkdirs();
                 }
@@ -163,7 +162,7 @@ public class ImageService {
                     extension_ = extension.substring(1);
                 }
 
-                File destdir = new File(fileLocation2 + folder + File.separator + tsiUno);
+                File destdir = new File(sitProperties.getFileLocation2() + folder + File.separator + tsiUno);
                 if (!destdir.exists()) {
                     destdir.mkdirs();
                 }
