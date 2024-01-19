@@ -143,7 +143,7 @@ public class SearchTextService {
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
         try {
-            String url = CommonStaticSearchUtil.getSerpApiUrlForGoogle(textYandexUrl, tsiKeywordHiddenValue, textYandexGl, textYandexNocache, textYandexLocation, (index * 10), textYandexApikey);
+            String url = CommonStaticSearchUtil.getSerpApiUrlForGoogle(textYandexUrl, tsiKeywordHiddenValue, textYandexGl, textYandexNocache, textYandexLocation, (index * 10), textYandexApikey, null, imageYandexEngine);
             log.info("keyword === {}", tsiKeywordHiddenValue);
             log.info("url === {} " + url);
 

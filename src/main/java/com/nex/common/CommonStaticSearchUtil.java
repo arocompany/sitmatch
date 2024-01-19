@@ -4,6 +4,9 @@ import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
+import org.hibernate.internal.util.StringHelper;
+import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -12,6 +15,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 @Slf4j
@@ -186,21 +190,51 @@ public class CommonStaticSearchUtil {
         return sre;
     }
 
-    public static String getSerpApiUrlForGoogle(String url, String keyword, String country, String noCache, String location, Integer pageNo, String key){
+    public static <RESULT> SearchResultEntity getSearchResultEntity2(int tsiUno, String tsrSns, RESULT result
+            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
+        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
+        SearchResultEntity sre = new SearchResultEntity();
+        sre.setTsiUno(tsiUno);
+        sre.setTsrJson(result.toString());
+        sre.setTsrDownloadUrl(getOriginalFn.apply(result));
+        sre.setTsrTitle(getTitleFn.apply(result));
+        sre.setTsrSiteUrl(getLinkFn.apply(result));
+
+        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
+        //sre.setTsrSns("11");
+
+        //Facebook 검색이고, source 값이 Facebook 인 경우
+        if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
+            sre.setTsrSns("17");
+        } else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
+            sre.setTsrSns("15");
+        } else {
+            sre.setTsrSns("11");
+        }
+
+        return sre;
+    }
+
+    public static String getSerpApiUrlForGoogle(String url, String keyword, String country, String noCache, String location, Integer pageNo, String key, String imageUrl, String engine){
 
         StringBuilder queryString = new StringBuilder();
         try {
 
-            appendQueryParam(queryString, "q", keyword);
-            appendQueryParam(queryString, "gl", country);
-            appendQueryParam(queryString, "no_cache", noCache);
-            appendQueryParam(queryString, "location", location);
-            appendQueryParam(queryString, "start", String.valueOf(pageNo * 10));
-            appendQueryParam(queryString, "api_key", key);
+            if(StringUtils.hasText(keyword)) appendQueryParam(queryString, "q", keyword);
+            if(StringUtils.hasText(country)) appendQueryParam(queryString, "gl", country);
+            if(StringUtils.hasText(noCache)) appendQueryParam(queryString, "no_cache", noCache);
+            if(StringUtils.hasText(location)) appendQueryParam(queryString, "location", location);
+            if(pageNo != null && pageNo > -1) appendQueryParam(queryString, "start", String.valueOf(pageNo * 10));
+            if(StringUtils.hasText(key)) appendQueryParam(queryString, "api_key", key);
+            if(StringUtils.hasText(imageUrl)) appendQueryParam(queryString, "image_url", imageUrl);
+            if(StringUtils.hasText(engine)) appendQueryParam(queryString, "engine", engine);
+
+
             appendQueryParam(queryString, "safe", "off");
             appendQueryParam(queryString, "filter", "0");
             appendQueryParam(queryString, "nfpr", "0");
-            appendQueryParam(queryString, "engine", "google");
+
         } catch (UnsupportedEncodingException e) {
             // 예외 처리 로직 추가
             e.printStackTrace();
@@ -216,5 +250,13 @@ public class CommonStaticSearchUtil {
         queryString.append(URLEncoder.encode(key, StandardCharsets.UTF_8.toString()));
         queryString.append("=");
         queryString.append(URLEncoder.encode(value, StandardCharsets.UTF_8.toString()));
+    }
+
+    public static void setOutMap(Map<String, Object> map, Page page){
+        map.put("traceHistoryList", page);
+        map.put("totalPages", page.getTotalPages());
+        map.put("number", page.getNumber());
+        map.put("totalElements", page.getTotalElements());
+        map.put("maxPage", Consts.MAX_PAGE);
     }
 }

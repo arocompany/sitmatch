@@ -502,7 +502,7 @@ public class TrackingSearchResultService{
                             }
 
                             //검색 결과 엔티티 추출
-                            SearchResultEntity searchResultEntity = searchService.getSearchResultEntity(getTsiUnoFn.apply(result), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                            SearchResultEntity searchResultEntity = CommonStaticSearchUtil.getSearchResultEntity2(getTsiUnoFn.apply(result), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
 
                             try {
                                 //이미지 파일 저장

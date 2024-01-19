@@ -390,8 +390,6 @@ public class BaseController {
 
         userSearchHistoryList = searchService.getUserSearchHistoryList(searchPage, searchKeyword);
 
-
-
         modelAndView.addObject("userCount", searchService.getUserIdMap());
         modelAndView.addObject("userIdMap", searchService.getUserIdMap());
         modelAndView.addObject("userSearchHistoryList", userSearchHistoryList.get("userSearchHistoryList"));
