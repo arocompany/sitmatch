@@ -44,6 +44,7 @@
 /* 20240122 유나 수정 */
 .keyword .keyword-box > div.box_wrap {
     height: auto;
+    max-height: 280px;
 }
 .flex {
     display: flex;
