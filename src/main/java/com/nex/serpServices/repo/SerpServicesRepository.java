@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface SerpServicesRepository extends JpaRepository <SerpServicesEntity, Integer> {
     List<SerpServicesEntity> findAll();
-    List<SerpServicesEntity> findBySsIsViewActive(int viewActive);
+    List<SerpServicesEntity> findBySsIsActive(int viewActive);
 }

@@ -38,10 +38,10 @@ public class BaseController {
         ModelAndView mv = new ModelAndView("html/index");
         mv.addObject("headerMenu", "index");
         List<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getNoticeListMain(0);
-        List<SerpServicesEntity> serpServicesViewActiveList = serpServicesService.serpServicesIsViewActiveList(1);
+        List<SerpServicesEntity> serpServicesIsSsActiveList = serpServicesService.serpServicesIsSsActiveList(1);
 
         mv.addObject("traceInfoList", defaultQueryDtoInterface);
-        mv.addObject("serpServicesViewActiveList", serpServicesViewActiveList);
+        mv.addObject("serpServicesIsSsActiveList", serpServicesIsSsActiveList);
         mv.addObject("sessionInfo", sessionInfoDto);
         return mv;
     }
@@ -520,10 +520,6 @@ public class BaseController {
     public ModelAndView keyword(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
         ModelAndView modelAndView = new ModelAndView("html/nations");
         log.info("========= nations 페이지 진입 ========");
-
-//        List<NewKeywordDto> newKeywordList = newKeywordRepository.keywordList();
-
-//        modelAndView.addObject("newKeywordList", newKeywordList);
         modelAndView.addObject("sessionInfo", sessionInfoDto);
 
         return modelAndView;

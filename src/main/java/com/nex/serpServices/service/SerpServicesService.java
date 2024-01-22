@@ -19,8 +19,8 @@ public class SerpServicesService {
         return serpServicesRepository.findAll();
     }
 
-    public List<SerpServicesEntity> serpServicesIsViewActiveList(int viewActive) {
-        return serpServicesRepository.findBySsIsViewActive(viewActive);
+    public List<SerpServicesEntity> serpServicesIsSsActiveList(int ssActive) {
+        return serpServicesRepository.findBySsIsActive(ssActive);
     }
 
 }

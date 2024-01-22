@@ -14,15 +14,15 @@ public class SerpServicesEntity {
     private int ssUno;
 
     @Basic
-    @Column(name = "ss_icon_path", nullable = true)
+    @Column(name = "ss_icon_path", nullable = false)
     private String ssIconPath;
 
     @Basic
-    @Column(name = "ss_name", nullable = true)
+    @Column(name = "ss_name", nullable = false)
     private String ssName;
 
     @Basic
-    @Column(name = "ss_is_active", nullable = true)
+    @Column(name = "ss_is_active", nullable = false)
     private int ssIsActive;
 
 }
