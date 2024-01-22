@@ -46,7 +46,7 @@ public class ScheduleTasks {
                 scheduler = new ThreadPoolTaskScheduler();
                 scheduler.initialize();
                 // 스케쥴러가 시작되는 부분
-//                scheduler.schedule(getRunnable(), getTrigger(batchCycleByHour));
+                // scheduler.schedule(getRunnable(), getTrigger(batchCycleByHour));
                 scheduler.schedule(getRunnable(), new CronTrigger(String.format("0 0 */%s * * *", batchCycleByHour + "")));
 
             }
@@ -82,7 +82,6 @@ public class ScheduleTasks {
     public void trackingTask() {
         log.info("trackingTask 진입");
         JobParameters jobParameters = new JobParametersBuilder().toJobParameters();
-        //TODO : 임시
         try {
             jobLauncher.run(job, jobParameters);
         } catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException |
@@ -92,8 +91,8 @@ public class ScheduleTasks {
     }
 
 
-    @Scheduled(fixedDelay = 5000, initialDelay = 3000)
-    public void init() {
-
-    }
+//    @Scheduled(fixedDelay = 5000, initialDelay = 3000)
+//    public void init() {
+//
+//    }
 }
