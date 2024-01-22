@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SerpServicesRepository extends JpaRepository <SerpServicesEntity, Integer> {
-    List<SerpServicesEntity> findAll(Sort sort);
+    List<SerpServicesEntity> findAll();
+    List<SerpServicesEntity> findBySsIsViewActive(int viewActive);
 }

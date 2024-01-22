@@ -1,6 +1,5 @@
 package com.nex.base.controller;
 
-import com.nex.Chart.repo.AlltimeMonitoringHistRepository;
 import com.nex.common.Consts;
 import com.nex.request.ReqNotice;
 import com.nex.search.entity.dto.DefaultQueryDtoInterface;
@@ -8,6 +7,8 @@ import com.nex.search.entity.dto.SearchResultMonitoringHistoryDto;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultMonitoringRepository;
 import com.nex.search.service.SearchService;
+import com.nex.serpServices.entity.SerpServicesEntity;
+import com.nex.serpServices.service.SerpServicesService;
 import com.nex.user.entity.SessionInfoDto;
 import com.nex.user.repo.AutoRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,16 +30,18 @@ public class BaseController {
     private final SearchService searchService;
     private final AutoRepository autoRepository;
     private final SearchJobRepository searchJobRepository;
-    private final AlltimeMonitoringHistRepository alltimeMonitoringHistRepository;
     private final SearchResultMonitoringRepository searchResultMonitoringRepository;
-
+    private final SerpServicesService serpServicesService;
 
     @GetMapping("/")
     public ModelAndView index(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
         ModelAndView mv = new ModelAndView("html/index");
         mv.addObject("headerMenu", "index");
         List<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getNoticeListMain(0);
+        List<SerpServicesEntity> serpServicesViewActiveList = serpServicesService.serpServicesIsViewActiveList(1);
+
         mv.addObject("traceInfoList", defaultQueryDtoInterface);
+        mv.addObject("serpServicesViewActiveList", serpServicesViewActiveList);
         mv.addObject("sessionInfo", sessionInfoDto);
         return mv;
     }

@@ -13,14 +13,7 @@
   <script src="/js/style.js"></script>
 </head>
 <style>
-  .file-btn2 {
-    border-radius: 4px 4px 4px 4px;
-    height: 38px;
-    line-height: 38px;
-    padding: 0 24px;
-    color: #194894;
-    width: 80px;
-  }
+
 </style>
 <script>
 
@@ -35,7 +28,22 @@
       <img src="/img/common/logo3.jpg" alt="서울기술 연구원 로고">
     </h1>
     <form name="search" action="./search" method="POST" enctype="multipart/form-data" onsubmit="return goresult()">
+
+
       <div class="sns-check">
+        <div th:each="list : ${serpServicesViewActiveList}">
+          <!--<img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">-->
+          <!--
+          <input type="checkbox" id="${list.getSsname()}" name="${'/imagePath'+list.getSsname()}" checked>
+          &lt;!&ndash; style="background-image:url(${list.getSsIconPath()}) " &ndash;&gt;
+          <label class="btn-off bor10" for="google" tooltip="${list.getSsname()}" flow="up" >구글</label>
+          -->
+          <img width="50px;" th:src="${list.getSsIconPath()}">
+          <!--<input style="width: 10px;" type="checkbox" th:src="${list.getSsIconPath()}">-->
+        </div>
+      </div>
+
+      <!--<div class="sns-check">
         <input type="checkbox" id="google" name="tsiGoogle" checked>
         <label class="btn-off bor10" for="google" tooltip="구글" flow="up">구글</label>
         <input type="checkbox" id="twitter" name="tsiTwitter" checked>
@@ -47,6 +55,7 @@
         <div class="sns-check">
         </div>
       </div>
+      -->
       <div class="search-bar-user bor10" style="width: 550px; height: 60px;">
         <input style="text-align: center; margin-left: 100px;" id="tsiUserFile" name="tsiUserFile" type="text" placeholder="대상자의 파일명을 입력하세요" >
       </div>
@@ -81,6 +90,7 @@
             <div class='img'>
               <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="">
             </div>
+
             <th:block th:switch="${list.getTsrSns()}">
               <img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">
               <img th:case="13" src="/img/common/sns/twitter-round.png" alt="" class="sns">
@@ -163,7 +173,7 @@
       }
       */
 
-      if (document.getElementById('search-text').value == "" && document.getElementById('file').value == "" ) {
+      if (document.getElementById('search-text').value === "" && document.getElementById('file').value === "" ) {
         alert("검색어를 입력하세요.");
       } else {
 
