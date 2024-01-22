@@ -12,13 +12,20 @@ public class SerpServicesEntity {
     @Id
     @Column(name = "ss_uno", nullable = false)
     private int ssUno;
-    @Id
+
+    @Basic
     @Column(name = "ss_icon_path", nullable = true)
     private String ssIconPath;
-    @Id
+
+    @Basic
     @Column(name = "ss_name", nullable = true)
     private String ssName;
-    @Id
+
+    @Basic
     @Column(name = "ss_is_active", nullable = true)
     private int ssIsActive;
+
+    @Basic
+    @Column(name = "ss_is_view_active", nullable = true)
+    private int ssIsViewActive;
 }

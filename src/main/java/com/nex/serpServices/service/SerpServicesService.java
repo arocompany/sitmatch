@@ -16,6 +16,11 @@ public class SerpServicesService {
     private final SerpServicesRepository serpServicesRepository;
 
     public List<SerpServicesEntity> serpServicesList() {
-        return serpServicesRepository.findAll(Sort.by(Sort.Direction.ASC,"ss_uno"));
+        return serpServicesRepository.findAll();
     }
+
+    public List<SerpServicesEntity> serpServicesIsViewActiveList(int viewActive) {
+        return serpServicesRepository.findBySsIsViewActive(viewActive);
+    }
+
 }

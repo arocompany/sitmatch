@@ -16,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/serp")
 public class SerpServicesController {
+    /*
     private final SerpServicesService serpServicesService;
 
     @GetMapping("/servicesList")
@@ -27,5 +28,6 @@ public class SerpServicesController {
 
         return modelAndView;
     }
+     */
 
 }
