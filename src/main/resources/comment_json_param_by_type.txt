@@ -13,25 +13,25 @@ Keyword, Keyword + Image, Keyword + Video, Image, Video
     https://serpapi.com/search.json?engine=google_lens&url="+searchImageUrl+"&country="+nationCode+"&api_key="+api-key;
 
 구글 리버스는 paging 탐
-    https://serpapi.com/search.json?gl="+nationCode+"&no_cache=true&q="+keyword+"&api_key="+api-key+"&safe=off&filter=0&nfpr=0&start="+String.valueOf(index*10)+"&engine="+imageYandexEngine+"&image_url="+searchImageUrl;
+    https://serpapi.com/search.json?gl="+nationCode+"&no_cache=true&q="+keyword+"&api_key="+api-key+"&safe=off&filter=0&nfpr=0&start="+String.valueOf(index*10)+"&engine=google_reverse_image&image_url="+searchImageUrl;
 
 3. 키워드 + 영상
 paging 안탐
-   https://serpapi.com/search.json?gl="+nationCode+"&q="+keyword+"&no_cache=true&api_key="+api-key+"&engine="+imageYandexEngine+"&safe=off&filter=0&nfpr=0&image_url="+searchImageUrl;
+   https://serpapi.com/search.json?gl="+nationCode+"&q="+keyword+"&no_cache=true&api_key="+api-key+"&engine=google_reverse_image&safe=off&filter=0&nfpr=0&image_url="+searchImageUrl;
 
 4. 이미지
 구글 렌즈는 paging 안탐
-    https://serpapi.com/search.json?engine=google_lens&url="+searchImageUrl+"&country="+finalnationCode1+"&api_key="+api-key;
+    https://serpapi.com/search.json?engine=google_lens&url="+searchImageUrl+"&country="+nationCode+"&api_key="+api-key;
 
 구글 리버스는 paging 탐
-    https://serpapi.com/search.json?gl="+nationCode+"&no_cache=true&api_key="+api-key+"&safe=off&filter=0&nfpr=0&start="+String.valueOf(index*10)+"&engine="+imageYandexEngine+"&image_url="+searchImageUrl;
+    https://serpapi.com/search.json?gl="+nationCode+"&no_cache=true&api_key="+api-key+"&safe=off&filter=0&nfpr=0&start="+String.valueOf(index*10)+"&engine=google_reverse_image&image_url="+searchImageUrl;
 
 5. 영상
 paging 안탐
-    https://serpapi.com/search.json?gl=cn&no_cache=true&api_key="+api-key+"&engine="+imageYandexEngine+"&safe=off&filter=0&nfpr=0&image_url="+searchImageUrl;
+    https://serpapi.com/search.json?gl=cn&no_cache=true&api_key="+api-key+"&engine=google_reverse_image&safe=off&filter=0&nfpr=0&image_url="+searchImageUrl;
 
 
-imageYandexEngine : google_reverse_image (영상 + 이미지 검색 시 사용)
+engine : google_reverse_image (영상 + 이미지 검색 시 사용)
                   : google_lens (이미지 검색 시 사용)
                   : google (키워드 검색)
                   : youtube (키워드 검색 유투브)
