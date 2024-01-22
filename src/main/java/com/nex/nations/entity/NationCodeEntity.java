@@ -1,4 +1,4 @@
-package com.nex.search.entity;
+package com.nex.nations.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
