@@ -8,6 +8,7 @@
   <title>디지털 성범죄</title>
   <link rel="stylesheet" href="/css/common.min.css" />
   <link rel="stylesheet" href="/css/main.min.css" />
+  <link rel="stylesheet" href="/css/dev.css" />
   <!--  <script src="./js/header.js"></script>-->
   <script src="/js/footer.js"></script>
   <script src="/js/style.js"></script>
@@ -28,28 +29,23 @@
       <img src="/img/common/logo3.jpg" alt="서울기술 연구원 로고">
     </h1>
     <form name="search" action="./search" method="POST" enctype="multipart/form-data" onsubmit="return goresult()">
-
-
       <div class="sns-check">
-        <div th:each="list : ${serpServicesViewActiveList}">
-          <!--<img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">-->
-          <!--
-          <input type="checkbox" id="${list.getSsname()}" name="${'/imagePath'+list.getSsname()}" checked>
-          &lt;!&ndash; style="background-image:url(${list.getSsIconPath()}) " &ndash;&gt;
-          <label class="btn-off bor10" for="google" tooltip="${list.getSsname()}" flow="up" >구글</label>
-          -->
-          <img width="50px;" th:src="${list.getSsIconPath()}">
-          <!--<input style="width: 10px;" type="checkbox" th:src="${list.getSsIconPath()}">-->
+        <div class="areaItem"  th:each="item : ${serpServicesViewActiveList}">
+          <input type="checkbox" th:classappend="${item.ssName}" th:id="${item.ssName}" th:name="${#strings.concat('tsi',#strings.toUpperCase(#strings.substring(item.ssName, 0, 1)),#strings.substring(item.ssName, 1))}" checked>
+          <label class="btn-off bor10" th:for="${item.ssName}" tooltip="" flow="up" th:text="${item.ssName}"></label>
         </div>
       </div>
 
       <!--<div class="sns-check">
         <input type="checkbox" id="google" name="tsiGoogle" checked>
         <label class="btn-off bor10" for="google" tooltip="구글" flow="up">구글</label>
+
         <input type="checkbox" id="twitter" name="tsiTwitter" checked>
         <label class="btn-off bor10" for="twitter" tooltip="트위터" flow="up">트위터</label>
+
         <input type="checkbox" id="instar" name="tsiInstagram" checked>
         <label class="btn-off bor10" for="instar" tooltip="인스타" flow="up">인스타</label>
+
         <input type="checkbox" id="facebook" value="facebook" name="tsiFacebook" checked>
         <label class="btn-off bor10" for="facebook" tooltip="페이스북" flow="up">페이스북</label>
         <div class="sns-check">
@@ -72,7 +68,7 @@
           <input type="file" id="file" name="file" onchange="fileChange(this)">
           <div class="file-box">
             <input class="file-name " value="" placeholder="첨부 파일" readonly>
-            <button class="file-btn btn-off">검색</button>
+            <button class="file-btn btn-off" type = "submit">검색</button>
           </div>
         </div>
       </div>
