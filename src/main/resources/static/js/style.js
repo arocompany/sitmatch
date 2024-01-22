@@ -1,5 +1,6 @@
 // 헤더 유저(상세) 버튼 
 document.addEventListener("DOMContentLoaded", function () {
+  console.info("321");
   const detailBtn = document.querySelectorAll("header .detail-btn");
   if (detailBtn) {
     for (let i = 0; i < detailBtn.length; i++) {
@@ -317,6 +318,12 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.style.display = 'flex';
         modal.innerHTML = xhr.response
       }
+
+      const esc = document.querySelector(".esc-btn");
+      esc.onclick = () => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'unset';
+      }
     }
   });
 
@@ -336,9 +343,12 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.style.display = 'flex';
         modal.innerHTML = xhr.response
       }
+
+      const esc = document.querySelector(".esc-btn");
+      esc.onclick = () => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'unset';
+      }
     }
   });
 });
-
-
-

@@ -119,10 +119,29 @@
 /* .box_wrap input[type="checkbox"]:enabled:hover {
   box-shadow: 0 0 0 max(4px, 0.2em) lightgray;
 } */
+.nations .box_wrap ul {
+    width: 100%;
+}
+.nations .box_wrap li {
+    height: 45px;
+    line-height: 40px;
+    display: inline-block;
+    width: 24%;
+}
+.box_wrap li.nations_all_check {
+    height: 45px;
+    line-height: 40px;
+    display: inline-block;
+    width: 100%;
+}
+.box_wrap li.nations_all_check span.tit{
+    width:90px;
+}
 .box_wrap li {
     height: 45px;
     line-height: 40px;
 }
+
 .box_wrap li label{
     align-items: center;
 }
