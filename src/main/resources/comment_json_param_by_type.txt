@@ -1,0 +1,43 @@
+검색 타입에 따라 서비스 분기 처리
+Keyword, Keyword + Image, Keyword + Video, Image, Video
+
+1. 키워드
+유투브는 paging 안탐
+    https://serpapi.com/search.json?engine=youtube&search_query="+keyword+"&gl="+nationCode+"&api_key="+api-key;
+
+키워드는 paging 탐
+    https://serpapi.com/search.json?q="+keyword+"&gl="+nationCode+"&no_cache=true&location="+textYandexLocation+"&start="+String.valueOf(index*10)+"&api_key="+api-key+"&safe=off&filter=0&nfpr=0&engine=google";
+
+2. 키워드 + 이미지
+구글 렌즈는 paging 안탐
+    https://serpapi.com/search.json?engine=google_lens&url="+searchImageUrl+"&country="+nationCode+"&api_key="+api-key;
+
+구글 리버스는 paging 탐
+    https://serpapi.com/search.json?gl="+nationCode+"&no_cache=true&q="+keyword+"&api_key="+api-key+"&safe=off&filter=0&nfpr=0&start="+String.valueOf(index*10)+"&engine="+imageYandexEngine+"&image_url="+searchImageUrl;
+
+3. 키워드 + 영상
+paging 안탐
+   https://serpapi.com/search.json?gl="+nationCode+"&q="+keyword+"&no_cache=true&api_key="+api-key+"&engine="+imageYandexEngine+"&safe=off&filter=0&nfpr=0&image_url="+searchImageUrl;
+
+4. 이미지
+구글 렌즈는 paging 안탐
+    https://serpapi.com/search.json?engine=google_lens&url="+searchImageUrl+"&country="+finalnationCode1+"&api_key="+api-key;
+
+구글 리버스는 paging 탐
+    https://serpapi.com/search.json?gl="+nationCode+"&no_cache=true&api_key="+api-key+"&safe=off&filter=0&nfpr=0&start="+String.valueOf(index*10)+"&engine="+imageYandexEngine+"&image_url="+searchImageUrl;
+
+5. 영상
+paging 안탐
+    https://serpapi.com/search.json?gl=cn&no_cache=true&api_key="+api-key+"&engine="+imageYandexEngine+"&safe=off&filter=0&nfpr=0&image_url="+searchImageUrl;
+
+
+imageYandexEngine : google_reverse_image (영상 + 이미지 검색 시 사용)
+                  : google_lens (이미지 검색 시 사용)
+                  : google (키워드 검색)
+                  : youtube (키워드 검색 유투브)
+api-key : serp_key
+searchImageUrl : upload 한 이미지 주소 (절대값)
+String.valueOf(index * 10) : paging
+
+
+### 영상 검색은, 영상 파일을 파이썬으로 이미지를 분석? 쪼개?서, 이미지 파일로 만든 후 google_reverse_image를 타게 됨
