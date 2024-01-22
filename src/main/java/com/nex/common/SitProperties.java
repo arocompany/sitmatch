@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 public class SitProperties {
-
     @Value("${python.video.module}") private String pythonVideoModule;
     @Value("${search.yandex.text.url}") private String textYandexUrl;
     @Value("${search.yandex.text.gl}") private String textYandexGl;

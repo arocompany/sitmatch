@@ -2,9 +2,7 @@ package com.nex.search.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nex.common.CommonCode;
-import com.nex.common.CommonStaticSearchUtil;
-import com.nex.common.SitProperties;
+import com.nex.common.*;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -109,11 +107,14 @@ public class SearchTextService {
         log.info("============== searchTextYandex index: {} sns: {} textYandexGl {}", index, tsrSns, textYandexGl);
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+
         try {
             if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
             else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
 
-            String url = CommonStaticSearchUtil.getSerpApiUrlForGoogle(sitProperties.getTextYandexUrl(), tsiKeywordHiddenValue, textYandexGl, sitProperties.getTextYandexNocache(), sitProperties.getTextYandexLocation(), (index * 10), sitProperties.getTextYandexApikey(), null, sitProperties.getImageYandexEngine());
+            String url = CommonStaticSearchUtil.getSerpApiUrlForGoogle(sitProperties.getTextYandexUrl(), tsiKeywordHiddenValue, textYandexGl, sitProperties.getTextYandexNocache(), sitProperties.getTextYandexLocation(), (index * 10), configData.getSearchYandexTextApiKey()
+                    , null, sitProperties.getImageYandexEngine());
             log.info("keyword === {}", tsiKeywordHiddenValue);
             log.info("url === {} " + url);
 

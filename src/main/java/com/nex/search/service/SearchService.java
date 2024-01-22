@@ -136,16 +136,6 @@ public class SearchService {
 
         return saveSearchInfo(param);
     }
-
-    /*
-        검색 타입에 따라 서비스 분기 처리
-        Keyword, Keyword + Image, Keyword + Video, Image, Video
-
-        특성 :
-
-        나라별 : 5개 모두 타입에 대하여 적용
-        Paging
-     */
     public void search(SearchInfoEntity param, SearchInfoDto siDto, String folder){
         try {
             List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);

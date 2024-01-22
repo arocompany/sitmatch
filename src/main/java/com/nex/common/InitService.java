@@ -1,7 +1,7 @@
 package com.nex.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nex.batch.ScheduleTasks;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +64,7 @@ public class InitService {
             ConfigData newConfig = new ConfigData();
             // 설정할 값들을 필요에 따라 설정
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
             objectMapper.writeValue(new File(location), newConfig);
 
             log.info("Config file created: " + newConfig);
@@ -90,6 +91,7 @@ public class InitService {
             if(config.getSearchYandexTextApiKey() != null) configData.setSearchYandexTextApiKey(config.getSearchYandexTextApiKey());
 
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
             objectMapper.writeValue(new File(location), configData);
 
             log.info("Config file created: " + configData);
