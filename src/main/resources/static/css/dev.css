@@ -40,3 +40,127 @@
 
 .search .sns-check input.facebook + label { background-image: url("../img/main/off04.png"); margin-right: 0 }
 .search .sns-check input.facebook:checked + label { background-image: url("../img/main/on04.png") }
+
+/* 20240122 유나 수정 */
+.keyword .keyword-box > div.box_wrap {
+    height: auto;
+}
+.flex {
+    display: flex;
+}
+.flex-column {
+    flex-direction: column;
+}
+.flex_cnt {
+    justify-content: center;
+    align-items: center;
+}
+.box_wrap form {
+    width: 100%;
+    margin: 10px 0;
+    align-items: center;
+    padding-right: 30px;
+}
+.box_wrap input[type="checkbox"] {
+    appearance: none;
+    position: relative;
+    border-radius: 1.25em;
+    width: 2.25em;
+    height: 1.25em;
+    background-color: #ddd;
+    box-shadow: inset 1px 2px 3px;
+    cursor: pointer;
+}
+
+.box_wrap input[type="checkbox"]::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    transform: scale(0.8);
+    background-color: #fff;
+    transition: left 250ms linear;
+}
+
+.box_wrap input[type="checkbox"]:checked {
+    background-color: #194894;
+    border-color: #194894;
+}
+
+.box_wrap input[type="checkbox"]:checked::before {
+    background-color: white;
+    left: 1.2em;
+}
+
+.box_wrap input[type="checkbox"]:disabled {
+    border-color: lightgray;
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.box_wrap input[type="checkbox"]:disabled:before {
+    background-color: lightgray;
+}
+
+.box_wrap input[type="checkbox"]:disabled + span {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.box_wrap input[type="checkbox"]:focus-visible {
+    outline-offset: max(2px, 0.1em);
+    outline: max(2px, 0.1em) solid tomato;
+}
+
+/* .box_wrap input[type="checkbox"]:enabled:hover {
+  box-shadow: 0 0 0 max(4px, 0.2em) lightgray;
+} */
+.box_wrap li {
+    height: 45px;
+    line-height: 40px;
+}
+.box_wrap li label{
+    align-items: center;
+}
+.box_wrap li label span.tit{
+    font-weight: 700;
+    width: 120px;
+    text-align: center;
+}
+
+.box_wrap li label span.select_box{
+    font-weight: 700;
+    /* flex: 3; */
+}
+.service_info form {
+    padding-right: 0;
+}
+.service_info li label span.icon{
+    font-weight: 700;
+    width: 120px;
+    text-align: center;
+}
+.service_info li label span.icon span{
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 3px;
+    background-color: #ddd;
+    box-shadow: inset 2px 2px 3px #bbb;
+}
+.service_info li label span.icon span img{
+    display: inline-block;
+    width: 80%;
+}
+.service_info li label span.select_box {
+    width: 120px;
+    text-align: center;
+}
+
+.serpServices input[type=checkbox], .nations input[type=checkbox] {
+    background: none;
+}
+/* 2024 0122 유나 수정*/

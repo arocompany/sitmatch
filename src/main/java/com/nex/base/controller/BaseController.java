@@ -516,4 +516,16 @@ public class BaseController {
         return manage;
     }
 
+    @GetMapping("/nations/setting")
+    public ModelAndView keyword(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
+        ModelAndView modelAndView = new ModelAndView("html/nations");
+        log.info("========= nations 페이지 진입 ========");
+
+//        List<NewKeywordDto> newKeywordList = newKeywordRepository.keywordList();
+
+//        modelAndView.addObject("newKeywordList", newKeywordList);
+        modelAndView.addObject("sessionInfo", sessionInfoDto);
+
+        return modelAndView;
+    }
 }
