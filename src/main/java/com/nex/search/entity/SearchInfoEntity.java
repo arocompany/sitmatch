@@ -29,6 +29,7 @@ public class SearchInfoEntity {
     @Basic
     @Column(name = "TSI_INSTAGRAM")
     private byte tsiInstagram;
+
     @Basic
     @Column(name = "TSI_KEYWORD")
     private String tsiKeyword;
@@ -41,6 +42,7 @@ public class SearchInfoEntity {
     @Basic
     @Column(name = "TSI_IMG_EXT")
     private String tsiImgExt;
+
     @Basic
     @Column(name = "TSI_STAT")
     private String tsiStat;

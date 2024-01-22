@@ -24,8 +24,4 @@ public class SerpServicesEntity {
     @Basic
     @Column(name = "ss_is_active", nullable = false)
     private int ssIsActive;
-
-    @Basic
-    @Column(name = "ss_is_view_active", nullable = false)
-    private int ssIsViewActive;
 }

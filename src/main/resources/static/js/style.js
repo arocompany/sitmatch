@@ -1,5 +1,6 @@
 // 헤더 유저(상세) 버튼 
 document.addEventListener("DOMContentLoaded", function () {
+  console.info("321");
   const detailBtn = document.querySelectorAll("header .detail-btn");
   if (detailBtn) {
     for (let i = 0; i < detailBtn.length; i++) {
@@ -301,9 +302,53 @@ document.addEventListener("DOMContentLoaded", function () {
     })
   })
 
+  const btnNationsSetting = document.querySelector(".btn-nations-setting");
+  btnNationsSetting.addEventListener("click", () => {
+    //XMLHttpRequest 객체 생성
+    var xhr = new XMLHttpRequest();
+    //요청을 보낼 방식, 주소, 비동기여부 설정
+    xhr.open('GET', '/nations/setting', true);
+    //요청 전송
+    xhr.send(null);
+    //통신후 작업
+    xhr.onload = () => {
+      //통신 성공
+      if (xhr.status == 200) {
+        document.body.style.overflow = 'hidden';
+        modal.style.display = 'flex';
+        modal.innerHTML = xhr.response
+      }
 
+      const esc = document.querySelector(".esc-btn");
+      esc.onclick = () => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'unset';
+      }
+    }
+  });
 
+  const btnServicesSetting = document.querySelector(".btn-services-setting");
+  btnServicesSetting.addEventListener("click", () => {
+    //XMLHttpRequest 객체 생성
+    var xhr = new XMLHttpRequest();
+    //요청을 보낼 방식, 주소, 비동기여부 설정
+    xhr.open('GET', '/serp/setting', true);
+    //요청 전송
+    xhr.send(null);
+    //통신후 작업
+    xhr.onload = () => {
+      //통신 성공
+      if (xhr.status == 200) {
+        document.body.style.overflow = 'hidden';
+        modal.style.display = 'flex';
+        modal.innerHTML = xhr.response
+      }
+
+      const esc = document.querySelector(".esc-btn");
+      esc.onclick = () => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'unset';
+      }
+    }
+  });
 });
-
-
-
