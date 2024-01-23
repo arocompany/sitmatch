@@ -32,7 +32,7 @@
       <div class="sns-check">
         <div class="areaItem"  th:each="item : ${serpServicesIsSsActiveList}">
           <input type="checkbox" th:classappend="${item.ssName}" th:id="${item.ssName}" th:name="${#strings.concat('tsi',#strings.toUpperCase(#strings.substring(item.ssName, 0, 1)),#strings.substring(item.ssName, 1))}" checked>
-          <label class="btn-off bor10" th:for="${item.ssName}" tooltip="" flow="up" th:text="${item.ssName}"></label>
+          <label class="btn-off bor10" th:for="${item.ssName}" th:tooltip="${item.ssName}" flow="up" th:text="${item.ssName}"></label>
         </div>
       </div>
 
@@ -159,7 +159,7 @@
   //   }
   // }
   const goresult = () => {
-   // window.location.href="/history";
+    // window.location.href="/history";
 
     if (document.getElementById('google').checked || document.getElementById('instar').checked || document.getElementById('facebook').checked) {
       /*
