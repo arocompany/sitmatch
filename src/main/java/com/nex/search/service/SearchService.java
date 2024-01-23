@@ -153,7 +153,7 @@ public class SearchService {
                 // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19:영상
                 switch (param.getTsiType()) {
                     case CommonCode.searchTypeKeyword -> { // 11:키워드
-                        searchYoutubeService.searchYandexYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
+                        searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
                         if (param.getTsiGoogle() == 1) {
                             searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
                         }
@@ -165,7 +165,7 @@ public class SearchService {
                         }
                     }
                     case CommonCode.searchTypeKeywordImage -> { // 13:키워드+이미지
-                        searchImageGoogleLensService.searchYandexByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
+                        searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
                         if (param.getTsiGoogle() == 1) {
                             searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
                         }
@@ -179,16 +179,16 @@ public class SearchService {
                     case CommonCode.searchTypeKeywordVideo -> {
                         // 15:키워드+영상
 //                            search(param, folder, siDto);
-                        if (param.getTsiGoogle() == 1) { searchVideoService.searchYandexByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());}
-                        if (param.getTsiFacebook() == 1) { searchVideoService.searchYandexByTextVideo(CommonCode.snsTypeFacebook, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
-                        if (param.getTsiInstagram() == 1) { searchVideoService.searchYandexByTextVideo(CommonCode.snsTypeInstagram, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
+                        if (param.getTsiGoogle() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());}
+                        if (param.getTsiFacebook() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeFacebook, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
+                        if (param.getTsiInstagram() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeInstagram, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
                     }
                     case CommonCode.searchTypeImage -> { // 17:이미지
-                        searchImageGoogleLensService.searchYandexByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
+                        searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
                         searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
                     }
                     case CommonCode.searchTypeVideo -> {// 19: 영상
-                        searchVideoService.searchYandexByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());
+                        searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());
                     }
                 }
                 // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
@@ -202,7 +202,7 @@ public class SearchService {
 //    /**
 //     * 텍스트, 이미지 검색
 //     *
-//     * {@link #searchYandexByText(String, String, SearchInfoEntity)} {@link #searchYandexByImage(String, String, SearchInfoEntity)}}
+//     * {@link #searchByText(String, String, SearchInfoEntity)} {@link #searchByImage(String, String, SearchInfoEntity)}}
 //     *
 //     * @param url         (URL)
 //     * @param infoClass   (YandexByTextResult or YandexByImageResult Class)
@@ -215,9 +215,9 @@ public class SearchService {
 //     */
 
     // 배치시 진입
-    public <INFO, RESULT> List<RESULT> searchBatchYandex(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+    public <INFO, RESULT> List<RESULT> searchBatch(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
         try {
-            log.info("searchBatchYandex 진입");
+            log.info("searchBatch 진입");
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();

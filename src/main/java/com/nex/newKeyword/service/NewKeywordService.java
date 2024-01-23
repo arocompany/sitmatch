@@ -10,7 +10,7 @@ import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.result.Images_resultsByText;
-import com.nex.search.entity.result.YandexByTextResult;
+import com.nex.search.entity.result.SerpApiTextResult;
 import com.nex.search.repo.NewKeywordRepository;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
@@ -85,22 +85,22 @@ public class NewKeywordService {
         // String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
         do {
-            String url = sitProperties.getTextYandexUrl()
+            String url = sitProperties.getTextUrl()
                     + "?q=" + newKeyword
-                    + "&gl=" + sitProperties.getTextYandexGl()
-                    + "&no_cache=" + sitProperties.getTextYandexNocache()
-                    + "&location=" + sitProperties.getTextYandexLocation()
-//                    + "&tbm=" + textYandexTbm
+                    + "&gl=" + sitProperties.getTextGl()
+                    + "&no_cache=" + sitProperties.getTextNocache()
+                    + "&location=" + sitProperties.getTextLocation()
+//                    + "&tbm=" + textTbm
                     + "&start=" + String.valueOf(index * 10)
-                    + "&api_key=" + sitProperties.getTextYandexApikey()
+                    + "&api_key=" + sitProperties.getTextApikey()
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
                     + "&engine=google";
 
-            CompletableFutureYandexByText(url, tsrSns, insertResult);
+            CompletableFutureByText(url, tsrSns, insertResult);
 
-            if (index >= sitProperties.getTextYandexCountLimit() - 1) {
+            if (index >= sitProperties.getTextCountLimit() - 1) {
                 log.info("index: " + index);
                 loop = false;
             }
@@ -112,12 +112,12 @@ public class NewKeywordService {
 
     }
 
-    public void CompletableFutureYandexByText(String url, String tsrSns, SearchInfoEntity insertResult) {
+    public void CompletableFutureByText(String url, String tsrSns, SearchInfoEntity insertResult) {
         CompletableFuture
                 .supplyAsync(() -> {
                     try {
-                        // text기반 yandex 검색
-                        return searchTextYandex(url, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                        // text기반 검색
+                        return searchText(url, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -126,7 +126,7 @@ public class NewKeywordService {
                 .thenApply((r) -> {
                     try {
                         // 결과 저장.(이미지)
-                        return saveYandex(
+                        return save(
                                 r
                                 , tsrSns
                                 , insertResult
@@ -144,15 +144,15 @@ public class NewKeywordService {
                 })
                 .thenAccept((r) -> {
                     try {
-                        // yandex검색을 통해 결과 db에 적재.
-                        saveImgSearchYandex(r, insertResult);
+                        // serp api 검색을 통해 결과 db에 적재.
+                        saveImgSearch(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
                 });
     }
 
-    public <INFO, RESULT> List<RESULT> searchTextYandex(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+    public <INFO, RESULT> List<RESULT> searchText(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
         try {
             // HttpHeaders header = new HttpHeaders();
             HttpHeaders header = new HttpHeaders();
@@ -185,10 +185,10 @@ public class NewKeywordService {
         return null;
     }
 
-    public <RESULT> List<SearchResultEntity> saveYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
+    public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
-        log.info("========= saveYandex 진입 =========");
+        log.info("========= save 진입 =========");
 
         if (results == null) {
             log.info("result null");
@@ -238,7 +238,7 @@ public class NewKeywordService {
         return sreList;
     }
 
-    public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
+    public String saveImgSearch(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
         insertResult.setTsiStat("13");
 
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {

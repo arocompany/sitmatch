@@ -46,7 +46,7 @@ public class SearchImageGoogleLensService {
     private final SitProperties sitProperties;
     private final RestTemplate restTemplate;
 
-    public void searchYandexByGoogleLensImage(String tsrSns, SearchInfoEntity insertResult, String nationCode) throws JsonProcessingException {
+    public void searchByGoogleLensImage(String tsrSns, SearchInfoEntity insertResult, String nationCode) throws JsonProcessingException {
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
         try {
@@ -54,24 +54,24 @@ public class SearchImageGoogleLensService {
             searchImageUrl = configData.getSearchServerUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
 
             this.nationCode = nationCode;
-            String finalTextYandexGl1=this.nationCode;
+            String finalTextGl1=this.nationCode;
 
-            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextYandexUrl(), null, nationCode, null, null, null, configData.getSearchYandexTextApiKey(), searchImageUrl, "google_lens", null);
+            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, nationCode, null, null, null, configData.getSearchTextApiKey(), searchImageUrl, "google_lens", null);
 
-            log.info("google lens index = {}, textYandexGl = {}, tsrSns = {}, loop = {}", null, nationCode, tsrSns, null);
+            log.info("google lens index = {}, textGl = {}, tsrSns = {}, loop = {}", null, nationCode, tsrSns, null);
             log.info("keyword === {}, url === {}", null, url);
-            CompletableFutureGoogleLensByImage(url, tsrSns, insertResult, finalTextYandexGl1);
+            CompletableFutureGoogleLensByImage(url, tsrSns, insertResult, finalTextGl1);
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public void CompletableFutureGoogleLensByImage(String url, String tsrSns, SearchInfoEntity insertResult, String finalTextYandexGl1) {
+    public void CompletableFutureGoogleLensByImage(String url, String tsrSns, SearchInfoEntity insertResult, String finalTextGl1) {
         // 이미지
         CompletableFuture
                 .supplyAsync(() -> {
                     try { // text기반 검색
-                        return searchGoogleLens(url, GoogleLensImagesByImageResult.class, GoogleLensImagesByImageResult::getError, GoogleLensImagesByImageResult::getImage_sources, finalTextYandexGl1);
+                        return searchGoogleLens(url, GoogleLensImagesByImageResult.class, GoogleLensImagesByImageResult::getError, GoogleLensImagesByImageResult::getImage_sources, finalTextGl1);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -103,7 +103,7 @@ public class SearchImageGoogleLensService {
                 });
     }
 
-    public <INFO, RESULT> List<RESULT> searchGoogleLens(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, String finalTextYandexGl1) throws Exception {
+    public <INFO, RESULT> List<RESULT> searchGoogleLens(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, String finalTextGl1) throws Exception {
         try {
             ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
@@ -120,14 +120,14 @@ public class SearchImageGoogleLensService {
             // pageToken값 출력
             log.info("google lens page_token: " + pageToken);
 
-//            String url2 = sitProperties.getTextYandexUrl()
+//            String url2 = sitProperties.getTextUrl()
 //                    + "?engine=google_lens_image_sources"
 //                    + "&page_token=" + pageToken
-//                    + "&country=" + finalTextYandexGl1
+//                    + "&country=" + finalTextGl1
 //                    + "&safe=off"
-//                    + "&api_key=" + configData.getSearchYandexTextApiKey();
+//                    + "&api_key=" + configData.getSearchTextApiKey();
 
-            String sourcesUrl = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextYandexUrl(), null, finalTextYandexGl1, null, null, null, configData.getSearchYandexTextApiKey(), null, "google_lens_image_sources", pageToken);
+            String sourcesUrl = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, finalTextGl1, null, null, null, configData.getSearchTextApiKey(), null, "google_lens_image_sources", pageToken);
 
             HttpHeaders sourcesHeader = new HttpHeaders();
             HttpEntity<?> sourcesEntity = new HttpEntity<>(sourcesHeader);

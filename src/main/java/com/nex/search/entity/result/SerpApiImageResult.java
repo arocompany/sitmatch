@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class YandexByImageResult {
+public class SerpApiImageResult {
 
     private String error;
 

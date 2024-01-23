@@ -11,8 +11,8 @@ import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
 import com.nex.search.entity.result.Images_resultsByImage;
 import com.nex.search.entity.result.Images_resultsByText;
-import com.nex.search.entity.result.YandexByImageResult;
-import com.nex.search.entity.result.YandexByTextResult;
+import com.nex.search.entity.result.SerpApiImageResult;
+import com.nex.search.entity.result.SerpApiTextResult;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
@@ -61,24 +61,24 @@ public class SearchTextImageService {
 
     public void searchSnsByImage(String searchImageUrl, String tsiKeywordHiddenValue, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
         int index=0;
-        String textYandexGl = this.nationCode;
+        String textGl = this.nationCode;
 
-        searchByImage(index, textYandexGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
-        searchByText(index, textYandexGl,tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
+        searchByImage(index, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
+        searchByText(index, textGl,tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
     }
 
-    public void searchByImage(int index, String textYandexGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
+    public void searchByImage(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
         CompletableFuture
                 .supplyAsync(() -> {
-                    try { // text기반 yandex 검색
-                        return searchYandex(index, textYandexGl, tsiKeywordHiddenValue, searchImageUrl,searchInfoDto, tsrSns, YandexByImageResult.class, YandexByImageResult::getError, YandexByImageResult::getInline_images);
+                    try { // text기반 검색
+                        return search(index, textGl, tsiKeywordHiddenValue, searchImageUrl,searchInfoDto, tsrSns, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
                     }
                 }).thenApply((r) -> {
                     try { // 결과 저장.(이미지)
-                        return saveImageYandex(
+                        return saveImage(
                                 r
                                 , tsrSns
                                 , insertResult
@@ -96,7 +96,7 @@ public class SearchTextImageService {
                 }).thenApplyAsync((r) -> {
                     try { // db에 적재.
                         if(r == null) { return null; }
-                        return saveImgSearchYandex(r, insertResult);
+                        return saveImgSearch(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -104,30 +104,30 @@ public class SearchTextImageService {
                 }).thenRun(()->{
                     if(loop == true){
                         log.info("loop == true 진입: " + loop);
-                        CompletableFutureYandexByImage(index, textYandexGl,tsiKeywordHiddenValue, searchImageUrl,searchInfoDto, tsrSns,insertResult);
+                        CompletableFutureByImage(index, textGl,tsiKeywordHiddenValue, searchImageUrl,searchInfoDto, tsrSns,insertResult);
                     }
                 });
     }
 
-    public <INFO, RESULT> List<RESULT> searchYandex(int index, String textYandexGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+    public <INFO, RESULT> List<RESULT> search(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
         try {
             if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
             else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
 
-            String url = sitProperties.getTextYandexUrl()
-                    + "?gl=" + textYandexGl
-                    + "&no_cache=" + sitProperties.getTextYandexNocache()
+            String url = sitProperties.getTextUrl()
+                    + "?gl=" + textGl
+                    + "&no_cache=" + sitProperties.getTextNocache()
                     + "&q=" + tsiKeywordHiddenValue
-                    + "&api_key=" + sitProperties.getTextYandexApikey()
+                    + "&api_key=" + sitProperties.getTextApikey()
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
                     + "&start=" + String.valueOf(index * 10)
-                    // + "&tbm=" + textYandexTbm
-                    + "&engine=" + sitProperties.getImageYandexEngine()
+                    // + "&tbm=" + textTbm
+                    + "&engine=" + sitProperties.getImageEngine()
                     + "&image_url=" + searchImageUrl;
 
-            log.info("searchYandex 진입");
+            log.info("search 진입");
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
@@ -147,13 +147,13 @@ public class SearchTextImageService {
                 }
             }
 
-            if (results == null || index >= sitProperties.getTextYandexCountLimit() - 1) {
+            if (results == null || index >= sitProperties.getTextCountLimit() - 1) {
                 loop = false;
             }
             //        if(index>2){ loop=false; }
 
             log.info("results: " + results);
-            log.debug("searchYandex loop: " + loop);
+            log.debug("search loop: " + loop);
 
             return results != null ? results : new ArrayList<>();
         }catch (Exception e){
@@ -162,10 +162,10 @@ public class SearchTextImageService {
         return null;
     }
 
-    public <RESULT> List<SearchResultEntity> saveYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
+    public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
-        log.info("========= saveYandex 진입 =========");
+        log.info("========= save 진입 =========");
 
         if (results == null) {
             log.info("result null");
@@ -216,7 +216,7 @@ public class SearchTextImageService {
         return sreList;
     }
 
-    public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
+    public String saveImgSearch(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
         insertResult.setTsiStat("13");
 
         if (result == null) {
@@ -253,15 +253,15 @@ public class SearchTextImageService {
         return "저장 완료";
     }
 
-    public void CompletableFutureYandexByImage(int index, String textYandexGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto,  String tsrSns, SearchInfoEntity insertResult) {
+    public void CompletableFutureByImage(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto,  String tsrSns, SearchInfoEntity insertResult) {
         index++;
         int finalIndex = index;
 
         // 이미지
         CompletableFuture
                 .supplyAsync(() -> {
-                    try { // text기반 yandex 검색
-                        return searchYandex(finalIndex, textYandexGl,tsiKeywordHiddenValue, searchImageUrl, searchInfoDto,tsrSns, YandexByImageResult.class, YandexByImageResult::getError, YandexByImageResult::getInline_images);
+                    try { // text기반 검색
+                        return search(finalIndex, textGl,tsiKeywordHiddenValue, searchImageUrl, searchInfoDto,tsrSns, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -269,7 +269,7 @@ public class SearchTextImageService {
                 })
                 .thenApply((r) -> {
                     try { // 결과 저장.(이미지)
-                        return saveImageYandex(
+                        return saveImage(
                                 r
                                 , tsrSns
                                 , insertResult
@@ -285,27 +285,27 @@ public class SearchTextImageService {
                         return null;
                     }
                 }).thenApplyAsync((r) -> {
-                    try { // yandex검색을 통해 결과 db에 적재.
+                    try { // 검색을 통해 결과 db에 적재.
                         if(r == null) return null;
-                        return saveImgSearchYandex(r, insertResult);
+                        return saveImgSearch(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
                     }
                 }).thenRun(()->{
                     if(loop == true){
-                        CompletableFutureYandexByImage(finalIndex, textYandexGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
+                        CompletableFutureByImage(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
                     }
                 });
     }
 
     // ----------------------------------------------------------------------------------------------------------- //
 
-    public void searchByText(int index, String textYandexGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
+    public void searchByText(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
         CompletableFuture
                 .supplyAsync(() -> {
-                    try { // text기반 yandex 검색
-                        return searchYandex(index, textYandexGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                    try { // text기반 검색
+                        return search(index, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -313,7 +313,7 @@ public class SearchTextImageService {
                 })
                 .thenApply((r) -> {
                     try { // 결과 저장.(이미지)
-                        return saveYandex(
+                        return save(
                                 r
                                 , tsrSns
                                 , insertResult
@@ -330,21 +330,21 @@ public class SearchTextImageService {
                     }
                 })
                 .thenAccept((r) -> {
-                    try { // yandex검색을 통해 결과 db에 적재.
-                        saveImgSearchYandex(r, insertResult);
+                    try { // 검색을 통해 결과 db에 적재.
+                        saveImgSearch(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
                 }).thenRun(()->{
                     if(loop == true){
                         log.info("loop 값1: " + loop);
-                        CompletableFutureText(index, textYandexGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
+                        CompletableFutureText(index, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
                     }
                 });
     }
 
-    public void CompletableFutureText(int index, String textYandexGl, String tsiKeywordHiddenValue,String searchImageUrl,SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
-        log.info("==== CompletableFutureText(재귀 함수 진입 ==== index 값: {} sns 값: {} textYandexGl {}", index, tsrSns, textYandexGl);
+    public void CompletableFutureText(int index, String textGl, String tsiKeywordHiddenValue,String searchImageUrl,SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
+        log.info("==== CompletableFutureText(재귀 함수 진입 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, textGl);
         if(!loop){
             return;
         }
@@ -354,15 +354,15 @@ public class SearchTextImageService {
 
         CompletableFuture
                 .supplyAsync(() -> {
-                    try { // text기반 yandex 검색
-                        return searchYandex(finalIndex, textYandexGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, YandexByTextResult.class, YandexByTextResult::getError, YandexByTextResult::getImages_results);
+                    try { // text기반 검색
+                        return search(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
                     }
                 }).thenApply((r) -> {
                     try { // 결과 저장.(이미지)
-                        return saveYandex(
+                        return save(
                                 r
                                 , tsrSns
                                 , insertResult
@@ -378,25 +378,25 @@ public class SearchTextImageService {
                         return null;
                     }
                 }).thenAccept((r) -> {
-                    try { // yandex검색을 통해 결과 db에 적재.
-                        saveImgSearchYandex(r, insertResult);
+                    try { // 검색을 통해 결과 db에 적재.
+                        saveImgSearch(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
                 }).thenRun(()->{
                     if(loop == true){
                         log.info("loop 값2: " + loop);
-                        CompletableFutureText(finalIndex, textYandexGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
+                        CompletableFutureText(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
                     }
                 });
 
     }
 
 
-    public <RESULT> List<SearchResultEntity> saveImageYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
+    public <RESULT> List<SearchResultEntity> saveImage(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
-        log.info("========= saveYandex 진입 =========");
+        log.info("========= saveImage 진입 =========");
 
         if (results == null) {
             log.info("result null");

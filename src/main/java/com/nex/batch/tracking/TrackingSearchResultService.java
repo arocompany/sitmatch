@@ -46,21 +46,21 @@ public class TrackingSearchResultService{
     private final NationCodeRepository nationCodeRepository;
 
 
-    /**
-     * 모든 결과 List 추출
-     *
-     * @param  searchInfoEntity (검색 이력 엔티티)
-     * @param  infoClass        (YandexByTextResult or YandexByImageResult Class)
-     * @param  getErrorFn       (info error getter Function)
-     * @param  getSubFn         (RESULT getter Function)
-     * @param  setTsiUnoCn      (tsiUno setter BiConsumer)
-     * @param  getLinkFn        (link getter Function)
-     * @param  isFacebookFn     (isFacebook Function)
-     * @param  isInstagram      (isInstagram Function)
-     * @return List<RESULT>     (Images_resultsByText or Images_resultsByImage List)
-     * @param  <INFO>           (YandexByTextResult or YandexByImageResult)
-     * @param  <RESULT>         (Images_resultsByText or Images_resultsByImage)
-     */
+//    /**
+//     * 모든 결과 List 추출
+//     *
+//     * @param  searchInfoEntity (검색 이력 엔티티)
+//     * @param  infoClass        (YandexByTextResult or YandexByImageResult Class)
+//     * @param  getErrorFn       (info error getter Function)
+//     * @param  getSubFn         (RESULT getter Function)
+//     * @param  setTsiUnoCn      (tsiUno setter BiConsumer)
+//     * @param  getLinkFn        (link getter Function)
+//     * @param  isFacebookFn     (isFacebook Function)
+//     * @param  isInstagram      (isInstagram Function)
+//     * @return List<RESULT>     (Images_resultsByText or Images_resultsByImage List)
+//     * @param  <INFO>           (YandexByTextResult or YandexByImageResult)
+//     * @param  <RESULT>         (Images_resultsByText or Images_resultsByImage)
+//     */
     public  <INFO, RESULT> List<RESULT> getAllResults(SearchInfoEntity searchInfoEntity
             , Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getSubFn, BiConsumer<RESULT, Integer> setTsiUnoCn
             , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Boolean isText) throws JsonProcessingException {
@@ -139,24 +139,24 @@ public class TrackingSearchResultService{
         return allResults;
     }
 
-    /**
-     * 결과 List 추출
-     *
-     * @param  tsiKeyword       (검색어)
-     * @param  searchInfoEntity (검색 정보 엔티티)
-     * @param  dvn              (구분)
-     * @param  siteUrls         (사이트 URL List)
-     * @param  infoClass        (YandexByTextResult or YandexByImageResult Class)
-     * @param  getErrorFn       (info error getter Function)
-     * @param  getSubFn         (RESULT getter Function)
-     * @param  setTsiUnoCn      (tsiUno setter BiConsumer)
-     * @param  getLinkFn        (link getter Function)
-     * @param  isFacebookFn     (isFacebook Function)
-     * @param  isInstagram      (isInstagram Function)
-     * @return List<RESULT>     (Images_resultsByText or Images_resultsByImage List)
-     * @param  <INFO>           (YandexByTextResult or YandexByImageResult)
-     * @param  <RESULT>         (Images_resultsByText or Images_resultsByImage)
-     */
+//    /**
+//     * 결과 List 추출
+//     *
+//     * @param  tsiKeyword       (검색어)
+//     * @param  searchInfoEntity (검색 정보 엔티티)
+//     * @param  dvn              (구분)
+//     * @param  siteUrls         (사이트 URL List)
+//     * @param  infoClass        (YandexByTextResult or YandexByImageResult Class)
+//     * @param  getErrorFn       (info error getter Function)
+//     * @param  getSubFn         (RESULT getter Function)
+//     * @param  setTsiUnoCn      (tsiUno setter BiConsumer)
+//     * @param  getLinkFn        (link getter Function)
+//     * @param  isFacebookFn     (isFacebook Function)
+//     * @param  isInstagram      (isInstagram Function)
+//     * @return List<RESULT>     (Images_resultsByText or Images_resultsByImage List)
+//     * @param  <INFO>           (YandexByTextResult or YandexByImageResult)
+//     * @param  <RESULT>         (Images_resultsByText or Images_resultsByImage)
+//     */
     private <INFO, RESULT> List<RESULT> getResults(String tsiKeyword, SearchInfoEntity searchInfoEntity, String dvn, List<String> siteUrls
             , Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getSubFn, BiConsumer<RESULT, Integer> setTsiUnoCn
             , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Boolean isText) throws JsonProcessingException {
@@ -183,26 +183,26 @@ public class TrackingSearchResultService{
     }
 
 
-    /**
-     * 이미지 결과 목록 추출
-     *
-     * @param  tsiKeyword       (검색어)
-     * @param  searchInfoEntity (검색 정보 엔티티)
-     * @param  dvn              (구분)
-     * @param  siteUrls         (사이트 URL List)
-     * @param  results          (결과 List)
-     * @param  index            (인덱스)
-     * @param  infoClass        (YandexByTextResult or YandexByImageResult Class)
-     * @param  getErrorFn       (info error getter Function)
-     * @param  getSubFn         (RESULT getter Function)
-     * @param  setTsiUnoCn      (tsiUno setter BiConsumer)
-     * @param  getLinkFn        (link getter Function)
-     * @param  isFacebookFn     (isFacebook Function)
-     * @param  isInstagram      (isInstagram Function)
-     * @return List<RESULT>     (Images_resultsByText or Images_resultsByImage List)
-     * @param  <INFO>           (YandexByTextResult or YandexByImageResult)
-     * @param  <RESULT>         (Images_resultsByText or Images_resultsByImage)
-     */
+//    /**
+//     * 이미지 결과 목록 추출
+//     *
+//     * @param  tsiKeyword       (검색어)
+//     * @param  searchInfoEntity (검색 정보 엔티티)
+//     * @param  dvn              (구분)
+//     * @param  siteUrls         (사이트 URL List)
+//     * @param  results          (결과 List)
+//     * @param  index            (인덱스)
+//     * @param  infoClass        (YandexByTextResult or YandexByImageResult Class)
+//     * @param  getErrorFn       (info error getter Function)
+//     * @param  getSubFn         (RESULT getter Function)
+//     * @param  setTsiUnoCn      (tsiUno setter BiConsumer)
+//     * @param  getLinkFn        (link getter Function)
+//     * @param  isFacebookFn     (isFacebook Function)
+//     * @param  isInstagram      (isInstagram Function)
+//     * @return List<RESULT>     (Images_resultsByText or Images_resultsByImage List)
+//     * @param  <INFO>           (YandexByTextResult or YandexByImageResult)
+//     * @param  <RESULT>         (Images_resultsByText or Images_resultsByImage)
+//     */
     private <INFO, RESULT> List<RESULT> getResults(String tsiKeyword, SearchInfoEntity searchInfoEntity, String dvn, List<String> siteUrls
             , List<RESULT> results, int index, Class<INFO> infoClass, Function<INFO, String> getErrorFn
             , Function<INFO, List<RESULT>> getSubFn, BiConsumer<RESULT, Integer> setTsiUnoCn
@@ -225,7 +225,7 @@ public class TrackingSearchResultService{
                             try {
                                 // text기반 yandex 검색
                                 // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
-                                return searchService.searchBatchYandex(url, infoClass, getErrorFn, getSubFn);
+                                return searchService.searchBatch(url, infoClass, getErrorFn, getSubFn);
                             } catch (Exception e) {
                                 log.debug(e.getMessage());
                             }
@@ -240,7 +240,7 @@ public class TrackingSearchResultService{
                     log.error(e.getMessage());
                 }
 
-                if (! loop || index >= sitProperties.getTextYandexCountLimit() - 1) {
+                if (! loop || index >= sitProperties.getTextCountLimit() - 1) {
                     loop = false;
                 }else{
                     completableFutures.add(listCompletableFuture);
@@ -280,8 +280,8 @@ public class TrackingSearchResultService{
         boolean isNextAble = (isFirst && size == index * 100) || (!isFirst && size == 100);
 
 
-        //결과 size 가 textYandexCountLimit * 100 보다 작고, 다음 페이지 조회 가능 여부가 true 이면 재검색
-        if (textYandexCountLimit * textYandexCountPage > results.size() && isNextAble) {
+        //결과 size 가 textCountLimit * 100 보다 작고, 다음 페이지 조회 가능 여부가 true 이면 재검색
+        if (textCountLimit * textYandexCountPage > results.size() && isNextAble) {
             return getResults(
                     tsiKeyword
                     , searchInfoEntity
@@ -326,18 +326,18 @@ public class TrackingSearchResultService{
         if (isText) {
             log.info("텍스트검색 getUrl 진입");
             // yandex search url
-             url = sitProperties.getTextYandexUrl()
+             url = sitProperties.getTextUrl()
                     + "?q=" + tsiKeyword
                     + "&gl=" + lang
-                    + "&no_cache=" + sitProperties.getTextYandexNocache()
-                    + "&location=" + sitProperties.getTextYandexLocation()
-                    + "&tbm=" + sitProperties.getTextYandexTbm()
+                    + "&no_cache=" + sitProperties.getTextNocache()
+                    + "&location=" + sitProperties.getTextLocation()
+                    + "&tbm=" + sitProperties.getTextTbm()
                     + "&start=" + String.valueOf(index*10)
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
-                    + "&api_key=" + sitProperties.getTextYandexApikey()
-                    + "&engine=" + sitProperties.getTextYandexEngine();
+                    + "&api_key=" + sitProperties.getTextApikey()
+                    + "&engine=" + sitProperties.getTextEngine();
 
         }
         //이미지 검색
@@ -348,15 +348,15 @@ public class TrackingSearchResultService{
             // searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
             // searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20240102/e89c63da-d7ed-48b6-a9a3-056fe582b6b2.jpg"; //고양이
 
-            url = sitProperties.getTextYandexUrl()
+            url = sitProperties.getTextUrl()
                     + "&gl=" + lang
-                    + "&no_cache=" + sitProperties.getTextYandexNocache()
-                    + "&api_key=" + sitProperties.getTextYandexApikey()
+                    + "&no_cache=" + sitProperties.getTextNocache()
+                    + "&api_key=" + sitProperties.getTextApikey()
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
                     + "&start=" + String.valueOf(index*10)
-                    + "&engine=" + sitProperties.getImageYandexEngine()
+                    + "&engine=" + sitProperties.getImageEngine()
                     + "&image_url=" + searchImageUrl;
         }
 
@@ -371,18 +371,18 @@ public class TrackingSearchResultService{
         if (isText) {
             log.info("텍스트검색 getGoogleLensUrl 진입");
             // yandex search url
-            url = sitProperties.getTextYandexUrl()
+            url = sitProperties.getTextUrl()
                     + "?q=" + tsiKeyword
-                    + "&gl=" + sitProperties.getTextYandexGl()
-                    + "&no_cache=" + sitProperties.getTextYandexNocache()
-                    + "&location=" + sitProperties.getTextYandexLocation()
-                    + "&tbm=" + sitProperties.getTextYandexTbm()
+                    + "&gl=" + sitProperties.getTextGl()
+                    + "&no_cache=" + sitProperties.getTextNocache()
+                    + "&location=" + sitProperties.getTextLocation()
+                    + "&tbm=" + sitProperties.getTextTbm()
                     + "&start=" + String.valueOf(index*10)
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"
-                    + "&api_key=" + sitProperties.getTextYandexApikey()
-                    + "&engine=" + sitProperties.getTextYandexEngine();
+                    + "&api_key=" + sitProperties.getTextApikey()
+                    + "&engine=" + sitProperties.getTextEngine();
 
         } else { //이미지 검색
             log.info("이미지검색 getGoogleLensUrl 진입");
@@ -391,11 +391,11 @@ public class TrackingSearchResultService{
             // searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
             // searchImageUrl= "http://106.254.235.202:9091/imagePath/requests/20240115/05b9343c-b1d2-48c6-ae3a-27dfd3bae972.jpg";
 
-            url = sitProperties.getTextYandexUrl()
+            url = sitProperties.getTextUrl()
                     + "?engine=google_lens"
                     + "&url=" + searchImageUrl
-                    + "&country="+ sitProperties.getTextYandexGl()
-                    + "&api_key=" + sitProperties.getTextYandexApikey();
+                    + "&country="+ sitProperties.getTextGl()
+                    + "&api_key=" + sitProperties.getTextApikey();
 
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
@@ -409,12 +409,12 @@ public class TrackingSearchResultService{
 
             System.out.println("배치 pageToken: " + pageToken);
 
-            url2 = sitProperties.getTextYandexUrl()
+            url2 = sitProperties.getTextUrl()
                     + "?engine=google_lens_image_sources"
                     + "&page_token=" + pageToken
-                    + "&country="+sitProperties.getTextYandexGl()
+                    + "&country="+sitProperties.getTextGl()
                     + "&safe=off"
-                    + "&api_key=" + sitProperties.getTextYandexApikey();
+                    + "&api_key=" + sitProperties.getTextApikey();
 
         }
 

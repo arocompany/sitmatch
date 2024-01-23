@@ -12,7 +12,7 @@ import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.VideoInfoEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
 import com.nex.search.entity.result.Images_resultsByImage;
-import com.nex.search.entity.result.YandexByImageResult;
+import com.nex.search.entity.result.SerpApiImageResult;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
@@ -55,7 +55,7 @@ public class SearchVideoService {
     private final SitProperties sitProperties;
 
     @Async
-    public void searchYandexByTextVideo(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String path, String nationCode) throws Exception {
+    public void searchByTextVideo(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String path, String nationCode) throws Exception {
         List<String> files = processVideo(insertResult);
 
         for(int i=0; i<files.size(); i++) {
@@ -80,24 +80,24 @@ public class SearchVideoService {
                 // searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
 
                 try {
-//                    String url = textYandexUrl
-//                            + "?gl=" + textYandexGl
+//                    String url = textUrl
+//                            + "?gl=" + textGl
 //                            + "&q=" + tsiKeywordHiddenValue
-//                            + "&no_cache=" + textYandexNocache
-//                            + "&api_key=" + textYandexApikey
-//                            + "&engine=" + imageYandexEngine
+//                            + "&no_cache=" + textNocache
+//                            + "&api_key=" + textApikey
+//                            + "&engine=" + imageEngine
 //                            + "&safe=off"
 //                            + "&filter=0"
 //                            + "&nfpr=0"
 //                            + "&image_url=" + searchImageUrl;
 
-                    String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextYandexUrl(), tsiKeywordHiddenValue, nationCode, sitProperties.getTextYandexNocache(), sitProperties.getTextYandexLocation(), null, sitProperties.getTextYandexApikey(), searchImageUrl, sitProperties.getImageYandexEngine(), null);
+                    String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, sitProperties.getTextNocache(), sitProperties.getTextLocation(), null, sitProperties.getTextApikey(), searchImageUrl, sitProperties.getImageEngine(), null);
 
                     CompletableFuture
                             .supplyAsync(() -> {
                                 try {
-                                    // text기반 yandex 검색 및 결과 저장.(이미지)
-                                    return searchYandex(url, YandexByImageResult.class, YandexByImageResult::getError, YandexByImageResult::getInline_images);
+                                    // text기반 검색 및 결과 저장.(이미지)
+                                    return search(url, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images);
                                 } catch (Exception e) {
                                     log.error(e.getMessage(), e);
                                     return null;
@@ -106,7 +106,7 @@ public class SearchVideoService {
                                 try {
                                     log.info("R" + r);
                                     //검색 결과를 SearchResult Table에 저장 및 이미지 저장
-                                    return saveYandex(
+                                    return save(
                                             r
                                             , tsrSns
                                             , insertResult
@@ -124,9 +124,9 @@ public class SearchVideoService {
                             })
                             .thenApplyAsync((r) -> {
                                 try {
-                                    // yandex검색을 통해 결과 db에 적재.
+                                    // 검색을 통해 결과 db에 적재.
                                     if(r == null){ return null; }
-                                    return saveImgSearchYandex(r, insertResult);
+                                    return saveImgSearch(r, insertResult);
                                 } catch (Exception e) {
                                     log.error(e.getMessage(), e);
                                     return null;
@@ -142,9 +142,9 @@ public class SearchVideoService {
         }
     }
 
-    public <INFO, RESULT> List<RESULT> searchYandex(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+    public <INFO, RESULT> List<RESULT> search(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
         try {
-            log.info("searchYandex 진입");
+            log.info("search 진입");
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
@@ -172,10 +172,10 @@ public class SearchVideoService {
         return null;
     }
 
-    public <RESULT> List<SearchResultEntity> saveYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
+    public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
-        log.info("========= saveYandex 진입 =========");
+        log.info("========= save 진입 =========");
 
         if (results == null) {
             log.info("result null");
@@ -254,7 +254,7 @@ public class SearchVideoService {
         return files;
     }
 
-    public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
+    public String saveImgSearch(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
         insertResult.setTsiStat("13");
 
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {

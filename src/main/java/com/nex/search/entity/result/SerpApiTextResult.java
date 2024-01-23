@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class YandexByTextResult {
+public class SerpApiTextResult {
 
     private String error;
 

@@ -16,7 +16,7 @@ public class ConfigData {
     private String pythonVideoModule;
     private String searchServerUrl;
 
-    private String searchYandexTextApiKey;
+    private String searchTextApiKey;
 
 //
 //    private String externalLocation;
@@ -33,7 +33,7 @@ public class ConfigData {
                 ", serverUrl='" + serverUrl + '\'' +
                 ", pythonVideoModule='" + pythonVideoModule + '\'' +
                 ", searchServerUrl='" + searchServerUrl + '\'' +
-                ", searchYandexTextApiKey='" + searchYandexTextApiKey + '\'' +
+                ", searchTextApiKey='" + searchTextApiKey + '\'' +
                 '}';
     }
 }

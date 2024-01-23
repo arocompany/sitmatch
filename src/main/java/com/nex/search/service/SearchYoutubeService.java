@@ -46,12 +46,12 @@ public class SearchYoutubeService {
 
     private final SitProperties sitProperties;
 
-    public void searchYandexYoutube(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
+    public void searchYoutube(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
         try {
 
-            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextYandexUrl(), tsiKeywordHiddenValue, nationCode, null, null, null, configData.getSearchYandexTextApiKey(), null, "youtube", null);
+            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, null, null, null, configData.getSearchTextApiKey(), null, "youtube", null);
             log.info("youtube keyword === {}, url === {}", tsiKeywordHiddenValue, url);
             CompletableFutureYoutubeByResult(url, tsrSns, insertResult);
         } catch (Exception e){
@@ -64,7 +64,7 @@ public class SearchYoutubeService {
         CompletableFuture
                 .supplyAsync(() -> {
                     try {
-                        // text기반 yandex 검색
+                        // text기반 검색
                         return searchByYoutube(url, YoutubeByResult.class, YoutubeByResult::getError, YoutubeByResult::getVideo_results);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -91,8 +91,8 @@ public class SearchYoutubeService {
                 .thenApplyAsync((r) -> {
                     try {
                         if(r == null) return null;
-                        // yandex검색을 통해 결과 db에 적재.
-                        return saveImgSearchYandex(r, insertResult);
+                        // 검색을 통해 결과 db에 적재.
+                        return saveImgSearch(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -173,7 +173,7 @@ public class SearchYoutubeService {
      * @param insertResult (검색 이력 엔티티)
      * @return String       (저장 결과)
      */
-    public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
+    public String saveImgSearch(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
         if (result == null) {
             return null;
         }

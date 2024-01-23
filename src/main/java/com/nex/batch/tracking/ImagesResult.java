@@ -3,7 +3,7 @@ package com.nex.batch.tracking;
 import lombok.Data;
 
 @Data
-public class YandexImagesResult {
+public class ImagesResult {
 
     private Integer tsiUno;
 

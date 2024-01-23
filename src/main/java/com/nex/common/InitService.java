@@ -88,7 +88,7 @@ public class InitService {
             if(config.getServerUrl() != null) configData.setServerUrl(config.getServerUrl());
             if(config.getPythonVideoModule() != null) configData.setPythonVideoModule(config.getPythonVideoModule());
             if(config.getSearchServerUrl() != null) configData.setSearchServerUrl(config.getSearchServerUrl());
-            if(config.getSearchYandexTextApiKey() != null) configData.setSearchYandexTextApiKey(config.getSearchYandexTextApiKey());
+            if(config.getSearchTextApiKey() != null) configData.setSearchTextApiKey(config.getSearchTextApiKey());
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.enable(SerializationFeature.INDENT_OUTPUT);

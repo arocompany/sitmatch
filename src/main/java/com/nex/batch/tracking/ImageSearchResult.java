@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class SearchResult implements ItemReader<List<YandexImagesResult>> {
+public class ImageSearchResult implements ItemReader<List<ImagesResult>> {
     private final TrackingSearchResultService trackingSearchResultService;
     private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
@@ -32,7 +32,7 @@ public class SearchResult implements ItemReader<List<YandexImagesResult>> {
     private int page = 0;
 
     @Override
-    public List<YandexImagesResult> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+    public List<ImagesResult> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         log.info("read() 진입");
         log.info("page1: "+page);
 
@@ -44,7 +44,7 @@ public class SearchResult implements ItemReader<List<YandexImagesResult>> {
         }
         log.info("read() 진입2");
 
-        List<YandexImagesResult> results = new ArrayList<>();
+        List<ImagesResult> results = new ArrayList<>();
 
         //24시간 모니터링 코드 값이 20 (모니터링) 인 데이터 조회
         List<SearchResultEntity> dtoList = searchResultRepository.findByMonitoringCd("20");
@@ -78,15 +78,15 @@ public class SearchResult implements ItemReader<List<YandexImagesResult>> {
             isNotImage = !"17".equals(searchInfoEntityByTsiUno.getTsiType());
 
             //모든 결과 List 추출
-            List<YandexImagesResult> allResults = trackingSearchResultService.getAllResults(
+            List<ImagesResult> allResults = trackingSearchResultService.getAllResults(
                     searchInfoEntityByTsrUno
-                    , YandexResult.class
-                    , YandexResult::getError
-                    , isNotImage ? YandexResult::getImages_results : YandexResult::getInline_images
-                    , YandexImagesResult::setTsiUno
-                    , YandexImagesResult::getLink
-                    , YandexImagesResult::isFacebook
-                    , YandexImagesResult::isInstagram
+                    , SerpApiImageResult.class
+                    , SerpApiImageResult::getError
+                    , isNotImage ? SerpApiImageResult::getImages_results : SerpApiImageResult::getInline_images
+                    , ImagesResult::setTsiUno
+                    , ImagesResult::getLink
+                    , ImagesResult::isFacebook
+                    , ImagesResult::isInstagram
                     , isNotImage
             );
 
@@ -101,25 +101,25 @@ public class SearchResult implements ItemReader<List<YandexImagesResult>> {
     }
 
     @Bean
-    public ItemReader<List<YandexImagesResult>> searchResultReader() {
+    public ItemReader<List<ImagesResult>> searchResultReader() {
         log.info("searchResultReader 진입");
         return this;
     }
     @Bean
-    public ItemProcessor<List<YandexImagesResult>, List<SearchResultEntity>> searchResultProcessor() {
+    public ItemProcessor<List<ImagesResult>, List<SearchResultEntity>> searchResultProcessor() {
         log.info("searchResultProcessor 진입");
         return imagesResults -> {
             if (!imagesResults.isEmpty()) {
                 //결과를 검색 결과 엔티티로 변환
                 return trackingSearchResultService.resultsToSearchResultEntity(
                         imagesResults
-                        , YandexImagesResult::getTsiUno
-                        , YandexImagesResult::getOriginal
-                        , YandexImagesResult::getThumbnail
-                        , YandexImagesResult::getTitle
-                        , YandexImagesResult::getLink
-                        , YandexImagesResult::isFacebook
-                        , YandexImagesResult::isInstagram
+                        , ImagesResult::getTsiUno
+                        , ImagesResult::getOriginal
+                        , ImagesResult::getThumbnail
+                        , ImagesResult::getTitle
+                        , ImagesResult::getLink
+                        , ImagesResult::isFacebook
+                        , ImagesResult::isInstagram
                 );
             }
 

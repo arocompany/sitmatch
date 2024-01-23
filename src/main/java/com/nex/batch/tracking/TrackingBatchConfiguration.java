@@ -24,7 +24,7 @@ import java.util.List;
 public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
     private final AllTimeInfo allTimeInfo;
     private final SearchInfo searchInfo;
-    private final SearchResult searchResult;
+    private final ImageSearchResult searchResult;
     private final SearchJob searchJob;
     private final int CHUNK_SIZE = 100;
 
@@ -91,7 +91,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
         log.info("searchResultStep 진입");
         return new StepBuilder("searchResultStep", jobRepository)
                 .allowStartIfComplete(true)
-                .<List<YandexImagesResult>, List<SearchResultEntity>>chunk(CHUNK_SIZE, transactionManager)
+                .<List<ImagesResult>, List<SearchResultEntity>>chunk(CHUNK_SIZE, transactionManager)
                 .reader(searchResult.searchResultReader())
                 .processor(searchResult.searchResultProcessor())
                 .writer(searchResult.searchResultWriter())
