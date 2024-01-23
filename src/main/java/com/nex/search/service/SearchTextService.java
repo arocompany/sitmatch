@@ -60,7 +60,7 @@ public class SearchTextService {
     }
 
     public void searchByText(int index, String textYandexGl, String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
-        log.info("index = {}, textYandexGl = {}, tsrSns = {}, loop = {}", index, textYandexGl, tsrSns, loop);
+        log.info("google keyword index = {}, textYandexGl = {}, tsrSns = {}, loop = {}", index, textYandexGl, tsrSns, loop);
         CompletableFuture
                 .supplyAsync(() -> {
                     try {
@@ -114,8 +114,8 @@ public class SearchTextService {
             if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
             else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
 
-            String url = CommonStaticSearchUtil.getSerpApiUrlForGoogle(sitProperties.getTextYandexUrl(), tsiKeywordHiddenValue, textYandexGl, sitProperties.getTextYandexNocache(), sitProperties.getTextYandexLocation(), (index * 10), configData.getSearchYandexTextApiKey()
-                    , null, "google");
+            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextYandexUrl(), tsiKeywordHiddenValue, textYandexGl, sitProperties.getTextYandexNocache(), sitProperties.getTextYandexLocation(), (index * 10), configData.getSearchYandexTextApiKey()
+                    , null, "google", null);
             log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
 
             HttpHeaders header = new HttpHeaders();

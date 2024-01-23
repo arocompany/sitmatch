@@ -91,7 +91,7 @@ public class SearchVideoService {
 //                            + "&nfpr=0"
 //                            + "&image_url=" + searchImageUrl;
 
-                    String url = CommonStaticSearchUtil.getSerpApiUrlForGoogle(sitProperties.getTextYandexUrl(), tsiKeywordHiddenValue, nationCode, sitProperties.getTextYandexNocache(), sitProperties.getTextYandexLocation(), null, sitProperties.getTextYandexApikey(), searchImageUrl, sitProperties.getImageYandexEngine());
+                    String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextYandexUrl(), tsiKeywordHiddenValue, nationCode, sitProperties.getTextYandexNocache(), sitProperties.getTextYandexLocation(), null, sitProperties.getTextYandexApikey(), searchImageUrl, sitProperties.getImageYandexEngine(), null);
 
                     CompletableFuture
                             .supplyAsync(() -> {

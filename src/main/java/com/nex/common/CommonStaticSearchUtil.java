@@ -215,19 +215,39 @@ public class CommonStaticSearchUtil {
         return sre;
     }
 
-    public static String getSerpApiUrlForGoogle(String url, String keyword, String country, String noCache, String location, Integer pageNo, String key, String imageUrl, String engine){
+    public static String getSerpApiUrl(String url, String keyword, String country, String noCache, String location, Integer pageNo, String key, String imageUrl, String engine, String pageToken){
 
         StringBuilder queryString = new StringBuilder();
         try {
-
-            if(StringUtils.hasText(keyword)) appendQueryParam(queryString, "q", keyword);
-            if(StringUtils.hasText(country)) appendQueryParam(queryString, "gl", country);
             if(StringUtils.hasText(noCache)) appendQueryParam(queryString, "no_cache", noCache);
             if(StringUtils.hasText(location)) appendQueryParam(queryString, "location", location);
-            if(pageNo != null && pageNo > -1) appendQueryParam(queryString, "start", String.valueOf(pageNo * 10));
             if(StringUtils.hasText(key)) appendQueryParam(queryString, "api_key", key);
-            if(StringUtils.hasText(imageUrl)) appendQueryParam(queryString, "image_url", imageUrl);
             if(StringUtils.hasText(engine)) appendQueryParam(queryString, "engine", engine);
+            if(StringUtils.hasText(pageToken)) appendQueryParam(queryString, "page_token", pageToken);
+
+            if(pageNo != null && pageNo > -1) appendQueryParam(queryString, "start", String.valueOf(pageNo * 10));
+
+            if(StringUtils.hasText(engine)) {
+                switch (engine) {
+                    case "google" -> {
+                        if(StringUtils.hasText(keyword)) appendQueryParam(queryString, "q", keyword);
+                        if(StringUtils.hasText(country)) appendQueryParam(queryString, "gl", country);
+                        if(StringUtils.hasText(imageUrl)) appendQueryParam(queryString, "image_url", imageUrl);
+                    }
+                    case "youtube" -> {
+                        if(StringUtils.hasText(keyword)) appendQueryParam(queryString, "search_query", keyword);
+                        if(StringUtils.hasText(country)) appendQueryParam(queryString, "gl", country);
+                        if(StringUtils.hasText(imageUrl)) appendQueryParam(queryString, "image_url", imageUrl);
+                    }
+                    case "google_lens" -> {
+                        if(StringUtils.hasText(country)) appendQueryParam(queryString, "country", country);
+                        if(StringUtils.hasText(imageUrl)) appendQueryParam(queryString, "url", imageUrl);
+                    }
+                    case "google_lens_image_sources" -> {
+                        if(StringUtils.hasText(country)) appendQueryParam(queryString, "country", country);
+                    }
+                }
+            }
 
 
             appendQueryParam(queryString, "safe", "off");
@@ -246,7 +266,7 @@ public class CommonStaticSearchUtil {
         if (queryString.length() > 0) {
             queryString.append("&");
         }
-        if(! key.equals("q")) {
+        if(! key.equals("q") && ! key.equals("search_query") && ! key.equals("url") && ! key.equals("image_url")) {
             queryString.append(URLEncoder.encode(key, StandardCharsets.UTF_8.toString()));
             queryString.append("=");
             queryString.append(URLEncoder.encode(value, StandardCharsets.UTF_8.toString()));

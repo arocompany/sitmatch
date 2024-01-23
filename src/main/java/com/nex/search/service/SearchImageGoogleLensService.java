@@ -4,8 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nex.common.CommonStaticSearchUtil;
-import com.nex.common.SitProperties;
+import com.nex.common.*;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -48,29 +47,20 @@ public class SearchImageGoogleLensService {
     private final RestTemplate restTemplate;
 
     public void searchYandexByGoogleLensImage(String tsrSns, SearchInfoEntity insertResult, String nationCode) throws JsonProcessingException {
-        log.info("searchYandexByGoogleLensImage 진입");
-        String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
-        searchImageUrl = sitProperties.getServerIp() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
-        // test용 이미지
-        // searchImageUrl = "http://106.254.235.202:9091/imagePath/requests/20240102/e89c63da-d7ed-48b6-a9a3-056fe582b6b2.jpg"; //고양이
-
-        this.nationCode = nationCode;
-        String finalTextYandexGl1=this.nationCode;
-
-        log.info("searchImageUrl: "+searchImageUrl);
-        // CompletableFutureGoogleLensByImage(searchImageUrl, tsrSns, insertResult);
         try {
-            String url = sitProperties.getTextYandexUrl()
-                    + "?engine=google_lens"
-                    + "&url=" + searchImageUrl
-                    + "&country="+finalTextYandexGl1
-                    + "&api_key="+sitProperties.getTextYandexApikey();
+            String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
+            searchImageUrl = configData.getSearchServerUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
 
-            log.info("url: " + url);
+            this.nationCode = nationCode;
+            String finalTextYandexGl1=this.nationCode;
 
+            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextYandexUrl(), null, nationCode, null, null, null, configData.getSearchYandexTextApiKey(), searchImageUrl, "google_lens", null);
+
+            log.info("google lens index = {}, textYandexGl = {}, tsrSns = {}, loop = {}", null, nationCode, tsrSns, null);
+            log.info("keyword === {}, url === {}", null, url);
             CompletableFutureGoogleLensByImage(url, tsrSns, insertResult, finalTextYandexGl1);
-
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -114,9 +104,8 @@ public class SearchImageGoogleLensService {
     }
 
     public <INFO, RESULT> List<RESULT> searchGoogleLens(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, String finalTextYandexGl1) throws Exception {
-        log.info("searchYandex 진입: "+url);
-
         try {
+            ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
@@ -128,31 +117,31 @@ public class SearchImageGoogleLensService {
             JsonNode rootNode = mapper.readTree(jsonInString);
             String pageToken = rootNode.at("/image_sources_search/page_token").asText();
 
-            System.out.println("page_token: " + pageToken);
-
             // pageToken값 출력
-            System.out.println("page_token: " + pageToken);
+            log.info("google lens page_token: " + pageToken);
 
-            String url2 = sitProperties.getTextYandexUrl()
-                    + "?engine=google_lens_image_sources"
-                    + "&page_token=" + pageToken
-                    + "&country=" + finalTextYandexGl1
-                    + "&safe=off"
-                    + "&api_key=" + sitProperties.getTextYandexApikey();
+//            String url2 = sitProperties.getTextYandexUrl()
+//                    + "?engine=google_lens_image_sources"
+//                    + "&page_token=" + pageToken
+//                    + "&country=" + finalTextYandexGl1
+//                    + "&safe=off"
+//                    + "&api_key=" + configData.getSearchYandexTextApiKey();
 
-            HttpHeaders header2 = new HttpHeaders();
-            HttpEntity<?> entity2 = new HttpEntity<>(header2);
-            UriComponents uri2 = UriComponentsBuilder.fromHttpUrl(url2).build();
-            ResponseEntity<?> resultMap2 = new RestTemplate().exchange(uri2.toString(), HttpMethod.GET, entity2, Object.class);
+            String sourcesUrl = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextYandexUrl(), null, finalTextYandexGl1, null, null, null, configData.getSearchYandexTextApiKey(), null, "google_lens_image_sources", pageToken);
+
+            HttpHeaders sourcesHeader = new HttpHeaders();
+            HttpEntity<?> sourcesEntity = new HttpEntity<>(sourcesHeader);
+            UriComponents sourcesUri = UriComponentsBuilder.fromHttpUrl(sourcesUrl).build();
+            ResponseEntity<?> sourcesResultMap = new RestTemplate().exchange(sourcesUri.toString(), HttpMethod.GET, sourcesEntity, Object.class);
 
             List<RESULT> results = null;
 
-            log.debug("resultMap.getStatusCodeValue(): " + resultMap2.getStatusCodeValue());
+            log.debug("resultMap.getStatusCodeValue(): " + sourcesResultMap.getStatusCodeValue());
 
-            if (resultMap2.getStatusCodeValue() == 200) {
-                ObjectMapper mapper2 = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                String jsonInString2 = mapper2.writeValueAsString(resultMap2.getBody());
-                INFO info = mapper2.readValue(jsonInString2, infoClass);
+            if (sourcesResultMap.getStatusCodeValue() == 200) {
+                ObjectMapper sourcesMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                String sourcesJsonInString = sourcesMapper.writeValueAsString(sourcesResultMap.getBody());
+                INFO info = sourcesMapper.readValue(sourcesJsonInString, infoClass);
 
                 if (getErrorFn.apply(info) == null) {
                     results = getResultFn.apply(info);
@@ -169,23 +158,17 @@ public class SearchImageGoogleLensService {
 
     public <RESULT> List<SearchResultEntity> saveGoogleLens(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
-        log.info("========= saveYandex 진입 =========");
-
         if (results == null) {
             log.info("result null");
             return null;
         }
-
         // RestTemplate restTemplate = new RestTemplate();
         List<SearchResultEntity> sreList = new ArrayList<>();
 
         //SearchResultEntity sre = null;
         for (RESULT result : results) {
-            log.info("results: " + results);
-
             try {
                 String imageUrl = getThumbnailFn.apply(result);
-                log.info("imageUrl1: "+imageUrl);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
                     SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleLensEntity(insertResult.getTsiUno(), tsrSns, result, getThumbnailFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
@@ -194,9 +177,6 @@ public class SearchImageGoogleLensService {
                     if (!tsrSns.equals(sre.getTsrSns())) {
                         continue;
                     }
-
-                    log.info("getThumbnailFn: "+getThumbnailFn);
-
                     //이미지 파일 저장
                     imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getThumbnailFn, getThumbnailFn, true);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
@@ -221,7 +201,7 @@ public class SearchImageGoogleLensService {
         if (result == null) {
             return null;
         }
-        insertResult.setTsiStat("13");
+        insertResult.setTsiStat(CommonCode.searchStateFinish);
 
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));

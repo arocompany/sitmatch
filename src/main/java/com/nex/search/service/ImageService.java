@@ -106,13 +106,10 @@ public class ImageService {
     public <RESULT> void saveYoutubeImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
             , RESULT result, Function<RESULT, Map<String,String>> getThumnailFn) throws IOException {
         // Function<RESULT, String> getPositionFn,
-        log.info("saveYoutubeImageFile 진입 ===============");
-        log.info("getThumbnailFn: " + getThumnailFn);
         // Map<String, String> imageUrl = "11".equals(sre.getTsrSns()) ? getPositionFn.apply(result) : getThumnailFn.apply(result);
         String imageUrl = getThumnailFn.apply(result).get("static");
         // imageUrl = imageUrl.replace("%7Bstatic%3Dhttps","https");
 
-        log.info("imageUrl: "+imageUrl);
         // imageUrl = imageUrl != null ? getPositionFn.apply(result) : getThumnailFn.apply(result);
 
         //2023-03-26 에러 나는 url 처리

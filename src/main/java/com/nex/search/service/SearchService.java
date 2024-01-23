@@ -104,10 +104,15 @@ public class SearchService {
                     }
                 } else if(mimeType.substring(0,mimeType.indexOf("/")).contentEquals("image")){// 이미지 업로드
                     BufferedImage bi = ImageIO.read(uploadFile.getInputStream());
-                    param.setTsiImgHeight(String.valueOf(bi.getHeight()));
-                    param.setTsiImgWidth(String.valueOf(bi.getWidth()));
-                    param.setTsiImgSize(String.valueOf(uploadFile.getSize() / 1024));
-                    bi.flush();
+
+                    // TODO : image/webp mime type에 대한 후 처리 또는 예외 처리 필요
+                    if(bi != null) {
+                        param.setTsiImgHeight(String.valueOf(bi.getHeight()));
+                        param.setTsiImgWidth(String.valueOf(bi.getWidth()));
+                        param.setTsiImgSize(String.valueOf(uploadFile.getSize() / 1024));
+                        bi.flush();
+                    }
+
                     if(! StringUtils.hasText(param.getTsiKeyword())){
                         param.setTsiType("17");
                     } else {
@@ -148,8 +153,8 @@ public class SearchService {
                 // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19:영상
                 switch (param.getTsiType()) {
                     case CommonCode.searchTypeKeyword -> { // 11:키워드
+                        searchYoutubeService.searchYandexYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
                         if (param.getTsiGoogle() == 1) {
-                            searchYoutubeService.searchYandexYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
                             searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
                         }
                         if (param.getTsiInstagram() == 1) {
@@ -179,7 +184,6 @@ public class SearchService {
                         if (param.getTsiInstagram() == 1) { searchVideoService.searchYandexByTextVideo(CommonCode.snsTypeInstagram, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
                     }
                     case CommonCode.searchTypeImage -> { // 17:이미지
-                        // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
                         searchImageGoogleLensService.searchYandexByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
                         searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
                     }
@@ -189,8 +193,6 @@ public class SearchService {
                 }
                 // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
             }
-
-            log.info("====== search 끝 ======");
         }catch (Exception e){
             e.printStackTrace();
             log.error(e.getMessage());

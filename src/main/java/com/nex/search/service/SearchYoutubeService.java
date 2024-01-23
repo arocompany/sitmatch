@@ -2,9 +2,7 @@ package com.nex.search.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nex.common.CommonStaticSearchUtil;
-import com.nex.common.RestTemplateConfig;
-import com.nex.common.SitProperties;
+import com.nex.common.*;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -49,16 +47,12 @@ public class SearchYoutubeService {
     private final SitProperties sitProperties;
 
     public void searchYandexYoutube(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
-        log.info("========= searchYandexYoutube 진입 =========");
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
-
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
         try {
-            String url = sitProperties.getTextYandexUrl()
-                    + "?engine=youtube"
-                    + "&search_query=" + tsiKeywordHiddenValue
-                    + "&gl=" + nationCode
-                    + "&api_key=" + sitProperties.getTextYandexApikey();
 
+            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextYandexUrl(), tsiKeywordHiddenValue, nationCode, null, null, null, configData.getSearchYandexTextApiKey(), null, "youtube", null);
+            log.info("youtube keyword === {}, url === {}", tsiKeywordHiddenValue, url);
             CompletableFutureYoutubeByResult(url, tsrSns, insertResult);
         } catch (Exception e){
             log.debug("Exception: "+e);
@@ -109,30 +103,24 @@ public class SearchYoutubeService {
     // 유튜브
     public <INFO, RESULT> List<RESULT> searchByYoutube(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
         try {
-            log.info("searchByYoutube 진입");
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
             ResponseEntity<?> resultMap = restTemplateConfig.customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-
             List<RESULT> results = null;
-
-            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
 
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 // String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "video_results");
                 String jsonInString = mapper.writeValueAsString(resultMap.getBody());
-                log.info("jsonInString " + jsonInString);
                 INFO info = mapper.readValue(jsonInString, infoClass);
 
-                log.info("info: " + info);
                 if (getErrorFn.apply(info) == null) {
                     results = getResultFn.apply(info);
                 }
+            }else{
+                log.error(resultMap.getStatusCode() + "");
             }
-
-            log.debug("results: " + results);
             return results != null ? results : new ArrayList<>();
         }catch (Exception e){
             log.error(e.getMessage());
@@ -143,19 +131,14 @@ public class SearchYoutubeService {
     // ,Function<RESULT, String> getThumnailFn
     public <RESULT> List<SearchResultEntity> saveYoutube(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getPositionFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn ,Function<RESULT, Map<String,String>> getThumnailFn) throws Exception {
-        log.info("========= saveYandex 진입 =========");
         if (results == null) {
             log.info("result null");
             return null;
         }
-
-        log.info("getThumbnailFn: " + getThumnailFn);
         // RestTemplate restTemplate = new RestTemplate();
         List<SearchResultEntity> sreList = new ArrayList<>();
-
         //SearchResultEntity sre = null;
         for (RESULT result : results) {
-            log.info("results: " + results);
             try {
                 //검색 결과 엔티티 추출
                 SearchResultEntity sre = getYoutubeResultEntity(insertResult.getTsiUno(), result, getPositionFn,getLinkFn, getTitleFn);
@@ -194,7 +177,7 @@ public class SearchYoutubeService {
         if (result == null) {
             return null;
         }
-        insertResult.setTsiStat("13");
+        insertResult.setTsiStat(CommonCode.searchStateFinish);
 
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
@@ -222,17 +205,13 @@ public class SearchYoutubeService {
 
     public <RESULT> SearchResultEntity getYoutubeResultEntity(int tsiUno, RESULT result
             , Function<RESULT, String> getPositionFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn) {
-        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
         sre.setTsrDownloadUrl(getPositionFn.apply(result));
         sre.setTsrSiteUrl(getLinkFn.apply(result));
         sre.setTsrTitle(getTitleFn.apply(result));
-
-        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
-        sre.setTsrSns("11");
-
+        sre.setTsrSns(CommonCode.snsTypeGoogle);
         return sre;
     }
 
