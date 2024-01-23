@@ -2,9 +2,7 @@ package com.nex.search.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nex.common.CommonCode;
-import com.nex.common.CommonStaticSearchUtil;
-import com.nex.common.SitProperties;
+import com.nex.common.*;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -51,9 +49,11 @@ public class SearchTextImageService {
 
     public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode, String tsrSns){
 //        String tsrSns = "17";
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
-        searchImageUrl = sitProperties.getServerIp() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
+        searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
         this.nationCode = nationCode;
         searchSnsByImage(searchImageUrl, tsiKeywordHiddenValue, searchInfoDto, tsrSns, insertResult);
 
@@ -111,6 +111,8 @@ public class SearchTextImageService {
 
     public <INFO, RESULT> List<RESULT> search(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
         try {
+            ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+
             if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
             else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
 
@@ -118,7 +120,7 @@ public class SearchTextImageService {
                     + "?gl=" + textGl
                     + "&no_cache=" + sitProperties.getTextNocache()
                     + "&q=" + tsiKeywordHiddenValue
-                    + "&api_key=" + sitProperties.getTextApikey()
+                    + "&api_key=" + configData.getSerpApiKey()
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"

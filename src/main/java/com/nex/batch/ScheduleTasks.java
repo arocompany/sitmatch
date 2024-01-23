@@ -48,6 +48,7 @@ public class ScheduleTasks {
                 // 스케쥴러가 시작되는 부분
                 // scheduler.schedule(getRunnable(), getTrigger(batchCycleByHour));
                 scheduler.schedule(getRunnable(), new CronTrigger(String.format("0 0 */%s * * *", batchCycleByHour + "")));
+//                scheduler.schedule(getRunnable(), new CronTrigger(String.format("0 */%s * * * *", batchCycleByHour + "")));
 
             }
         }

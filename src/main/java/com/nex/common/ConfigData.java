@@ -12,11 +12,10 @@ public class ConfigData {
     private String userName;
     private String password;
 
-    private String serverUrl;
     private String pythonVideoModule;
-    private String searchServerUrl;
+    private String hostImageUrl;
 
-    private String searchTextApiKey;
+    private String serpApiKey;
 
 //
 //    private String externalLocation;
@@ -30,10 +29,9 @@ public class ConfigData {
                 ", url='" + url + '\'' +
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
-                ", serverUrl='" + serverUrl + '\'' +
                 ", pythonVideoModule='" + pythonVideoModule + '\'' +
-                ", searchServerUrl='" + searchServerUrl + '\'' +
-                ", searchTextApiKey='" + searchTextApiKey + '\'' +
+                ", hostImageUrl='" + hostImageUrl + '\'' +
+                ", serpApiKey='" + serpApiKey + '\'' +
                 '}';
     }
 }

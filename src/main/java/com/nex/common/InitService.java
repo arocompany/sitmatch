@@ -35,7 +35,6 @@ public class InitService {
 
             }
         }catch (Exception e){
-            e.printStackTrace();
             log.error(e.getMessage());
         }
 
@@ -53,8 +52,9 @@ public class InitService {
 
             ConfigDataManager.getInstance().setDefaultConfig(loadedConfig);
             log.info("Config loaded from file: {}", loadedConfig.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 
@@ -70,7 +70,6 @@ public class InitService {
             log.info("Config file created: " + newConfig);
             readConfigFromFile();
         } catch (IOException e) {
-            e.printStackTrace();
             log.error(e.getMessage());
         }
     }
@@ -85,10 +84,9 @@ public class InitService {
             if(config.getUrl() != null) configData.setUrl(config.getUrl());
             if(config.getUserName() != null) configData.setUserName(config.getUserName());
             if(config.getPassword() != null) configData.setPassword(config.getPassword());
-            if(config.getServerUrl() != null) configData.setServerUrl(config.getServerUrl());
             if(config.getPythonVideoModule() != null) configData.setPythonVideoModule(config.getPythonVideoModule());
-            if(config.getSearchServerUrl() != null) configData.setSearchServerUrl(config.getSearchServerUrl());
-            if(config.getSearchTextApiKey() != null) configData.setSearchTextApiKey(config.getSearchTextApiKey());
+            if(config.getHostImageUrl() != null) configData.setHostImageUrl(config.getHostImageUrl());
+            if(config.getSerpApiKey() != null) configData.setSerpApiKey(config.getSerpApiKey());
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -97,7 +95,6 @@ public class InitService {
             log.info("Config file created: " + configData);
             readConfigFromFile();
         } catch (IOException e) {
-            e.printStackTrace();
             log.error(e.getMessage());
         }
     }

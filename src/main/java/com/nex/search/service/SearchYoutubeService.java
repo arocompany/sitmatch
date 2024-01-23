@@ -51,7 +51,7 @@ public class SearchYoutubeService {
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
         try {
 
-            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, null, null, null, configData.getSearchTextApiKey(), null, "youtube", null);
+            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, null, null, null, configData.getSerpApiKey(), null, "youtube", null);
             log.info("youtube keyword === {}, url === {}", tsiKeywordHiddenValue, url);
             CompletableFutureYoutubeByResult(url, tsrSns, insertResult);
         } catch (Exception e){

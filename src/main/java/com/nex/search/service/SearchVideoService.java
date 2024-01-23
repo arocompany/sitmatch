@@ -2,10 +2,7 @@ package com.nex.search.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nex.common.CommonCode;
-import com.nex.common.CommonStaticSearchUtil;
-import com.nex.common.RestTemplateConfig;
-import com.nex.common.SitProperties;
+import com.nex.common.*;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -74,8 +71,10 @@ public class SearchVideoService {
         }
 
         try {
+            ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+
             for (int i = 0; i < files.size(); i++) {
-                String searchImageUrl = sitProperties.getServerIp() + sitProperties.getFileLocation3() + "/" + path + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
+                String searchImageUrl = configData.getHostImageUrl() + sitProperties.getFileLocation3() + "/" + path + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
                 // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
                 // searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
 
@@ -91,7 +90,7 @@ public class SearchVideoService {
 //                            + "&nfpr=0"
 //                            + "&image_url=" + searchImageUrl;
 
-                    String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, sitProperties.getTextNocache(), sitProperties.getTextLocation(), null, sitProperties.getTextApikey(), searchImageUrl, sitProperties.getImageEngine(), null);
+                    String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, sitProperties.getTextNocache(), sitProperties.getTextLocation(), null, configData.getSerpApiKey(), searchImageUrl, sitProperties.getImageEngine(), null);
 
                     CompletableFuture
                             .supplyAsync(() -> {

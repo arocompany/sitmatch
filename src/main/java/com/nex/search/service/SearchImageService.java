@@ -3,6 +3,8 @@ package com.nex.search.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.CommonStaticSearchUtil;
+import com.nex.common.ConfigData;
+import com.nex.common.ConfigDataManager;
 import com.nex.common.SitProperties;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
@@ -48,9 +50,12 @@ public class SearchImageService {
     private final RestTemplate restTemplate;
 
     public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
+
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+
         String tsrSns = "11";
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
-        searchImageUrl = sitProperties.getServerIp() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
+        searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
         // searchImageUrl= "http://106.254.235.202:9091/imagePath/requests/20240115/05b9343c-b1d2-48c6-ae3a-27dfd3bae972.jpg";
         this.nationCode = nationCode;
 
@@ -112,10 +117,12 @@ public class SearchImageService {
 
     public <INFO, RESULT> List<RESULT> search(int index,String finalTextGl1, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
         try {
+            ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+
             String url = sitProperties.getTextUrl()
                     + "?gl=" + finalTextGl1
                     + "&no_cache=" + sitProperties.getTextNocache()
-                    + "&api_key=" + sitProperties.getTextApikey()
+                    + "&api_key=" + configData.getSerpApiKey()
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"

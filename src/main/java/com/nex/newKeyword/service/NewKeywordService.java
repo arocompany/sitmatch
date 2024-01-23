@@ -2,9 +2,7 @@ package com.nex.newKeyword.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nex.common.CommonStaticSearchUtil;
-import com.nex.common.Consts;
-import com.nex.common.SitProperties;
+import com.nex.common.*;
 import com.nex.search.entity.NewKeywordEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
@@ -84,6 +82,8 @@ public class NewKeywordService {
         String tsrSns = "11";
         // String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+
         do {
             String url = sitProperties.getTextUrl()
                     + "?q=" + newKeyword
@@ -92,7 +92,7 @@ public class NewKeywordService {
                     + "&location=" + sitProperties.getTextLocation()
 //                    + "&tbm=" + textTbm
                     + "&start=" + String.valueOf(index * 10)
-                    + "&api_key=" + sitProperties.getTextApikey()
+                    + "&api_key=" + configData.getSerpApiKey()
                     + "&safe=off"
                     + "&filter=0"
                     + "&nfpr=0"

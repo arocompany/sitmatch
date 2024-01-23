@@ -51,12 +51,12 @@ public class SearchImageGoogleLensService {
 
         try {
             String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
-            searchImageUrl = configData.getSearchServerUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
+            searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
 
             this.nationCode = nationCode;
             String finalTextGl1=this.nationCode;
 
-            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, nationCode, null, null, null, configData.getSearchTextApiKey(), searchImageUrl, "google_lens", null);
+            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, nationCode, null, null, null, configData.getSerpApiKey(), searchImageUrl, "google_lens", null);
 
             log.info("google lens index = {}, textGl = {}, tsrSns = {}, loop = {}", null, nationCode, tsrSns, null);
             log.info("keyword === {}, url === {}", null, url);
@@ -127,7 +127,7 @@ public class SearchImageGoogleLensService {
 //                    + "&safe=off"
 //                    + "&api_key=" + configData.getSearchTextApiKey();
 
-            String sourcesUrl = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, finalTextGl1, null, null, null, configData.getSearchTextApiKey(), null, "google_lens_image_sources", pageToken);
+            String sourcesUrl = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, finalTextGl1, null, null, null, configData.getSerpApiKey(), null, "google_lens_image_sources", pageToken);
 
             HttpHeaders sourcesHeader = new HttpHeaders();
             HttpEntity<?> sourcesEntity = new HttpEntity<>(sourcesHeader);

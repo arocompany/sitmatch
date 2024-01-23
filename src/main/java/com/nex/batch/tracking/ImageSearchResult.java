@@ -1,6 +1,7 @@
 package com.nex.batch.tracking;
 
 import com.nex.batch.JpaItemListWriter;
+import com.nex.common.CommonCode;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.repo.SearchInfoRepository;
@@ -75,7 +76,8 @@ public class ImageSearchResult implements ItemReader<List<ImagesResult>> {
             searchInfoEntityByTsrUno = searchInfoEntityMapByTsrUno.get(searchResultEntity.getTsrUno());
 
             //검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19: 영상
-            isNotImage = !"17".equals(searchInfoEntityByTsiUno.getTsiType());
+            isNotImage = !CommonCode.searchTypeImage.equals(searchInfoEntityByTsiUno.getTsiType())
+                    && !CommonCode.searchTypeVideo.equals(searchInfoEntityByTsiUno.getTsiType());
 
             //모든 결과 List 추출
             List<ImagesResult> allResults = trackingSearchResultService.getAllResults(
