@@ -60,6 +60,7 @@ public class SearchTextService {
     }
 
     public void searchByText(int index, String textYandexGl, String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
+        log.info("index = {}, textYandexGl = {}, tsrSns = {}, loop = {}", index, textYandexGl, tsrSns, loop);
         CompletableFuture
                 .supplyAsync(() -> {
                     try {
@@ -71,6 +72,7 @@ public class SearchTextService {
                     }
                 }).thenApply((r) -> {
                     try {
+                        log.info("r == {}", r);
                         //검색 결과를 SearchResult Table에 저장 및 이미지 저장
                         return saveYandex(
                                 r
@@ -104,7 +106,6 @@ public class SearchTextService {
     }
 
     public <INFO, RESULT> List<RESULT> searchTextYandex(int index, SearchInfoDto searchInfoDto, String tsrSns, String textYandexGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        log.info("============== searchTextYandex index: {} sns: {} textYandexGl {}", index, tsrSns, textYandexGl);
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
@@ -114,9 +115,8 @@ public class SearchTextService {
             else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
 
             String url = CommonStaticSearchUtil.getSerpApiUrlForGoogle(sitProperties.getTextYandexUrl(), tsiKeywordHiddenValue, textYandexGl, sitProperties.getTextYandexNocache(), sitProperties.getTextYandexLocation(), (index * 10), configData.getSearchYandexTextApiKey()
-                    , null, sitProperties.getImageYandexEngine());
-            log.info("keyword === {}", tsiKeywordHiddenValue);
-            log.info("url === {} " + url);
+                    , null, "google");
+            log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
 
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
@@ -125,7 +125,7 @@ public class SearchTextService {
             ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
             List<RESULT> results = null;
 
-            log.info("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+//            log.info("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "images_results");
@@ -134,13 +134,6 @@ public class SearchTextService {
                 if (getErrorFn.apply(info) == null) {
                     results = getResultFn.apply(info);
                 }
-                /*
-                log.info("mapper: "+ mapper);
-                log.info("jsonInString: "+ jsonInString);
-                log.info("info: "+ info);
-                */
-                log.info("searchTextYandex results: " + results);
-
             }
 
             if (results == null || index >= sitProperties.getTextYandexCountLimit() - 1) {
@@ -156,7 +149,7 @@ public class SearchTextService {
     public <RESULT> List<SearchResultEntity> saveYandex(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
-        log.info("=========== saveYandex 진입 ==============");
+
         if (results == null) {
             loop = false;
             return null;
@@ -166,14 +159,13 @@ public class SearchTextService {
         List<SearchResultEntity> sreList = new ArrayList<>();
 
         for (RESULT result : results) {
-
+            log.info("result item === {}", result);
             try {
                 String imageUrl = getOriginalFn.apply(result);
-                log.info("imageUrl1: "+imageUrl);
+
                 if(imageUrl == null) {
                     imageUrl = getThumbnailFn.apply(result);
                 }
-                log.info("imageUrl2: "+imageUrl);
 
                 if(imageUrl != null) {
                     SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
@@ -186,7 +178,6 @@ public class SearchTextService {
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
                     searchResultRepository.save(sre);
 //                    searchService.saveSearchResult(sre);
-
                     sreList.add(sre);
                 }
 
@@ -202,7 +193,6 @@ public class SearchTextService {
     }
 
     public String saveImgSearchYandex(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
-        log.info("==========saveImgSearchYandex 진입==========");
         if (result == null) {
             loop=false;
             return null;
@@ -276,7 +266,6 @@ public class SearchTextService {
             }
         }).thenAccept((r) -> {
             try {
-                log.info("==== thenAccept 진입 ===="+" textYandexGl "+textYandexGl);
                 if (r != null) {
                     // yandex검색을 통해 결과 db에 적재.
                     saveImgSearchYandex(r, insertResult);
@@ -285,9 +274,7 @@ public class SearchTextService {
                 log.error(e.getMessage(), e);
             }
         }).thenRun(()->{
-            log.info("thenRun loop값: "+loop);
             if(loop == true){
-                log.info("loop==true 진입:" + loop);
                 CompletableFutureYandexByText(finalIndex, tsrSns, textYandexGl, insertResult,searchInfoDto);
             }else{
                 log.info("==== CompletableFutureYandexByText(재귀 함수 종료 ==== index 값: {} sns 값: {} textYandexGl {}", finalIndex, tsrSns, textYandexGl);

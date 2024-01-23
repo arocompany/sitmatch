@@ -246,9 +246,15 @@ public class CommonStaticSearchUtil {
         if (queryString.length() > 0) {
             queryString.append("&");
         }
-        queryString.append(URLEncoder.encode(key, StandardCharsets.UTF_8.toString()));
-        queryString.append("=");
-        queryString.append(URLEncoder.encode(value, StandardCharsets.UTF_8.toString()));
+        if(! key.equals("q")) {
+            queryString.append(URLEncoder.encode(key, StandardCharsets.UTF_8.toString()));
+            queryString.append("=");
+            queryString.append(URLEncoder.encode(value, StandardCharsets.UTF_8.toString()));
+        }else{
+            queryString.append(key);
+            queryString.append("=");
+            queryString.append(value);
+        }
     }
 
     public static void setOutMap(Map<String, Object> map, Page<DefaultQueryDtoInterface> page){
