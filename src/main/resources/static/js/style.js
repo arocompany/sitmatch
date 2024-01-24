@@ -116,6 +116,9 @@ document.addEventListener("DOMContentLoaded", function () {
     xhr.open('GET', '/keyword/', true);
     //요청 전송
     xhr.send(null);
+
+    alert('zz')
+
     //통신후 작업
     xhr.onload = () => {
       //통신 성공
@@ -351,4 +354,68 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   });
+
+  const nationsSetting = document.querySelector(".btn-nations-setting");
+  // const checkboxNation = document.getElementById('checkboxNation');
+  nationsSetting.addEventListener('click', function() {
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/nations/setting',true);
+    xhr.send(null);
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        document.body.style.overflow = 'hidden';
+        modal.style.display = 'flex';
+        modal.innerHTML = xhr.response;
+
+        const esc = document.querySelector(".esc-btn");
+        esc.onclick = () => {
+          modal.style.display = 'none';
+          document.body.style.overflow = 'unset';
+        }
+
+        alert('페이지 진입2')
+        const checkboxNation = document.querySelectorAll(".checkboxNation");
+        checkboxNation.forEach(function (checkbox){
+          if(checkbox.value==="1") {
+            checkbox.checked=true;
+          } else {
+            checkbox.checked=false;
+          }
+        })
+
+        const nationUno = document.querySelectorAll(".nationUno");
+        const checkboxNationValue = document.querySelectorAll(".checkboxNation");
+
+        nationUno.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            alert(btn.value)
+
+            $.ajax({
+              url: "/nations/nationCodeUpdate",
+              type: "POST",
+              dataType: "json",
+              data : {
+                ncUno : checkboxNationUno.value,
+                ncIsActive : btn.value
+              },
+              success: function(data) {
+
+              }, error: function (e){
+                console.log("error", e)
+              }
+            });
+
+          });
+        });
+
+
+
+
+      }
+    }
+
+
+  });
+
 });

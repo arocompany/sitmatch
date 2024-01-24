@@ -7,13 +7,18 @@
                     <li class="nations_all_check flex">
                         <label class="flex">
                             <span class="tit">전체</span>
-                            <span class="select_box"><input type="checkbox"></span>
+                            <span class="select_box" >
+                                <input class="selectBox" type="checkbox">
+                            </span>
                         </label>
                     </li>
                     <li th:each="item : ${list}">
                         <label class="flex">
                             <span class="tit" th:text="${item.getNcName()}">미국</span>
-                            <span class="select_box"><input type="checkbox"></span>
+                            <span class="select_box nationUno"  th:value="${item.getNcUno()}">
+                                <!--<input class="checkboxNationUno" type="hidden" th:value="${item.getNcUno()}">-->
+                                <input class="checkboxNation" type="checkbox"  th:value="${item.getNcIsActive()}">
+                            </span>
                         </label>
                     </li>
 

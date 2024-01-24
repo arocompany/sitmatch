@@ -16,8 +16,10 @@ public class NationService {
     private final NationCodeRepository nationCodeRepository;
 
     public List<NationCodeEntity> nationList(){
-
         return nationCodeRepository.findAll();
     }
 
+    public NationCodeEntity nationUpdate(int ncUno, int ncIsActive){
+        return nationCodeRepository.nationUpdate(ncUno, ncIsActive);
+    }
 }

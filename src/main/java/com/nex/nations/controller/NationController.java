@@ -6,10 +6,7 @@ import com.nex.nations.service.NationService;
 import com.nex.user.entity.SessionInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -32,5 +29,28 @@ public class NationController {
         modelAndView.addObject("list", nationActiveList);
 
         return modelAndView;
+    }
+
+    @PostMapping("/nationCodeUpdate")
+    public String nationCodeUpdate(String ncUno, String ncIsActive){
+        int ncIsActive2=0;
+
+        int ncUno2 = Integer.parseInt(ncUno);
+        if(ncIsActive.equals("1")){
+            ncIsActive2 = 0;
+        } else {
+            ncIsActive2 = 1;
+        }
+
+        log.info("nationCodeUpdate 진입");
+        log.info("ncUno: "+ncUno+" ncIsActive: "+ncIsActive);
+        //nationService.nationUpdate(ncUno, ncIsActive2);
+        return "success";
+    }
+
+    @PostMapping("/nationCodeAllUpdate")
+    public String nationCodeAllUpdate() {
+        
+        return "success";
     }
 }
