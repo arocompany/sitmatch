@@ -38,7 +38,7 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 // .next(allTimeMonitoringSetTimeStep(jobRepository, transactionManager)) // 마지막 모니터링 체크시간
                 .next(searchInfoStep(jobRepository, transactionManager))
                 .next(searchResultStep(jobRepository, transactionManager))
-                // .next(searchJobStep(jobRepository, transactionManager))
+                .next(searchJobStep(jobRepository, transactionManager))
                 .build();
     }
 

@@ -217,7 +217,7 @@ public class SearchService {
     // 배치시 진입
     public <INFO, RESULT> List<RESULT> searchBatch(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
         try {
-            log.info("searchBatch 진입");
+            log.info("searchBatch 진입 url === {}", url);
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();

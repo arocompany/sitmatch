@@ -45,10 +45,7 @@ public class ScheduleTasks {
             if (batchCycleByHour != null && batchCycleByHour > 0) {
                 scheduler = new ThreadPoolTaskScheduler();
                 scheduler.initialize();
-                // 스케쥴러가 시작되는 부분
-                // scheduler.schedule(getRunnable(), getTrigger(batchCycleByHour));
-//                scheduler.schedule(getRunnable(), new CronTrigger(String.format("0 0 */%s * * *", batchCycleByHour + "")));
-                scheduler.schedule(getRunnable(), new CronTrigger(String.format("0 */%s * * * *", batchCycleByHour + "")));
+                scheduler.schedule(getRunnable(), new CronTrigger(String.format("0 0 */%s * * *", batchCycleByHour + "")));
 
             }
         }
@@ -56,30 +53,10 @@ public class ScheduleTasks {
 
     private Runnable getRunnable(){
         return () -> {
-//            log.info("current time === {}", CommonStaticUtil.getCurrent().getSecond() + "");
+            log.info("current time === {}", CommonStaticUtil.getCurrent().getSecond() + "");
             trackingTask();
         };
     }
-
-//    private Trigger getTrigger(int batchCycleByHour) {
-//        // 작업 주기 설정
-//        log.info("Scheduled Cycle Setting by " + batchCycleByHour + " hours");
-////        return new PeriodicTrigger(batchCycleByHour, TimeUnit.HOURS);
-//
-//
-//        PeriodicTrigger trigger = new PeriodicTrigger(batchCycleByHour, TimeUnit.HOURS);
-//
-//        // Trigger의 시작 시간을 조절하여 00시, 06시, 12시, 18시, 24시로 설정
-//        int currentHour = CommonStaticUtil.getCurrent().getHour();  // 현재 시간을 가져오는 메소드를 구현해야 합니다.
-//        int nextExecutionHour = ((currentHour / batchCycleByHour) + 1) * batchCycleByHour;
-//
-//        trigger.setInitialDelay(nextExecutionHour - currentHour);
-//
-//        return trigger;
-//    }
-
-    //@Scheduled(cron = "${batch.schedule.tracking.cron}", zone = "Asia/Seoul")
-    //@Scheduled(cron = "0 12 * * * *", zone = "Asia/Seoul")
     public void trackingTask() {
         log.info("trackingTask 진입");
         JobParameters jobParameters = new JobParametersBuilder().toJobParameters();
@@ -90,10 +67,4 @@ public class ScheduleTasks {
             throw new RuntimeException(e);
         }
     }
-
-
-//    @Scheduled(fixedDelay = 5000, initialDelay = 3000)
-//    public void init() {
-//
-//    }
 }

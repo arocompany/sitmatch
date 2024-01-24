@@ -25,6 +25,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -148,37 +149,47 @@ public class TrackingSearchResultService{
         for(NationCodeEntity ncInfo : ncList){
             int pageNo = 0;
             //기존 SearchService 에 있던 부분 활용
-            boolean isFirst = index == 0;
-            boolean loop = true;
-            do {
-                String url = getUrl(tsiKeyword, pageNo, isText, searchInfoEntity, ncInfo.getNcCode().toLowerCase());
-                log.info(" ### url ### : {}, ### pageNo ### : {}, ### nation ### : {}", url, pageNo, ncInfo.getNcName());
+            String url = getUrl(tsiKeyword, pageNo, isText, searchInfoEntity, ncInfo.getNcCode().toLowerCase());
 
-                if (! loop || pageNo >= sitProperties.getTextCountLimit()) loop = false;
-                else {
-                    CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
-                            .supplyAsync(() -> {
-                                try {
-                                    // text기반 yandex 검색
-                                    // return searchService.searchYandex(url, infoClass, getErrorFn, getSubFn);
-                                    return searchService.searchBatch(url, infoClass, getErrorFn, getSubFn);
-                                } catch (Exception e) {
-                                    log.debug(e.getMessage());
-                                }
-                                return null;
-                            });
-                    try {
-                        List<RESULT> res = listCompletableFuture.get();
-                        if(res == null || res.isEmpty() || res.get(0) == null){
-                            loop = false;
+            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
+                    .supplyAsync(() -> {
+                        try {
+                            List<RESULT> list = searchService.searchBatch(url, infoClass, getErrorFn, getSubFn);
+                            return list;
+                        } catch (Exception e) {
+                            log.debug(e.getMessage());
                         }
-                    }catch (Exception e){
-                        log.error(e.getMessage());
+                        return null;
+                    });
+
+            completableFutures.add(listCompletableFuture);
+
+            int numberOfApiCalls = sitProperties.getTextCountLimit();
+            for (int i = 1; i < numberOfApiCalls; i++) {
+                int currentApiNumber = i;
+
+                listCompletableFuture = listCompletableFuture.thenComposeAsync(previousResult -> {
+                    // 이전 API의 결과를 확인하고 다음 외부 API 호출
+                    if (previousResult != null && !previousResult.isEmpty() && previousResult.get(0) != null) {
+                        String finalUrl = getUrl(tsiKeyword, currentApiNumber, isText, searchInfoEntity, ncInfo.getNcCode().toLowerCase());
+
+                        return CompletableFuture.supplyAsync(() -> {
+                            try {
+                                List<RESULT> list = searchService.searchBatch(finalUrl, infoClass, getErrorFn, getSubFn);
+                                return list;
+                            } catch (Exception e) {
+                                log.debug(e.getMessage());
+                            }
+                            return null;
+                        });
+                    } else {
+                        // 이전 API의 결과가 없으면 빈 CompletableFuture 반환
+                        return CompletableFuture.completedFuture(Collections.emptyList());
                     }
-                    completableFutures.add(listCompletableFuture);
-                }
-                pageNo++;
-            } while (loop);
+                });
+
+                completableFutures.add(listCompletableFuture);
+            }
         }
 
         //결과 값을 받아온다.
