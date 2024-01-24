@@ -146,14 +146,15 @@ public class TrackingSearchResultService{
 
         List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
         for(NationCodeEntity ncInfo : ncList){
+            int pageNo = 0;
             //기존 SearchService 에 있던 부분 활용
             boolean isFirst = index == 0;
             boolean loop = true;
             do {
-                String url = getUrl(tsiKeyword, index, isText, searchInfoEntity, ncInfo.getNcCode().toLowerCase());
-                log.info(" ### url ### : {}, ### index ### : {}", url, index);
+                String url = getUrl(tsiKeyword, pageNo, isText, searchInfoEntity, ncInfo.getNcCode().toLowerCase());
+                log.info(" ### url ### : {}, ### pageNo ### : {}, ### nation ### : {}", url, pageNo, ncInfo.getNcName());
 
-                if (! loop || index >= sitProperties.getTextCountLimit()) loop = false;
+                if (! loop || pageNo >= sitProperties.getTextCountLimit()) loop = false;
                 else {
                     CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
                             .supplyAsync(() -> {
@@ -176,7 +177,7 @@ public class TrackingSearchResultService{
                     }
                     completableFutures.add(listCompletableFuture);
                 }
-                index++;
+                pageNo++;
             } while (loop);
         }
 
