@@ -12,12 +12,12 @@ public class NationCodeEntity {
     @Column(name = "NC_UNO", nullable = false)
     private int ncUno;
     @Basic
-    @Column(name = "NC_NAME", nullable = true)
+    @Column(name = "NC_NAME", nullable = false)
     private String ncName;
     @Basic
-    @Column(name = "NC_CODE", nullable = true)
+    @Column(name = "NC_CODE", nullable = false)
     private String ncCode;
     @Basic
-    @Column(name = "NC_IS_ACTIVE", nullable = true)
+    @Column(name = "NC_IS_ACTIVE", nullable = false)
     private int ncIsActive;
 }
