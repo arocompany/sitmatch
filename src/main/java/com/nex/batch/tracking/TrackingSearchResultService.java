@@ -163,6 +163,8 @@ public class TrackingSearchResultService{
 
             completableFutures.add(listCompletableFuture);
 
+            //TODO 상열 확인 필요
+
             int numberOfApiCalls = sitProperties.getTextCountLimit();
             for (int i = 1; i < numberOfApiCalls; i++) {
                 int currentApiNumber = i;
