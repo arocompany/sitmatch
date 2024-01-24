@@ -9,72 +9,18 @@
                             <span class="tit">서비스</span>
                             <span class="tit">아이콘</span>
                             <span class="tit">설정여부</span>
-                            <span class="tit">노출여부</span>
                         </label>
                     </li>
-                    <li>
+                    <li th:each="item : ${list}">
                         <label class="flex">
-                            <span class="tit">구글</span>
-                            <span class="icon flex flex_cnt"><span class="icon_box"><img src="/img/sns/insta.png" alt="구글"></span></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                        </label>
-                    </li>
-                    <li>
-                        <label class="flex">
-                            <span class="tit">트위터</span>
-                            <span class="icon flex flex_cnt"><span class="icon_box"><img src="/img/sns/insta.png" alt="트위터"></span></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                        </label>
-                    </li>
-                    <li>
-                        <label class="flex">
-                            <span class="tit">인스타그램</span>
-                            <span class="icon flex flex_cnt"><span class="icon_box"><img src="/img/sns/insta.png" alt="인스타그램"></span></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                        </label>
-                    </li>
-                    <li>
-                        <label class="flex">
-                            <span class="tit">페이스북</span>
-                            <span class="icon flex flex_cnt"><span class="icon_box"><img src="/img/sns/insta.png" alt="페이스북"></span></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                        </label>
-                    </li>
-
-                    <li>
-                        <label class="flex">
-                            <span class="tit">구글</span>
-                            <span class="icon flex flex_cnt"><span class="icon_box"><img src="/img/sns/insta.png" alt="구글"></span></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                        </label>
-                    </li>
-                    <li>
-                        <label class="flex">
-                            <span class="tit">트위터</span>
-                            <span class="icon flex flex_cnt"><span class="icon_box"><img src="/img/sns/insta.png" alt="트위터"></span></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                        </label>
-                    </li>
-                    <li>
-                        <label class="flex">
-                            <span class="tit">인스타그램</span>
-                            <span class="icon flex flex_cnt"><span class="icon_box"><img src="/img/sns/insta.png" alt="인스타그램"></span></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                        </label>
-                    </li>
-                    <li>
-                        <label class="flex">
-                            <span class="tit">페이스북</span>
-                            <span class="icon flex flex_cnt"><span class="icon_box"><img src="/img/sns/insta.png" alt="페이스북"></span></span>
-                            <span class="select_box"><input type="checkbox"></span>
-                            <span class="select_box"><input type="checkbox"></span>
+                            <span class="tit" th:text="${item.getSsName()}"></span>
+                            <span class="icon flex flex_cnt">
+                                <span class="icon_box"><img th:src="${item.getSsIconPath()}" >
+                                </span>
+                            </span>
+                            <span class="select_box">
+                                <input class="checkboxService chkServiceItem" type="checkbox" th:value="${item.getSsIsActive()}" th:attr="serviceUno=${item.ssUno}" th:checked="${item.ssIsActive == 1}">
+                            </span>
                         </label>
                     </li>
                 </ul>

@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //통신후 작업
     xhr.onload = () => {
       //통신 성공
-      if (xhr.status == 200) {
+      if (xhr.status === 200) {
         document.body.style.overflow = 'hidden';
         modal.style.display = 'flex';
         modal.innerHTML = xhr.response;
@@ -287,7 +287,7 @@ document.addEventListener("DOMContentLoaded", function () {
       xhr.send(null);
       xhr.onload = () => {
         //통신 성공
-        if (xhr.status == 200) {
+        if (xhr.status === 200) {
           document.body.style.overflow = 'hidden';
           modal.style.display = 'flex';
           modal.innerHTML = xhr.response;
@@ -338,7 +338,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //통신후 작업
     xhr.onload = () => {
       //통신 성공
-      if (xhr.status == 200) {
+      if (xhr.status === 200) {
         document.body.style.overflow = 'hidden';
         modal.style.display = 'flex';
         modal.innerHTML = xhr.response
@@ -353,7 +353,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   const nationsSetting = document.querySelector(".btn-nations-setting");
-  // const checkboxNation = document.getElementById('checkboxNation');
   nationsSetting.addEventListener('click', function() {
 
     var xhr = new XMLHttpRequest();
@@ -371,30 +370,28 @@ document.addEventListener("DOMContentLoaded", function () {
           document.body.style.overflow = 'unset';
         }
 
-        if ($(".nations .chkItem:checked").length == $(".nations .chkItem").length){
+        if ($(".nations .chkItem:checked").length === $(".nations .chkItem").length){
           $(".nations .chkAll").prop("checked", true);
         }
 
         $(".nations .chkItem, .nations .chkAll").on("click", function(){
           if($(this).is(":checked")){
-            console.info("checked");
-            changeFun($(this).attr("nationuno"), 1);
+            changeFun($(this).attr("nationUno"), 1);
 
-            if($(this).attr("nationuno") == undefined){
+            if($(this).attr("nationUno") === undefined){
               $(".nations .chkItem").prop("checked", true);
             }else{
-              if ($(".nations .chkItem:checked").length == $(".nations .chkItem").length){
+              if ($(".nations .chkItem:checked").length === $(".nations .chkItem").length){
                 $(".nations .chkAll").prop("checked", true);
               }
             }
           }else{
-            console.info("unchecked");
-            changeFun($(this).attr("nationuno"), 0);
+            changeFun($(this).attr("nationUno"), 0);
 
-            if($(this).attr("nationuno") == undefined){
+            if($(this).attr("nationUno") === undefined){
               $(".nations .chkItem").prop("checked", false);
             }else{
-              if ($(".nations .chkItem:checked").length != $(".nations .chkItem").length){
+              if ($(".nations .chkItem:checked").length !== $(".nations .chkItem").length){
                 $(".nations .chkAll").prop("checked", false);
               }
             }
@@ -403,17 +400,45 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   });
+
+  const servicesSetting = document.querySelector(".btn-services-setting");
+  servicesSetting.addEventListener('click', function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/serp/serviceCodeUpdate',true);
+    xhr.send(null);
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        document.body.style.overflow = 'hidden';
+        modal.style.display = 'flex';
+        modal.innerHTML = xhr.response;
+
+        const esc = document.querySelector(".esc-btn");
+        esc.onclick = () => {
+          modal.style.display = 'none';
+          document.body.style.overflow = 'unset';
+        }
+
+        $(".chkServiceItem").on("click", function(){
+          if($(this).is(":checked")){
+            serviceChangeFun($(this).attr("serviceUno"), 1);
+          } else {
+            serviceChangeFun($(this).attr("serviceUno"), 0);
+          }
+        });
+      }
+    }
+  });
+
 });
 
 function changeFun(uno, isActive){
-  console.info(uno, isActive);
-
   // if(!uno || uno < 0){
   //   console.info("uno data is strange", uno);
   //   return;
   // }
 
-  if(isActive == undefined || isActive == null || isActive < 0){
+  if(isActive === undefined || isActive === null || isActive < 0){
     console.info("isActive data is strange", isActive);
     return;
   }
@@ -441,7 +466,19 @@ function changeFun(uno, isActive){
   });
 }
 
-
-// $(function(){
-
-// });
+function serviceChangeFun(uno, isActive){
+  if(isActive === undefined || isActive === null || isActive < 0){
+    console.info("isActive data is strange", isActive);
+    return;
+  }
+  $.ajax({
+    url: "/serp/serviceCodeUpdate/"+uno+"/"+isActive,
+    type: "POST",
+    dataType: "json",
+    success: function(data) {
+      console.info(data);
+    }, error: function (e){
+      console.log("error", e)
+    }
+  });
+}
