@@ -19,7 +19,36 @@ public class NationService {
         return nationCodeRepository.findAll();
     }
 
-    public NationCodeEntity nationUpdate(int ncUno, int ncIsActive){
-        return nationCodeRepository.nationUpdate(ncUno, ncIsActive);
+    public String nationUpdate(int ncUno, int ncIsActive){
+        try{
+            int data = nationCodeRepository.nationUpdate(ncUno, ncIsActive);
+
+            log.info("result == {}", data);
+
+            if(data > 0){
+                return "success";
+            }
+        }catch(Exception e){
+            log.error(e.getMessage());
+            e.printStackTrace();
+        }
+        return "fail";
+    }
+
+
+    public String nationAllUpdate(int ncIsActive){
+        try{
+            int data = nationCodeRepository.nationAllUpdate(ncIsActive);
+
+            log.info("result == {}", data);
+
+            if(data > 0){
+                return "success";
+            }
+        }catch(Exception e){
+            log.error(e.getMessage());
+            e.printStackTrace();
+        }
+        return "fail";
     }
 }

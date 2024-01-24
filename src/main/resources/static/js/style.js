@@ -1,6 +1,5 @@
 // 헤더 유저(상세) 버튼 
 document.addEventListener("DOMContentLoaded", function () {
-  console.info("321");
   const detailBtn = document.querySelectorAll("header .detail-btn");
   if (detailBtn) {
     for (let i = 0; i < detailBtn.length; i++) {
@@ -116,8 +115,6 @@ document.addEventListener("DOMContentLoaded", function () {
     xhr.open('GET', '/keyword/', true);
     //요청 전송
     xhr.send(null);
-
-    alert('zz')
 
     //통신후 작업
     xhr.onload = () => {
@@ -305,30 +302,30 @@ document.addEventListener("DOMContentLoaded", function () {
     })
   })
 
-  const btnNationsSetting = document.querySelector(".btn-nations-setting");
-  btnNationsSetting.addEventListener("click", () => {
-    //XMLHttpRequest 객체 생성
-    var xhr = new XMLHttpRequest();
-    //요청을 보낼 방식, 주소, 비동기여부 설정
-    xhr.open('GET', '/nations/setting', true);
-    //요청 전송
-    xhr.send(null);
-    //통신후 작업
-    xhr.onload = () => {
-      //통신 성공
-      if (xhr.status == 200) {
-        document.body.style.overflow = 'hidden';
-        modal.style.display = 'flex';
-        modal.innerHTML = xhr.response
-      }
-
-      const esc = document.querySelector(".esc-btn");
-      esc.onclick = () => {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'unset';
-      }
-    }
-  });
+  // const btnNationsSetting = document.querySelector(".btn-nations-setting");
+  // btnNationsSetting.addEventListener("click", () => {
+  //   //XMLHttpRequest 객체 생성
+  //   var xhr = new XMLHttpRequest();
+  //   //요청을 보낼 방식, 주소, 비동기여부 설정
+  //   xhr.open('GET', '/nations/setting', true);
+  //   //요청 전송
+  //   xhr.send(null);
+  //   //통신후 작업
+  //   xhr.onload = () => {
+  //     //통신 성공
+  //     if (xhr.status == 200) {
+  //       document.body.style.overflow = 'hidden';
+  //       modal.style.display = 'flex';
+  //       modal.innerHTML = xhr.response
+  //     }
+  //
+  //     const esc = document.querySelector(".esc-btn");
+  //     esc.onclick = () => {
+  //       modal.style.display = 'none';
+  //       document.body.style.overflow = 'unset';
+  //     }
+  //   }
+  // });
 
   const btnServicesSetting = document.querySelector(".btn-services-setting");
   btnServicesSetting.addEventListener("click", () => {
@@ -374,48 +371,77 @@ document.addEventListener("DOMContentLoaded", function () {
           document.body.style.overflow = 'unset';
         }
 
-        alert('페이지 진입2')
-        const checkboxNation = document.querySelectorAll(".checkboxNation");
-        checkboxNation.forEach(function (checkbox){
-          if(checkbox.value==="1") {
-            checkbox.checked=true;
-          } else {
-            checkbox.checked=false;
-          }
-        })
+        if ($(".nations .chkItem:checked").length == $(".nations .chkItem").length){
+          $(".nations .chkAll").prop("checked", true);
+        }
 
-        const nationUno = document.querySelectorAll(".nationUno");
-        const checkboxNationValue = document.querySelectorAll(".checkboxNation");
+        $(".nations .chkItem, .nations .chkAll").on("click", function(){
+          if($(this).is(":checked")){
+            console.info("checked");
+            changeFun($(this).attr("nationuno"), 1);
 
-        nationUno.forEach((btn) => {
-          btn.addEventListener('click', () => {
-            alert(btn.value)
-
-            $.ajax({
-              url: "/nations/nationCodeUpdate",
-              type: "POST",
-              dataType: "json",
-              data : {
-                ncUno : checkboxNationUno.value,
-                ncIsActive : btn.value
-              },
-              success: function(data) {
-
-              }, error: function (e){
-                console.log("error", e)
+            if($(this).attr("nationuno") == undefined){
+              $(".nations .chkItem").prop("checked", true);
+            }else{
+              if ($(".nations .chkItem:checked").length == $(".nations .chkItem").length){
+                $(".nations .chkAll").prop("checked", true);
               }
-            });
+            }
+          }else{
+            console.info("unchecked");
+            changeFun($(this).attr("nationuno"), 0);
 
-          });
+            if($(this).attr("nationuno") == undefined){
+              $(".nations .chkItem").prop("checked", false);
+            }else{
+              if ($(".nations .chkItem:checked").length != $(".nations .chkItem").length){
+                $(".nations .chkAll").prop("checked", false);
+              }
+            }
+          }
         });
-
-
-
-
       }
     }
-
-
   });
-
 });
+
+function changeFun(uno, isActive){
+  console.info(uno, isActive);
+
+  // if(!uno || uno < 0){
+  //   console.info("uno data is strange", uno);
+  //   return;
+  // }
+
+  if(isActive == undefined || isActive == null || isActive < 0){
+    console.info("isActive data is strange", isActive);
+    return;
+  }
+
+  let url = "/nations/nationCodeUpdate";
+
+  if(uno > 0){
+    url += "/"+uno;
+  }
+
+  if(isActive > -1){
+    url += "/" + isActive;
+  }
+
+  $.ajax({
+    url: url,
+    type: "POST",
+    dataType: "json",
+    data : {},
+    success: function(data) {
+      console.info(data);
+    }, error: function (e){
+      console.log("error", e)
+    }
+  });
+}
+
+
+// $(function(){
+
+// });

@@ -8,35 +8,19 @@
                         <label class="flex">
                             <span class="tit">전체</span>
                             <span class="select_box" >
-                                <input class="selectBox" type="checkbox">
+                                <input class="selectBox chkAll" type="checkbox">
                             </span>
                         </label>
                     </li>
                     <li th:each="item : ${list}">
                         <label class="flex">
-                            <span class="tit" th:text="${item.getNcName()}">미국</span>
-                            <span class="select_box nationUno"  th:value="${item.getNcUno()}">
+                            <span class="tit" th:text="${item.getNcName()}"></span>
+                            <span class="select_box nationUno">
                                 <!--<input class="checkboxNationUno" type="hidden" th:value="${item.getNcUno()}">-->
-                                <input class="checkboxNation" type="checkbox"  th:value="${item.getNcIsActive()}">
+                                <input class="checkboxNation chkItem" type="checkbox" th:value="${item.getNcIsActive()}" th:attr="nationUno=${item.ncUno}" th:checked="${item.ncIsActive == 1}">
                             </span>
                         </label>
                     </li>
-
-                    
-                    <!--
-                                        <li class="nations_all_check flex">
-                                            <label class="flex">
-                                                <span class="tit">전체</span>
-                                                <span class="select_box"><input type="checkbox"></span>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="flex">
-                                                <span class="tit">미국</span>
-                                                <span class="select_box"><input type="checkbox"></span>
-                                            </label>
-                                        </li>
-                    -->
                 </ul>
             </form>
         </div>

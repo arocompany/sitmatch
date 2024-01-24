@@ -31,26 +31,22 @@ public class NationController {
         return modelAndView;
     }
 
-    @PostMapping("/nationCodeUpdate")
-    public String nationCodeUpdate(String ncUno, String ncIsActive){
-        int ncIsActive2=0;
-
-        int ncUno2 = Integer.parseInt(ncUno);
-        if(ncIsActive.equals("1")){
-            ncIsActive2 = 0;
-        } else {
-            ncIsActive2 = 1;
+    @PostMapping("/nationCodeUpdate/{ncUno}/{ncIsActive}")
+    public String nationUpdate(@PathVariable("ncUno") Integer ncUno, @PathVariable("ncIsActive") Integer ncIsActive){
+        if(ncUno == null || ncIsActive == null){
+            log.info("ncUno: {}, ncIsActive {}", ncUno, ncIsActive);
+            return "data is wrong";
         }
-
-        log.info("nationCodeUpdate 진입");
-        log.info("ncUno: "+ncUno+" ncIsActive: "+ncIsActive);
-        //nationService.nationUpdate(ncUno, ncIsActive2);
-        return "success";
+        return nationService.nationUpdate(ncUno, ncIsActive);
     }
 
-    @PostMapping("/nationCodeAllUpdate")
-    public String nationCodeAllUpdate() {
-        
-        return "success";
+    @PostMapping("/nationCodeUpdate/{ncIsActive}")
+    public String nationAllUpdate(@PathVariable("ncIsActive") Integer ncIsActive) {
+
+        if(ncIsActive == null){
+            log.info("ncIsActive {}", ncIsActive);
+            return "data is wrong";
+        }
+        return nationService.nationAllUpdate(ncIsActive);
     }
 }

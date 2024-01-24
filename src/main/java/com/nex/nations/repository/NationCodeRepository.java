@@ -19,8 +19,11 @@ public interface NationCodeRepository extends JpaRepository<NationCodeEntity, In
     @Transactional
     @Modifying
     @Query(value = "UPDATE tb_nation_code SET nc_is_active = :ncIsActive WHERE nc_uno = :ncUno", nativeQuery = true)
-    NationCodeEntity nationUpdate(int ncUno, int ncIsActive);    // 자동추적 키워드 목록
+    int nationUpdate(int ncUno, int ncIsActive);    // 자동추적 키워드 목록
 
-
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE tb_nation_code SET nc_is_active = :ncIsActive", nativeQuery = true)
+    int nationAllUpdate(int ncIsActive);    // 자동추적 키워드 목록
 
 }
