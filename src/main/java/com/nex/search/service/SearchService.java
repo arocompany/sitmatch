@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.Chart.entity.*;
 import com.nex.Chart.repo.*;
 import com.nex.common.*;
-
 import com.nex.nations.entity.NationCodeEntity;
 import com.nex.nations.repository.NationCodeRepository;
 import com.nex.search.entity.SearchInfoEntity;
@@ -16,6 +15,8 @@ import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
 import com.nex.search.repo.VideoInfoRepository;
+import com.nex.serpServices.entity.SerpServicesEntity;
+import com.nex.serpServices.repo.SerpServicesRepository;
 import com.nex.user.entity.ResultListExcelDto;
 import com.nex.user.entity.SearchHistoryExcelDto;
 import jakarta.servlet.ServletOutputStream;
@@ -67,6 +68,7 @@ public class SearchService {
     private final SearchYoutubeService searchYoutubeService;
 
     private final NationCodeRepository nationCodeRepository;
+    private final SerpServicesRepository serpServicesRepository;
 
     private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
@@ -149,19 +151,21 @@ public class SearchService {
     public void search(SearchInfoEntity param, SearchInfoDto siDto, String folder){
         try {
             List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+            List<SerpServicesEntity> ssList = serpServicesRepository.findBySsIsActive(1);
             for (NationCodeEntity ncInfo : ncList) {
                 // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19:영상
                 switch (param.getTsiType()) {
                     case CommonCode.searchTypeKeyword -> { // 11:키워드
-                        searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
-                        if (param.getTsiGoogle() == 1) {
-                            searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
-                        }
-                        if (param.getTsiInstagram() == 1) {
-                            searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
-                        }
-                        if (param.getTsiFacebook() == 1) {
-                            searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+
+                        for(SerpServicesEntity ssInfo : ssList) {
+                            switch (ssInfo.getSsName()){
+                                case "google" -> {
+                                    if (param.getTsiGoogle() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
+                                    if (param.getTsiInstagram() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
+                                    if (param.getTsiFacebook() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
+                                }
+                                case "youtube" -> { searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase()); }
+                            }
                         }
                     }
                     case CommonCode.searchTypeKeywordImage -> { // 13:키워드+이미지

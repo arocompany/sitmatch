@@ -31,14 +31,14 @@
       <img src="/img/common/logo3.jpg" alt="서울기술 연구원 로고">
     </h1>
     <form name="search" action="./search" method="POST" enctype="multipart/form-data" onsubmit="return goresult()">
-      <div class="sns-check">
-        <div class="areaItem"  th:each="item : ${serpServicesIsSsActiveList}">
-          <input type="checkbox" th:classappend="${item.ssName}" th:id="${item.ssName}" th:name="${#strings.concat('tsi',#strings.toUpperCase(#strings.substring(item.ssName, 0, 1)),#strings.substring(item.ssName, 1))}" checked>
-          <label class="btn-off bor10" th:for="${item.ssName}" th:tooltip="${item.ssName}" flow="up" th:text="${item.ssName}"></label>
-        </div>
-      </div>
+<!--      <div class="sns-check">-->
+<!--        <div class="areaItem"  th:each="item : ${serpServicesIsSsActiveList}">-->
+<!--          <input type="checkbox" th:classappend="${item.ssName}" th:id="${item.ssName}" th:name="${#strings.concat('tsi',#strings.toUpperCase(#strings.substring(item.ssName, 0, 1)),#strings.substring(item.ssName, 1))}" checked>-->
+<!--          <label class="btn-off bor10" th:for="${item.ssName}" th:tooltip="${item.ssName}" flow="up" th:text="${item.ssName}"></label>-->
+<!--        </div>-->
+<!--      </div>-->
 
-      <!--<div class="sns-check">
+      <div class="sns-check">
         <input type="checkbox" id="google" name="tsiGoogle" checked>
         <label class="btn-off bor10" for="google" tooltip="구글" flow="up">구글</label>
 
@@ -53,7 +53,7 @@
         <div class="sns-check">
         </div>
       </div>
-      -->
+
       <div class="search-bar-user bor10" style="width: 550px; height: 60px;">
         <input style="text-align: center; margin-left: 100px;" id="tsiUserFile" name="tsiUserFile" type="text" placeholder="대상자의 파일명을 입력하세요" >
       </div>

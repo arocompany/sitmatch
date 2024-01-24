@@ -1,12 +1,7 @@
 package com.nex.serpServices.controller;
 
-import com.nex.common.Consts;
-import com.nex.nations.entity.NationCodeEntity;
-import com.nex.nations.service.NationService;
 import com.nex.serpServices.entity.SerpServicesEntity;
 import com.nex.serpServices.service.SerpServicesService;
-import com.nex.user.entity.NewKeywordDto;
-import com.nex.user.entity.SessionInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
