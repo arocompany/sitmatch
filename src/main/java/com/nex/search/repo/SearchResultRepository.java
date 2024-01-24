@@ -18,6 +18,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     Integer countByTrkStatCdNotNullAndTrkStatCd(String trkStatCd);
     // Integer countByMonitoringCd(String monitoringCd);
 
+    Integer countByTrkStatCdNotNull();
+
     @Query(value = allTimeMonitoringCnt, nativeQuery = true, countQuery=allTimeMonitoringCnt)
     String allTimeMonitoringCnt();
 
@@ -54,7 +56,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " ON TSI.USER_UNO = TU.USER_UNO " +
             " WHERE TSR.TRK_STAT_CD IS NOT NULL " +
             " AND TRK_STAT_CD IS NOT NULL " +
-            " AND TSR.TSR_TITLE LIKE CONCAT('%','','%') OR TSR.TSR_TITLE IS NULL" +
+            " AND (TSR.TSR_TITLE LIKE CONCAT('%','','%') OR TSR.TSR_TITLE IS NULL)" +
             " AND TSR.MONITORING_CD = '20' " +
             " ORDER BY tsr.MST_DML_DT DESC ";
 

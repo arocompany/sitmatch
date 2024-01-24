@@ -24,7 +24,7 @@ import java.util.List;
 public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
     private final AllTimeInfo allTimeInfo;
     private final SearchInfo searchInfo;
-    private final ImageSearchResult searchResult;
+    private final SearchResult searchResult;
     private final SearchJob searchJob;
     private final int CHUNK_SIZE = 100;
 

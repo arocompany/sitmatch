@@ -39,7 +39,6 @@ public class ScheduleTasks {
                 scheduler = new ThreadPoolTaskScheduler();
                 scheduler.initialize();
                 scheduler.schedule(getRunnable(), new CronTrigger(String.format("0 0 */%s * * *", batchCycleByHour + "")));
-
             }
         }
     }
@@ -50,6 +49,7 @@ public class ScheduleTasks {
             trackingTask();
         };
     }
+
     public void trackingTask() {
         log.info("trackingTask 진입");
         JobParameters jobParameters = new JobParametersBuilder().toJobParameters();

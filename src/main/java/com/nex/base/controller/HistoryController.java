@@ -93,12 +93,14 @@ public class HistoryController {
 
         // 추적이력 데이터
         modelAndView.addObject("traceHistoryList", Objects.requireNonNull(traceHistoryMap).get("traceHistoryList"));
-        modelAndView.addObject("traceHistoryListCount", traceHistoryMap.get("totalElements"));
+
         modelAndView.addObject("traceNumber", traceHistoryMap.get("number"));
         modelAndView.addObject("maxPage", traceHistoryMap.get("maxPage"));
         modelAndView.addObject("traceTotalPages", traceHistoryMap.get("totalPages"));
         modelAndView.addObject("traceKeyword", traceKeyword);
 
+
+        modelAndView.addObject("traceHistoryListCount", searchService.getResultByTrace());
         modelAndView.addObject("countMonitoring", traceHistoryMap.get("countMonitoring")); // 모니터링
         modelAndView.addObject("countDelReq", traceHistoryMap.get("countDelReq"));         // 삭제요청
         modelAndView.addObject("countDelCmpl", traceHistoryMap.get("countDelCmpl"));       // 삭제완료

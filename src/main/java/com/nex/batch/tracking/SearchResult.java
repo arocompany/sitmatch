@@ -5,7 +5,6 @@ import com.nex.common.CommonCode;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.repo.SearchInfoRepository;
-import com.nex.search.repo.SearchResultMonitoringRepository;
 import com.nex.search.repo.SearchResultRepository;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +23,10 @@ import java.util.stream.Collectors;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class ImageSearchResult implements ItemReader<List<ImagesResult>> {
+public class SearchResult implements ItemReader<List<ImagesResult>> {
     private final TrackingSearchResultService trackingSearchResultService;
     private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
-    private final SearchResultMonitoringRepository searchResultMonitoringRepository;
     private final EntityManagerFactory em;
     private int page = 0;
 

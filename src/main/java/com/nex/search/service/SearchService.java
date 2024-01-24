@@ -345,6 +345,10 @@ public class SearchService {
         return videoInfoRepository.findAllByTsiUno(tsiUno);
     }
 
+    public int getResultByTrace(){
+        return searchResultRepository.countByTrkStatCdNotNull();
+    }
+
     public Map<String, Object> getTraceHistoryList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
@@ -1023,6 +1027,7 @@ public class SearchService {
         SearchResultEntity sre =  searchResultRepository.findByTsrUno(tsrUno);
         sre.setTrkStatCd(null);
         sre.setDataStatCd("20");
+        sre.setMonitoringCd("10");
         searchResultRepository.save(sre);
     }
 
