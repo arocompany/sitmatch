@@ -36,7 +36,6 @@ public class SearchController {
         }
 
         log.info("search진입 tsiKeyword {}", searchInfoEntity.getTsiKeyword());
-        // String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
         LocalDate now = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -53,7 +52,6 @@ public class SearchController {
             return mv;
         }
 
-
         return mv;
     }
 
@@ -63,7 +61,6 @@ public class SearchController {
         searchService.deleteTsiUnos(tsiUnosValue);
         return "success";
     }
-
 
     @GetMapping("deleteSearchInfo")
     public String deleteSearchInfo(@RequestParam Optional<Integer> tsiUno) {
@@ -85,7 +82,6 @@ public class SearchController {
             String userId = sessionInfoDto.getUserId();
             searchService.addTrkStat(userUno,userId, tsrUno.get());
         }
-        // tsrUno.ifPresent(searchService::addTrkStat);
         return "success";
     }
 
@@ -102,7 +98,6 @@ public class SearchController {
                                @RequestParam String trkStatCd) {
         int userUno = sessionInfoDto.getUserUno();
         String userId = sessionInfoDto.getUserId();
-        log.info(" setTrkStatCd 진입: "+trkStatCd);
 
         if(trkStatCd.equals("20")) { // 삭제요청
             tsrUno.ifPresent(integer -> searchService.setTrkStatCd(userUno, userId, integer, "20"));
@@ -118,14 +113,9 @@ public class SearchController {
     @GetMapping("/monitoring")
     public String setMonitoringCd(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                   @RequestParam Optional<Integer> tsrUno) {
-
-        log.info(" === setMonitoringCd 진입 여기 === ");
         int userUno = sessionInfoDto.getUserUno();
         String userId = sessionInfoDto.getUserId();
-        // log.info("tsrUno: "+ tsrUno.get() + " traceTsiUno: "+traceTsiUno.get());
-        // monitoring_cd= 10 비활성화  // 20 활성화
         searchService.setMonitoringCd(userUno, userId, tsrUno.get());
-        // tsrUno.ifPresent(searchService::setMonitoringCd);
         return "success";
     }
 }

@@ -150,13 +150,13 @@ public class SearchService {
     }
     public void search(SearchInfoEntity param, SearchInfoDto siDto, String folder){
         try {
-            List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
-            List<SerpServicesEntity> ssList = serpServicesRepository.findBySsIsActive(1);
+            List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);               // 활성화된 언어 리스트
+            List<SerpServicesEntity> ssList = serpServicesRepository.findBySsIsActive(1); // 활성화된 검색엔진 리스트
+
             for (NationCodeEntity ncInfo : ncList) {
                 // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19:영상
                 switch (param.getTsiType()) {
                     case CommonCode.searchTypeKeyword -> { // 11:키워드
-
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()){
                                 case "google" -> {
@@ -164,36 +164,44 @@ public class SearchService {
                                     if (param.getTsiInstagram() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
                                     if (param.getTsiFacebook() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
                                 }
-                                case "youtube" -> { searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase()); }
+                                case "youtube" -> searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
                             }
                         }
                     }
                     case CommonCode.searchTypeKeywordImage -> { // 13:키워드+이미지
-                        searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
-                        if (param.getTsiGoogle() == 1) {
-                            searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
-                        }
-                        if (param.getTsiInstagram() == 1) {
-                            searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
-                        }
-                        if (param.getTsiFacebook() == 1) {
-                            searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                        for(SerpServicesEntity ssInfo : ssList) {
+                            switch (ssInfo.getSsName()){
+                                case "google" -> {
+                                    if (param.getTsiGoogle() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
+                                    if (param.getTsiInstagram() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
+                                    if (param.getTsiFacebook() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
+                                }
+                                case "googleLens" -> searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
+                            }
                         }
                     }
-                    case CommonCode.searchTypeKeywordVideo -> {
-                        // 15:키워드+영상
+                    case CommonCode.searchTypeKeywordVideo -> { // 15:키워드+영상
 //                            search(param, folder, siDto);
-                        if (param.getTsiGoogle() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());}
-                        if (param.getTsiFacebook() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeFacebook, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
-                        if (param.getTsiInstagram() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeInstagram, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
+                        for(SerpServicesEntity ssInfo : ssList) {
+                            switch (ssInfo.getSsName()){
+                                case "google" -> {
+                                    if (param.getTsiGoogle() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());}
+                                    if (param.getTsiFacebook() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeFacebook, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
+                                    if (param.getTsiInstagram() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeInstagram, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
+                                }
+                            }
+                        }
                     }
                     case CommonCode.searchTypeImage -> { // 17:이미지
-                        searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
-                        searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
+                        for(SerpServicesEntity ssInfo : ssList) {
+                            switch (ssInfo.getSsName()){
+                                case "google" -> searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
+                                case "googleLens" -> searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
+                            }
+                        }
                     }
-                    case CommonCode.searchTypeVideo -> {// 19: 영상
-                        searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());
-                    }
+                    // 19: 영상
+                    case CommonCode.searchTypeVideo -> searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());
                 }
                 // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
             }
@@ -367,7 +375,6 @@ public class SearchService {
     }
 
     public Map<String, Object> getTraceHistoryUserFileList(Integer page, String keyword) {
-        log.info(" == getTraceHistoryUserFileList 진입 == ");
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 //        Page<SearchResultEntity> traceHistoryListPage = searchResultRepository.findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(keyword, pageRequest);
@@ -711,15 +718,12 @@ public class SearchService {
     }
 
     public void deleteTsrUnos(List<Integer> tsrUnoValues) {
-        log.info("추적이력 일괄삭제 진입");
         List<SearchResultEntity> sre = searchResultRepository.findByTsrUnoIn(tsrUnoValues);
-        // List<MatchResultEntity> mre = matchResultRepository.findByTsrUnoIn(tsrUnoValues);
         for (SearchResultEntity searchResultEntity : sre) {
             searchResultEntity.setTrkStatCd(null);
             searchResultEntity.setDataStatCd("20");
             searchResultRepository.save(searchResultEntity);
         }
-
     }
 
     public void deleteSearchInfo(Integer tsiUno) {
@@ -773,7 +777,7 @@ public class SearchService {
         }
     }
 
-    public void setMonitoringCd(int userUno,String userId, Integer tsrUno) {
+    public void setMonitoringCd(int userUno,String userId, Integer tsrUno) { // monitoring_cd (10: 비활성화, 20: 활성화)
         SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
         searchResultEntity.setMonitoringCd(Consts.MONITORING_CD_NONE.equals(searchResultEntity.getMonitoringCd()) ? Consts.MONITORING_CD_ING : Consts.MONITORING_CD_NONE);
         searchResultRepository.save(searchResultEntity);
@@ -796,10 +800,8 @@ public class SearchService {
         log.info("getSearchInfoList page: " + page);
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        // Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, pageRequest);
-        //  Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc("10","0", keyword, pageRequest);
-
         Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getSearchInfoResultCnt("10","0", keyword, pageRequest);
+
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
         outMap.put("number", searchInfoListPage.getNumber());
@@ -813,9 +815,8 @@ public class SearchService {
     public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        // Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc("10", keyword, userUno, pageRequest);
-        // Page<SearchInfoEntity> searchInfoListPage = searchInfoRepository.findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc("10","0", keyword, userUno, pageRequest);
         Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getUserSearchInfoList("10","0", keyword, userUno, pageRequest);
+
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
         outMap.put("number", searchInfoListPage.getNumber());

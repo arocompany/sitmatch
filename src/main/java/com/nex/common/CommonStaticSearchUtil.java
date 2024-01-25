@@ -248,14 +248,10 @@ public class CommonStaticSearchUtil {
                     }
                 }
             }
-
-
             appendQueryParam(queryString, "safe", "off");
             appendQueryParam(queryString, "filter", "0");
             appendQueryParam(queryString, "nfpr", "0");
-
         } catch (UnsupportedEncodingException e) {
-            // 예외 처리 로직 추가
             e.printStackTrace();
         }
         return url + "?" + queryString;

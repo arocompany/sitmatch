@@ -49,7 +49,7 @@ public class SearchTextService {
     public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode, String tsrSns){
         this.nationCode = nationCode;
         String textGl = this.nationCode;
-        // searchText(tsiType, insertResult, folder, tsrSns, searchInfoDto);
+
         searchSnsByText(tsrSns, insertResult, searchInfoDto, textGl);
     }
 
