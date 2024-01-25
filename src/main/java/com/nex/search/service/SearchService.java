@@ -786,7 +786,16 @@ public class SearchService {
 
     public void setMonitoringCd(int userUno,String userId, Integer tsrUno) { // monitoring_cd (10: 비활성화, 20: 활성화)
         SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
+
         searchResultEntity.setMonitoringCd(Consts.MONITORING_CD_NONE.equals(searchResultEntity.getMonitoringCd()) ? Consts.MONITORING_CD_ING : Consts.MONITORING_CD_NONE);
+        //TODO 모니터링 주기 설정 html 및 min max 시간 설정 로직
+        if(searchResultEntity.getMonitoringCd().equals(Consts.MONITORING_CD_ING)){
+            searchResultEntity.setTsrIsBatch(1);
+            searchResultEntity.setTsrCycleBatch(24);
+        }else{
+            searchResultEntity.setTsrIsBatch(0);
+        }
+
         searchResultRepository.save(searchResultEntity);
 
         AlltimeMonitoringHistEntity alltimeMonitoringHistEntity = new AlltimeMonitoringHistEntity();
