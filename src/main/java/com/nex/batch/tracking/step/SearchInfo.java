@@ -1,5 +1,6 @@
-package com.nex.batch.tracking;
+package com.nex.batch.tracking.step;
 
+import com.nex.batch.tracking.TrackingSearchInfoService;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.repo.SearchInfoRepository;
@@ -23,9 +24,8 @@ public class SearchInfo {
     private final EntityManagerFactory em;
     private final int CHUNK_SIZE = 100;
 
-    @Bean
-    public JpaPagingItemReader<SearchResultEntity> searchInfoReader() {
-        log.info("searchInfoReader 진입");
+
+    public JpaPagingItemReader<SearchResultEntity> searchInfoReader(Integer tsrUno) {
         String queryString = """
                              select sr
                              from   SearchResultEntity sr
@@ -40,7 +40,7 @@ public class SearchInfo {
                                                from   SearchInfoEntity si
                                                where  si.tsrUno = sr.tsrUno
                                                )
-                             """;
+                             and sr.tsrUno = """ + tsrUno;
         return new JpaPagingItemReaderBuilder<SearchResultEntity>()
                 .name("searchInfoReader")
                 .pageSize(CHUNK_SIZE)

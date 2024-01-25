@@ -150,13 +150,16 @@ public class SearchService {
     }
     public void search(SearchInfoEntity param, SearchInfoDto siDto, String folder){
         try {
-            List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);               // 활성화된 언어 리스트
-            List<SerpServicesEntity> ssList = serpServicesRepository.findBySsIsActive(1); // 활성화된 검색엔진 리스트
+            // 활성화된 언어 리스트
+            List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+            // 활성화된 검색엔진 리스트
+            List<SerpServicesEntity> ssList = serpServicesRepository.findBySsIsActive(1);
 
             for (NationCodeEntity ncInfo : ncList) {
                 // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19:영상
                 switch (param.getTsiType()) {
-                    case CommonCode.searchTypeKeyword -> { // 11:키워드
+                    // 11:키워드
+                    case CommonCode.searchTypeKeyword -> {
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()){
                                 case "google" -> {
@@ -168,7 +171,8 @@ public class SearchService {
                             }
                         }
                     }
-                    case CommonCode.searchTypeKeywordImage -> { // 13:키워드+이미지
+                    // 13:키워드+이미지
+                    case CommonCode.searchTypeKeywordImage -> {
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()){
                                 case "google" -> {
@@ -180,8 +184,8 @@ public class SearchService {
                             }
                         }
                     }
-                    case CommonCode.searchTypeKeywordVideo -> { // 15:키워드+영상
-//                            search(param, folder, siDto);
+                    // 15:키워드+영상
+                    case CommonCode.searchTypeKeywordVideo -> {
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()){
                                 case "google" -> {
@@ -192,7 +196,8 @@ public class SearchService {
                             }
                         }
                     }
-                    case CommonCode.searchTypeImage -> { // 17:이미지
+                    // 17:이미지
+                    case CommonCode.searchTypeImage -> {
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()){
                                 case "google" -> searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
@@ -201,7 +206,9 @@ public class SearchService {
                         }
                     }
                     // 19: 영상
-                    case CommonCode.searchTypeVideo -> searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());
+                    case CommonCode.searchTypeVideo -> {
+                        searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());
+                    }
                 }
                 // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
             }

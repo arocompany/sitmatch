@@ -31,6 +31,7 @@ public class TrackingSearchInfoService {
     private final SitProperties sitProperties;
 
     public SearchInfoEntity getSearchInfoEntity2(SearchInfoEntity searchInfoEntityByTsiUno, SearchResultEntity searchResultEntity) {
+        log.info("allTimeInfo processor {} / {}", searchInfoEntityByTsiUno, searchResultEntity);
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         if(searchInfoEntityByTsiUno.getTsiMonitoringCnt() != 0){
@@ -61,6 +62,7 @@ public class TrackingSearchInfoService {
      * @return SearchInfoEntity         (검색 정보 엔티티)
      */
     public SearchInfoEntity getSearchInfoEntity(SearchInfoEntity searchInfoEntityByTsiUno, SearchResultEntity searchResultEntity) {
+        log.info("searchInfo processor");
         SearchInfoEntity searchInfoEntity = new SearchInfoEntity();
 
         searchInfoEntity.setUserUno(1);

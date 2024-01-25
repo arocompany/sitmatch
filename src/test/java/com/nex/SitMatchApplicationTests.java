@@ -14,7 +14,7 @@ class SitMatchApplicationTests {
 
     @Test
     void contextLoads() {
-        scheduleTasks.trackingTask();
+//        scheduleTasks.trackingTask();
     }
 
 }

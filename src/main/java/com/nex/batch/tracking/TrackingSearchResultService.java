@@ -382,6 +382,8 @@ public class TrackingSearchResultService{
            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
         List<CompletableFuture<SearchResultEntity>> completableFutures = new ArrayList<>();
 
+        log.info(" searchResult processor");
+
         for (RESULT result : results) {
             CompletableFuture<SearchResultEntity> completableFuture = CompletableFuture
                     .supplyAsync(() -> {

@@ -1,5 +1,6 @@
-package com.nex.batch.tracking;
+package com.nex.batch.tracking.step;
 
+import com.nex.batch.tracking.TrackingSearchInfoService;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.repo.SearchInfoRepository;
@@ -22,13 +23,8 @@ public class AllTimeInfo {
     private final EntityManagerFactory em;
     private final int CHUNK_SIZE = 100;
 
-    @Bean
-    public JpaPagingItemReader<SearchResultEntity> allTimeInfoReader() {
-        String queryString = """
-                             select sr
-                             from   SearchResultEntity sr
-                             where  sr.monitoringCd = '20'
-                             """;
+    public JpaPagingItemReader<SearchResultEntity> allTimeInfoReader(Integer tsrUno) {
+        String queryString = "select sr from   SearchResultEntity sr where  sr.monitoringCd = '20' and sr.tsrUno = "+ tsrUno;
         return new JpaPagingItemReaderBuilder<SearchResultEntity>()
                 .name("allTimeInfoReader")
                 .pageSize(CHUNK_SIZE)
@@ -38,7 +34,6 @@ public class AllTimeInfo {
     }
     @Bean
     public ItemProcessor<SearchResultEntity, SearchInfoEntity> allTimeInfoProcessor() {
-        log.info("allTimeInfoProcessor 진입");
         return findSearchResult -> {
             SearchInfoEntity findSearchInfo = searchInfoRepository.findById(findSearchResult.getTsiUno()).orElseThrow();
             return trackingSearchInfoService.getSearchInfoEntity2(findSearchInfo, findSearchResult);
