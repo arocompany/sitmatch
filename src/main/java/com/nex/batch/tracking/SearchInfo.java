@@ -23,15 +23,6 @@ public class SearchInfo {
     private final EntityManagerFactory em;
     private final int CHUNK_SIZE = 100;
 
-        /*
-        Notice :
-        Reader : tb_search_result에 monitoring_cd=20인 값이면서
-                 monitoring_cd=20인 해당 tsr_uno 값이 tb_search_info의 tsr_uno컬럼에 없는 데이터들을 read
-        Processor : 새로운 tsi_uno값을 생성 후 해당 tsr_uno컬럼에  monitoring_cd=20이였던 tsr_uno 값을 삽입
-                    기존 searchResult 이미지 파일 복사 후 각 컬럼에 set
-        Writer : 위에 set한 데이터를 write처리
-        */
-
     @Bean
     public JpaPagingItemReader<SearchResultEntity> searchInfoReader() {
         log.info("searchInfoReader 진입");
@@ -60,7 +51,6 @@ public class SearchInfo {
 
     @Bean
     public ItemProcessor<SearchResultEntity, SearchInfoEntity> searchInfoProcessor() {
-        log.info("searchInfoProcessor 진입");
         return findSearchResult -> {
             SearchInfoEntity findSearchInfo = searchInfoRepository.findById(findSearchResult.getTsiUno()).orElseThrow();
             return trackingSearchInfoService.getSearchInfoEntity(findSearchInfo, findSearchResult);
@@ -69,7 +59,6 @@ public class SearchInfo {
 
     @Bean
     public JpaItemWriter<SearchInfoEntity> searchInfoWriter() {
-        log.info("searchInfoWriter 진입");
         JpaItemWriter<SearchInfoEntity> writer = new JpaItemWriter<>();
         writer.setEntityManagerFactory(em);
         return writer;

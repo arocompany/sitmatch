@@ -76,6 +76,13 @@ public class SearchResultEntity {
     @Column(name = "TSR_SEARCH_VALUE")
     private String tsrSearchValue;
 
+    @Basic
+    @Column(name = "TSR_IS_BATCH")
+    private int tsrIsBatch;
+
+    @Basic
+    @Column(name = "TSR_CYCLE_BATCH")
+    private int tsrCycleBatch;
 
     @Override
     public boolean equals(Object o) {

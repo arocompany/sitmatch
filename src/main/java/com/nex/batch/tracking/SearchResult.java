@@ -102,12 +102,10 @@ public class SearchResult implements ItemReader<List<ImagesResult>> {
 
     @Bean
     public ItemReader<List<ImagesResult>> searchResultReader() {
-        log.info("searchResultReader 진입");
         return this;
     }
     @Bean
     public ItemProcessor<List<ImagesResult>, List<SearchResultEntity>> searchResultProcessor() {
-        log.info("searchResultProcessor 진입");
         return imagesResults -> {
             if (!imagesResults.isEmpty()) {
                 //결과를 검색 결과 엔티티로 변환
@@ -129,7 +127,6 @@ public class SearchResult implements ItemReader<List<ImagesResult>> {
 
     @Bean
     public JpaItemListWriter<SearchResultEntity> searchResultWriter() {
-        log.info("searchResultWriter 진입");
         JpaItemWriter<SearchResultEntity> writer = new JpaItemWriter<>();
         writer.setEntityManagerFactory(em);
 

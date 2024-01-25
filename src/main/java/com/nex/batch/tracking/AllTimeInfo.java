@@ -22,19 +22,8 @@ public class AllTimeInfo {
     private final EntityManagerFactory em;
     private final int CHUNK_SIZE = 100;
 
-    /*
-        Notice :
-        Reader :
-            24시간 모니터링이 체크된 리스트를 조회
-        Processor :
-            모니터링 된 건에 대한 실시간 데이터 반영 (테이블 삽입 및 카운트 행위)
-        Writer :
-
-     */
-
     @Bean
     public JpaPagingItemReader<SearchResultEntity> allTimeInfoReader() {
-        log.info("allTimeInfoReader 진입");
         String queryString = """
                              select sr
                              from   SearchResultEntity sr

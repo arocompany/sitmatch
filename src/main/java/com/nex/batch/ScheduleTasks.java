@@ -51,7 +51,6 @@ public class ScheduleTasks {
     }
 
     public void trackingTask() {
-        log.info("trackingTask 진입");
         JobParameters jobParameters = new JobParametersBuilder().toJobParameters();
         try {
             jobLauncher.run(job, jobParameters);

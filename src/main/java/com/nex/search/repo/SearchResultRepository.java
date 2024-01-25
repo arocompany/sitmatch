@@ -13,8 +13,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface SearchResultRepository extends JpaRepository<SearchResultEntity, Long> {
+    List<SearchResultEntity> findByTsrIsBatch(int activeBatch); // 활성화된 배치 쿼리
     // Page<SearchResultEntity> findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(String keyword,Pageable pageable);
-
     Integer countByTrkStatCdNotNullAndTrkStatCd(String trkStatCd);
     // Integer countByMonitoringCd(String monitoringCd);
 

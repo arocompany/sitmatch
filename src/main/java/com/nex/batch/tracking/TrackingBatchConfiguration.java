@@ -30,28 +30,17 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
 
     @Bean
     public Job trackingJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        log.info("trackingJob 진입");
-
         return new JobBuilder("trackingJob", jobRepository)
-                .start(allTimeInfoStep(jobRepository, transactionManager)) // 검색현황
-//                .next(searchInfoMonitoringStep(jobRepository, transactionManager)) // 검색현황 시간
-                // .next(allTimeMonitoringSetTimeStep(jobRepository, transactionManager)) // 마지막 모니터링 체크시간
-                .next(searchInfoStep(jobRepository, transactionManager))
-                .next(searchResultStep(jobRepository, transactionManager))
-                .next(searchJobStep(jobRepository, transactionManager))
+                .start(allTimeInfoStep(jobRepository, transactionManager)) // 24시간 모니터링이 체크된 리스트를 조회 후 카운트 및 시간 반영
+                .next(searchInfoStep(jobRepository, transactionManager))   // 24시간 모니터링 수행이 한번도 되지않은 최초 데이터 리스트 조회
+                .next(searchResultStep(jobRepository, transactionManager)) // 24시간 모니터링이 체크된 데이터를 serpApi 작업 처리 및 결과값 트랜잭션 처리
+                .next(searchJobStep(jobRepository, transactionManager))    // 결과값 데이터를 트랜잭션 처리
                 .build();
     }
 
-//
-//    /*
-//    Reader : tb_search_result에 monitoring_cd 값이 20인 데이터를 load
-//    Processor : load 한 데이터의 tsi_uno값 기준 tsi_monitoring_cnt 값 증가 처리
-//                tb_search_info_monitoring_history에 적재
-//    Writer : 위에 셋팅한 데이터를 트랜잭션 처리
-//    */
+
     @Bean
     public Step allTimeInfoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        log.info("allTimeInfoStep 진입");
         return new StepBuilder("allTimeInfoStep", jobRepository)
                 .allowStartIfComplete(true)
                 .<SearchResultEntity, SearchInfoEntity>chunk(CHUNK_SIZE, transactionManager)
@@ -61,16 +50,8 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .build();
     }
 
-    /*
-    Reader : tb_search_result 테이블에 monitoring_cd=20인 값이면서
-            monitoring_cd=20인 해당 tsr_uno 값이 tb_search_info의 tsr_uno컬럼에 없는 데이터들을 read
-    Processor : 새로운 tsi_uno값을 생성 후 해당 tsr_uno컬럼에  monitoring_cd=20이였던 tsr_uno 값을 update
-               기존 searchResult 이미지 파일 복사 후 각 컬럼에 set
-    Writer : 위에서 처리한 데이터를 write처리
-    */
     @Bean
     public Step searchInfoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        log.info("searchInfoStep 진입");
         return new StepBuilder("searchInfoStep", jobRepository)
                 .allowStartIfComplete(true)
                 .<SearchResultEntity, SearchInfoEntity>chunk(CHUNK_SIZE, transactionManager)
@@ -80,15 +61,8 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .build();
     }
 
-    /*
-    Reader : tb_search_result의 monitoring_cd값이 20인 기존 tsruno를 갖고와서 출력 후 tb_search_info에 해당 tsruno의 이미지경로를 찾아 url을 생성 후 serpAPI에 전송 후
-             json값을 받아 DB에 저장 되어 있지 않은 url 필터링하여 result를 return
-    Processor : reutrn받은 값을 tb_search_result에 tsr_uno를 생성하여 set처리
-    Writer : 위에서 처리한 데이터를 write처리
-    */
     @Bean
     public Step searchResultStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        log.info("searchResultStep 진입");
         return new StepBuilder("searchResultStep", jobRepository)
                 .allowStartIfComplete(true)
                 .<List<ImagesResult>, List<SearchResultEntity>>chunk(CHUNK_SIZE, transactionManager)
@@ -98,14 +72,8 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .build();
     }
 
-    /*
-    Reader : search_info에 tsrUno IS NOT NULL이면서 search_job에 해당 tsrUno값이 없는 데이터를 read
-    Processor : 위에 tsrUno값이 searchJob에 없으면 tsjUno를 생성하여 set처리
-    Writer : 위에서 처리한 데이터를 write처리
-    */
     @Bean
     public Step searchJobStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        log.info("searchJobStep 진입");
         return new StepBuilder("searchJobStep", jobRepository)
                 .allowStartIfComplete(true)
                 .<SearchResultEntity, SearchJobEntity >chunk(CHUNK_SIZE, transactionManager)
@@ -114,33 +82,4 @@ public class TrackingBatchConfiguration extends DefaultBatchConfiguration {
                 .writer(searchJob.searchJobWriter())
                 .build();
     }
-
-
-
-/*
-    @Bean
-    public Step allTimeMonitoringSetTimeStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        log.info("allTimeMonitoringSetTimeStep 진입");
-        return new StepBuilder("allTimeMonitoringSetTimeStep", jobRepository)
-                .allowStartIfComplete(true)
-                .<SearchResultEntity, SearchInfoEntity>chunk(CHUNK_SIZE, transactionManager)
-                .reader(allTimeInfoReader())
-                .processor(allTimeMonitoringSetTimeProcessor())
-                .writer(searchInfoWriter())
-                .build();
-    }
-*/
-
-/*
-    @Bean
-    public Job trackingJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        log.info("trackingJob 진입");
-
-        return new JobBuilder("trackingJob", jobRepository)
-                .start(allTimeInfoStep(jobRepository, transactionManager))
-                .build();
-    }
-*/
-
-
 }

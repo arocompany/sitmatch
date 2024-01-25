@@ -21,7 +21,6 @@ public class SearchJob {
     private final int CHUNK_SIZE = 100;
     @Bean
     public ItemReader<SearchResultEntity> searchJobReader() {
-        log.info("searchJobReader 진입");
         String queryString = """
                              select sr
                              from   SearchResultEntity sr
@@ -44,13 +43,11 @@ public class SearchJob {
 
     @Bean
     public ItemProcessor<SearchResultEntity, SearchJobEntity> searchJobProcessor() {
-        log.info("searchJobProcessor 진입");
         return trackingSearchJobService::searchResultEntityToSearchJobEntity;
     }
 
     @Bean
     public JpaItemWriter<SearchJobEntity> searchJobWriter() {
-        log.info("searchJobWriter 진입");
         JpaItemWriter<SearchJobEntity> writer = new JpaItemWriter<>();
         writer.setEntityManagerFactory(em);
         return writer;
