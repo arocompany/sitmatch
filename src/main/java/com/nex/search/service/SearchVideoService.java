@@ -90,7 +90,7 @@ public class SearchVideoService {
 //                            + "&nfpr=0"
 //                            + "&image_url=" + searchImageUrl;
 
-                    String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, sitProperties.getTextNocache(), sitProperties.getTextLocation(), null, configData.getSerpApiKey(), searchImageUrl, sitProperties.getImageEngine(), null);
+                    String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, sitProperties.getTextNocache(), sitProperties.getTextLocation(), null, configData.getSerpApiKey(), searchImageUrl, "google_reverse_image", null);
 
                     CompletableFuture
                             .supplyAsync(() -> {

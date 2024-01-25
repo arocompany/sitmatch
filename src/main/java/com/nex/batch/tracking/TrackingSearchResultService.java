@@ -277,7 +277,7 @@ public class TrackingSearchResultService{
                     + "&filter=0"
                     + "&nfpr=0"
                     + "&api_key=" + configData.getSerpApiKey()
-                    + "&engine=" + sitProperties.getTextEngine();
+                    + "&engine=google";
 
         }
         //이미지 검색

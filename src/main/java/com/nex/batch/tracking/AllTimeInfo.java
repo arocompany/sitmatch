@@ -23,17 +23,13 @@ public class AllTimeInfo {
     private final int CHUNK_SIZE = 100;
 
     /*
-        Notice : 꼭 명시해야할 것
-                Table to Table / 어떤 테이블에 어떤 행을 몇개?를 리스트업 하여,
-                               / 어떤 테이블에 어떻게 행을 삽입 또는 Update하는지?
-                                                        Update한다면,,??
-                                                         어떤 테이블에 어떤 키값을 가진 행을?
+        Notice :
+        Reader :
+            24시간 모니터링이 체크된 리스트를 조회
+        Processor :
+            모니터링 된 건에 대한 실시간 데이터 반영 (테이블 삽입 및 카운트 행위)
+        Writer :
 
-        Reader : tb_search_result에 monitoring_cd 값이 20인 데이터 갯수를 read
-        Processor : monitoring_cd가 20인 데이터의 tsi_uno값 출력하여 기존 tsi_uno에 tsiMonitoringCnt값 삽입
-                    tb_search_info_monitoring_history에 setTsiUno, setTsimhCreateDate 삽입
-
-        Writer : 위에 set한 값을 writer처리
      */
 
     @Bean

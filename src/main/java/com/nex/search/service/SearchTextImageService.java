@@ -126,7 +126,7 @@ public class SearchTextImageService {
                     + "&nfpr=0"
                     + "&start=" + String.valueOf(index * 10)
                     // + "&tbm=" + textTbm
-                    + "&engine=" + sitProperties.getImageEngine()
+                    + "&engine=google_reverse_image"
                     + "&image_url=" + searchImageUrl;
 
             log.info("search 진입");
