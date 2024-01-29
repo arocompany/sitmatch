@@ -621,8 +621,14 @@
   chkBtn.forEach((btn) => {
     btn.addEventListener('click', () => {
       if(btn.getAttribute("tsiUno")) {
+        let url = '/notice?tsiUno=' + btn.getAttribute("tsiUno");
         // window.location.href = '/notice?tsrUno=' + btn.value + '&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno");
-        window.location.href = '/notice?'+'tsiKeyword=' + btn.getAttribute("tsiKeyword") + '&tsiUno=' + btn.getAttribute("tsiUno");
+        if(btn.getAttribute("tsiKeyword") !== null){
+          url += '&tsiKeyword=' + btn.getAttribute("tsiKeyword");
+        }
+
+        // console.info(btn.getAttribute("tsiKeyword"));
+        window.location.href = url;
       }else{
         alert('조회대상이 없습니다.');
       }

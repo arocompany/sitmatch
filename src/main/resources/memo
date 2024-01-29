@@ -31,13 +31,13 @@ keyword + image
     1 * 7 * (3 * ( 1 + 1 ) * 10 + 1 + 1 ) = 434회 (max)
 keyword + video
     검색 * 국가 * 선택한 sns * 파일갯수
-    1 * 7 * 3 * ? = 21 * ? = 파일갯수의 수량이 중요
+    1 * 7 * 3 * 12 = 21 * 12 = 파일갯수의 수량이 중요
 image
     검색 * 국가 * (google_reverse_image * 페이징) + (google lens + google lens image sources))
     1 * 7 * (( 1 * 10 ) + 1 + 1 ) = 84회 (max)
 video
     검색 * 국가 * 파일갯수
-    1 * 7 * ? = 파일갯수의 수량이 중요
+    1 * 7 * 12 = 파일갯수의 수량이 중요
 
 배치
     24시간 모니터링 건 * 국가 * 페이징
