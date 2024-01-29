@@ -35,6 +35,7 @@ public class HistoryController {
         Map<String, Object> searchHistMap;
 
         log.info(" == history 진입 == manageType: " + manageType);
+        modelAndView.addObject("manageType", manageType);
 
         if (manageType.equals("검색어")) {
             manageType = "1";

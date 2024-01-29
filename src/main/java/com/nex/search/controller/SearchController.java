@@ -1,5 +1,6 @@
 package com.nex.search.controller;
 
+import com.nex.batch.ScheduleTasks;
 import com.nex.common.Consts;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
@@ -23,6 +24,7 @@ import java.util.Optional;
 @RequestMapping("/search")
 public class SearchController {
     private final SearchService searchService;
+    private final ScheduleTasks scheduleTasks;
 
     @PostMapping()
     public ModelAndView search(@RequestParam("file") Optional<MultipartFile> file, SearchInfoEntity searchInfoEntity
@@ -110,13 +112,40 @@ public class SearchController {
         return "success";
     }
 
-    @GetMapping("/monitoring")
+    @GetMapping("/monitoring/{tsrUno}/{tsrCycleBatch}")
     public String setMonitoringCd(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
-                                  @RequestParam Optional<Integer> tsrUno) {
-        int userUno = sessionInfoDto.getUserUno();
-        String userId = sessionInfoDto.getUserId();
-        searchService.setMonitoringCd(userUno, userId, tsrUno.get());
+                                  @PathVariable("tsrUno") Integer tsrUno, @PathVariable("tsrCycleBatch") Integer tsrCycleBatch) {
+        try {
+            if (!validateInteger(tsrUno)) {
+                return "fail";
+            }
+            if (!validateInteger(tsrCycleBatch)) {
+                return "fail";
+            }
+            if (tsrCycleBatch < 6 || tsrCycleBatch > 720) {
+                return "fail";
+            }
+            int userUno = sessionInfoDto.getUserUno();
+
+            String userId = sessionInfoDto.getUserId();
+            boolean resultFlag = searchService.setMonitoringCd(userUno, userId, tsrUno, tsrCycleBatch);
+
+            if(resultFlag){
+                scheduleTasks.reStartScheduler();
+            }
+
+
+        }catch(Exception e){
+            log.error(e.getMessage());
+        }
+
         return "success";
+    }
+
+    private boolean validateInteger(Integer param){
+        if(param == null) return false;
+        if(param < 0) return false;
+        else return true;
     }
 }
 

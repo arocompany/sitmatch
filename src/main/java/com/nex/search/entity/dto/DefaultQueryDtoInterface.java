@@ -59,4 +59,6 @@ public interface DefaultQueryDtoInterface {
     String getTsiUserFile();
     String getTsiAlltimeMonitoring();
 
+    String getTsrIsBatch();
+    String getTsrCycleBatch();
 }

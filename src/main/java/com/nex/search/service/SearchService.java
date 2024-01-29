@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.Chart.entity.*;
 import com.nex.Chart.repo.*;
+import com.nex.batch.ScheduleTasks;
 import com.nex.common.*;
 import com.nex.nations.entity.NationCodeEntity;
 import com.nex.nations.repository.NationCodeRepository;
@@ -21,6 +22,7 @@ import com.nex.user.entity.ResultListExcelDto;
 import com.nex.user.entity.SearchHistoryExcelDto;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
@@ -786,33 +788,41 @@ public class SearchService {
             searchResultRepository.save(searchResultEntity);
         }
     }
+    @Transactional
+    public boolean setMonitoringCd(int userUno,String userId, Integer tsrUno, Integer tsrCycleBatch) { // monitoring_cd (10: 비활성화, 20: 활성화)
+        try {
+            SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
 
-    public void setMonitoringCd(int userUno,String userId, Integer tsrUno) { // monitoring_cd (10: 비활성화, 20: 활성화)
-        SearchResultEntity searchResultEntity = searchResultRepository.findByTsrUno(tsrUno);
+            searchResultEntity.setMonitoringCd(Consts.MONITORING_CD_NONE.equals(searchResultEntity.getMonitoringCd()) ? Consts.MONITORING_CD_ING : Consts.MONITORING_CD_NONE);
+            //TODO 모니터링 주기 설정 html 및 min max 시간 설정 로직
+            if (searchResultEntity.getMonitoringCd().equals(Consts.MONITORING_CD_ING)) {
+                searchResultEntity.setTsrIsBatch(1);
+                searchResultEntity.setTsrCycleBatch(tsrCycleBatch);
+            } else {
+                searchResultEntity.setTsrIsBatch(0);
+            }
 
-        searchResultEntity.setMonitoringCd(Consts.MONITORING_CD_NONE.equals(searchResultEntity.getMonitoringCd()) ? Consts.MONITORING_CD_ING : Consts.MONITORING_CD_NONE);
-        //TODO 모니터링 주기 설정 html 및 min max 시간 설정 로직
-        if(searchResultEntity.getMonitoringCd().equals(Consts.MONITORING_CD_ING)){
-            searchResultEntity.setTsrIsBatch(1);
-            searchResultEntity.setTsrCycleBatch(24);
-        }else{
-            searchResultEntity.setTsrIsBatch(0);
+            searchResultRepository.save(searchResultEntity);
+
+
+            // 24시간 모니터링을 On / Off 할 때마다, tb_all_time_monitoring_history table 에 insert
+            AlltimeMonitoringHistEntity alltimeMonitoringHistEntity = new AlltimeMonitoringHistEntity();
+            alltimeMonitoringHistEntity.setClkDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+            alltimeMonitoringHistEntity.setTsrUno(tsrUno);
+            alltimeMonitoringHistEntity.setUserUno(userUno);
+            alltimeMonitoringHistEntity.setUserId(userId);
+
+            if (searchResultEntity.getMonitoringCd().equals("10")) { // 활성화 될 때
+                alltimeMonitoringHistEntity.setTamYn("Y");
+            } else {
+                alltimeMonitoringHistEntity.setTamYn("N");
+            }
+            alltimeMonitoringHistRepository.save(alltimeMonitoringHistEntity);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return false;
         }
-
-        searchResultRepository.save(searchResultEntity);
-
-        AlltimeMonitoringHistEntity alltimeMonitoringHistEntity = new AlltimeMonitoringHistEntity();
-        alltimeMonitoringHistEntity.setClkDmlDt(Timestamp.valueOf(LocalDateTime.now()));
-        alltimeMonitoringHistEntity.setTsrUno(tsrUno);
-        alltimeMonitoringHistEntity.setUserUno(userUno);
-        alltimeMonitoringHistEntity.setUserId(userId);
-
-        if(searchResultEntity.getMonitoringCd().equals("10")){ // 활성화 될 때
-            alltimeMonitoringHistEntity.setTamYn("Y");
-        } else {
-            alltimeMonitoringHistEntity.setTamYn("N");
-        }
-        alltimeMonitoringHistRepository.save(alltimeMonitoringHistEntity);
+        return true;
     }
 
     public Map<String, Object> getSearchInfoList(Integer page, String keyword) {

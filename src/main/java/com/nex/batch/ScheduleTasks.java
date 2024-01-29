@@ -44,22 +44,29 @@ public class ScheduleTasks {
         if(scheduler != null)
             scheduler.shutdown();
 
-        Integer batchCycleByHour = ConfigDataManager.getInstance().getDefaultConfig().getBatchCycleByHour();
         Boolean isBatchFlag = ConfigDataManager.getInstance().getDefaultConfig().getIsBatchFlag();
         if(isBatchFlag != null && isBatchFlag == true) {
             log.info("batch -- start");
-            if (batchCycleByHour != null && batchCycleByHour > 0) {
-                List<SearchResultEntity> jobList = searchResultRepository.findByTsrIsBatch(1);
+            List<SearchResultEntity> jobList = searchResultRepository.findByTsrIsBatch(1);
 
-                if(jobList != null && jobList.size() > 0) {
-                    scheduler = new ThreadPoolTaskScheduler();
-                    scheduler.initialize();
+            if(jobList != null && jobList.size() > 0) {
+                scheduler = new ThreadPoolTaskScheduler();
+                scheduler.initialize();
 
-                    for(SearchResultEntity jobItem : jobList) {
-                        if(jobItem.getTsrCycleBatch() > 0 && jobItem.getMonitoringCd().equals("20")) {
-                            String jobName = "job_result_" + jobItem.getTsrUno();
-                            scheduler.schedule(getRunnable(jobItem.getTsrUno(), jobName), new CronTrigger(String.format("0 0 */%s * * *", jobItem.getTsrCycleBatch() + "")));
+                for(SearchResultEntity jobItem : jobList) {
+                    if(jobItem.getTsrCycleBatch() > 0 && jobItem.getMonitoringCd().equals("20")) {
+                        String jobName = "job_result_" + jobItem.getTsrUno();
+                        String expression = "";
+                        if(jobItem.getTsrCycleBatch() > 24){
+                            String val = (jobItem.getTsrCycleBatch() / 24) + "";
+                            expression = String.format("0 0 0 */%s * *", val);
+                        }else{
+                            expression = String.format("0 0 */%s * * *", jobItem.getTsrCycleBatch() + "");
                         }
+
+                        log.info("expression === {}", expression);
+
+                        scheduler.schedule(getRunnable(jobItem.getTsrUno(), jobName), new CronTrigger(expression));
                     }
                 }
             }
