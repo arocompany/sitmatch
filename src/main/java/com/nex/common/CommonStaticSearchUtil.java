@@ -21,7 +21,7 @@ import java.util.function.Function;
 public class CommonStaticSearchUtil {
     public static <RESULT> SearchResultEntity getSearchResultGoogleReverseEntity(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
         log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
@@ -34,13 +34,15 @@ public class CommonStaticSearchUtil {
         log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");
 
-        //Facebook 검색이고, source 값이 Facebook 인 경우
-        if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
-            sre.setTsrSns(tsrSns);
-        } else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
-            sre.setTsrSns(tsrSns);
+        // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
+        if (CommonCode.snsTypeFacebook.equals(tsrSns) && isFacebookFn.apply(result)) {
+            sre.setTsrSns(CommonCode.snsTypeFacebook);
+        } else if(CommonCode.snsTypeTwitter.equals(tsrSns) && isTwitterFn.apply(result)){
+            sre.setTsrSns(CommonCode.snsTypeTwitter);
+        } else if (CommonCode.snsTypeInstagram.equals(tsrSns) && isInstagramFn.apply(result)) {
+            sre.setTsrSns(CommonCode.snsTypeInstagram);
         } else {
-            sre.setTsrSns("11");
+            sre.setTsrSns(CommonCode.snsTypeGoogle);
         }
 
         return sre;
@@ -78,6 +80,10 @@ public class CommonStaticSearchUtil {
         // sie.setTsiAlltimeMonitoring(String.valueOf(Timestamp.valueOf(LocalDateTime.now())+"   "));
         sie.setDataStatCd("10");
         sie.setSearchValue("0");
+
+        if(! StringUtils.hasText(sie.getTsiUserFile())){
+            sie.setTsiUserFile(null);
+        }
     }
 
     public static void setSearchInfoDefault_2(SearchInfoEntity sie) {
@@ -122,7 +128,7 @@ public class CommonStaticSearchUtil {
 
     public static <RESULT> SearchResultEntity getSearchResultGoogleLensEntity(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws IOException {
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) throws IOException {
         // log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
 
         /*
@@ -150,13 +156,15 @@ public class CommonStaticSearchUtil {
         log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");
 
-        //Facebook 검색이고, source 값이 Facebook 인 경우
-        if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
-            sre.setTsrSns("17");
-        } else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
-            sre.setTsrSns("15");
+        // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
+        if (CommonCode.snsTypeFacebook.equals(tsrSns) && isFacebookFn.apply(result)) {
+            sre.setTsrSns(CommonCode.snsTypeFacebook);
+        } else if(CommonCode.snsTypeTwitter.equals(tsrSns) && isTwitterFn.apply(result)){
+            sre.setTsrSns(CommonCode.snsTypeTwitter);
+        } else if (CommonCode.snsTypeInstagram.equals(tsrSns) && isInstagramFn.apply(result)) {
+            sre.setTsrSns(CommonCode.snsTypeInstagram);
         } else {
-            sre.setTsrSns("11");
+            sre.setTsrSns(CommonCode.snsTypeGoogle);
         }
 
         return sre;
@@ -164,7 +172,7 @@ public class CommonStaticSearchUtil {
 
     public static <RESULT> SearchResultEntity getSearchResultTextEntity(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
         log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
@@ -177,13 +185,15 @@ public class CommonStaticSearchUtil {
         log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");
 
-        //Facebook 검색이고, source 값이 Facebook 인 경우
-        if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
-            sre.setTsrSns("17");
-        } else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
-            sre.setTsrSns("15");
+        // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
+        if (CommonCode.snsTypeFacebook.equals(tsrSns) && isFacebookFn.apply(result)) {
+            sre.setTsrSns(CommonCode.snsTypeFacebook);
+        } else if(CommonCode.snsTypeTwitter.equals(tsrSns) && isTwitterFn.apply(result)){
+            sre.setTsrSns(CommonCode.snsTypeTwitter);
+        } else if (CommonCode.snsTypeInstagram.equals(tsrSns) && isInstagramFn.apply(result)) {
+            sre.setTsrSns(CommonCode.snsTypeInstagram);
         } else {
-            sre.setTsrSns("11");
+            sre.setTsrSns(CommonCode.snsTypeGoogle);
         }
 
         return sre;
@@ -191,7 +201,7 @@ public class CommonStaticSearchUtil {
 
     public static <RESULT> SearchResultEntity getSearchResultEntity2(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
         log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
@@ -203,13 +213,15 @@ public class CommonStaticSearchUtil {
         log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");
 
-        //Facebook 검색이고, source 값이 Facebook 인 경우
-        if ("17".equals(tsrSns) && isFacebookFn.apply(result)) {
-            sre.setTsrSns("17");
-        } else if ("15".equals(tsrSns) && isInstagramFn.apply(result)) {
-            sre.setTsrSns("15");
+        // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
+        if (CommonCode.snsTypeFacebook.equals(tsrSns) && isFacebookFn.apply(result)) {
+            sre.setTsrSns(CommonCode.snsTypeFacebook);
+        } else if(CommonCode.snsTypeTwitter.equals(tsrSns) && isTwitterFn.apply(result)){
+            sre.setTsrSns(CommonCode.snsTypeTwitter);
+        } else if (CommonCode.snsTypeInstagram.equals(tsrSns) && isInstagramFn.apply(result)) {
+            sre.setTsrSns(CommonCode.snsTypeInstagram);
         } else {
-            sre.setTsrSns("11");
+            sre.setTsrSns(CommonCode.snsTypeGoogle);
         }
 
         return sre;

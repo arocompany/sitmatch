@@ -166,6 +166,7 @@ public class SearchService {
                                     if (param.getTsiGoogle() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
                                     if (param.getTsiInstagram() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
                                     if (param.getTsiFacebook() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
+                                    if (param.getTsiTwitter() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
                                 }
                                 case "youtube" -> searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
                             }
@@ -179,6 +180,7 @@ public class SearchService {
                                     if (param.getTsiGoogle() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
                                     if (param.getTsiInstagram() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
                                     if (param.getTsiFacebook() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
+                                    if (param.getTsiTwitter() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
                                 }
                                 case "googleLens" -> searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
                             }
@@ -192,6 +194,7 @@ public class SearchService {
                                     if (param.getTsiGoogle() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());}
                                     if (param.getTsiFacebook() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeFacebook, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
                                     if (param.getTsiInstagram() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeInstagram, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
+                                    if (param.getTsiTwitter() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeTwitter, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
                                 }
                             }
                         }

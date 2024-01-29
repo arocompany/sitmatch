@@ -16,5 +16,8 @@ public class Images_resultsByGoogleLens {
     public boolean isFacebook() {
         return "Facebook".equals(link);
     }
+    public boolean isTwitter() {
+        return "Twitter".equals(link);
+    }
 
 }

@@ -84,6 +84,7 @@ public class SearchTextService {
                                 , Images_resultsByText::getLink
                                 , Images_resultsByText::isFacebook
                                 , Images_resultsByText::isInstagram
+                                , Images_resultsByText::isTwitter
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -97,6 +98,7 @@ public class SearchTextService {
                         log.error(e.getMessage(), e);
                     }
                 }).thenRun(()-> {
+                    // 검색결과가 있으면 다음 페이지 진입 로직
                     if(loop == true) {
                         CompletableFutureByText(index, tsrSns, textGl, insertResult, searchInfoDto);
                     }else{
@@ -113,7 +115,9 @@ public class SearchTextService {
         try {
             if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
             else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
-
+            else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
+            
+            // serpAPI url 생성
             String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), (index * 10), configData.getSerpApiKey()
                     , null, "google", null);
             log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
@@ -121,11 +125,9 @@ public class SearchTextService {
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            // ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
             ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
             List<RESULT> results = null;
 
-//            log.info("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "images_results");
@@ -148,19 +150,20 @@ public class SearchTextService {
 
     public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) throws Exception {
 
+        // 검색결과가 없으면 false처리 후 return
         if (results == null) {
             loop = false;
             return null;
         }
 
-        // RestTemplate restTemplate = new RestTemplate();
         List<SearchResultEntity> sreList = new ArrayList<>();
 
         for (RESULT result : results) {
             log.info("result item === {}", result);
             try {
+                // original값이 없으면 thumbnail값 적용
                 String imageUrl = getOriginalFn.apply(result);
 
                 if(imageUrl == null) {
@@ -168,7 +171,7 @@ public class SearchTextService {
                 }
 
                 if(imageUrl != null) {
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
                     if (!tsrSns.equals(sre.getTsrSns())) {
                         continue;
                     }
@@ -177,10 +180,8 @@ public class SearchTextService {
                     imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn,false);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
                     searchResultRepository.save(sre);
-//                    searchService.saveSearchResult(sre);
                     sreList.add(sre);
                 }
-
             } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());
                 throw new IOException(e);
@@ -202,8 +203,6 @@ public class SearchTextService {
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
-
-//        SearchInfoEntity updateResult = searchService.saveSearchInfo_2(insertResult);
         CommonStaticSearchUtil.setSearchInfoDefault_2(insertResult);
         searchInfoRepository.save(insertResult);
         List<SearchResultEntity> searchResultEntity = result;
@@ -259,6 +258,7 @@ public class SearchTextService {
                         , Images_resultsByText::getLink
                         , Images_resultsByText::isFacebook
                         , Images_resultsByText::isInstagram
+                        , Images_resultsByText::isTwitter
                 );
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
@@ -279,7 +279,6 @@ public class SearchTextService {
             }else{
                 log.info("==== CompletableFutureByText(재귀 함수 종료 ==== index 값: {} sns 값: {} textGl {}", finalIndex, tsrSns, textGl);
             }
-
         });
 
         // results.get();

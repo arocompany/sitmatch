@@ -377,7 +377,7 @@ public class TrackingSearchResultService{
      */
     public <RESULT> List<SearchResultEntity> resultsToSearchResultEntity(List<RESULT> results, Function<RESULT, Integer> getTsiUnoFn
            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-           , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) {
+           , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
         List<CompletableFuture<SearchResultEntity>> completableFutures = new ArrayList<>();
 
         log.info(" searchResult processor");
@@ -403,7 +403,7 @@ public class TrackingSearchResultService{
                             }
 
                             //검색 결과 엔티티 추출
-                            SearchResultEntity searchResultEntity = CommonStaticSearchUtil.getSearchResultEntity2(getTsiUnoFn.apply(result), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                            SearchResultEntity searchResultEntity = CommonStaticSearchUtil.getSearchResultEntity2(getTsiUnoFn.apply(result), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 
                             try {
                                 //이미지 파일 저장

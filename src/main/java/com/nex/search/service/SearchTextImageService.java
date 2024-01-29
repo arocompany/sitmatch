@@ -88,6 +88,7 @@ public class SearchTextImageService {
                                 , Images_resultsByImage::getSource
                                 , Images_resultsByImage::isFacebook
                                 , Images_resultsByImage::isInstagram
+                                , Images_resultsByImage::isTwitter
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -115,6 +116,7 @@ public class SearchTextImageService {
 
             if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
             else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
+            else if (CommonCode.snsTypeTwitter.equals(tsrSns)){ tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
 
             String url = sitProperties.getTextUrl()
                     + "?gl=" + textGl
@@ -166,7 +168,7 @@ public class SearchTextImageService {
 
     public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) throws Exception {
         log.info("========= save 진입 =========");
 
         if (results == null) {
@@ -190,7 +192,7 @@ public class SearchTextImageService {
                 log.info("imageUrl2: "+imageUrl);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {
@@ -281,6 +283,7 @@ public class SearchTextImageService {
                                 , Images_resultsByImage::getSource
                                 , Images_resultsByImage::isFacebook
                                 , Images_resultsByImage::isInstagram
+                                , Images_resultsByImage::isTwitter
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -325,6 +328,7 @@ public class SearchTextImageService {
                                 , Images_resultsByText::getLink
                                 , Images_resultsByText::isFacebook
                                 , Images_resultsByText::isInstagram
+                                , Images_resultsByText::isTwitter
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -374,6 +378,7 @@ public class SearchTextImageService {
                                 , Images_resultsByText::getLink
                                 , Images_resultsByText::isFacebook
                                 , Images_resultsByText::isInstagram
+                                , Images_resultsByText::isTwitter
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -397,7 +402,7 @@ public class SearchTextImageService {
 
     public <RESULT> List<SearchResultEntity> saveImage(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) throws Exception {
         log.info("========= saveImage 진입 =========");
 
         if (results == null) {
@@ -421,7 +426,7 @@ public class SearchTextImageService {
                 log.info("imageUrl2: "+imageUrl);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {

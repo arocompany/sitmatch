@@ -7,6 +7,7 @@ import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
+import com.nex.search.entity.result.Images_resultsByText;
 import com.nex.search.entity.result.YoutubeByResult;
 import com.nex.search.entity.result.Youtube_resultsByText;
 import com.nex.search.repo.SearchInfoRepository;

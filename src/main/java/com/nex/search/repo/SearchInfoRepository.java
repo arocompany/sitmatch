@@ -174,7 +174,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             " from tb_search_info tsi " +
             " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
             " and tsi.SEARCH_VALUE= :searchValue" +
-            " and tsi.tsi_user_file LIKE CONCAT('%',:userKeyword,'%')  " +
+            //" and tsi.tsi_user_file LIKE CONCAT('%',:userKeyword,'%')  " +
             " and tsi.TSI_KEYWORD like '%' :keyword '%' " +
             " and tsi.TSR_UNO is null " +
             " and tsi.user_uno = :userUno " +

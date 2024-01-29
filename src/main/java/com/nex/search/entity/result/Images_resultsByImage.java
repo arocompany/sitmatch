@@ -25,5 +25,8 @@ public class Images_resultsByImage {
     public boolean isFacebook() {
         return "Facebook".equals(source);
     }
+    public boolean isTwitter() {
+        return "Twitter".equals(source);
+    }
 
 }

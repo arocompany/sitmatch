@@ -87,6 +87,7 @@ public class SearchImageGoogleLensService {
                                 , Images_resultsByGoogleLens::getThumbnail
                                 , Images_resultsByGoogleLens::isFacebook
                                 , Images_resultsByGoogleLens::isInstagram
+                                , Images_resultsByGoogleLens::isTwitter
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -157,7 +158,7 @@ public class SearchImageGoogleLensService {
     }
 
     public <RESULT> List<SearchResultEntity> saveGoogleLens(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
-            , Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
+            , Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) throws Exception {
         if (results == null) {
             log.info("result null");
             return null;
@@ -171,7 +172,7 @@ public class SearchImageGoogleLensService {
                 String imageUrl = getThumbnailFn.apply(result);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleLensEntity(insertResult.getTsiUno(), tsrSns, result, getThumbnailFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleLensEntity(insertResult.getTsiUno(), tsrSns, result, getThumbnailFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn,isTwitterFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {

@@ -94,6 +94,7 @@ public class SearchImageService {
                                 , Images_resultsByImage::getSource
                                 , Images_resultsByImage::isFacebook
                                 , Images_resultsByImage::isInstagram
+                                , Images_resultsByImage::isTwitter
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -240,6 +241,7 @@ public class SearchImageService {
                                 , Images_resultsByImage::getSource
                                 , Images_resultsByImage::isFacebook
                                 , Images_resultsByImage::isInstagram
+                                , Images_resultsByImage::isTwitter
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -263,7 +265,7 @@ public class SearchImageService {
 
     public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn) throws Exception {
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) throws Exception {
         log.info("========= save 진입 =========");
 
         if (results == null) {
@@ -287,7 +289,7 @@ public class SearchImageService {
                 log.info("imageUrl2: "+imageUrl);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {

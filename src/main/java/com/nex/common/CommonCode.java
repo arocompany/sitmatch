@@ -2,6 +2,8 @@ package com.nex.common;
 
 public interface CommonCode {
     String snsTypeGoogle = "11";
+    String snsTypeTwitter = "13";
+
     String snsTypeInstagram = "15";
     String snsTypeFacebook = "17";
 
