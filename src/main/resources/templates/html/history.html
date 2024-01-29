@@ -773,6 +773,7 @@
   });
 
   // 24시간 모니터링 버튼 활성화
+  // 24시간 모니터링 버튼 활성화
   const allTime = document.querySelectorAll(".all-time");
   for (let i = 0; i < allTime.length; i++) {
     allTime[i].addEventListener('click', function () {
@@ -782,7 +783,7 @@
       //XMLHttpRequest 객체 생성
       var xhr = new XMLHttpRequest();
       //요청을 보낼 방식, 주소, 비동기여부 설정
-      xhr.open('GET', 'search/monitoring?tsrUno='+this.value+"/"+inputValue, true);
+      xhr.open('GET', 'search/monitoring/'+this.value+"/"+inputValue, true);
       //요청 전송
       xhr.send(null);
       //통신후 작업
