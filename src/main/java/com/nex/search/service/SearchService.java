@@ -164,13 +164,54 @@ public class SearchService {
                     case CommonCode.searchTypeKeyword -> {
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()){
-                                case "google" -> {
+                                case CommonCode.SerpAPIEngineGoogle -> {
                                     if (param.getTsiGoogle() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
                                     if (param.getTsiInstagram() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
                                     if (param.getTsiFacebook() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
                                     if (param.getTsiTwitter() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
                                 }
-                                case "youtube" -> searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                case CommonCode.SerpAPIEngineYoutube -> {
+                                    if (param.getTsiGoogle() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                    if (param.getTsiInstagram() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeInstagram, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                    if (param.getTsiFacebook() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeFacebook, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                    if (param.getTsiTwitter() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeTwitter, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                }
+//                                case CommonCode.SerpAPIEngineBaidu -> {
+//                                    if (param.getTsiGoogle() == 1){}
+//                                    if (param.getTsiInstagram() == 1){}
+//                                    if (param.getTsiFacebook() == 1){}
+//                                    if (param.getTsiTwitter() == 1){}
+//                                }
+//                                case CommonCode.SerpAPIEngineBing -> {
+//                                    if (param.getTsiGoogle() == 1){}
+//                                    if (param.getTsiInstagram() == 1){}
+//                                    if (param.getTsiFacebook() == 1){}
+//                                    if (param.getTsiTwitter() == 1){}
+//                                }
+//                                case CommonCode.SerpAPIEngineDuckduckgo -> {
+//                                    if (param.getTsiGoogle() == 1){}
+//                                    if (param.getTsiInstagram() == 1){}
+//                                    if (param.getTsiFacebook() == 1){}
+//                                    if (param.getTsiTwitter() == 1){}
+//                                }
+//                                case CommonCode.SerpAPIEngineYahoo -> {
+//                                    if (param.getTsiGoogle() == 1){}
+//                                    if (param.getTsiInstagram() == 1){}
+//                                    if (param.getTsiFacebook() == 1){}
+//                                    if (param.getTsiTwitter() == 1){}
+//                                }
+//                                case CommonCode.SerpAPIEngineYandex -> {
+//                                    if (param.getTsiGoogle() == 1){}
+//                                    if (param.getTsiInstagram() == 1){}
+//                                    if (param.getTsiFacebook() == 1){}
+//                                    if (param.getTsiTwitter() == 1){}
+//                                }
+//                                case CommonCode.SerpAPIEngineNaver -> {
+//                                    if (param.getTsiGoogle() == 1){}
+//                                    if (param.getTsiInstagram() == 1){}
+//                                    if (param.getTsiFacebook() == 1){}
+//                                    if (param.getTsiTwitter() == 1){}
+//                                }
                             }
                         }
                     }
@@ -178,13 +219,40 @@ public class SearchService {
                     case CommonCode.searchTypeKeywordImage -> {
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()){
-                                case "google" -> {
+                                case CommonCode.SerpAPIEngineGoogle -> {
                                     if (param.getTsiGoogle() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
                                     if (param.getTsiInstagram() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
                                     if (param.getTsiFacebook() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
                                     if (param.getTsiTwitter() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
                                 }
-                                case "googleLens" -> searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
+                                case CommonCode.SerpAPIEngineGoogleLens -> {
+                                    if (param.getTsiGoogle() == 1){ searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());}
+                                    if (param.getTsiInstagram() == 1){ searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeInstagram, param, ncInfo.getNcCode().toLowerCase());}
+                                    if (param.getTsiFacebook() == 1){ searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeFacebook, param, ncInfo.getNcCode().toLowerCase());}
+                                    if (param.getTsiTwitter() == 1){ searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeTwitter, param, ncInfo.getNcCode().toLowerCase());}
+                                }
+                                case CommonCode.SerpAPIEngineYoutube -> {
+
+                                }
+                                case CommonCode.SerpAPIEngineBaidu -> {
+
+                                }
+                                case CommonCode.SerpAPIEngineBing -> {
+
+                                }
+                                case CommonCode.SerpAPIEngineDuckduckgo -> {
+
+                                }
+                                case CommonCode.SerpAPIEngineYahoo -> {
+
+                                }
+                                case CommonCode.SerpAPIEngineYandex -> {
+
+                                }
+                                case CommonCode.SerpAPIEngineNaver -> {
+
+                                }
+
                             }
                         }
                     }
@@ -192,11 +260,14 @@ public class SearchService {
                     case CommonCode.searchTypeKeywordVideo -> {
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()){
-                                case "google" -> {
+                                case CommonCode.SerpAPIEngineGoogle -> {
                                     if (param.getTsiGoogle() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());}
                                     if (param.getTsiFacebook() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeFacebook, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
                                     if (param.getTsiInstagram() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeInstagram, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
                                     if (param.getTsiTwitter() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeTwitter, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
+                                }
+                                case CommonCode.SerpAPIEngineYandex -> {
+
                                 }
                             }
                         }
@@ -205,14 +276,21 @@ public class SearchService {
                     case CommonCode.searchTypeImage -> {
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()){
-                                case "google" -> searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
-                                case "googleLens" -> searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
+                                case CommonCode.SerpAPIEngineGoogle -> searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
+                                case CommonCode.SerpAPIEngineGoogleLens -> searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
+                                case CommonCode.SerpAPIEngineYandex -> {
+
+                                }
                             }
                         }
                     }
                     // 19: 영상
                     case CommonCode.searchTypeVideo -> {
-                        searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());
+                        for(SerpServicesEntity ssInfo : ssList) {
+                            switch (ssInfo.getSsName()) {
+                                case CommonCode.SerpAPIEngineGoogle -> searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());
+                            }
+                        }
                     }
                 }
                 // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);

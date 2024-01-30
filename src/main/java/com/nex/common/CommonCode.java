@@ -17,4 +17,17 @@ public interface CommonCode {
     String searchStateFinish = "13";
     String searchStateIngCalc = "15";
     String searchStateFinishCalc = "17";
+
+    String SerpAPIEngineGoogle = "google";
+    String SerpAPIEngineYoutube = "youtube";
+    String SerpAPIEngineGoogleLens = "google_lens";
+    String SerpAPIEngineGoogleLensImageSourcesApi = "google_lens_image_sources";
+    String SerpAPIEngineGoogleReverseImage = "google_reverse_image";
+    String SerpAPIEngineBaidu = "baidu";
+    String SerpAPIEngineBing = "bing";
+    String SerpAPIEngineDuckduckgo = "duckduckgo";
+    String SerpAPIEngineYahoo = "yahoo";
+    String SerpAPIEngineYandex = "yandex";
+    String SerpAPIEngineYandexImage = "yandex_images";
+    String SerpAPIEngineNaver = "naver";
 }
