@@ -139,6 +139,24 @@ public class SearchService {
                 param.setTsiImgName(uuid+extension);
                 param.setTsiImgPath((destDir+File.separator).replaceAll("\\\\", "/"));
                 param.setTsiImgExt(extension.substring(1));
+
+                //검색 시점에 활성화 되어 있는 서비스 리스트 호출
+//                {
+//                    List<SerpServicesEntity> ssList = serpServicesRepository.findBySsIsActive(1);
+//
+//                    for(SerpServicesEntity item: ssList){
+//                        switch (item.getSsName()){
+//                            case CommonCode.SerpAPIEngineGoogle -> param.setTsiSerpEngineGoogle(1);
+//                            case CommonCode.SerpAPIEngineYoutube -> param.setTsiSerpEngineGoogle(1);
+//                            case CommonCode.SerpAPIEngineBaidu -> param.setTsiSerpEngineGoogle(1);
+//                            case CommonCode.SerpAPIEngineBing -> param.setTsiSerpEngineGoogle(1);
+//                            case CommonCode.SerpAPIEngineDuckduckgo -> param.setTsiSerpEngineGoogle(1);
+//                            case CommonCode.SerpAPIEngineYahoo -> param.setTsiSerpEngineGoogle(1);
+//                            case CommonCode.SerpAPIEngineYandex -> param.setTsiSerpEngineGoogle(1);
+//                            case CommonCode.SerpAPIEngineNaver -> param.setTsiSerpEngineGoogle(1);
+//                        }
+//                    }
+//                }
             }catch(Exception e){
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -157,6 +175,7 @@ public class SearchService {
             // 활성화된 검색엔진 리스트
             List<SerpServicesEntity> ssList = serpServicesRepository.findBySsIsActive(1);
 
+            int cntNation = 0;
             for (NationCodeEntity ncInfo : ncList) {
                 // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19:영상
                 switch (param.getTsiType()) {
@@ -177,10 +196,12 @@ public class SearchService {
                                     if (param.getTsiTwitter() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeTwitter, param, siDto, ncInfo.getNcCode().toLowerCase());
                                 }
 //                                case CommonCode.SerpAPIEngineBaidu -> {
+//                                if(cntNation == 0) {
 //                                    if (param.getTsiGoogle() == 1){}
 //                                    if (param.getTsiInstagram() == 1){}
 //                                    if (param.getTsiFacebook() == 1){}
 //                                    if (param.getTsiTwitter() == 1){}
+//                                }
 //                                }
 //                                case CommonCode.SerpAPIEngineBing -> {
 //                                    if (param.getTsiGoogle() == 1){}
@@ -294,6 +315,7 @@ public class SearchService {
                     }
                 }
                 // searchService.search(tsiGoogle, tsiFacebook, tsiInstagram, tsiTwitter, tsiType, insertResult, folder, searchInfoDto);
+                cntNation++;
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -1139,11 +1161,11 @@ public class SearchService {
         searchResultRepository.save(sre);
     }
 
-    public Map<String, Object> getUserSearchHistoryList(Integer page, String searchKeyword) {
+    public Map<String, Object> getUserSearchHistoryList(Integer page, String searchKeyword, int userUno) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<UserSearchHistoryDtoInterface> userSearchHistoryList = searchInfoRepository.getUserSearchHistoryList(pageRequest, searchKeyword);
+        Page<UserSearchHistoryDtoInterface> userSearchHistoryList = searchInfoRepository.getUserSearchHistoryList(pageRequest, searchKeyword, userUno);
 
         outMap.put("userSearchHistoryList", userSearchHistoryList);
         outMap.put("totalPages", userSearchHistoryList.getTotalPages());

@@ -210,7 +210,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
     String userSearchHistoryCount = " SELECT COUNT(*) " +
             " FROM  tb_search_info tsi " +
             " WHERE SEARCH_VALUE='0' ";
-    String userSearchHistoryList =  " SELECT " +
+
+    String allUserSearchHistoryList =  " SELECT " +
             " tsi.tsi_uno AS tsiUno, " +
             " tsi.tsi_user_file AS tsiUserFile, " +
             " (SELECT group_concat(TSIMH_CREATE_DATE ORDER BY TSIMH_CREATE_DATE DESC SEPARATOR '   ') FROM tb_search_info_monitoring_history WHERE tsi_uno = tsi.tsi_uno) tsimhCreateDate, " +
@@ -255,6 +256,52 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             " WHERE tsi.tsi_user_file LIKE CONCAT('%',:searchKeyword,'%')  " +
             " AND SEARCH_VALUE = '0' "+
             " ORDER BY tsi.tsi_uno DESC   ";
+    String userSearchHistoryList =  " SELECT " +
+            " tsi.tsi_uno AS tsiUno, " +
+            " tsi.tsi_user_file AS tsiUserFile, " +
+            " (SELECT group_concat(TSIMH_CREATE_DATE ORDER BY TSIMH_CREATE_DATE DESC SEPARATOR '   ') FROM tb_search_info_monitoring_history WHERE tsi_uno = tsi.tsi_uno) tsimhCreateDate, " +
+            " (SELECT COUNT(tsr3.tsr_uno) " +
+            " FROM tb_search_result tsr3 " +
+            " inner JOIN tb_search_info tsi3 " +
+            " ON tsr3.TSI_UNO = tsi3.tsi_uno " +
+            " WHERE tsr3.TSI_UNO = tsi.tsi_uno " +
+            " AND tsr3.TRK_STAT_CD = '10') AS monitoringCnt, " +
+            " (SELECT COUNT(tsr4.tsr_uno) " +
+            " FROM tb_search_result tsr4 " +
+            " inner JOIN tb_search_info tsi4 " +
+            " ON tsr4.TSI_UNO = tsi4.tsi_uno " +
+            " WHERE tsr4.TSI_UNO = tsi.tsi_uno " +
+            " AND tsr4.trk_stat_cd = '20') AS deleteReqCnt, " +
+            " (SELECT COUNT(tsr5.tsr_uno) " +
+            " FROM tb_search_result tsr5 " +
+            " inner JOIN tb_search_info tsi5 " +
+            " ON tsr5.TSI_UNO = tsi5.tsi_uno " +
+            " WHERE tsr5.TSI_UNO = tsi.tsi_uno " +
+            " AND tsr5.trk_stat_cd = '30') AS deleteConfirmCnt, " +
+            " (CASE " +
+            " WHEN ((SELECT COUNT(tsr6.tsr_uno) " +
+            " FROM tb_search_result tsr6 " +
+            " inner JOIN tb_search_info tsi6 " +
+            " ON tsr6.TSI_UNO = tsi6.tsi_uno " +
+            " WHERE tsr6.TSI_UNO = tsi.tsi_uno " +
+            " AND tsr6.monitoring_cd='20') > 0 ) THEN 'Y' " +
+            " ELSE 'N' " +
+            " END ) AS allDayMonitoringYn, " +
+            " tsi.tsi_monitoring_cnt AS allTimeCnt,  " +
+            " (SELECT COUNT(tsr8.tsr_uno) " +
+            " FROM  tb_search_result tsr8 " +
+            " WHERE tsr8.tsi_uno = tsi.tsi_uno " +
+            " AND tsr8.monitoring_cd='20') AS reDsmnCnt, " +
+            " (SELECT COUNT(DISTINCT tsr.tsr_site_url) " +
+            " FROM tb_search_result tsr " +
+            " inner JOIN tb_search_info tsi_2 " +
+            " ON tsr.TSI_UNO = tsi_2.tsi_uno " +
+            " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt " +
+            " FROM  tb_search_info tsi " +
+            " WHERE tsi.tsi_user_file LIKE CONCAT('%',:searchKeyword,'%')  " +
+            " AND SEARCH_VALUE = '0' "+
+            " AND TSI.USER_UNO = :userUno"+
+            " ORDER BY tsi.tsi_uno DESC   ";
 
     List<SearchInfoEntity> findAllByOrderByTsiUnoDesc();
     Page<SearchInfoEntity> findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd, String keyword, Pageable pageable);
@@ -268,8 +315,11 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
     @Query(value = userSearchInfoList, nativeQuery = true, countQuery=searchInfoCount)
     Page<ResultCntQueryDtoInterface> getUserSearchInfoList(String dataStatCd, String searchValue, String keyword, Integer userUno, Pageable pageable);
 
+    @Query(value = allUserSearchHistoryList, nativeQuery = true, countQuery=userSearchHistoryCount)
+    Page<UserSearchHistoryDtoInterface> getAllUserSearchHistoryList(Pageable pageable, String searchKeyword);
+
     @Query(value = userSearchHistoryList, nativeQuery = true, countQuery=userSearchHistoryCount)
-    Page<UserSearchHistoryDtoInterface> getUserSearchHistoryList(Pageable pageable, String searchKeyword);
+    Page<UserSearchHistoryDtoInterface> getUserSearchHistoryList(Pageable pageable, String searchKeyword, int userUno);
 
     @Query(value = "SELECT TU.USER_UNO as userUno, TU.USER_ID as userId FROM TB_USER TU", nativeQuery = true)
     List<UserIdDtoInterface> getUserIdByUserUno();

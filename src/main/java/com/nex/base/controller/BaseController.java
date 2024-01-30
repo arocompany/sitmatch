@@ -14,6 +14,7 @@ import com.nex.user.repo.AutoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.parameters.P;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -394,8 +395,14 @@ public class BaseController {
         modelAndView.addObject("headerMenu", "userSearchHistory");
 
         Map<String, Object> userSearchHistoryList;
-
-        userSearchHistoryList = searchService.getUserSearchHistoryList(searchPage, searchKeyword);
+        int userUno = sessionInfoDto.getUserUno();
+        
+        // 관리자일 때
+        if(sessionInfoDto.isAdmin()) {
+            userSearchHistoryList = searchService.getAllUserSearchHistoryList(searchPage, searchKeyword);
+        } else {
+            userSearchHistoryList = searchService.getUserSearchHistoryList(searchPage, searchKeyword, userUno);
+        }
 
         modelAndView.addObject("userCount", searchService.getUserIdMap());
         modelAndView.addObject("userIdMap", searchService.getUserIdMap());
@@ -405,8 +412,6 @@ public class BaseController {
         modelAndView.addObject("maxPage", userSearchHistoryList.get("maxPage"));
         modelAndView.addObject("searchTotalPages", userSearchHistoryList.get("totalPages"));
         modelAndView.addObject("searchKeyword", searchKeyword);
-
-        // modelAndView.addObject("searchKeyword", searchKeyword);
 
         return modelAndView;
     }
