@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.Chart.entity.*;
 import com.nex.Chart.repo.*;
-import com.nex.batch.ScheduleTasks;
 import com.nex.common.*;
 import com.nex.nations.entity.NationCodeEntity;
 import com.nex.nations.repository.NationCodeRepository;
@@ -1159,6 +1158,21 @@ public class SearchService {
         sre.setDataStatCd("20");
         sre.setMonitoringCd("10");
         searchResultRepository.save(sre);
+    }
+
+    public Map<String, Object> getAllUserSearchHistoryList(Integer page, String searchKeyword) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+
+        Page<UserSearchHistoryDtoInterface> userSearchHistoryList = searchInfoRepository.getAllUserSearchHistoryList(pageRequest, searchKeyword);
+
+        outMap.put("userSearchHistoryList", userSearchHistoryList);
+        outMap.put("totalPages", userSearchHistoryList.getTotalPages());
+        outMap.put("number", userSearchHistoryList.getNumber());
+        outMap.put("totalElements", userSearchHistoryList.getTotalElements());
+        outMap.put("maxPage", Consts.MAX_PAGE);
+
+        return outMap;
     }
 
     public Map<String, Object> getUserSearchHistoryList(Integer page, String searchKeyword, int userUno) {
