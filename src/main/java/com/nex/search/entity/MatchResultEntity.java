@@ -47,6 +47,19 @@ public class MatchResultEntity {
     @Column(name = "TMR_T_SCORE", nullable = true, precision = 0)
     private Object tmrTScore;
 
+    @Basic
+    @Column(name = "TMR_TOTAL_SCORE", nullable = true, precision = 0)
+    private Object tmrTotalScore;
+    @Basic
+    @Column(name = "TMR_AGE_SCORE", nullable = true, precision = 0)
+    private Object tmrAgeScore;
+    @Basic
+    @Column(name = "TMR_OBJECT_SCORE", nullable = true, precision = 0)
+    private Object tmrObjectScore;
+    @Basic
+    @Column(name = "TMR_OCW_SCORE", nullable = true, precision = 0)
+    private Object tmrOcwScore;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
