@@ -176,44 +176,45 @@ public class SearchService {
                                     if (param.getTsiFacebook() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeFacebook, param, siDto, ncInfo.getNcCode().toLowerCase());
                                     if (param.getTsiTwitter() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeTwitter, param, siDto, ncInfo.getNcCode().toLowerCase());
                                 }
-//                                case CommonCode.SerpAPIEngineBaidu -> {
-//                                if(cntNation == 0) {
-//                                    if (param.getTsiGoogle() == 1){}
-//                                    if (param.getTsiInstagram() == 1){}
-//                                    if (param.getTsiFacebook() == 1){}
-//                                    if (param.getTsiTwitter() == 1){}
-//                                }
-//                                }
-//                                case CommonCode.SerpAPIEngineBing -> {
-//                                    if (param.getTsiGoogle() == 1){}
-//                                    if (param.getTsiInstagram() == 1){}
-//                                    if (param.getTsiFacebook() == 1){}
-//                                    if (param.getTsiTwitter() == 1){}
-//                                }
-//                                case CommonCode.SerpAPIEngineDuckduckgo -> {
-//                                    if (param.getTsiGoogle() == 1){}
-//                                    if (param.getTsiInstagram() == 1){}
-//                                    if (param.getTsiFacebook() == 1){}
-//                                    if (param.getTsiTwitter() == 1){}
-//                                }
-//                                case CommonCode.SerpAPIEngineYahoo -> {
-//                                    if (param.getTsiGoogle() == 1){}
-//                                    if (param.getTsiInstagram() == 1){}
-//                                    if (param.getTsiFacebook() == 1){}
-//                                    if (param.getTsiTwitter() == 1){}
-//                                }
-//                                case CommonCode.SerpAPIEngineYandex -> {
-//                                    if (param.getTsiGoogle() == 1){}
-//                                    if (param.getTsiInstagram() == 1){}
-//                                    if (param.getTsiFacebook() == 1){}
-//                                    if (param.getTsiTwitter() == 1){}
-//                                }
-//                                case CommonCode.SerpAPIEngineNaver -> {
-//                                    if (param.getTsiGoogle() == 1){}
-//                                    if (param.getTsiInstagram() == 1){}
-//                                    if (param.getTsiFacebook() == 1){}
-//                                    if (param.getTsiTwitter() == 1){}
-//                                }
+                                case CommonCode.SerpAPIEngineBaidu -> {
+                                if(cntNation == 0) {
+                                    if (param.getTsiGoogle() == 1){ }
+                                    if (param.getTsiInstagram() == 1){}
+                                    if (param.getTsiFacebook() == 1){}
+                                    if (param.getTsiTwitter() == 1){}
+                                }
+                                }
+                                case CommonCode.SerpAPIEngineBing -> {
+                                    if (param.getTsiGoogle() == 1){}
+                                    if (param.getTsiInstagram() == 1){}
+                                    if (param.getTsiFacebook() == 1){}
+                                    if (param.getTsiTwitter() == 1){}
+                                }
+                                case CommonCode.SerpAPIEngineDuckduckgo -> {
+                                    if (param.getTsiGoogle() == 1){}
+                                    if (param.getTsiInstagram() == 1){}
+                                    if (param.getTsiFacebook() == 1){}
+                                    if (param.getTsiTwitter() == 1){}
+                                }
+                                case CommonCode.SerpAPIEngineYahoo -> {
+                                    if (param.getTsiGoogle() == 1){}
+                                    if (param.getTsiInstagram() == 1){}
+                                    if (param.getTsiFacebook() == 1){}
+                                    if (param.getTsiTwitter() == 1){}
+                                }
+                                case CommonCode.SerpAPIEngineYandex -> {
+                                    if (param.getTsiGoogle() == 1){}
+                                    if (param.getTsiInstagram() == 1){}
+                                    if (param.getTsiFacebook() == 1){}
+                                    if (param.getTsiTwitter() == 1){}
+                                }
+                                case CommonCode.SerpAPIEngineNaver -> {
+                                    if (param.getTsiGoogle() == 1){}
+                                    if (param.getTsiInstagram() == 1){}
+                                    if (param.getTsiFacebook() == 1){}
+                                    if (param.getTsiTwitter() == 1){}
+                                }
+
                             }
                         }
                     }

@@ -116,18 +116,13 @@ public class SearchTextYahooService {
             if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
             else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
             else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
-            
-            // serpAPI url 생성
-//            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), (index * 10), configData.getSerpApiKey()
-//                    , null, "google", null);
 
             String url = sitProperties.getTextUrl()
                         + "?engine=yahoo"
                         + "&p="+tsiKeywordHiddenValue
                         + "&api_key=" + configData.getSerpApiKey()
                         + "&b="+(index+1)*10
-                        + "&vc="+textGl
-                        + "&safe=off";
+                        + "&vc="+textGl;
 
             log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
 

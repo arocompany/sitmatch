@@ -35,7 +35,7 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 @Lazy
-public class SearchTextBingService {
+public class SearchTextYandexService {
     private final ImageService imageService;
     private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
@@ -117,13 +117,34 @@ public class SearchTextBingService {
             else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
             else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
 
-            String url = sitProperties.getTextUrl()
-                    + "?engine=bing"
-                    + "&q="+tsiKeywordHiddenValue
-                    + "&api_key=" + configData.getSerpApiKey()
-                    + "&first="+(index+1)
-                    + "&cc="+textGl.toUpperCase()
-                    + "&safeSearch=off";
+            String txtNation = "";
+            switch (textGl){
+                case "kr" -> txtNation = "135";
+                case "us" -> txtNation = "84";
+                case "cn" -> txtNation = "134";
+                case "nl" -> txtNation = "118";
+                case "th" -> txtNation = "995";
+                case "ru" -> txtNation = "225";
+            }
+
+            String url;
+            if(index == 0){
+                url = sitProperties.getTextUrl()
+                        + "?engine=yandex"
+                        + "&text="+tsiKeywordHiddenValue
+                        + "&api_key=" + configData.getSerpApiKey()
+                        + "&p="+index
+                        + "&lr="+txtNation
+                        + "&safe=off";
+
+            } else {
+                url = sitProperties.getTextUrl()
+                        + "?engine=yandex"
+                        + "&text="+tsiKeywordHiddenValue
+                        + "&api_key=" + configData.getSerpApiKey()
+                        + "&p="+index+1
+                        + "&lr="+txtNation;
+            }
 
             log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
 
@@ -182,6 +203,7 @@ public class SearchTextBingService {
                     }
 
                     //sre.setTsrSerpEngine("Baidu");
+
                     int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
                     if(cnt > 0) {
                         log.info("file cnt === {}", cnt);
