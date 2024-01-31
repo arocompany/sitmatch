@@ -3,9 +3,6 @@ package com.nex.search.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.sql.Timestamp;
-import java.util.Objects;
-
 @Entity
 @Data
 @Table(name = "tb_search_info_params", schema = "sittest", catalog = "")

@@ -97,7 +97,6 @@ public class SearchInfoEntity {
     @Column(name = "TSI_MONITORING_CNT")
     private Integer tsiMonitoringCnt;
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -20,6 +20,24 @@
 
   #history .trace-history .history-list .area_box .all-time-btn{width:40px; margin-left: 4px;}
 
+  .area_search_condition{
+    display: none;
+  }
+
+  .condition_info{
+    display: flex;
+  }
+
+  .condition_info > div{
+    flex: 1;
+  }
+
+  .condition_info > div.area_img{
+    display: flex;
+    align-items: center;
+    margin: auto;
+  }
+
   .dels {
     margin: 0;
     padding: 0;
@@ -65,6 +83,7 @@
       <span class="num" >순번</span>
       <span class="counselor">상담사</span>
       <span class="type">검색 유형</span>
+      <span style = "width:5%">검색 조건</span>
       <span class="cont">내용</span>
       <span class="social">SNS</span>
       <span class="time">검색 일시</span>
@@ -93,6 +112,37 @@
             <span th:case="${'19'}">영상</span>
           </th:block>
         </p>
+        <div style = "width:5%"><button type = "button" name = "btnShow" class = "btn-off">보기</button></div>
+        <div class = "area_search_condition">
+          <section class="keyword serpServices counselor-add bor10">
+            <h3 class="title">검색 조건</h3>
+            <div class="keyword-box btn-on bor10" style="margin-top: 30px;">
+              <div class="box_wrap condition_info">
+                <div>
+                  <p th:if="${searchInfoList.getTsiIsNationKr() eq 1}">한국</p>
+                  <p th:if="${searchInfoList.getTsiIsNationUs() eq 1}">미국</p>
+                  <p th:if="${searchInfoList.getTsiIsNationCn() eq 1}">중국</p>
+                  <p th:if="${searchInfoList.getTsiIsNationNl() eq 1}">네덜란드</p>
+                  <p th:if="${searchInfoList.getTsiIsNationTh() eq 1}">태국</p>
+                  <p th:if="${searchInfoList.getTsiIsNationRu() eq 1}">러시아</p>
+                  <p th:if="${searchInfoList.getTsiIsNationVn() eq 1}">베트남</p>
+                </div>
+
+                <div class = "area_img">
+                  <img th:if="${searchInfoList.getTsiIsEngineGoogle() eq 1}" src="/img/sns/google.png" alt="">
+                  <img th:if="${searchInfoList.getTsiIsEngineYoutube() eq 1}" src="/img/sns/youtube.png" alt="">
+                  <img th:if="${searchInfoList.getTsiIsEngineGoogleLens() eq 1}" src="/img/sns/googleLens.png" alt="">
+                  <img th:if="${searchInfoList.getTsiIsEngineBaidu() eq 1}" src="/img/sns/baidu.png" alt="">
+                  <img th:if="${searchInfoList.getTsiIsEngineBing() eq 1}" src="/img/sns/bing.png" alt="">
+                  <img th:if="${searchInfoList.getTsiIsEngineDuckduckgo() eq 1}" src="/img/sns/duckduckgo.png" alt="">
+                  <img th:if="${searchInfoList.getTsiIsEngineYahoo() eq 1}" src="/img/sns/yahoo.png" alt="">
+                  <img th:if="${searchInfoList.getTsiIsEngineYandex() eq 1}" src="/img/sns/yandex.png" alt="">
+                  <img th:if="${searchInfoList.getTsiIsEngineNaver() eq 1}" src="/img/sns/naver.png" alt="">
+                </div>
+              </div>
+            </div>
+            <button type="button" class="esc-btn">닫기</button>
+        </div>
         <div class="cont">
           <div class="img-box"> <!-- onclick="InfoList();" -->
             <div class="img" th:if="${searchInfoList.getTsiType() != '11'}">
@@ -890,7 +940,22 @@
   }
 
 
+  $(function(){
+    $(".area_search_condition").hide();
 
+    $("button[name='btnShow']").on("click", function(){
+      // $(this).parent().parent().find(".area_search_condition").show()
+
+        document.body.style.overflow = 'hidden';
+        modal.style.display = 'flex';
+        modal.innerHTML = $(this).parent().parent().find(".area_search_condition").html();
+
+      // $(".esc-btn").on("click", function(){
+      //   modal.style.display = 'none';
+      //   document.body.style.overflow = 'unset';
+      // });
+    });
+  });
 
 </script>
 </body>

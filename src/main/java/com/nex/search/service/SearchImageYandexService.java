@@ -10,8 +10,8 @@ import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
-import com.nex.search.entity.result.Images_resultsByImage;
-import com.nex.search.entity.result.SerpApiImageResult;
+import com.nex.search.entity.result.Images_resultsByImageForYandex;
+import com.nex.search.entity.result.SerpApiImageResultForYandex;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
@@ -31,6 +31,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -75,7 +76,7 @@ public class SearchImageYandexService {
                 .supplyAsync(() -> {
                     try {
                         // text기반 검색
-                        return search(index, finalTextGl1,searchImageUrl,searchInfoDto, tsrSns, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images);
+                        return search(index, finalTextGl1,searchImageUrl,searchInfoDto, tsrSns, SerpApiImageResultForYandex.class, SerpApiImageResultForYandex::getError, SerpApiImageResultForYandex::getImage_results);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         loop = false;
@@ -88,13 +89,13 @@ public class SearchImageYandexService {
                                 r
                                 , tsrSns
                                 , insertResult
-                                , Images_resultsByImage::getOriginal
-                                , Images_resultsByImage::getThumbnail
-                                , Images_resultsByImage::getTitle
-                                , Images_resultsByImage::getSource
-                                , Images_resultsByImage::isFacebook
-                                , Images_resultsByImage::isInstagram
-                                , Images_resultsByImage::isTwitter
+                                , Images_resultsByImageForYandex::getOriginal_image
+                                , Images_resultsByImageForYandex::getThumbnail
+                                , Images_resultsByImageForYandex::getTitle
+                                , Images_resultsByImageForYandex::getSource
+                                , Images_resultsByImageForYandex::isFacebook
+                                , Images_resultsByImageForYandex::isInstagram
+                                , Images_resultsByImageForYandex::isTwitter
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -129,22 +130,13 @@ public class SearchImageYandexService {
                 case "th" -> txtNation = "995";
                 case "ru" -> txtNation = "225";
             }
-            String url;
-            if (index == 0){
-                url = sitProperties.getTextUrl()
-                        + "?lr=" + txtNation
-                        + "&engine=yandex_images"
-                        + "&url=" + searchImageUrl
-                        + "p="+index
-                        + "&api_key=" + configData.getSerpApiKey();
-            } else {
-                url = sitProperties.getTextUrl()
-                        + "?lr=" + txtNation
-                        + "&engine=yandex_images"
-                        + "&url=" + searchImageUrl
-                        + "p="+index+1
-                        + "&api_key=" + configData.getSerpApiKey();
-            }
+            String url = sitProperties.getTextUrl()
+                    + "?lr=" + txtNation
+                    + "&engine=yandex_images"
+                    + "&url=" + searchImageUrl
+                    + "p="+index+1
+                    + "&api_key=" + configData.getSerpApiKey();
+
 
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
@@ -157,7 +149,7 @@ public class SearchImageYandexService {
 
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "images_results");
+                String jsonInString = mapper.writeValueAsString(resultMap.getBody());
                 INFO info = mapper.readValue(jsonInString, infoClass);
 
                 if (getErrorFn.apply(info) == null) {
@@ -231,7 +223,7 @@ public class SearchImageYandexService {
                 .supplyAsync(() -> {
                     try {
                         // text기반 검색
-                        return search(finalIndex, finalTextGl1, searchImageUrl, searchInfoDto,tsrSns, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images);
+                        return search(finalIndex, finalTextGl1, searchImageUrl, searchInfoDto,tsrSns, SerpApiImageResultForYandex.class, SerpApiImageResultForYandex::getError, SerpApiImageResultForYandex::getImage_results);
                     } catch (Exception e) {
                         loop = false;
                         log.error(e.getMessage(), e);
@@ -248,13 +240,13 @@ public class SearchImageYandexService {
                                 r
                                 , tsrSns
                                 , insertResult
-                                , Images_resultsByImage::getOriginal
-                                , Images_resultsByImage::getThumbnail
-                                , Images_resultsByImage::getTitle
-                                , Images_resultsByImage::getSource
-                                , Images_resultsByImage::isFacebook
-                                , Images_resultsByImage::isInstagram
-                                , Images_resultsByImage::isTwitter
+                                , Images_resultsByImageForYandex::getOriginal_image
+                                , Images_resultsByImageForYandex::getThumbnail
+                                , Images_resultsByImageForYandex::getTitle
+                                , Images_resultsByImageForYandex::getSource
+                                , Images_resultsByImageForYandex::isFacebook
+                                , Images_resultsByImageForYandex::isInstagram
+                                , Images_resultsByImageForYandex::isTwitter
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -277,7 +269,7 @@ public class SearchImageYandexService {
     }
 
     public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
-            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, Map<String, Object>> getOriginalFn, Function<RESULT, Map<String, Object>> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) throws Exception {
         log.info("========= save 진입 =========");
 
@@ -294,15 +286,15 @@ public class SearchImageYandexService {
             log.info("results: " + results);
 
             try {
-                String imageUrl = getOriginalFn.apply(result) ;
+                String imageUrl = getOriginalFn.apply(result).get("link").toString();
                 log.info("imageUrl1: "+imageUrl);
                 if(imageUrl == null) {
-                    imageUrl = getThumbnailFn.apply(result);
+                    imageUrl = getThumbnailFn.apply(result).get("link").toString();
                 }
                 log.info("imageUrl2: "+imageUrl);
                 if(imageUrl != null) {
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultYandexReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {
@@ -316,7 +308,7 @@ public class SearchImageYandexService {
                         log.info("file cnt === {}", cnt);
                     }else {
                         //이미지 파일 저장
-                        imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
+                        imageService.saveYandexReverseImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
                         CommonStaticSearchUtil.setSearchResultDefault(sre);
                         searchResultRepository.save(sre);
 

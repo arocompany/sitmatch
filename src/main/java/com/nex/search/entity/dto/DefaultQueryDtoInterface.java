@@ -61,4 +61,6 @@ public interface DefaultQueryDtoInterface {
 
     String getTsrIsBatch();
     String getTsrCycleBatch();
+
+
 }

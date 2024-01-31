@@ -127,24 +127,13 @@ public class SearchTextYandexService {
                 case "ru" -> txtNation = "225";
             }
 
-            String url;
-            if(index == 0){
-                url = sitProperties.getTextUrl()
-                        + "?engine=yandex"
-                        + "&text="+tsiKeywordHiddenValue
-                        + "&api_key=" + configData.getSerpApiKey()
-                        + "&p="+index
-                        + "&lr="+txtNation
-                        + "&safe=off";
+            String url = sitProperties.getTextUrl()
+                    + "?engine=yandex"
+                    + "&text="+tsiKeywordHiddenValue
+                    + "&api_key=" + configData.getSerpApiKey()
+                    + "&p="+index
+                    + "&lr="+txtNation;
 
-            } else {
-                url = sitProperties.getTextUrl()
-                        + "?engine=yandex"
-                        + "&text="+tsiKeywordHiddenValue
-                        + "&api_key=" + configData.getSerpApiKey()
-                        + "&p="+index+1
-                        + "&lr="+txtNation;
-            }
 
             log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
 

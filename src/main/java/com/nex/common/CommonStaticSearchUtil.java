@@ -48,6 +48,35 @@ public class CommonStaticSearchUtil {
         return sre;
     }
 
+    public static <RESULT> SearchResultEntity getSearchResultYandexReverseEntity(int tsiUno, String tsrSns, RESULT result
+            , Function<RESULT, Map<String, Object>> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
+        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
+        SearchResultEntity sre = new SearchResultEntity();
+        sre.setTsiUno(tsiUno);
+        sre.setTsrJson(result.toString());
+        sre.setTsrDownloadUrl(getOriginalFn.apply(result).get("link").toString());
+        sre.setTsrTitle(getTitleFn.apply(result));
+        sre.setTsrSiteUrl(getLinkFn.apply(result));
+        sre.setTsrSearchValue("0");
+
+        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
+        //sre.setTsrSns("11");
+
+        // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
+        if (CommonCode.snsTypeFacebook.equals(tsrSns) && isFacebookFn.apply(result)) {
+            sre.setTsrSns(CommonCode.snsTypeFacebook);
+        } else if(CommonCode.snsTypeTwitter.equals(tsrSns) && isTwitterFn.apply(result)){
+            sre.setTsrSns(CommonCode.snsTypeTwitter);
+        } else if (CommonCode.snsTypeInstagram.equals(tsrSns) && isInstagramFn.apply(result)) {
+            sre.setTsrSns(CommonCode.snsTypeInstagram);
+        } else {
+            sre.setTsrSns(CommonCode.snsTypeGoogle);
+        }
+
+        return sre;
+    }
+
     /**
      * 검색 작업 엔티티 추출
      *

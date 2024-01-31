@@ -180,4 +180,78 @@ public class ImageService {
         }
 
     }
+
+    public <RESULT> void saveYandexReverseImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
+            , RESULT result, Function<RESULT, Map<String, Object>> getOriginalFn, Function<RESULT, Map<String, Object>> getThumbnailFn, boolean isForGoogleLens) throws IOException {
+
+        String fileName = "";
+
+        if(isForGoogleLens){
+            fileName = CommonStaticSearchUtil.generateRandomFileName(30);
+        }else{
+            fileName = UUID.randomUUID().toString();
+        }
+
+        String imageUrl = getOriginalFn.apply(result).get("link").toString();
+        imageUrl = imageUrl != null ? getOriginalFn.apply(result).get("link").toString() : getThumbnailFn.apply(result).get("link").toString();
+
+        log.info("imageUrl: "+imageUrl);
+
+        //2023-03-26 에러 나는 url 처리
+        byte[] imageBytes;
+        if (imageUrl != null) {
+            Resource resource = resourceLoader.getResource(imageUrl);
+            try {
+                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
+            } catch (Exception e) {
+                imageUrl = getThumbnailFn.apply(result).get("link").toString();
+                resource = resourceLoader.getResource(imageUrl);
+                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
+            }
+
+            if (imageBytes == null) {
+                imageUrl = getThumbnailFn.apply(result).get("link").toString();
+                resource = resourceLoader.getResource(imageUrl);
+                imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
+            }
+
+            if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("") && imageBytes != null) {
+                LocalDate now = LocalDate.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+                String folder = now.format(formatter);
+                String restrictChars = "|\\\\?*<\":>/";
+                String regExpr = "[" + restrictChars + "]+";
+                String extension = "";
+                String extension_ = "";
+                if (resource.getFilename().indexOf(".") > 0) {
+                    extension = resource.getFilename().substring(resource.getFilename().lastIndexOf("."));
+                    extension = extension.replaceAll(regExpr, "").substring(0, Math.min(extension.length(), 10));
+                }
+
+                if(fileName.indexOf(".") > 0){
+                    extension_ = fileName.substring(fileName.length()-3);
+                }else{
+                    extension_ = extension.substring(1);
+                }
+
+                File destDir = new File(sitProperties.getFileLocation2() + folder + File.separator + tsiUno);
+                if (!destDir.exists()) {
+                    destDir.mkdirs();
+                }
+
+                Files.write(Paths.get(destDir + File.separator + fileName + extension), imageBytes);
+                sre.setTsrImgExt(extension_);
+                sre.setTsrImgName(fileName + extension);
+                sre.setTsrImgPath((destDir + File.separator).replaceAll("\\\\", "/"));
+
+                Image img = new ImageIcon(destDir + File.separator + fileName + extension).getImage();
+                sre.setTsrImgHeight(String.valueOf(img.getHeight(null)));
+                sre.setTsrImgWidth(String.valueOf(img.getWidth(null)));
+                sre.setTsrImgSize(String.valueOf(destDir.length() / 1024));
+                img.flush();
+            }
+        } else {
+
+        }
+    }
 }

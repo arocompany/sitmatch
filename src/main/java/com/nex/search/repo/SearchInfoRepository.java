@@ -111,7 +111,26 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " when isnull(tmr.TMR_T_SCORE) then 0 " +
                                     " else 1 " +
                                     " end)) * 1000)) > 1) AS tmrSimilarityCnt " +
+
+                                    ", coalesce(params.tsi_is_nation_kr, 0) tsiIsNationKr " +
+                                    ", coalesce(params.tsi_is_nation_us, 0) tsiIsNationUs " +
+                                    ", coalesce(params.tsi_is_nation_cn, 0) tsiIsNationCn " +
+                                    ", coalesce(params.tsi_is_nation_nl, 0) tsiIsNationNl " +
+                                    ", coalesce(params.tsi_is_nation_th, 0) tsiIsNationTh " +
+                                    ", coalesce(params.tsi_is_nation_ru, 0) tsiIsNationRu " +
+                                    ", coalesce(params.tsi_is_nation_vn, 0) tsiIsNationVn " +
+                                    ", coalesce(params.tsi_is_engine_google, 0) tsiIsEngineGoogle " +
+                                    ", coalesce(params.tsi_is_engine_youtube, 0) tsiIsEngineYoutube " +
+                                    ", coalesce(params.tsi_is_engine_google_lens, 0) tsiIsEngineGoogleLens " +
+                                    ", coalesce(params.tsi_is_engine_baidu, 0) tsiIsEngineBaidu " +
+                                    ", coalesce(params.tsi_is_engine_bing, 0) tsiIsEngineBing " +
+                                    ", coalesce(params.tsi_is_engine_duckduckgo, 0) tsiIsEngineDuckduckgo " +
+                                    ", coalesce(params.tsi_is_engine_yahoo, 0) tsiIsEngineYahoo " +
+                                    ", coalesce(params.tsi_is_engine_yandex, 0) tsiIsEngineYandex " +
+                                    ", coalesce(params.tsi_is_engine_naver, 0) tsiIsEngineNaver " +
                                     " from tb_search_info tsi " +
+
+                                    " LEFT OUTER JOIN TB_SEARCH_INFO_PARAMS params ON tsi.TSI_UNO = params.TSI_UNO "+
                                     " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
                                     " and tsi.SEARCH_VALUE= :searchValue" +
                                     " and tsi.TSI_KEYWORD like '%' :keyword '%' " +

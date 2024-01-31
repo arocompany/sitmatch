@@ -1,5 +1,7 @@
 package com.nex.search.entity.dto;
 
+import com.nex.search.entity.SearchInfoParamsEntity;
+
 import java.sql.Timestamp;
 
 public interface ResultCntQueryDtoInterface {
@@ -28,5 +30,21 @@ public interface ResultCntQueryDtoInterface {
     String getResultCnt();
     String getTmrSimilarityCnt();
 
-
+    SearchInfoParamsEntity getParams();
+    Integer getTsiIsNationUs();
+    Integer getTsiIsNationCn();
+    Integer getTsiIsNationKr();
+    Integer getTsiIsNationNl();
+    Integer getTsiIsNationTh();
+    Integer getTsiIsNationRu();
+    Integer getTsiIsNationVn();
+    Integer getTsiIsEngineGoogle();
+    Integer getTsiIsEngineYoutube();
+    Integer getTsiIsEngineGoogleLens();
+    Integer getTsiIsEngineBaidu();
+    Integer getTsiIsEngineBing();
+    Integer getTsiIsEngineDuckduckgo();
+    Integer getTsiIsEngineYahoo();
+    Integer getTsiIsEngineYandex();
+    Integer getTsiIsEngineNaver();
 }
