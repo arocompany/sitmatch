@@ -10,8 +10,10 @@
   <link rel="stylesheet" href="/css/trace.min.css?v=2023111401" />
   <link rel="stylesheet" href="/css/detail.min.css?v=2023111401" />
   <link rel="stylesheet" href="/css/dev.css" />
-  <script src="/js/style.js"></script>
+
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   <script src="/js/footer.js"></script>
+  <script src="/js/style.js"></script>
   <script src="/js/function.js"></script>
 </head>
 
@@ -754,7 +756,7 @@
   // 대상 디테일
   const imgBtn = document.querySelectorAll(".img-box");
   // const tsiUnoClass = document.querySelectorAll(".history-search-list");
-  const modal = document.querySelector("#modal");
+  // const modal = document.querySelector("#modal");
 
   /*
   tsiUnoClass.forEach((btn)=> {
@@ -950,10 +952,10 @@
         modal.style.display = 'flex';
         modal.innerHTML = $(this).parent().parent().find(".area_search_condition").html();
 
-      // $(".esc-btn").on("click", function(){
-      //   modal.style.display = 'none';
-      //   document.body.style.overflow = 'unset';
-      // });
+      $("#modal .esc-btn").on("click", function(){
+        modal.style.display = 'none';
+        document.body.style.overflow = 'unset';
+      });
     });
   });
 

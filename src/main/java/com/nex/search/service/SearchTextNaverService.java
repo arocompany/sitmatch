@@ -117,12 +117,11 @@ public class SearchTextNaverService {
             else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
             else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
 
-            //
             String url = sitProperties.getTextUrl()
                         + "?engine=naver"
                         + "&query="+tsiKeywordHiddenValue
                         + "&page="+(index+1)*10
-                        + "&where=web"
+                        + "&where=image"
                         + "&api_key=" + configData.getSerpApiKey();
 
             log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
