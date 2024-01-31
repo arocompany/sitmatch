@@ -178,13 +178,19 @@ public class SearchImageGoogleLensService {
                     if (!tsrSns.equals(sre.getTsrSns())) {
                         continue;
                     }
-                    //이미지 파일 저장
-                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getThumbnailFn, getThumbnailFn, true);
-                    CommonStaticSearchUtil.setSearchResultDefault(sre);
-                    searchResultRepository.save(sre);
-//                    searchService.saveSearchResult(sre);
 
-                    sreList.add(sre);
+                    int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
+                    if(cnt > 0) {
+                        log.info("file cnt === {}", cnt);
+                    }else {
+                        //이미지 파일 저장
+                        imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getThumbnailFn, getThumbnailFn, true);
+                        CommonStaticSearchUtil.setSearchResultDefault(sre);
+                        searchResultRepository.save(sre);
+                        //searchService.saveSearchResult(sre);
+
+                        sreList.add(sre);
+                    }
                 }
             } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());

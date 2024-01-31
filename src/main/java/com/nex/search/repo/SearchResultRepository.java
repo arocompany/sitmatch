@@ -28,6 +28,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     SearchResultEntity findByTsrUno(Integer TsrUno);
 
+    Integer countByTsrSiteUrl(String url);
+
     List<SearchResultEntity> findByTsrUnoIn(List<Integer> tsrUnoValues);
     /*----------------------------------------------------------------------------------------------------------------*/
 
