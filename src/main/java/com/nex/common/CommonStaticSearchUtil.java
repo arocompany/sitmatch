@@ -65,6 +65,9 @@ public class CommonStaticSearchUtil {
         }
         sje.setTsrImgName(sre.getTsrImgName());
         sje.setTsrImgExt(sre.getTsrImgExt());
+        sje.setTsjStatus("00");
+        sje.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+        sje.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         return sje;
     }
 
