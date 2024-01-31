@@ -18,6 +18,14 @@ public interface CommonCode {
     String searchStateIngCalc = "15";
     String searchStateFinishCalc = "17";
 
+    String searchNationCodeUs = "us";
+    String searchNationCodeKr = "kr";
+    String searchNationCodeCn = "cn";
+    String searchNationCodeNl = "nl";
+    String searchNationCodeTh = "th";
+    String searchNationCodeRu = "ru";
+    String searchNationCodeVn = "vn";
+
     String SerpAPIEngineGoogle = "google";
     String SerpAPIEngineYoutube = "youtube";
     String SerpAPIEngineGoogleLens = "google_lens";

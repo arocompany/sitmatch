@@ -8,13 +8,11 @@ import com.nex.common.*;
 import com.nex.nations.entity.NationCodeEntity;
 import com.nex.nations.repository.NationCodeRepository;
 import com.nex.search.entity.SearchInfoEntity;
+import com.nex.search.entity.SearchInfoParamsEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.VideoInfoEntity;
 import com.nex.search.entity.dto.*;
-import com.nex.search.repo.SearchInfoRepository;
-import com.nex.search.repo.SearchJobRepository;
-import com.nex.search.repo.SearchResultRepository;
-import com.nex.search.repo.VideoInfoRepository;
+import com.nex.search.repo.*;
 import com.nex.serpServices.entity.SerpServicesEntity;
 import com.nex.serpServices.repo.SerpServicesRepository;
 import com.nex.user.entity.ResultListExcelDto;
@@ -84,6 +82,8 @@ public class SearchService {
     private final TraceHistRepository traceHistRepository;
     private final SearchResultHistRepository searchResultHistRepository;
     private final NoticeHistRepository noticeHistRepository;
+    private final SearchInfoParamsRepository searchInfoParamsRepository;
+
 
     private final SitProperties sitProperties;
 
@@ -138,24 +138,6 @@ public class SearchService {
                 param.setTsiImgName(uuid+extension);
                 param.setTsiImgPath((destDir+File.separator).replaceAll("\\\\", "/"));
                 param.setTsiImgExt(extension.substring(1));
-
-                //검색 시점에 활성화 되어 있는 서비스 리스트 호출
-//                {
-//                    List<SerpServicesEntity> ssList = serpServicesRepository.findBySsIsActive(1);
-//
-//                    for(SerpServicesEntity item: ssList){
-//                        switch (item.getSsName()){
-//                            case CommonCode.SerpAPIEngineGoogle -> param.setTsiSerpEngineGoogle(1);
-//                            case CommonCode.SerpAPIEngineYoutube -> param.setTsiSerpEngineGoogle(1);
-//                            case CommonCode.SerpAPIEngineBaidu -> param.setTsiSerpEngineGoogle(1);
-//                            case CommonCode.SerpAPIEngineBing -> param.setTsiSerpEngineGoogle(1);
-//                            case CommonCode.SerpAPIEngineDuckduckgo -> param.setTsiSerpEngineGoogle(1);
-//                            case CommonCode.SerpAPIEngineYahoo -> param.setTsiSerpEngineGoogle(1);
-//                            case CommonCode.SerpAPIEngineYandex -> param.setTsiSerpEngineGoogle(1);
-//                            case CommonCode.SerpAPIEngineNaver -> param.setTsiSerpEngineGoogle(1);
-//                        }
-//                    }
-//                }
             }catch(Exception e){
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -1188,5 +1170,53 @@ public class SearchService {
         outMap.put("maxPage", Consts.MAX_PAGE);
 
         return outMap;
+    }
+
+    //검색 당시, 서비스, 국가 활성화 확인
+    public void saveSearchInfoParams(SearchInfoEntity param){
+        try {
+            SearchInfoParamsEntity sipEntity = new SearchInfoParamsEntity();
+            sipEntity.setTsiUno(param.getTsiUno());
+            {
+
+                List<SerpServicesEntity> ssList = serpServicesRepository.findBySsIsActive(1);
+
+                for (SerpServicesEntity item : ssList) {
+                    switch (item.getSsName()) {
+                        case CommonCode.SerpAPIEngineGoogle -> sipEntity.setTsiIsEngineGoogle(1);
+                        case CommonCode.SerpAPIEngineGoogleLens -> sipEntity.setTsiIsEngineGoogleLens(1);
+                        case CommonCode.SerpAPIEngineYoutube -> sipEntity.setTsiIsEngineYoutube(1);
+                        case CommonCode.SerpAPIEngineBaidu -> sipEntity.setTsiIsEngineBaidu(1);
+                        case CommonCode.SerpAPIEngineBing -> sipEntity.setTsiIsEngineBing(1);
+                        case CommonCode.SerpAPIEngineDuckduckgo -> sipEntity.setTsiIsEngineDuckduckgo(1);
+                        case CommonCode.SerpAPIEngineYahoo -> sipEntity.setTsiIsEngineYahoo(1);
+                        case CommonCode.SerpAPIEngineYandex -> sipEntity.setTsiIsEngineYandex(1);
+                        case CommonCode.SerpAPIEngineNaver -> sipEntity.setTsiIsEngineNaver(1);
+                    }
+                }
+            }
+
+            {
+
+                List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+
+                for (NationCodeEntity item : ncList) {
+                    switch (item.getNcCode()) {
+                        case CommonCode.searchNationCodeUs -> sipEntity.setTsiIsNationUs(1);
+                        case CommonCode.searchNationCodeKr -> sipEntity.setTsiIsNationKr(1);
+                        case CommonCode.searchNationCodeCn -> sipEntity.setTsiIsNationCn(1);
+                        case CommonCode.searchNationCodeNl -> sipEntity.setTsiIsNationNl(1);
+                        case CommonCode.searchNationCodeTh -> sipEntity.setTsiIsNationTh(1);
+                        case CommonCode.searchNationCodeRu -> sipEntity.setTsiIsNationRu(1);
+                        case CommonCode.searchNationCodeVn -> sipEntity.setTsiIsNationVn(1);
+                    }
+                }
+            }
+
+            searchInfoParamsRepository.save(sipEntity);
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+        }
     }
 }

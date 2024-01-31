@@ -48,6 +48,7 @@ public class SearchController {
         SearchInfoEntity resultEntity = searchService.insertSearchInfo(file.get(), searchInfoEntity, folder);
 
         if(resultEntity != null) {
+            searchService.saveSearchInfoParams(resultEntity);
             searchService.search(resultEntity, searchInfoDto, folder);
         }else{
             mv = new ModelAndView("redirect:/");
