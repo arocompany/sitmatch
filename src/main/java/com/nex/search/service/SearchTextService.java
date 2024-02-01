@@ -214,14 +214,9 @@ public class SearchTextService {
 
         for (SearchResultEntity sre : searchResultEntity) {
             try {
-                int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
-                if(cnt > 0) {
-                    log.info("file cnt === {}", cnt);
-                }else {
-                    SearchJobEntity sje = CommonStaticSearchUtil.getSearchJobEntity(sre);
-                    CommonStaticSearchUtil.setSearchJobDefault(sje);
-                    searchJobRepository.save(sje);
-                }
+                SearchJobEntity sje = CommonStaticSearchUtil.getSearchJobEntity(sre);
+                CommonStaticSearchUtil.setSearchJobDefault(sje);
+                searchJobRepository.save(sje);
             } catch (JpaSystemException e) {
                 log.error(e.getMessage());
                 e.printStackTrace();
