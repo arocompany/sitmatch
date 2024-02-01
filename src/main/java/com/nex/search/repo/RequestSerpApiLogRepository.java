@@ -21,5 +21,5 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface RequestSerpApiLogRepository extends JpaRepository<RequestSerpApiLogEntity, Integer> {
-
+    RequestSerpApiLogEntity findById(int uno);
 }

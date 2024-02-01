@@ -22,7 +22,7 @@ public class CommonStaticSearchUtil {
     public static <RESULT> SearchResultEntity getSearchResultGoogleReverseEntity(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
-        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
+//        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
@@ -31,7 +31,7 @@ public class CommonStaticSearchUtil {
         sre.setTsrSiteUrl(getLinkFn.apply(result));
         sre.setTsrSearchValue("0");
 
-        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
+//        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
@@ -51,7 +51,7 @@ public class CommonStaticSearchUtil {
     public static <RESULT> SearchResultEntity getSearchResultYandexReverseEntity(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, Map<String, Object>> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
-        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
+//        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
@@ -60,7 +60,7 @@ public class CommonStaticSearchUtil {
         sre.setTsrSiteUrl(getLinkFn.apply(result));
         sre.setTsrSearchValue("0");
 
-        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
+//        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
@@ -185,7 +185,7 @@ public class CommonStaticSearchUtil {
         sre.setTsrSiteUrl(getLinkFn.apply(result));
         sre.setTsrSearchValue("1");
 
-        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
+//        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
@@ -205,7 +205,7 @@ public class CommonStaticSearchUtil {
     public static <RESULT> SearchResultEntity getSearchResultTextEntity(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
-        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
+//        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
@@ -214,7 +214,7 @@ public class CommonStaticSearchUtil {
         sre.setTsrSiteUrl(getLinkFn.apply(result));
         sre.setTsrSearchValue("2");
 
-        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
+//        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
@@ -234,7 +234,7 @@ public class CommonStaticSearchUtil {
     public static <RESULT> SearchResultEntity getSearchResultEntity2(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
-        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
+//        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
@@ -242,7 +242,7 @@ public class CommonStaticSearchUtil {
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(getLinkFn.apply(result));
 
-        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
+//        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)

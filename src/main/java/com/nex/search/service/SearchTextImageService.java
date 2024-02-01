@@ -3,6 +3,8 @@ package com.nex.search.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.*;
+import com.nex.requestSerpApiLog.RequestSerpApiLogService;
+import com.nex.search.entity.RequestSerpApiLogEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -42,6 +44,7 @@ public class SearchTextImageService {
     private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
     private final SearchJobRepository searchJobRepository;
+    private final RequestSerpApiLogService requestSerpApiLogService;
     private Boolean loop = true;
     private final RestTemplate restTemplate;
     private String nationCode = "";
@@ -71,7 +74,7 @@ public class SearchTextImageService {
         CompletableFuture
                 .supplyAsync(() -> {
                     try { // text기반 검색
-                        return search(index, textGl, tsiKeywordHiddenValue, searchImageUrl,searchInfoDto, tsrSns, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images);
+                        return search(index, textGl, tsiKeywordHiddenValue, searchImageUrl,searchInfoDto, tsrSns, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -110,7 +113,8 @@ public class SearchTextImageService {
                 });
     }
 
-    public <INFO, RESULT> List<RESULT> search(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+    public <INFO, RESULT> List<RESULT> search(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, SearchInfoEntity siEntity) throws Exception {
+        int rsalUno = 0;
         try {
             ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
@@ -131,6 +135,10 @@ public class SearchTextImageService {
                     + "&engine=google_reverse_image"
                     + "&image_url=" + searchImageUrl;
 
+            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(siEntity.getTsiUno(), url, textGl, "google_reverse_image", tsiKeywordHiddenValue, index, configData.getSerpApiKey(), searchImageUrl);
+            requestSerpApiLogService.save(rsalEntity);
+            rsalUno = rsalEntity.getRslUno();
+
             log.info("search 진입");
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
@@ -139,7 +147,7 @@ public class SearchTextImageService {
 
             List<RESULT> results = null;
 
-            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+//            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
 
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -148,7 +156,16 @@ public class SearchTextImageService {
 
                 if (getErrorFn.apply(info) == null) {
                     results = getResultFn.apply(info);
+
+                    rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
+                    requestSerpApiLogService.save(rsalEntity);
+                }else{
+                    rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
+                    requestSerpApiLogService.save(rsalEntity);
                 }
+            }else{
+                rsalEntity = requestSerpApiLogService.fail(rsalEntity, resultMap.toString());
+                requestSerpApiLogService.save(rsalEntity);
             }
 
             if (results == null || index >= sitProperties.getTextCountLimit() - 1) {
@@ -156,12 +173,18 @@ public class SearchTextImageService {
             }
             //        if(index>2){ loop=false; }
 
-            log.info("results: " + results);
-            log.debug("search loop: " + loop);
+//            log.info("results: " + results);
+//            log.debug("search loop: " + loop);
 
             return results != null ? results : new ArrayList<>();
         }catch (Exception e){
             log.error(e.getMessage());
+
+            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
+            if(rsalEntity != null) {
+                requestSerpApiLogService.fail(rsalEntity, e.getMessage());
+                requestSerpApiLogService.save(rsalEntity);
+            }
         }
         return null;
     }
@@ -265,7 +288,7 @@ public class SearchTextImageService {
         CompletableFuture
                 .supplyAsync(() -> {
                     try { // text기반 검색
-                        return search(finalIndex, textGl,tsiKeywordHiddenValue, searchImageUrl, searchInfoDto,tsrSns, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images);
+                        return search(finalIndex, textGl,tsiKeywordHiddenValue, searchImageUrl, searchInfoDto,tsrSns, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -310,7 +333,7 @@ public class SearchTextImageService {
         CompletableFuture
                 .supplyAsync(() -> {
                     try { // text기반 검색
-                        return search(index, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results);
+                        return search(index, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -361,7 +384,7 @@ public class SearchTextImageService {
         CompletableFuture
                 .supplyAsync(() -> {
                     try { // text기반 검색
-                        return search(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results);
+                        return search(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;

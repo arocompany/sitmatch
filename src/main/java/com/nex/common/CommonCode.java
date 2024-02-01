@@ -38,4 +38,8 @@ public interface CommonCode {
     String SerpAPIEngineYandex = "yandex";
     String SerpAPIEngineYandexImage = "yandex_images";
     String SerpAPIEngineNaver = "naver";
+
+    int RequestSerpApiLogInit = 0;
+    int RequestSerpApiLogSuccess = 1;
+    int RequestSerpApiLogFail = 2;
 }

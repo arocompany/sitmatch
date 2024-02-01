@@ -3,10 +3,8 @@ package com.nex.search.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.*;
-import com.nex.search.entity.SearchInfoEntity;
-import com.nex.search.entity.SearchJobEntity;
-import com.nex.search.entity.SearchResultEntity;
-import com.nex.search.entity.VideoInfoEntity;
+import com.nex.requestSerpApiLog.RequestSerpApiLogService;
+import com.nex.search.entity.*;
 import com.nex.search.entity.dto.SearchInfoDto;
 import com.nex.search.entity.result.Images_resultsByImage;
 import com.nex.search.entity.result.SerpApiImageResult;
@@ -50,6 +48,7 @@ public class SearchVideoGoogleLensService {
     private final SearchResultRepository searchResultRepository;
     private final VideoInfoRepository videoInfoRepository;
     private final SitProperties sitProperties;
+    private final RequestSerpApiLogService requestSerpApiLogService;
 
     @Async
     public void searchByTextVideo(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String path, String nationCode) throws Exception {
@@ -79,6 +78,7 @@ public class SearchVideoGoogleLensService {
                 // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
                 // searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
 
+                int rsalUno = 0;
                 try {
                     String txtNation = "";
                     switch (nationCode){
@@ -96,11 +96,15 @@ public class SearchVideoGoogleLensService {
                             + "p=0"     //0
                             + "&api_key=" + configData.getSerpApiKey();
 
+                    RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(insertResult.getTsiUno(), url, nationCode, "yandex_images", tsiKeywordHiddenValue, null, configData.getSerpApiKey(), searchImageUrl);
+                    requestSerpApiLogService.save(rsalEntity);
+                    rsalUno = rsalEntity.getRslUno();
+                    int finalRsalUno = rsalUno;
                     CompletableFuture
                             .supplyAsync(() -> {
                                 try {
                                     // text기반 검색 및 결과 저장.(이미지)
-                                    return search(url, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images);
+                                    return search(url, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images, finalRsalUno);
                                 } catch (Exception e) {
                                     log.error(e.getMessage(), e);
                                     return null;
@@ -146,7 +150,7 @@ public class SearchVideoGoogleLensService {
         }
     }
 
-    public <INFO, RESULT> List<RESULT> search(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+    public <INFO, RESULT> List<RESULT> search(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, int rsalUno) throws Exception {
         try {
             log.info("search 진입");
             HttpHeaders header = new HttpHeaders();
@@ -156,7 +160,9 @@ public class SearchVideoGoogleLensService {
 
             List<RESULT> results = null;
 
-            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+//            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+
+            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
 
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -165,13 +171,28 @@ public class SearchVideoGoogleLensService {
 
                 if (getErrorFn.apply(info) == null) {
                     results = getResultFn.apply(info);
+
+                    rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
+                    requestSerpApiLogService.save(rsalEntity);
+                }else{
+                    rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
+                    requestSerpApiLogService.save(rsalEntity);
                 }
+            }else{
+                rsalEntity = requestSerpApiLogService.fail(rsalEntity, resultMap.toString());
+                requestSerpApiLogService.save(rsalEntity);
             }
 
-            log.debug("results: " + results);
+//            log.debug("results: " + results);
             return results != null ? results : new ArrayList<>();
         }catch (Exception e){
             log.error(e.getMessage());
+
+            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
+            if(rsalEntity != null) {
+                requestSerpApiLogService.fail(rsalEntity, e.getMessage());
+                requestSerpApiLogService.save(rsalEntity);
+            }
         }
         return null;
     }
@@ -179,7 +200,7 @@ public class SearchVideoGoogleLensService {
     public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) throws Exception {
-        log.info("========= save 진입 =========");
+//        log.info("========= save 진입 =========");
 
         if (results == null) {
             log.info("result null");
@@ -209,7 +230,7 @@ public class SearchVideoGoogleLensService {
                         continue;
                     }
 
-                    log.info("getThumbnailFn: "+getThumbnailFn);
+//                    log.info("getThumbnailFn: "+getThumbnailFn);
 
                     int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
                     if(cnt > 0) {

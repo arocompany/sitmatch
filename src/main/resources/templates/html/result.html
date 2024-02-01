@@ -33,48 +33,41 @@
             <section class="sns-chk">
                 <h2>SNS</h2>
                 <div class="chk-box chk-box-sns">
-                    <label><input type="checkbox" class="W" name="snsStatusAll" value="1"
-                                  th:checked="${snsStatusAll != ''}">전체</label>
-                    <label><input type="checkbox" name="snsStatus01" th:value="${snsStatus01}"
-                                  th:checked="${snsStatus01 != ''}">구글</label>
-                    <label><input type="checkbox" name="snsStatus02" th:value="${snsStatus02}"
-                                  th:checked="${snsStatus02 != ''}">트위터</label>
-                    <label><input type="checkbox" name="snsStatus03" th:value="${snsStatus03}"
-                                  th:checked="${snsStatus03 != ''}">인스타</label>
-                    <label><input type="checkbox" name="snsStatus04" th:value="${snsStatus04}"
-                                  th:checked="${snsStatus04 != ''}">페이스북</label>
+                    <label><input type="checkbox" class="W" name="snsStatusAll" value="1" th:checked="${snsStatusAll != ''}">전체</label>
+                    <label><input type="checkbox" name="snsStatus01" th:value="${snsStatus01}" th:checked="${snsStatus01 != ''}">구글</label>
+                    <label><input type="checkbox" name="snsStatus02" th:value="${snsStatus02}" th:checked="${snsStatus02 != ''}">트위터</label>
+                    <label><input type="checkbox" name="snsStatus03" th:value="${snsStatus03}" th:checked="${snsStatus03 != ''}">인스타</label>
+                    <label><input type="checkbox" name="snsStatus04" th:value="${snsStatus04}" th:checked="${snsStatus04 != ''}">페이스북</label>
                 </div>
             </section>
 
             <section class="video-chk">
                 <h2>일치율 높은순</h2>
                 <div class="chk-box chk-box-od">
-                    <label><input type="checkbox" class="W" name="odStatusAll" value="1"
-                                  th:checked="${odStatusAll != ''}">전체</label>
-                    <label><input type="checkbox" name="odStatus01" th:value="${odStatus01}"
-                                  th:checked="${odStatus01 != ''}">이미지(V)</label>
-                    <label><input type="checkbox" name="odStatus02" th:value="${odStatus02}"
-                                  th:checked="${odStatus02 != ''}">오디오(A)</label>
-                    <label><input type="checkbox" name="odStatus03" th:value="${odStatus03}"
-                                  th:checked="${odStatus03 != ''}">텍스트(T)</label>
+                    <label><input type="checkbox" class="W" name="odStatusAll" value="1" th:checked="${odStatusAll != ''}">전체</label>
+                    <label><input type="checkbox" name="odStatus01" th:value="${odStatus01}" th:checked="${odStatus01 != ''}">이미지(V)</label>
+                    <label><input type="checkbox" name="odStatus02" th:value="${odStatus02}" th:checked="${odStatus02 != ''}">오디오(A)</label>
+                    <label><input type="checkbox" name="odStatus03" th:value="${odStatus03}" th:checked="${odStatus03 != ''}">텍스트(T)</label>
                 </div>
             </section>
 
             <section class="sort-chk">
                 <h2>분류</h2>
                 <div class="chk-box chk-box-tsj">
-                    <label><input type="checkbox" class="W" name="tsjStatusAll" value="1"
-                                  th:checked="${tsjStatusAll != ''}">전체</label>
-                    <label><input type="checkbox" name="tsjStatus11" th:value="${tsjStatus11}"
-                                  th:checked="${tsjStatus11 != ''}">일치율</label>
-                    <label><input type="checkbox" name="tsjStatus01" th:value="${tsjStatus01}"
-                                  th:checked="${tsjStatus01 != ''}">처리중</label>
-                    <label><input type="checkbox" name="tsjStatus00" th:value="${tsjStatus00}"
-                                  th:checked="${tsjStatus00 != ''}">대기중</label>
-                    <label><input type="checkbox" name="tsjStatus10" th:value="${tsjStatus10}"
-                                  th:checked="${tsjStatus10 != ''}">SKIP
+                    <label><input type="checkbox" class="W" name="tsjStatusAll" value="1" th:checked="${tsjStatusAll != ''}">전체</label>
+                    <label><input type="checkbox" name="tsjStatus11" th:value="${tsjStatus11}" th:checked="${tsjStatus11 != ''}">일치율</label>
+                    <label><input type="checkbox" name="tsjStatus01" th:value="${tsjStatus01}" th:checked="${tsjStatus01 != ''}">처리중</label>
+                    <label><input type="checkbox" name="tsjStatus00" th:value="${tsjStatus00}" th:checked="${tsjStatus00 != ''}">대기중</label>
+                    <label><input type="checkbox" name="tsjStatus10" th:value="${tsjStatus10}" th:checked="${tsjStatus10 != ''}">SKIP
                         <span class="describe" flow="up" tooltip="해당 검색 결과의 일치율 비교 불가 데이터">?</span>
                     </label>
+                </div>
+            </section>
+
+            <section class="img-chk">
+                <h2>이미지 있는 것만 보기</h2>
+                <div class="chk-box chk-box-sns">
+                    <label><input type="checkbox" class="" name="isImage" id = "isImage" th:checked="${isImage != '0'}">이미지 있는것만 보기</label>
                 </div>
             </section>
             <!--      <section class="pri-chk">-->
@@ -97,10 +90,8 @@
                 <div class="search-tab">
                     <div class="tab on">
                         <div class="search-img">
-                            <img th:if="${(imgSrc != null && tsiType != '15' && tsiType != '19')}"
-                                 th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
-                            <video th:if="${(imgSrc != null && (tsiType == '15' || tsiType == '19'))}"
-                                   th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt=""></video>
+                            <img th:if="${(imgSrc != null && tsiType != '15' && tsiType != '19')}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
+                            <video th:if="${(imgSrc != null && (tsiType == '15' || tsiType == '19'))}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt=""></video>
                         </div>
                     </div>
                     <img th:if="${!#strings.isEmpty(keyword)}" src="/img/result/double-right.png" alt=""
@@ -130,6 +121,7 @@
         <!--            <img src="./img/replace/man.png" alt="" loading="lazy" >-->
         <div class="result-list  list-content" >
             <section class="list M-box-up bor10" th:each="list:${searchResultList}">
+                <p th:text="${list.getTsiUno()}"></p>
                 <div class="img-box">
                     <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
                     <div class="img">
@@ -159,8 +151,8 @@
                         <span th:case="10">SKIP</span>
                         <span th:case="11">
                             <span>
-                                <h2 th:if="${list.getMaxSimilarity() != null || list.getMaxSimilarity() != '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getMaxSimilarity(), '%')}">99%</h2>
-                                <h2 th:unless="${list.getMaxSimilarity() != null || list.getMaxSimilarity() != '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
+                                <h2 th:if="${list.getMaxSimilarity() != null && list.getMaxSimilarity() != '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getMaxSimilarity(), '%')}">99%</h2>
+                                <h2 th:unless="${list.getTmrSimilarity() != null && list.getTmrSimilarity() != '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
                             </span>
                             <!--
                                 <span th:elseif="${list.getMaxSimilarity() == null || list.getMaxSimilarity() == '0'}">
@@ -223,19 +215,13 @@
     <nav>
         <ul id="pagination"
             th:with="start=${(number / maxPage * maxPage) + 1}, end=(${(totalPages == 0) ? 1 : ((start + maxPage - 1) < totalPages ? (start + maxPage - 1) : totalPages)})">
-            <li class="page-num" th:if="${start > 1}">
-                <a th:onclick="'javascript:searchEvent('+ ${1} + ');'"
-                   class="btn-off" style="width:30px;">처음</a></li>
-            <li class="page-prev" th:if="${start > 1}">
-                <a th:onclick="'javascript:searchEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
+            <li class="page-num" th:if="${start > 1}"> <a th:onclick="'javascript:searchEvent('+ ${1} + ');'" class="btn-off" style="width:30px;">처음</a></li>
+            <li class="page-prev" th:if="${start > 1}"> <a th:onclick="'javascript:searchEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
             <li class="page-num" th:each="pageNum : ${#numbers.sequence(start, end)}">
-                <a th:onclick="'javascript:searchEvent('+ ${pageNum} + ');'" class="btn-off"
-                   th:classappend="${number + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a></li>
-            <li class="page-next" th:if="${end < totalPages}">
-                <a th:onclick="'javascript:searchEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
-            <li class="page-num" th:if="${end < totalPages}">
-                <a th:onclick="'javascript:searchEvent('+ ${totalPages} + ');'" class="btn-off"
-                   style="width:30px;">끝</a></li>
+                <a th:onclick="'javascript:searchEvent('+ ${pageNum} + ');'" class="btn-off" th:classappend="${number + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a>
+            </li>
+            <li class="page-next" th:if="${end < totalPages}"> <a th:onclick="'javascript:searchEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
+            <li class="page-num" th:if="${end < totalPages}"> <a th:onclick="'javascript:searchEvent('+ ${totalPages} + ');'" class="btn-off" style="width:30px;">끝</a></li>
         </ul>
     </nav>
     <script>footer();</script>

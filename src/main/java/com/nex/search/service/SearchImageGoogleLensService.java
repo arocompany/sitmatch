@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.*;
+import com.nex.requestSerpApiLog.RequestSerpApiLogService;
+import com.nex.search.entity.RequestSerpApiLogEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -41,6 +43,8 @@ public class SearchImageGoogleLensService {
     private final SearchResultRepository searchResultRepository;
     private final SearchJobRepository searchJobRepository;
 
+    private final RequestSerpApiLogService requestSerpApiLogService;
+
     private final ImageService imageService;
     private String nationCode = "";
     private final SitProperties sitProperties;
@@ -58,20 +62,24 @@ public class SearchImageGoogleLensService {
 
             String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, nationCode, null, null, null, configData.getSerpApiKey(), searchImageUrl, "google_lens", null);
 
+            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(insertResult.getTsiUno(), url, finalTextGl1, "google_lens", null, null, configData.getSerpApiKey(), searchImageUrl);
+            requestSerpApiLogService.save(rsalEntity);
+            int rsalUno = rsalEntity.getRslUno();
+
 //            log.info("google lens index = {}, textGl = {}, tsrSns = {}, loop = {}", null, nationCode, tsrSns, null);
 //            log.info("keyword === {}, url === {}", null, url);
-            CompletableFutureGoogleLensByImage(url, tsrSns, insertResult, finalTextGl1);
+            CompletableFutureGoogleLensByImage(url, tsrSns, insertResult, finalTextGl1, rsalUno);
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public void CompletableFutureGoogleLensByImage(String url, String tsrSns, SearchInfoEntity insertResult, String finalTextGl1) {
+    public void CompletableFutureGoogleLensByImage(String url, String tsrSns, SearchInfoEntity insertResult, String finalTextGl1, int rsalUno) {
         // 이미지
         CompletableFuture
                 .supplyAsync(() -> {
                     try { // text기반 검색
-                        return searchGoogleLens(url, GoogleLensImagesByImageResult.class, GoogleLensImagesByImageResult::getError, GoogleLensImagesByImageResult::getImage_sources, finalTextGl1);
+                        return searchGoogleLens(url, GoogleLensImagesByImageResult.class, GoogleLensImagesByImageResult::getError, GoogleLensImagesByImageResult::getImage_sources, finalTextGl1, rsalUno);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -104,7 +112,7 @@ public class SearchImageGoogleLensService {
                 });
     }
 
-    public <INFO, RESULT> List<RESULT> searchGoogleLens(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, String finalTextGl1) throws Exception {
+    public <INFO, RESULT> List<RESULT> searchGoogleLens(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, String finalTextGl1, int rsalUno) throws Exception {
         try {
             ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
@@ -137,7 +145,9 @@ public class SearchImageGoogleLensService {
 
             List<RESULT> results = null;
 
-            log.debug("resultMap.getStatusCodeValue(): " + sourcesResultMap.getStatusCodeValue());
+//            log.debug("resultMap.getStatusCodeValue(): " + sourcesResultMap.getStatusCodeValue());
+
+            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
 
             if (sourcesResultMap.getStatusCodeValue() == 200) {
                 ObjectMapper sourcesMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -146,13 +156,28 @@ public class SearchImageGoogleLensService {
 
                 if (getErrorFn.apply(info) == null) {
                     results = getResultFn.apply(info);
+
+                    rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
+                    requestSerpApiLogService.save(rsalEntity);
+                }else{
+                    rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
+                    requestSerpApiLogService.save(rsalEntity);
                 }
+            }else{
+                rsalEntity = requestSerpApiLogService.fail(rsalEntity, resultMap.toString());
+                requestSerpApiLogService.save(rsalEntity);
             }
 
             log.debug("results: " + results);
             return results != null ? results : new ArrayList<>();
         }catch (Exception e){
             log.error(e.getMessage());
+
+            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
+            if(rsalEntity != null) {
+                requestSerpApiLogService.fail(rsalEntity, e.getMessage());
+                requestSerpApiLogService.save(rsalEntity);
+            }
         }
         return null;
     }

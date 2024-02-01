@@ -194,10 +194,12 @@ public class SearchService {
                                     }
                                 }
                                 case CommonCode.SerpAPIEngineBing -> {
-                                    if (param.getTsiGoogle() == 1){searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                    if (param.getTsiInstagram() == 1){searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                    if (param.getTsiFacebook() == 1){searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                    if (param.getTsiTwitter() == 1){searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
+                                    if(! ncInfo.getNcCode().equals("cn") && ! ncInfo.getNcCode().equals("th") && ! ncInfo.getNcCode().equals("ru") && ! ncInfo.getNcCode().equals("vn")) {
+                                        if (param.getTsiGoogle() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
+                                        if (param.getTsiInstagram() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
+                                        if (param.getTsiFacebook() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
+                                        if (param.getTsiTwitter() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
+                                    }
                                 }
                                 case CommonCode.SerpAPIEngineDuckduckgo -> {
                                     if (param.getTsiGoogle() == 1){searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
@@ -259,10 +261,12 @@ public class SearchService {
                                     }
                                 }
                                 case CommonCode.SerpAPIEngineBing -> {
-                                    if (param.getTsiGoogle() == 1){searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                    if (param.getTsiInstagram() == 1){searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                    if (param.getTsiFacebook() == 1){searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                    if (param.getTsiTwitter() == 1){searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
+                                    if(! ncInfo.getNcCode().equals("cn") && ! ncInfo.getNcCode().equals("th") && ! ncInfo.getNcCode().equals("ru") && ! ncInfo.getNcCode().equals("vn")) {
+                                        if (param.getTsiGoogle() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
+                                        if (param.getTsiInstagram() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
+                                        if (param.getTsiFacebook() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
+                                        if (param.getTsiTwitter() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
+                                    }
                                 }
                                 case CommonCode.SerpAPIEngineDuckduckgo -> {
                                     if (param.getTsiGoogle() == 1){searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
@@ -375,7 +379,7 @@ public class SearchService {
 
             List<RESULT> results = null;
 
-            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+//            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
 
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -407,7 +411,7 @@ public class SearchService {
 //     */
     public Page<DefaultQueryDtoInterface> getSearchResultList(Integer tsiUno, String keyword, Integer page, String priority,
                                                               String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
-                                                              String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String order_type) {
+                                                              String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, String order_type) {
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
         log.debug("priority => {}", priority);
@@ -417,33 +421,33 @@ public class SearchService {
         if ("1".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_1");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_1(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, pageRequest);
         } else if ("2".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_2");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_2(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, pageRequest);
         } else if ("3".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_3");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_3(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, pageRequest);
         } else if ("4".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_4");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_4(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, pageRequest);
         } else if ("5".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_5");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_5(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, pageRequest);
         } else if ("6".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_6");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_6(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, pageRequest);
         } else {
             log.info("getResultInfoListOrderByTmrSimilarityDesc");
             log.info("pageRequest" + pageRequest);
 
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, pageRequest);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, pageRequest);
         }
     }
 

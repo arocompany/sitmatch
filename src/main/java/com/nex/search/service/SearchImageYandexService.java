@@ -6,6 +6,8 @@ import com.nex.common.CommonStaticSearchUtil;
 import com.nex.common.ConfigData;
 import com.nex.common.ConfigDataManager;
 import com.nex.common.SitProperties;
+import com.nex.requestSerpApiLog.RequestSerpApiLogService;
+import com.nex.search.entity.RequestSerpApiLogEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -44,6 +46,7 @@ public class SearchImageYandexService {
     private final SearchResultRepository searchResultRepository;
     private final SearchJobRepository searchJobRepository;
     private final ImageService imageService;
+    private final RequestSerpApiLogService requestSerpApiLogService;
 
     private String nationCode = "";
     private final SitProperties sitProperties;
@@ -76,7 +79,7 @@ public class SearchImageYandexService {
                 .supplyAsync(() -> {
                     try {
                         // text기반 검색
-                        return search(index, finalTextGl1,searchImageUrl,searchInfoDto, tsrSns, SerpApiImageResultForYandex.class, SerpApiImageResultForYandex::getError, SerpApiImageResultForYandex::getImage_results);
+                        return search(index, finalTextGl1,searchImageUrl,searchInfoDto, tsrSns, SerpApiImageResultForYandex.class, SerpApiImageResultForYandex::getError, SerpApiImageResultForYandex::getImage_results, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         loop = false;
@@ -117,7 +120,8 @@ public class SearchImageYandexService {
                 });
     }
 
-    public <INFO, RESULT> List<RESULT> search(int index,String finalTextGl1, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+    public <INFO, RESULT> List<RESULT> search(int index,String finalTextGl1, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, SearchInfoEntity siEntity) throws Exception {
+        int rsalUno = 0;
         try {
             ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
@@ -137,6 +141,10 @@ public class SearchImageYandexService {
                     + "p="+index+1
                     + "&api_key=" + configData.getSerpApiKey();
 
+            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(siEntity.getTsiUno(), url, finalTextGl1, "yandex_images", null, index, configData.getSerpApiKey(), searchImageUrl);
+            requestSerpApiLogService.save(rsalEntity);
+            rsalUno = rsalEntity.getRslUno();
+
 
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
@@ -145,7 +153,7 @@ public class SearchImageYandexService {
 
             List<RESULT> results = null;
 
-            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+//            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
 
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -154,9 +162,17 @@ public class SearchImageYandexService {
 
                 if (getErrorFn.apply(info) == null) {
                     results = getResultFn.apply(info);
-                }
-            }
 
+                    rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
+                    requestSerpApiLogService.save(rsalEntity);
+                }else{
+                    rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
+                    requestSerpApiLogService.save(rsalEntity);
+                }
+            }else{
+                rsalEntity = requestSerpApiLogService.fail(rsalEntity, resultMap.toString());
+                requestSerpApiLogService.save(rsalEntity);
+            }
 
             if (results == null || index >= sitProperties.getTextCountLimit() - 1) {
                 loop = false;
@@ -164,12 +180,18 @@ public class SearchImageYandexService {
 
             // if(index >1){ loop=false;}
 
-            log.info("results: " + results);
-            log.debug("search loop: " + loop);
+//            log.info("results: " + results);
+//            log.debug("search loop: " + loop);
 
             return results != null ? results : new ArrayList<>();
         }catch(Exception e){
             log.error(e.getMessage());
+
+            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
+            if(rsalEntity != null) {
+                requestSerpApiLogService.fail(rsalEntity, e.getMessage());
+                requestSerpApiLogService.save(rsalEntity);
+            }
         }
         return null;
     }
@@ -223,7 +245,7 @@ public class SearchImageYandexService {
                 .supplyAsync(() -> {
                     try {
                         // text기반 검색
-                        return search(finalIndex, finalTextGl1, searchImageUrl, searchInfoDto,tsrSns, SerpApiImageResultForYandex.class, SerpApiImageResultForYandex::getError, SerpApiImageResultForYandex::getImage_results);
+                        return search(finalIndex, finalTextGl1, searchImageUrl, searchInfoDto,tsrSns, SerpApiImageResultForYandex.class, SerpApiImageResultForYandex::getError, SerpApiImageResultForYandex::getImage_results, insertResult);
                     } catch (Exception e) {
                         loop = false;
                         log.error(e.getMessage(), e);

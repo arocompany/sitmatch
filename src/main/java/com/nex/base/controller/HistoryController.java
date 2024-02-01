@@ -139,7 +139,8 @@ public class HistoryController {
                                @RequestParam(required = false, defaultValue = "") String snsStatus02,
                                @RequestParam(required = false, defaultValue = "") String snsStatus03,
                                @RequestParam(required = false, defaultValue = "") String snsStatus04,
-                               @RequestParam(required = false, defaultValue = "1") String priority) {
+                               @RequestParam(required = false, defaultValue = "1") String priority,
+                               @RequestParam(required = false, defaultValue = "0") String isImage) {
         ModelAndView modelAndView = new ModelAndView("html/result");
         Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = null;
 
@@ -227,6 +228,8 @@ public class HistoryController {
             modelAndView.addObject("snsStatus03", snsStatus03);//인스타
             modelAndView.addObject("snsStatus04", snsStatus04);//페이스북
 
+            modelAndView.addObject("isImage", isImage);
+
             if(!"".equals(tsjStatusAll)) {
                 tsjStatus1 = "00";
                 tsjStatus2 = "01";
@@ -264,7 +267,7 @@ public class HistoryController {
             }
 
             defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, order_type);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, order_type);
 
         }
         tsiKeyword.ifPresent(s -> modelAndView.addObject("tsiKeyword", s));

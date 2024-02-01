@@ -3,6 +3,8 @@ package com.nex.search.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.*;
+import com.nex.requestSerpApiLog.RequestSerpApiLogService;
+import com.nex.search.entity.RequestSerpApiLogEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
@@ -40,6 +42,7 @@ public class SearchTextBaiduService {
     private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
     private final SearchJobRepository searchJobRepository;
+    private final RequestSerpApiLogService requestSerpApiLogService;
     private String nationCode = "";
     private final SitProperties sitProperties;
 
@@ -65,7 +68,7 @@ public class SearchTextBaiduService {
                 .supplyAsync(() -> {
                     try {
                         //serpApi를 통하여 검색
-                        return searchText(index, searchInfoDto, tsrSns, textGl, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results);
+                        return searchText(index, searchInfoDto, tsrSns, textGl, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -107,11 +110,11 @@ public class SearchTextBaiduService {
                 });
     }
 
-    public <INFO, RESULT> List<RESULT> searchText(int index, SearchInfoDto searchInfoDto, String tsrSns, String textGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+    public <INFO, RESULT> List<RESULT> searchText(int index, SearchInfoDto searchInfoDto, String tsrSns, String textGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, SearchInfoEntity siEntity) throws Exception {
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
-
+        int rsalUno = 0;
         try {
             if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
             else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
@@ -124,6 +127,10 @@ public class SearchTextBaiduService {
                         + "&api_key=" + configData.getSerpApiKey();
 
 //            log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
+
+            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(siEntity.getTsiUno(), url, textGl, "baidu", tsiKeywordHiddenValue, index, configData.getSerpApiKey(), null);
+            requestSerpApiLogService.save(rsalEntity);
+            rsalUno = rsalEntity.getRslUno();
 
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
@@ -138,7 +145,16 @@ public class SearchTextBaiduService {
 
                 if (getErrorFn.apply(info) == null) {
                     results = getResultFn.apply(info);
+
+                    rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
+                    requestSerpApiLogService.save(rsalEntity);
+                }else{
+                    rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
+                    requestSerpApiLogService.save(rsalEntity);
                 }
+            }else{
+                rsalEntity = requestSerpApiLogService.fail(rsalEntity, resultMap.toString());
+                requestSerpApiLogService.save(rsalEntity);
             }
 
             if (results == null || index >= sitProperties.getTextCountLimit() - 1) {
@@ -147,6 +163,12 @@ public class SearchTextBaiduService {
             return results != null ? results : new ArrayList<>();
         }catch(Exception e){
             log.error(e.getMessage());
+
+            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
+            if(rsalEntity != null) {
+                requestSerpApiLogService.fail(rsalEntity, e.getMessage());
+                requestSerpApiLogService.save(rsalEntity);
+            }
         }
         return null;
     }
@@ -247,7 +269,7 @@ public class SearchTextBaiduService {
         CompletableFuture.supplyAsync(() -> {
             try {
                 // text기반 검색
-                return searchText(finalIndex, searchInfoDto, tsrSns, textGl, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results);
+                return searchText(finalIndex, searchInfoDto, tsrSns, textGl, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results, insertResult);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 return null;
