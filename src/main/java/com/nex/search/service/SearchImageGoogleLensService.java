@@ -58,8 +58,8 @@ public class SearchImageGoogleLensService {
 
             String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, nationCode, null, null, null, configData.getSerpApiKey(), searchImageUrl, "google_lens", null);
 
-            log.info("google lens index = {}, textGl = {}, tsrSns = {}, loop = {}", null, nationCode, tsrSns, null);
-            log.info("keyword === {}, url === {}", null, url);
+//            log.info("google lens index = {}, textGl = {}, tsrSns = {}, loop = {}", null, nationCode, tsrSns, null);
+//            log.info("keyword === {}, url === {}", null, url);
             CompletableFutureGoogleLensByImage(url, tsrSns, insertResult, finalTextGl1);
         } catch (Exception e){
             e.printStackTrace();
@@ -169,8 +169,8 @@ public class SearchImageGoogleLensService {
         //SearchResultEntity sre = null;
         for (RESULT result : results) {
             try {
-                String imageUrl = getThumbnailFn.apply(result);
-                if(imageUrl != null) {
+//                String imageUrl = getThumbnailFn.apply(result);
+//                if(imageUrl != null) {
                     //검색 결과 엔티티 추출
                     SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleLensEntity(insertResult.getTsiUno(), tsrSns, result, getThumbnailFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn,isTwitterFn);
 
@@ -191,7 +191,7 @@ public class SearchImageGoogleLensService {
 
                         sreList.add(sre);
                     }
-                }
+//                }
             } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());
                 throw new IOException(e);

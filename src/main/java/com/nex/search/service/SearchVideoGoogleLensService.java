@@ -107,7 +107,7 @@ public class SearchVideoGoogleLensService {
                                 }
                             }).thenApply((r) -> {
                                 try {
-                                    log.info("R" + r);
+//                                    log.info("R" + r);
                                     //검색 결과를 SearchResult Table에 저장 및 이미지 저장
                                     return save(
                                             r
@@ -191,16 +191,16 @@ public class SearchVideoGoogleLensService {
 
         //SearchResultEntity sre = null;
         for (RESULT result : results) {
-            log.info("results: " + results);
+//            log.info("results: " + results);
 
             try {
-                String imageUrl = getOriginalFn.apply(result);
-                log.info("imageUrl1: "+imageUrl);
-                if(imageUrl == null) {
-                    imageUrl = getThumbnailFn.apply(result);
-                }
-                log.info("imageUrl2: "+imageUrl);
-                if(imageUrl != null) {
+//                String imageUrl = getOriginalFn.apply(result);
+//                log.info("imageUrl1: "+imageUrl);
+//                if(imageUrl == null) {
+//                    imageUrl = getThumbnailFn.apply(result);
+//                }
+//                log.info("imageUrl2: "+imageUrl);
+//                if(imageUrl != null) {
                     //검색 결과 엔티티 추출
                     SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultEntity2(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 
@@ -221,7 +221,7 @@ public class SearchVideoGoogleLensService {
                         searchResultRepository.save(sre);
                         sreList.add(sre);
                     }
-                }
+//                }
             } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());
                 throw new IOException(e);

@@ -3,12 +3,14 @@ package com.nex.search.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.*;
+import com.nex.search.entity.RequestSerpApiLogEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
 import com.nex.search.entity.result.Images_resultsByText;
 import com.nex.search.entity.result.SerpApiTextResult;
+import com.nex.search.repo.RequestSerpApiLogRepository;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
@@ -40,6 +42,7 @@ public class SearchTextService {
     private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
     private final SearchJobRepository searchJobRepository;
+    private final RequestSerpApiLogRepository requestSerpApiLogRepository;
     private String nationCode = "";
     private final SitProperties sitProperties;
 
@@ -60,7 +63,7 @@ public class SearchTextService {
     }
 
     public void searchByText(int index, String textGl, String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
-        log.info("google keyword index = {}, textGl = {}, tsrSns = {}, loop = {}", index, textGl, tsrSns, loop);
+//        log.info("google keyword index = {}, textGl = {}, tsrSns = {}, loop = {} google", index, textGl, tsrSns, loop);
         CompletableFuture
                 .supplyAsync(() -> {
                     try {
@@ -72,7 +75,7 @@ public class SearchTextService {
                     }
                 }).thenApply((r) -> {
                     try {
-                        log.info("r == {}", r);
+//                        log.info("r == {}", r);
                         //검색 결과를 SearchResult Table에 저장 및 이미지 저장
                         return save(
                                 r
@@ -120,7 +123,7 @@ public class SearchTextService {
             // serpAPI url 생성
             String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey()
                     , null, "google", null);
-            log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
+//            log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
 
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
@@ -161,32 +164,32 @@ public class SearchTextService {
         List<SearchResultEntity> sreList = new ArrayList<>();
 
         for (RESULT result : results) {
-            log.info("result item === {}", result);
+//            log.info("result item === {}", result);
             try {
-                // original값이 없으면 thumbnail값 적용
-                String imageUrl = getOriginalFn.apply(result);
+//                // original값이 없으면 thumbnail값 적용
+//                String imageUrl = getOriginalFn.apply(result);
+//
+//                if(imageUrl == null) {
+//                    imageUrl = getThumbnailFn.apply(result);
+//                }
 
-                if(imageUrl == null) {
-                    imageUrl = getThumbnailFn.apply(result);
+//                if(imageUrl != null) {
+                SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                if (!tsrSns.equals(sre.getTsrSns())) {
+                    continue;
                 }
 
-                if(imageUrl != null) {
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
-                    if (!tsrSns.equals(sre.getTsrSns())) {
-                        continue;
-                    }
-
-                    int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
-                    if(cnt > 0) {
-                        log.info("file cnt === {}", cnt);
-                    }else {
-                        //이미지 파일 저장
-                        imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
-                        CommonStaticSearchUtil.setSearchResultDefault(sre);
-                        searchResultRepository.save(sre);
-                        sreList.add(sre);
-                    }
+                int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
+                if(cnt > 0) {
+                    log.info("file cnt === {}", cnt);
+                }else {
+                    //이미지 파일 저장
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
+                    CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    searchResultRepository.save(sre);
+                    sreList.add(sre);
                 }
+//                }
             } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());
                 throw new IOException(e);
@@ -289,4 +292,16 @@ public class SearchTextService {
         // results.get();
 
     }
+
+//    public void logSave(int index, String textGl, String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
+//        try{
+//            RequestSerpApiLogEntity param = new RequestSerpApiLogEntity();
+//            param.setTsiUno(insertResult.getTsiUno());
+//            param.setRslQuery();
+//            requestSerpApiLogRepository.save(param);
+//        }catch (Exception e){
+//            log.error(e.getMessage());
+//            e.printStackTrace();
+//        }
+//    }
 }

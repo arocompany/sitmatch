@@ -325,9 +325,7 @@ public class SearchService {
                             switch (ssInfo.getSsName()){
                                 case CommonCode.SerpAPIEngineGoogle -> searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
                                 case CommonCode.SerpAPIEngineGoogleLens -> searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
-                                case CommonCode.SerpAPIEngineYandex -> {
-
-                                }
+                                case CommonCode.SerpAPIEngineYandex -> searchImageYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
                             }
                         }
                     }

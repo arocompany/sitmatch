@@ -60,7 +60,7 @@ public class SearchTextYandexService {
     }
 
     public void searchByText(int index, String textGl, String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
-        log.info("google keyword index = {}, textGl = {}, tsrSns = {}, loop = {}", index, textGl, tsrSns, loop);
+//        log.info("google keyword index = {}, textGl = {}, tsrSns = {}, loop = {} yandex", index, textGl, tsrSns, loop);
         CompletableFuture
                 .supplyAsync(() -> {
                     try {
@@ -72,7 +72,7 @@ public class SearchTextYandexService {
                     }
                 }).thenApply((r) -> {
                     try {
-                        log.info("r == {}", r);
+//                        log.info("r == {}", r);
                         //검색 결과를 SearchResult Table에 저장 및 이미지 저장
                         return save(
                                 r
@@ -135,7 +135,7 @@ public class SearchTextYandexService {
                     + "&lr="+txtNation;
 
 
-            log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
+//            log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
 
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
@@ -176,16 +176,16 @@ public class SearchTextYandexService {
         List<SearchResultEntity> sreList = new ArrayList<>();
 
         for (RESULT result : results) {
-            log.info("result item === {}", result);
+//            log.info("result item === {}", result);
             try {
                 // original값이 없으면 thumbnail값 적용
-                String imageUrl = getOriginalFn.apply(result);
-
-                if(imageUrl == null) {
-                    imageUrl = getThumbnailFn.apply(result);
-                }
-
-                if(imageUrl != null) {
+//                String imageUrl = getOriginalFn.apply(result);
+//
+//                if(imageUrl == null) {
+//                    imageUrl = getThumbnailFn.apply(result);
+//                }
+//
+//                if(imageUrl != null) {
                     SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
                     if (!tsrSns.equals(sre.getTsrSns())) {
                         continue;
@@ -203,7 +203,7 @@ public class SearchTextYandexService {
                         searchResultRepository.save(sre);
                         sreList.add(sre);
                     }
-                }
+//                }
             } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());
                 throw new IOException(e);

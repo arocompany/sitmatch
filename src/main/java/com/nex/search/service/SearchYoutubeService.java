@@ -55,7 +55,7 @@ public class SearchYoutubeService {
             else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
 
             String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, null, null, null, configData.getSerpApiKey(), null, "youtube", null);
-            log.info("youtube keyword === {}, url === {}", tsiKeywordHiddenValue, url);
+//            log.info("youtube keyword === {}, url === {}", tsiKeywordHiddenValue, url);
             CompletableFutureYoutubeByResult(url, tsrSns, insertResult);
         } catch (Exception e){
             log.debug("Exception: "+e);

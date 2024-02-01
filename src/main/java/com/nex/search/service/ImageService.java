@@ -43,7 +43,7 @@ public class ImageService {
         String imageUrl = getOriginalFn.apply(result);
         imageUrl = imageUrl != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
 
-        log.info("imageUrl: "+imageUrl);
+//        log.info("imageUrl: "+imageUrl);
 
         //2023-03-26 에러 나는 url 처리
         byte[] imageBytes;
@@ -195,7 +195,7 @@ public class ImageService {
         String imageUrl = getOriginalFn.apply(result).get("link").toString();
         imageUrl = imageUrl != null ? getOriginalFn.apply(result).get("link").toString() : getThumbnailFn.apply(result).get("link").toString();
 
-        log.info("imageUrl: "+imageUrl);
+//        log.info("imageUrl: "+imageUrl);
 
         //2023-03-26 에러 나는 url 처리
         byte[] imageBytes;
