@@ -111,6 +111,15 @@ public class SearchTextService {
                 });
     }
 
+    public String getUrl(String tsrSns, String tsiKeywordHiddenValue, String textGl, int index){
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+
+        if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
+        else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
+        else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
+        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey(), null, "google", null);
+    }
+
     public <INFO, RESULT> List<RESULT> searchText(int index, SearchInfoDto searchInfoDto, String tsrSns, String textGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, SearchInfoEntity siEntity) throws Exception {
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 

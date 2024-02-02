@@ -1,10 +1,11 @@
 package com.nex.search.service;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.Chart.entity.*;
 import com.nex.Chart.repo.*;
-import com.nex.common.*;
+import com.nex.common.CommonCode;
+import com.nex.common.CommonStaticSearchUtil;
+import com.nex.common.Consts;
+import com.nex.common.SitProperties;
 import com.nex.nations.entity.NationCodeEntity;
 import com.nex.nations.repository.NationCodeRepository;
 import com.nex.search.entity.SearchInfoEntity;
@@ -31,15 +32,9 @@ import org.apache.tika.Tika;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -49,16 +44,16 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Function;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
 @Configuration
 @RequiredArgsConstructor
 public class SearchService {
-    private final RestTemplateConfig restTemplateConfig;
-
     private final SearchImageService searchImageService;
     private final SearchImageGoogleLensService searchImageGoogleLensService;
     private final SearchTextService searchTextService;
@@ -414,38 +409,6 @@ public class SearchService {
 //     * @return List<RESULT> (RESULT List)
 //     * @throws Exception
 //     */
-
-    // 배치시 진입
-    public <INFO, RESULT> List<RESULT> searchBatch(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
-        try {
-            log.info("searchBatch 진입 url === {}", url);
-            HttpHeaders header = new HttpHeaders();
-            HttpEntity<?> entity = new HttpEntity<>(header);
-            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            // ResponseEntity<?> resultMap = new customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-            ResponseEntity<?> resultMap = restTemplateConfig.customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-
-            List<RESULT> results = null;
-
-//            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
-
-            if (resultMap.getStatusCodeValue() == 200) {
-                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "images_results");
-                INFO info = mapper.readValue(jsonInString, infoClass);
-
-                if (getErrorFn.apply(info) == null) {
-                    results = getResultFn.apply(info);
-                }
-            }
-
-            log.debug("results: " + results);
-            return results != null ? results : new ArrayList<>();
-        }catch(Exception e){
-            log.error(e.getMessage());
-        }
-        return null;
-    }
 
     public SearchInfoEntity saveSearchInfo(SearchInfoEntity sie) {
         CommonStaticSearchUtil.setSearchInfoDefault(sie);

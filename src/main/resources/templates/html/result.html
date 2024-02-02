@@ -121,7 +121,6 @@
         <!--            <img src="./img/replace/man.png" alt="" loading="lazy" >-->
         <div class="result-list  list-content" >
             <section class="list M-box-up bor10" th:each="list:${searchResultList}">
-                <p th:text="${list.getTsiUno()}"></p>
                 <div class="img-box">
                     <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
                     <div class="img">

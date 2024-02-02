@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -98,20 +99,22 @@ public class TrackingSearchInfoService {
         File srcFile  = new File(searchResultEntity.getTsrImgPath() + searchResultEntity.getTsrImgName());
         File destFile = new File(destdir + File.separator + uuid + "." + extension);
 
-        try {
-            FileUtils.copyFile(srcFile, destFile);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException(e);
-        }
+        if(StringUtils.hasText(searchResultEntity.getTsrImgPath()) && StringUtils.hasText(searchResultEntity.getTsrImgName())){
+            try {
+                FileUtils.copyFile(srcFile, destFile);
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+                throw new RuntimeException(e);
+            }
 
-        //기존 searchResult 값 세팅 (이미지 정보)
-        searchInfoEntity.setTsiImgPath((destdir + File.separator).replaceAll("\\\\", "/"));
-        searchInfoEntity.setTsiImgName(uuid + "." + extension);
-        searchInfoEntity.setTsiImgExt(searchResultEntity.getTsrImgExt());
-        searchInfoEntity.setTsiImgHeight(searchResultEntity.getTsrImgHeight());
-        searchInfoEntity.setTsiImgWidth(searchResultEntity.getTsrImgWidth());
-        searchInfoEntity.setTsiImgSize(searchResultEntity.getTsrImgSize());
+            //기존 searchResult 값 세팅 (이미지 정보)
+            searchInfoEntity.setTsiImgPath((destdir + File.separator).replaceAll("\\\\", "/"));
+            searchInfoEntity.setTsiImgName(uuid + "." + extension);
+            searchInfoEntity.setTsiImgExt(searchResultEntity.getTsrImgExt());
+            searchInfoEntity.setTsiImgHeight(searchResultEntity.getTsrImgHeight());
+            searchInfoEntity.setTsiImgWidth(searchResultEntity.getTsrImgWidth());
+            searchInfoEntity.setTsiImgSize(searchResultEntity.getTsrImgSize());
+        }
         searchInfoEntity.setTsrUno(searchResultEntity.getTsrUno());
 
         //검색 정보 엔티티 기본값 세팅

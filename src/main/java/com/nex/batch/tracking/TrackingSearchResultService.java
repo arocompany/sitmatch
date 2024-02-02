@@ -11,6 +11,9 @@ import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.service.ImageService;
 import com.nex.search.service.SearchService;
+import com.nex.search.service.SearchTextService;
+import com.nex.serpServices.entity.SerpServicesEntity;
+import com.nex.serpServices.repo.SerpServicesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -42,6 +45,11 @@ public class TrackingSearchResultService{
     private final SitProperties sitProperties;
     private final RestTemplate restTemplate;
     private final NationCodeRepository nationCodeRepository;
+    private final SerpServicesRepository serpServicesRepository;
+
+    private final RestTemplateConfig restTemplateConfig;
+
+    private final SearchTextService searchTextService;
 
 
 //    /**
@@ -145,49 +153,124 @@ public class TrackingSearchResultService{
         List<CompletableFuture<List<RESULT>>> completableFutures = new ArrayList<>();
 
         List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+        List<SerpServicesEntity> ssList = serpServicesRepository.findBySsIsActive(1);
+
+        int cntNation = 0;
         for(NationCodeEntity ncInfo : ncList){
-            int pageNo = 0;
-            //기존 SearchService 에 있던 부분 활용
-            String url = getUrl(tsiKeyword, pageNo, isText, searchInfoEntity, ncInfo.getNcCode().toLowerCase());
-
-            CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
-                    .supplyAsync(() -> {
-                        try {
-                            List<RESULT> list = searchService.searchBatch(url, infoClass, getErrorFn, getSubFn);
-                            return list;
-                        } catch (Exception e) {
-                            log.debug(e.getMessage());
+            for(SerpServicesEntity ssInfo : ssList) {
+                String url = "";
+                int pageNo = 0;
+                if(isText) {
+                    switch (ssInfo.getSsName()) {
+                        case CommonCode.SerpAPIEngineGoogle -> {
+                            if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo);}
+                            if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo);}
+                            if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo);}
+                            if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo);}
                         }
-                        return null;
-                    });
+                        case CommonCode.SerpAPIEngineYoutube -> {
+                            if (searchInfoEntity.getTsiGoogle() == 1) { }
+                            if (searchInfoEntity.getTsiInstagram() == 1) { }
+                            if (searchInfoEntity.getTsiFacebook() == 1) { }
+                            if (searchInfoEntity.getTsiTwitter() == 1) { }
+                        }
+                        case CommonCode.SerpAPIEngineBaidu -> {
+                            if (cntNation == 0) {
+                                if (searchInfoEntity.getTsiGoogle() == 1) { }
+                                if (searchInfoEntity.getTsiInstagram() == 1) { }
+                                if (searchInfoEntity.getTsiFacebook() == 1) { }
+                                if (searchInfoEntity.getTsiTwitter() == 1) { }
+                            }
+                        }
+                        case CommonCode.SerpAPIEngineBing -> {
+                            if (!ncInfo.getNcCode().equals("cn") && !ncInfo.getNcCode().equals("th") && !ncInfo.getNcCode().equals("ru") && !ncInfo.getNcCode().equals("vn")) {
+                                if (searchInfoEntity.getTsiGoogle() == 1) { }
+                                if (searchInfoEntity.getTsiInstagram() == 1) { }
+                                if (searchInfoEntity.getTsiFacebook() == 1) { }
+                                if (searchInfoEntity.getTsiTwitter() == 1) { }
+                            }
+                        }
+                        case CommonCode.SerpAPIEngineDuckduckgo -> {
+                            if (searchInfoEntity.getTsiGoogle() == 1) { }
+                            if (searchInfoEntity.getTsiInstagram() == 1) { }
+                            if (searchInfoEntity.getTsiFacebook() == 1) { }
+                            if (searchInfoEntity.getTsiTwitter() == 1) { }
+                        }
+                        case CommonCode.SerpAPIEngineYahoo -> {
+                            if (searchInfoEntity.getTsiGoogle() == 1) { }
+                            if (searchInfoEntity.getTsiInstagram() == 1) { }
+                            if (searchInfoEntity.getTsiFacebook() == 1) { }
+                            if (searchInfoEntity.getTsiTwitter() == 1) { }
+                        }
+                        case CommonCode.SerpAPIEngineYandex -> {
+                            if (!ncInfo.getNcCode().equals("vn")) {
+                                if (searchInfoEntity.getTsiGoogle() == 1) { }
+                                if (searchInfoEntity.getTsiInstagram() == 1) { }
+                                if (searchInfoEntity.getTsiFacebook() == 1) { }
+                                if (searchInfoEntity.getTsiTwitter() == 1) { }
+                            }
+                        }
+                        case CommonCode.SerpAPIEngineNaver -> {
+                            if (cntNation == 0) {
+                                if (searchInfoEntity.getTsiGoogle() == 1) { }
+                                if (searchInfoEntity.getTsiInstagram() == 1) { }
+                                if (searchInfoEntity.getTsiFacebook() == 1) { }
+                                if (searchInfoEntity.getTsiTwitter() == 1) { }
+                            }
+                        }
+                    }
+                }else{
+                    switch (ssInfo.getSsName()){
+                        case CommonCode.SerpAPIEngineGoogle -> {}
+                        case CommonCode.SerpAPIEngineGoogleLens -> {}
+                        case CommonCode.SerpAPIEngineYandex -> {
+                            if( !ncInfo.getNcCode().equals("vn") ){
 
-            completableFutures.add(listCompletableFuture);
+                            }
+                        }
+                    }
+                }
 
-            int numberOfApiCalls = sitProperties.getTextCountLimit();
-            for (int i = 1; i < numberOfApiCalls; i++) {
-                int currentApiNumber = i;
-
-                listCompletableFuture = listCompletableFuture.thenComposeAsync(previousResult -> {
-                    // 이전 API의 결과를 확인하고 다음 외부 API 호출
-                    if (previousResult != null && !previousResult.isEmpty() && previousResult.get(0) != null) {
-                        String finalUrl = getUrl(tsiKeyword, currentApiNumber, isText, searchInfoEntity, ncInfo.getNcCode().toLowerCase());
-
-                        return CompletableFuture.supplyAsync(() -> {
+                //기존 SearchService 에 있던 부분 활용
+                CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
+                        .supplyAsync(() -> {
                             try {
-                                List<RESULT> list = searchService.searchBatch(finalUrl, infoClass, getErrorFn, getSubFn);
+                                List<RESULT> list = searchBatch(url, infoClass, getErrorFn, getSubFn);
                                 return list;
                             } catch (Exception e) {
                                 log.debug(e.getMessage());
                             }
                             return null;
                         });
-                    } else {
-                        // 이전 API의 결과가 없으면 빈 CompletableFuture 반환
-                        return CompletableFuture.completedFuture(Collections.emptyList());
-                    }
-                });
 
                 completableFutures.add(listCompletableFuture);
+
+                int numberOfApiCalls = sitProperties.getTextCountLimit();
+                for (int i = 1; i < numberOfApiCalls; i++) {
+                    int currentApiNumber = i;
+
+                    listCompletableFuture = listCompletableFuture.thenComposeAsync(previousResult -> {
+                        // 이전 API의 결과를 확인하고 다음 외부 API 호출
+                        if (previousResult != null && !previousResult.isEmpty() && previousResult.get(0) != null) {
+                            String finalUrl = getUrl(tsiKeyword, currentApiNumber, isText, searchInfoEntity, ncInfo.getNcCode().toLowerCase());
+
+                            return CompletableFuture.supplyAsync(() -> {
+                                try {
+                                    List<RESULT> list = searchBatch(finalUrl, infoClass, getErrorFn, getSubFn);
+                                    return list;
+                                } catch (Exception e) {
+                                    log.debug(e.getMessage());
+                                }
+                                return null;
+                            });
+                        } else {
+                            // 이전 API의 결과가 없으면 빈 CompletableFuture 반환
+                            return CompletableFuture.completedFuture(Collections.emptyList());
+                        }
+                    });
+
+                    completableFutures.add(listCompletableFuture);
+                }
             }
         }
 
@@ -301,65 +384,6 @@ public class TrackingSearchResultService{
         return url;
     }
 
-    private String getGoogleLensUrl(String tsiKeyword, int index, Boolean isText, SearchInfoEntity searchInfoEntity) throws JsonProcessingException {
-        log.info("getGoogleLensUrl 진입");
-        String url, url2 = null;
-
-        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
-
-        //텍스트 검색
-        if (isText) {
-            log.info("텍스트검색 getGoogleLensUrl 진입");
-            // yandex search url
-            url = sitProperties.getTextUrl()
-                    + "?q=" + tsiKeyword
-                    + "&gl=" + sitProperties.getTextGl()
-                    + "&no_cache=" + sitProperties.getTextNocache()
-                    + "&location=" + sitProperties.getTextLocation()
-                    + "&tbm=" + sitProperties.getTextTbm()
-                    + "&start=" + String.valueOf(index*10)
-                    + "&safe=off"
-                    + "&filter=0"
-                    + "&nfpr=0"
-                    + "&api_key=" + configData.getSerpApiKey()
-                    + "&engine=" + sitProperties.getTextEngine();
-
-        } else { //이미지 검색
-            log.info("이미지검색 getGoogleLensUrl 진입");
-            String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
-            searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
-            // searchImageUrl = searchImageUrl.replace("172.20.7.100","222.239.171.250");
-            // searchImageUrl= "http://106.254.235.202:9091/imagePath/requests/20240115/05b9343c-b1d2-48c6-ae3a-27dfd3bae972.jpg";
-
-            url = sitProperties.getTextUrl()
-                    + "?engine=google_lens"
-                    + "&url=" + searchImageUrl
-                    + "&country="+ sitProperties.getTextGl()
-                    + "&api_key=" + configData.getSerpApiKey();
-
-            HttpHeaders header = new HttpHeaders();
-            HttpEntity<?> entity = new HttpEntity<>(header);
-            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
-
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody());
-            JsonNode rootNode = mapper.readTree(jsonInString);
-            String pageToken = rootNode.at("/image_sources_search/page_token").asText();
-
-            System.out.println("배치 pageToken: " + pageToken);
-
-            url2 = sitProperties.getTextUrl()
-                    + "?engine=google_lens_image_sources"
-                    + "&page_token=" + pageToken
-                    + "&country="+sitProperties.getTextGl()
-                    + "&safe=off"
-                    + "&api_key=" + configData.getSerpApiKey();
-
-        }
-
-        return url2;
-    }
 
     /**
      * 결과를 검색 결과 엔티티로 변환
@@ -381,6 +405,7 @@ public class TrackingSearchResultService{
         List<CompletableFuture<SearchResultEntity>> completableFutures = new ArrayList<>();
 
         log.info(" searchResult processor");
+        log.info("results count === {}", results.size());
 
         for (RESULT result : results) {
             CompletableFuture<SearchResultEntity> completableFuture = CompletableFuture
@@ -410,7 +435,8 @@ public class TrackingSearchResultService{
                                 imageService.saveImageFile(getTsiUnoFn.apply(result), restTemplate, searchResultEntity, result, getOriginalFn, getThumbnailFn, false);
                             } catch (IOException e) {
                                 log.error(e.getMessage(), e);
-                                throw new RuntimeException(e);
+                                e.printStackTrace();
+//                                throw new RuntimeException(e);
                             }
 
                             //검색 결과 엔티티 기본값 세팅
@@ -430,6 +456,38 @@ public class TrackingSearchResultService{
         List<SearchResultEntity> searchResults = completableFutures.stream().map(CompletableFuture::join).filter(Objects::nonNull).toList();
 
         return searchResults;
+    }
+
+        // 배치시 진입
+    public <INFO, RESULT> List<RESULT> searchBatch(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+        try {
+            log.info("searchBatch 진입 url === {}", url);
+            HttpHeaders header = new HttpHeaders();
+            HttpEntity<?> entity = new HttpEntity<>(header);
+            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
+            // ResponseEntity<?> resultMap = new customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+            ResponseEntity<?> resultMap = restTemplateConfig.customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+
+            List<RESULT> results = null;
+
+//            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+
+            if (resultMap.getStatusCodeValue() == 200) {
+                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "images_results");
+                INFO info = mapper.readValue(jsonInString, infoClass);
+
+                if (getErrorFn.apply(info) == null) {
+                    results = getResultFn.apply(info);
+                }
+            }
+
+            log.debug("results: " + results);
+            return results != null ? results : new ArrayList<>();
+        }catch(Exception e){
+            log.error(e.getMessage());
+        }
+        return null;
     }
 
     /*
