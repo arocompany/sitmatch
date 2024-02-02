@@ -55,7 +55,7 @@ public class SearchResult implements ItemReader<List<ImagesResult>> {
         //검색 결과 테이블의 PK 로 조회
         List<SearchInfoEntity> searchInfoEntitiesByTsrUno = searchInfoRepository.findByTsrUnoIn(tsrUnoList);
 
-        SearchInfoEntity searchInfoEntityByTsiUno = searchInfoRepository.findByTsiUno(dtoList.getTsiUno());
+        SearchInfoEntity searchInfoEntityByTsiUno = searchInfoRepository.findByTsrUno(dtoList.getTsrUno());
         Map<Integer, SearchInfoEntity> searchInfoEntityMapByTsrUno = searchInfoEntitiesByTsrUno.stream().collect(Collectors.toMap(SearchInfoEntity::getTsrUno, Function.identity()));
 
 //        for (SearchResultEntity searchResultEntity : dtoList) {

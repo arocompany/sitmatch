@@ -1,5 +1,6 @@
 package com.nex.batch.tracking;
 
+import com.nex.search.entity.RequestSerpApiLogEntity;
 import lombok.Data;
 
 @Data
@@ -14,6 +15,8 @@ public class ImagesResult {
     private int position;
     private int original_width;
     private int original_height;
+
+    private RequestSerpApiLogEntity rslInfo;
 
     public boolean isInstagram() {
         return "Instagram".equals(source);

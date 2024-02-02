@@ -354,7 +354,9 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
 
     List<SearchInfoEntity> findByTsrUnoIn(List<Integer> tsrUnos);
 
-    Optional<SearchInfoEntity> findByTsrUno(Integer tsrUno);
+//    Optional<SearchInfoEntity> findByTsrUno(Integer tsrUno);
+
+    SearchInfoEntity findByTsrUno(Integer tsrUno);
 
     @Query(value = searchKeywordDateCnt, nativeQuery = true)
     List<String> searchKeywordDateCnt(String fromDate, String toDate);

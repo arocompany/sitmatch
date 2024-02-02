@@ -182,8 +182,9 @@ public class TrackingSearchResultService{
                 }
 
                 RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(searchInfoEntity.getTsiUno(), url, ncInfo.getNcCode().toLowerCase(), ssInfo.getSsName(), tsiKeyword, index, configData.getSerpApiKey(), searchImageUrl);
-                requestSerpApiLogService.save(rsalEntity);
-                int rsalUno = rsalEntity.getRslUno();
+
+
+
 
                 String realUrl = url;
 
@@ -191,7 +192,7 @@ public class TrackingSearchResultService{
                 CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
                         .supplyAsync(() -> {
                             try {
-                                List<RESULT> list = searchBatch(realUrl, infoClass, getErrorFn, getSubFn, rsalUno, isText);
+                                List<RESULT> list = searchBatch(realUrl, infoClass, getErrorFn, getSubFn, rsalEntity, isText);
                                 return list;
                             } catch (Exception e) {
                                 log.debug(e.getMessage());
@@ -205,14 +206,18 @@ public class TrackingSearchResultService{
                 for (int i = 1; i < numberOfApiCalls; i++) {
                     int currentApiNumber = i;
 
+                    String searchImageUrl2 = searchImageUrl;
                     listCompletableFuture = listCompletableFuture.thenComposeAsync(previousResult -> {
                         // 이전 API의 결과를 확인하고 다음 외부 API 호출
                         if (previousResult != null && !previousResult.isEmpty() && previousResult.get(0) != null) {
+
                             String finalUrl = getUrl(isText, ssInfo, searchInfoEntity, tsiKeyword, ncInfo, currentApiNumber, cntNation);
 
+                            RequestSerpApiLogEntity rsalEntitySecond = requestSerpApiLogService.init(searchInfoEntity.getTsiUno(), finalUrl, ncInfo.getNcCode().toLowerCase(), ssInfo.getSsName(), tsiKeyword, currentApiNumber, configData.getSerpApiKey(), searchImageUrl2);
+//                            RequestSerpApiLogEntity rsalEntitySecond2 = rsalEntitySecond;
                             return CompletableFuture.supplyAsync(() -> {
                                 try {
-                                    List<RESULT> list = searchBatch(finalUrl, infoClass, getErrorFn, getSubFn, rsalUno, isText);
+                                    List<RESULT> list = searchBatch(finalUrl, infoClass, getErrorFn, getSubFn, rsalEntitySecond, isText);
                                     return list;
                                 } catch (Exception e) {
                                     log.debug(e.getMessage());
@@ -415,7 +420,7 @@ public class TrackingSearchResultService{
     }
 
         // 배치시 진입
-    public <INFO, RESULT> List<RESULT> searchBatch(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, int rsalUno, boolean isText) throws Exception {
+    public <INFO, RESULT> List<RESULT> searchBatch(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, RequestSerpApiLogEntity rsalEntity, boolean isText) throws Exception {
         try {
             ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
@@ -429,9 +434,15 @@ public class TrackingSearchResultService{
             List<RESULT> results = null;
 
 //            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
-            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
 
-            if(rsalEntity.getRslEngine().equals("google_lens")) {
+            if(rsalEntity == null) {
+                log.error("rsalEntity is null");
+            }else{
+                requestSerpApiLogService.save(rsalEntity);
+            }
+
+
+            if(rsalEntity != null && rsalEntity.getRslEngine().equals("google_lens")) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 String jsonInString = mapper.writeValueAsString(resultMap.getBody());
                 JsonNode rootNode = mapper.readTree(jsonInString);
@@ -472,7 +483,6 @@ public class TrackingSearchResultService{
         }catch(Exception e){
             log.error(e.getMessage());
 
-            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
             if(rsalEntity != null) {
                 requestSerpApiLogService.fail(rsalEntity, e.getMessage());
                 requestSerpApiLogService.save(rsalEntity);
