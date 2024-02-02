@@ -222,8 +222,8 @@ public class TrackingSearchResultService{
                     }
                 }else{
                     switch (ssInfo.getSsName()){
-                        case CommonCode.SerpAPIEngineGoogle -> { url = searchTextService.getGoogleImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                        case CommonCode.SerpAPIEngineGoogleLens -> { url = searchTextService.getGoogleLensImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase());}
+                        case CommonCode.SerpAPIEngineGoogle -> { url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo, CommonCode.SerpAPIEngineGoogleReverseImage); }
+                        case CommonCode.SerpAPIEngineGoogleLens -> { url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), null, CommonCode.SerpAPIEngineGoogleLens);}
                         case CommonCode.SerpAPIEngineYandex -> {
                             if( !ncInfo.getNcCode().equals("vn") ){
                                 searchTextService.getYandexImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo);

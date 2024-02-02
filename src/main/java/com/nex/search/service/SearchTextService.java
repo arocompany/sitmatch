@@ -119,23 +119,11 @@ public class SearchTextService {
         return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey(), null, "google", null);
     }
 
-    public String getGoogleImageUrl(SearchInfoEntity searchInfoEntity, String textGl, int index){
+    public String getImageUrl(SearchInfoEntity searchInfoEntity, String textGl, Integer index, String engine){
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
         String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
         searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
-        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey(), searchImageUrl, "google_reverse_image", null);
-    }
-
-    public String getGoogleLensImageUrl(SearchInfoEntity searchInfoEntity, String textGl){
-        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
-        String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
-        searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
-        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), 0, configData.getSerpApiKey(), searchImageUrl, "google_lens", null);
-    }
-
-    public String getGoogleLensPageTokenUrl(String textGl, String pageToken){
-        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
-        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), 0, configData.getSerpApiKey(), null, "google_lens_image_sources", pageToken);
+        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey(), searchImageUrl, engine, null);
     }
 
     public String getYandexImageUrl(SearchInfoEntity searchInfoEntity, String textGl, int index){
@@ -160,6 +148,20 @@ public class SearchTextService {
                 + "p="+index+1
                 + "&api_key=" + configData.getSerpApiKey();
     }
+
+/*
+    public String getGoogleLensImageUrl(SearchInfoEntity searchInfoEntity, String textGl){
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+        String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
+        searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
+        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), 0, configData.getSerpApiKey(), searchImageUrl, "google_lens", null);
+    }
+
+    public String getGoogleLensPageTokenUrl(String textGl, String pageToken){
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), 0, configData.getSerpApiKey(), null, "google_lens_image_sources", pageToken);
+    }
+*/
 
     public <INFO, RESULT> List<RESULT> searchText(int index, SearchInfoDto searchInfoDto, String tsrSns, String textGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, SearchInfoEntity siEntity) throws Exception {
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
