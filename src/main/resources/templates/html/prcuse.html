@@ -651,11 +651,11 @@
                     }
                 },
                 scales: {
-                    responsive: false,
-                    y: {
-                        min: 0,
-                        max: 200,
-                    }
+                    responsive: true,
+                    // y: {
+                    //     min: 0,
+                    //     max: 200,
+                    // }
                 }
             }
         });
@@ -996,11 +996,12 @@
                             }
                         ]
                     }, options: {
-                        responsive: true,
-                        y: {
-                            min: 0,
-                            max: 100,
-                        },plugins: {
+                        responsive: true
+                        // ,y: {
+                        //     min: 0,
+                        //     max: 100,
+                        // }
+                        ,plugins: {
                             legend: {
                                 position: 'top',
                             },

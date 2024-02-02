@@ -31,7 +31,7 @@ public interface NoticeHistRepository extends JpaRepository<NoticeHistEntity, Lo
                                 " COUNT(*) AS  noticeCnt " +
                                 " FROM tb_notice_history " +
                                 " WHERE clk_dml_dt LIKE CONCAT(:toDate,'%') " +
-                                " GROUP BY userId ";
+                                " GROUP BY USER_ID ";
 
     @Query(value = countByClkNotice, nativeQuery = true)
     List<NoticeHistDto> countByClkNotice(String fromDate, String toDate2);

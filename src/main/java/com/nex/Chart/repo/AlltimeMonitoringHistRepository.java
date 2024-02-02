@@ -68,7 +68,7 @@ public interface AlltimeMonitoringHistRepository extends JpaRepository<AlltimeMo
                                     " LEFT OUTER JOIN tb_user tu " +
                                     " ON tu.user_uno = tam.user_uno " +
                                     " WHERE clk_dml_dt  BETWEEN :fromDate AND :toDate " +
-                                    " GROUP BY monitoringDate " +
+                                    " GROUP BY DATE_FORMAT(tam.clk_dml_dt,'%Y%m%d'), tu.user_uno " +
                                     " ORDER BY monitoringDate ASC";
 
     String allTimeMonitoringList =  " SELECT TAM_UNO AS tamUno" +
