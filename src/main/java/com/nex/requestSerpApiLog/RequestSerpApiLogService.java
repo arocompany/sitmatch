@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Slf4j
 @Service

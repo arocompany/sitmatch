@@ -110,6 +110,23 @@ public class SearchTextYahooService {
                 });
     }
 
+    public String getUrl(String tsrSns, String tsiKeywordHiddenValue, String textGl, int index){
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+
+        if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
+        else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
+        else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
+
+        String url = sitProperties.getTextUrl()
+                + "?engine=yahoo"
+                + "&p="+tsiKeywordHiddenValue
+                + "&api_key=" + configData.getSerpApiKey()
+                + "&b="+(index*10)+1
+                + "&vc="+textGl;
+
+        return url;
+    }
+
     public <INFO, RESULT> List<RESULT> searchText(int index, SearchInfoDto searchInfoDto, String tsrSns, String textGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, SearchInfoEntity siEntity) throws Exception {
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 

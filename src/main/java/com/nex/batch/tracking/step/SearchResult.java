@@ -79,6 +79,7 @@ public class SearchResult implements ItemReader<List<ImagesResult>> {
                     , ImagesResult::getLink
                     , ImagesResult::isFacebook
                     , ImagesResult::isInstagram
+                    , ImagesResult::isTwitter
                     , isNotImage
             );
 

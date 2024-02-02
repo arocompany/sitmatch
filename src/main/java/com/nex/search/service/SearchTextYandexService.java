@@ -110,6 +110,33 @@ public class SearchTextYandexService {
                 });
     }
 
+    public String getUrl(String tsrSns, String tsiKeywordHiddenValue, String textGl, int index){
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+
+        if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
+        else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
+        else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
+
+        String txtNation = "";
+        switch (textGl){
+            case "kr" -> txtNation = "135";
+            case "us" -> txtNation = "84";
+            case "cn" -> txtNation = "134";
+            case "nl" -> txtNation = "118";
+            case "th" -> txtNation = "995";
+            case "ru" -> txtNation = "225";
+        }
+
+        String url = sitProperties.getTextUrl()
+                + "?engine=yandex"
+                + "&text="+tsiKeywordHiddenValue
+                + "&api_key=" + configData.getSerpApiKey()
+                + "&p="+(index + 1)
+                + "&lr="+txtNation;
+
+        return url;
+    }
+
     public <INFO, RESULT> List<RESULT> searchText(int index, SearchInfoDto searchInfoDto, String tsrSns, String textGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, SearchInfoEntity siEntity) throws Exception {
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
 

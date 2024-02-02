@@ -1,14 +1,9 @@
 package com.nex.newKeyword.service;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nex.common.*;
+import com.nex.common.Consts;
+import com.nex.common.SitProperties;
 import com.nex.search.entity.NewKeywordEntity;
 import com.nex.search.entity.SearchInfoEntity;
-import com.nex.search.entity.SearchJobEntity;
-import com.nex.search.entity.SearchResultEntity;
-import com.nex.search.entity.result.Images_resultsByText;
-import com.nex.search.entity.result.SerpApiTextResult;
 import com.nex.search.repo.NewKeywordRepository;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
@@ -19,27 +14,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 
 @Slf4j
 @Service
