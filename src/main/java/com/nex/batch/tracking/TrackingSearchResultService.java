@@ -7,11 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.*;
 import com.nex.nations.entity.NationCodeEntity;
 import com.nex.nations.repository.NationCodeRepository;
+import com.nex.requestSerpApiLog.RequestSerpApiLogService;
+import com.nex.search.entity.RequestSerpApiLogEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
-import com.nex.search.service.ImageService;
-import com.nex.search.service.SearchService;
-import com.nex.search.service.SearchTextService;
+import com.nex.search.service.*;
 import com.nex.serpServices.entity.SerpServicesEntity;
 import com.nex.serpServices.repo.SerpServicesRepository;
 import lombok.RequiredArgsConstructor;
@@ -47,10 +47,18 @@ public class TrackingSearchResultService{
     private final NationCodeRepository nationCodeRepository;
     private final SerpServicesRepository serpServicesRepository;
 
+    private final RequestSerpApiLogService requestSerpApiLogService;
+
     private final RestTemplateConfig restTemplateConfig;
 
     private final SearchTextService searchTextService;
-
+    private final SearchYoutubeService searchYoutubeService;
+    private final SearchTextBaiduService searchTextBaiduService;
+    private final SearchTextBingService searchTextBingService;
+    private final SearchTextDuckduckgoService searchTextDuckduckgoService;
+    private final SearchTextYahooService searchTextYahooService;
+    private final SearchTextYandexService searchTextYandexService;
+    private final SearchTextNaverService searchTextNaverService;
 
 //    /**
 //     * 모든 결과 List 추출
@@ -155,67 +163,79 @@ public class TrackingSearchResultService{
         List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
         List<SerpServicesEntity> ssList = serpServicesRepository.findBySsIsActive(1);
 
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+
         int cntNation = 0;
         for(NationCodeEntity ncInfo : ncList){
             for(SerpServicesEntity ssInfo : ssList) {
                 String url = "";
                 int pageNo = 0;
+                String engine = "";
+                String imageUrl = "";
                 if(isText) {
                     switch (ssInfo.getSsName()) {
                         case CommonCode.SerpAPIEngineGoogle -> {
+                            engine = CommonCode.SerpAPIEngineGoogle;
                             if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo);}
                             if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo);}
                             if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo);}
                             if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo);}
                         }
                         case CommonCode.SerpAPIEngineYoutube -> {
-                            if (searchInfoEntity.getTsiGoogle() == 1) { }
-                            if (searchInfoEntity.getTsiInstagram() == 1) { }
-                            if (searchInfoEntity.getTsiFacebook() == 1) { }
-                            if (searchInfoEntity.getTsiTwitter() == 1) { }
+                            engine = CommonCode.SerpAPIEngineYoutube;
+                            if (searchInfoEntity.getTsiGoogle() == 1) { url = searchYoutubeService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, ncInfo.getNcCode().toLowerCase()); }
+                            if (searchInfoEntity.getTsiInstagram() == 1) { url = searchYoutubeService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, ncInfo.getNcCode().toLowerCase()); }
+                            if (searchInfoEntity.getTsiFacebook() == 1) { url = searchYoutubeService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, ncInfo.getNcCode().toLowerCase()); }
+                            if (searchInfoEntity.getTsiTwitter() == 1) { url = searchYoutubeService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, ncInfo.getNcCode().toLowerCase()); }
                         }
                         case CommonCode.SerpAPIEngineBaidu -> {
+                            engine = CommonCode.SerpAPIEngineBaidu;
                             if (cntNation == 0) {
-                                if (searchInfoEntity.getTsiGoogle() == 1) { }
-                                if (searchInfoEntity.getTsiInstagram() == 1) { }
-                                if (searchInfoEntity.getTsiFacebook() == 1) { }
-                                if (searchInfoEntity.getTsiTwitter() == 1) { }
+                                if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextBaiduService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, pageNo); }
+                                if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextBaiduService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, pageNo); }
+                                if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextBaiduService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, pageNo); }
+                                if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextBaiduService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, pageNo); }
                             }
                         }
                         case CommonCode.SerpAPIEngineBing -> {
+                            engine = CommonCode.SerpAPIEngineBing;
                             if (!ncInfo.getNcCode().equals("cn") && !ncInfo.getNcCode().equals("th") && !ncInfo.getNcCode().equals("ru") && !ncInfo.getNcCode().equals("vn")) {
-                                if (searchInfoEntity.getTsiGoogle() == 1) { }
-                                if (searchInfoEntity.getTsiInstagram() == 1) { }
-                                if (searchInfoEntity.getTsiFacebook() == 1) { }
-                                if (searchInfoEntity.getTsiTwitter() == 1) { }
+                                if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextBingService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                                if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextBingService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                                if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextBingService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                                if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextBingService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
                             }
                         }
                         case CommonCode.SerpAPIEngineDuckduckgo -> {
-                            if (searchInfoEntity.getTsiGoogle() == 1) { }
-                            if (searchInfoEntity.getTsiInstagram() == 1) { }
-                            if (searchInfoEntity.getTsiFacebook() == 1) { }
-                            if (searchInfoEntity.getTsiTwitter() == 1) { }
+                            engine = CommonCode.SerpAPIEngineDuckduckgo;
+                            if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextDuckduckgoService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                            if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextDuckduckgoService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                            if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextDuckduckgoService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                            if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextDuckduckgoService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
                         }
                         case CommonCode.SerpAPIEngineYahoo -> {
-                            if (searchInfoEntity.getTsiGoogle() == 1) { }
-                            if (searchInfoEntity.getTsiInstagram() == 1) { }
-                            if (searchInfoEntity.getTsiFacebook() == 1) { }
-                            if (searchInfoEntity.getTsiTwitter() == 1) { }
+                            engine = CommonCode.SerpAPIEngineYahoo;
+                            if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextYahooService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                            if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextYahooService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                            if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextYahooService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                            if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextYahooService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
                         }
                         case CommonCode.SerpAPIEngineYandex -> {
+                            engine = CommonCode.SerpAPIEngineYandex;
                             if (!ncInfo.getNcCode().equals("vn")) {
-                                if (searchInfoEntity.getTsiGoogle() == 1) { }
-                                if (searchInfoEntity.getTsiInstagram() == 1) { }
-                                if (searchInfoEntity.getTsiFacebook() == 1) { }
-                                if (searchInfoEntity.getTsiTwitter() == 1) { }
+                                if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextYandexService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                                if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextYandexService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                                if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextYandexService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                                if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextYandexService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
                             }
                         }
                         case CommonCode.SerpAPIEngineNaver -> {
+                            engine = CommonCode.SerpAPIEngineNaver;
                             if (cntNation == 0) {
-                                if (searchInfoEntity.getTsiGoogle() == 1) { }
-                                if (searchInfoEntity.getTsiInstagram() == 1) { }
-                                if (searchInfoEntity.getTsiFacebook() == 1) { }
-                                if (searchInfoEntity.getTsiTwitter() == 1) { }
+                                if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextNaverService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, pageNo); }
+                                if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextNaverService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, pageNo); }
+                                if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextNaverService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, pageNo); }
+                                if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextNaverService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, pageNo); }
                             }
                         }
                     }
@@ -231,11 +251,18 @@ public class TrackingSearchResultService{
                     }
                 }
 
+
+                RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(searchInfoEntity.getTsiUno(), url, ncInfo.getNcCode().toLowerCase(), engine, tsiKeyword, index, configData.getSerpApiKey(), imageUrl);
+                requestSerpApiLogService.save(rsalEntity);
+                int rsalUno = rsalEntity.getRslUno();
+
+                String realUrl = url;
+
                 //기존 SearchService 에 있던 부분 활용
                 CompletableFuture<List<RESULT>> listCompletableFuture = CompletableFuture
                         .supplyAsync(() -> {
                             try {
-                                List<RESULT> list = searchBatch(url, infoClass, getErrorFn, getSubFn);
+                                List<RESULT> list = searchBatch(realUrl, infoClass, getErrorFn, getSubFn, rsalUno);
                                 return list;
                             } catch (Exception e) {
                                 log.debug(e.getMessage());
@@ -459,7 +486,7 @@ public class TrackingSearchResultService{
     }
 
         // 배치시 진입
-    public <INFO, RESULT> List<RESULT> searchBatch(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn) throws Exception {
+    public <INFO, RESULT> List<RESULT> searchBatch(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, int rsalUno) throws Exception {
         try {
             log.info("searchBatch 진입 url === {}", url);
             HttpHeaders header = new HttpHeaders();
@@ -471,6 +498,7 @@ public class TrackingSearchResultService{
             List<RESULT> results = null;
 
 //            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
+            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
 
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -479,13 +507,28 @@ public class TrackingSearchResultService{
 
                 if (getErrorFn.apply(info) == null) {
                     results = getResultFn.apply(info);
+
+                    rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
+                    requestSerpApiLogService.save(rsalEntity);
+                }else{
+                    rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
+                    requestSerpApiLogService.save(rsalEntity);
                 }
+            }else{
+                rsalEntity = requestSerpApiLogService.fail(rsalEntity, resultMap.toString());
+                requestSerpApiLogService.save(rsalEntity);
             }
 
             log.debug("results: " + results);
             return results != null ? results : new ArrayList<>();
         }catch(Exception e){
             log.error(e.getMessage());
+
+            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
+            if(rsalEntity != null) {
+                requestSerpApiLogService.fail(rsalEntity, e.getMessage());
+                requestSerpApiLogService.save(rsalEntity);
+            }
         }
         return null;
     }
