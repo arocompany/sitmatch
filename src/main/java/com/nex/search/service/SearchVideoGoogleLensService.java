@@ -1,6 +1,7 @@
 package com.nex.search.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.*;
 import com.nex.requestSerpApiLog.RequestSerpApiLogService;
@@ -22,6 +23,7 @@ import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -51,7 +53,7 @@ public class SearchVideoGoogleLensService {
     private final RequestSerpApiLogService requestSerpApiLogService;
 
     @Async
-    public void searchByTextVideo(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String path, String nationCode) throws Exception {
+    public void searchByGoogleLensVideo(String tsrSns, SearchInfoEntity insertResult, String path, String nationCode) throws Exception {
         List<String> files = processVideo(insertResult);
 
         for(int i=0; i<files.size(); i++) {
@@ -61,42 +63,17 @@ public class SearchVideoGoogleLensService {
             videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
             saveVideoInfo(videoInfo);
         }
-        String tsiKeywordHiddenValue = null;
-        if(StringUtils.hasText(searchInfoDto.getTsiKeywordHiddenValue())) {
-            tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
-
-            if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
-            else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
-            else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
-        }
 
         try {
             ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
             for (int i = 0; i < files.size(); i++) {
                 String searchImageUrl = configData.getHostImageUrl() + sitProperties.getFileLocation3() + "/" + path + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
-                // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
-                // searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
 
                 int rsalUno = 0;
                 try {
-                    String txtNation = "";
-                    switch (nationCode){
-                        case "kr" -> txtNation = "135";
-                        case "us" -> txtNation = "84";
-                        case "cn" -> txtNation = "134";
-                        case "nl" -> txtNation = "118";
-                        case "th" -> txtNation = "995";
-                        case "ru" -> txtNation = "225";
-                    }
-                    String url = sitProperties.getTextUrl()
-                            + "?lr=" + txtNation
-                            + "&engine=yandex_images"
-                            + "&url=" + searchImageUrl
-                            + "p=0"     //0
-                            + "&api_key=" + configData.getSerpApiKey();
-
-                    RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(insertResult.getTsiUno(), url, nationCode, "yandex_images", tsiKeywordHiddenValue, null, configData.getSerpApiKey(), searchImageUrl);
+                    String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, nationCode, null, null, null, configData.getSerpApiKey(), searchImageUrl, "google_lens", null);
+                    RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(insertResult.getTsiUno(), url, nationCode, "google_lens", null, null, configData.getSerpApiKey(), searchImageUrl);
                     requestSerpApiLogService.save(rsalEntity);
                     rsalUno = rsalEntity.getRslUno();
                     int finalRsalUno = rsalUno;
@@ -104,7 +81,7 @@ public class SearchVideoGoogleLensService {
                             .supplyAsync(() -> {
                                 try {
                                     // text기반 검색 및 결과 저장.(이미지)
-                                    return search(url, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images, finalRsalUno);
+                                    return search(url, nationCode, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images, finalRsalUno);
                                 } catch (Exception e) {
                                     log.error(e.getMessage(), e);
                                     return null;
@@ -150,24 +127,38 @@ public class SearchVideoGoogleLensService {
         }
     }
 
-    public <INFO, RESULT> List<RESULT> search(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, int rsalUno) throws Exception {
+    public <INFO, RESULT> List<RESULT> search(String url,String nationCode, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, int rsalUno) throws Exception {
         try {
-            log.info("search 진입");
+            ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            ResponseEntity<?> resultMap = restTemplateConfig.customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+            ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+
+            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            String jsonInString = mapper.writeValueAsString(resultMap.getBody());
+            JsonNode rootNode = mapper.readTree(jsonInString);
+            String pageToken = rootNode.at("/image_sources_search/page_token").asText();
+
+            // pageToken값 출력
+            log.info("google_lens page_token === {} ", pageToken);
+
+            String sourcesUrl = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, nationCode, null, null, null, configData.getSerpApiKey(), null, "google_lens_image_sources", pageToken);
+
+            HttpHeaders sourcesHeader = new HttpHeaders();
+            HttpEntity<?> sourcesEntity = new HttpEntity<>(sourcesHeader);
+            UriComponents sourcesUri = UriComponentsBuilder.fromHttpUrl(sourcesUrl).build();
+            ResponseEntity<?> sourcesResultMap = new RestTemplate().exchange(sourcesUri.toString(), HttpMethod.GET, sourcesEntity, Object.class);
 
             List<RESULT> results = null;
 
-//            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
-
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
 
-            if (resultMap.getStatusCodeValue() == 200) {
-                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "images_results");
-                INFO info = mapper.readValue(jsonInString, infoClass);
+            if (sourcesResultMap.getStatusCodeValue() == 200) {
+                ObjectMapper sourcesMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                String sourcesJsonInString = sourcesMapper.writeValueAsString(sourcesResultMap.getBody());
+                INFO info = sourcesMapper.readValue(sourcesJsonInString, infoClass);
 
                 if (getErrorFn.apply(info) == null) {
                     results = getResultFn.apply(info);
@@ -183,7 +174,6 @@ public class SearchVideoGoogleLensService {
                 requestSerpApiLogService.save(rsalEntity);
             }
 
-//            log.debug("results: " + results);
             return results != null ? results : new ArrayList<>();
         }catch (Exception e){
             log.error(e.getMessage());

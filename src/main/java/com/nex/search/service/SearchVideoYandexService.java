@@ -68,8 +68,6 @@ public class SearchVideoYandexService {
 
             for (int i = 0; i < files.size(); i++) {
                 String searchImageUrl = configData.getHostImageUrl() + sitProperties.getFileLocation3() + "/" + path + "/" + insertResult.getTsiUno() + files.get(i).substring(files.get(i).lastIndexOf("/"));
-                // searchImageUrl = searchImageUrl.replace("172.20.7.100", "222.239.171.250");
-                // searchImageUrl = searchImageUrl.replace("172.30.1.220", "106.254.235.202");
 
                 int rsalUno = 0;
                 try {
@@ -86,7 +84,7 @@ public class SearchVideoYandexService {
                             + "?lr=" + txtNation
                             + "&engine=yandex_images"
                             + "&url=" + searchImageUrl
-                            + "p=0"     //0
+                            + "p=0"
                             + "&api_key=" + configData.getSerpApiKey();
 
                     RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(insertResult.getTsiUno(), url, nationCode, "yandex_images", null, null, configData.getSerpApiKey(), searchImageUrl);
@@ -105,7 +103,6 @@ public class SearchVideoYandexService {
                                 }
                             }).thenApply((r) -> {
                                 try {
-//                                    log.info("R" + r);
                                     //검색 결과를 SearchResult Table에 저장 및 이미지 저장
                                     return save(
                                             r
@@ -134,7 +131,6 @@ public class SearchVideoYandexService {
                                     return null;
                                 }
                             });
-
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
                 }
@@ -146,15 +142,12 @@ public class SearchVideoYandexService {
 
     public <INFO, RESULT> List<RESULT> search(String url, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, int rsalUno) throws Exception {
         try {
-            log.info("search 진입");
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
             ResponseEntity<?> resultMap = restTemplateConfig.customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
 
             List<RESULT> results = null;
-
-//            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
 
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
 

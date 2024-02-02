@@ -80,17 +80,6 @@ public class SearchVideoService {
 
                 int rsalUno = 0;
                 try {
-//                    String url = textUrl
-//                            + "?gl=" + textGl
-//                            + "&q=" + tsiKeywordHiddenValue
-//                            + "&no_cache=" + textNocache
-//                            + "&api_key=" + textApikey
-//                            + "&engine=" + imageEngine
-//                            + "&safe=off"
-//                            + "&filter=0"
-//                            + "&nfpr=0"
-//                            + "&image_url=" + searchImageUrl;
-
                     String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, sitProperties.getTextNocache(), sitProperties.getTextLocation(), null, configData.getSerpApiKey(), searchImageUrl, "google_reverse_image", null);
 
                     RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(insertResult.getTsiUno(), url, nationCode, "yandex_images", tsiKeywordHiddenValue, null, configData.getSerpApiKey(), searchImageUrl);
