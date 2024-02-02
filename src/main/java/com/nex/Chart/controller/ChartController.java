@@ -242,6 +242,7 @@ public class ChartController {
         List<TraceHistExcelDto> traceHistExcelDtoList = traceHistRepository.traceExcelList(toDate, toDate2);
         List<SearchResultExcelDto> searchResultExcelDtoList = searchResultHistRepository.searchResultExcelList(toDate, toDate2);
         List<NoticeListExcelDto> noticeListExcelDtoList = noticeHistRepository.noticeExcelList(toDate, toDate2);
+
         List<LoginExcelDto> loginExcelDtoList = userService.userHistExcel(toDate, toDate2);
 
         List<SearchInfoExcelDto> userKeywordCntExcelList = searchInfoHistRepository.userKeywordCntExcelList(toDate, toDate2);

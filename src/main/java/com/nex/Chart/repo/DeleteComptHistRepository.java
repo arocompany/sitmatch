@@ -27,12 +27,12 @@ public interface DeleteComptHistRepository extends JpaRepository<DeleteComptHist
     String userDeleteComptExcelList = " SELECT tu.user_nm AS userNm " +
                                       " ,tu.USER_ID AS userId " +
                                       " ,COUNT(*) AS  deleteComptCnt " +
-                                      " ,tmh.CLK_DML_DT AS deleteComptDate " +
+//                                      " ,tmh.CLK_DML_DT AS deleteComptDate " +
                                       " FROM tb_delete_compt_history tmh " +
                                       " LEFT OUTER JOIN tb_user tu " +
                                       " ON tu.user_uno = tmh.user_uno " +
                                       " WHERE clk_dml_dt LIKE CONCAT(:toDate,'%') " +
-                                      " GROUP BY userId ";
+                                      " GROUP BY tu.user_uno ";
     @Query(value = deleteComptHistList,nativeQuery = true)
     List<DeleteComptHistDto> deleteComptHistList(String fromDate, String toDate);
 

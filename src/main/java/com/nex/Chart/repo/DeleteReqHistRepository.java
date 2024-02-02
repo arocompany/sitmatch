@@ -28,12 +28,12 @@ public interface DeleteReqHistRepository extends JpaRepository<DeleteReqHistEnti
     String userDeleteReqExcelList = " SELECT tu.user_nm AS userNm " +
                                     " ,tu.USER_ID AS userId " +
                                     " ,COUNT(*) AS  deleteRequestCnt " +
-                                    " ,tmh.CLK_DML_DT AS deleteRequestDate " +
+//                                    " ,tmh.CLK_DML_DT AS deleteRequestDate " +
                                     " FROM tb_delete_req_history tmh " +
                                     " LEFT OUTER JOIN tb_user tu " +
                                     " ON tu.user_uno = tmh.user_uno " +
                                     " WHERE clk_dml_dt LIKE CONCAT(:toDate,'%') " +
-                                    " GROUP BY userId";
+                                    " GROUP BY tu.user_uno";
     @Query(value = deleteReqHistList, nativeQuery = true)
     List<DeleteReqHistDto> deleteReqHistList(String fromDate, String toDate);
 

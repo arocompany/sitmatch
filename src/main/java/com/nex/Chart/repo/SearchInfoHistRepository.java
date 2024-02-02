@@ -14,7 +14,8 @@ import java.util.List;
 @Repository
 public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEntity, Long> {
 
-    String userKeywordCntExcelList= " SELECT tsi.fst_dml_dt as date, tu.USER_NM as userNm ,user_id AS userId, COUNT(tsi.tsi_keyword) AS keywordCnt " +
+    String userKeywordCntExcelList= " /* 사용자별 키워드 현황 */" +
+                                    " SELECT tu.USER_NM as userNm ,user_id AS userId, COUNT(tsi.tsi_keyword) AS keywordCnt " +
                                     " ,SUM((SELECT COUNT(DISTINCT tsr.tsr_site_url) " +
                                     " from tb_search_result tsr LEFT OUTER JOIN tb_search_info tsi2 " +
                                     " ON tsr.tsi_uno = tsi2.tsi_uno " +
@@ -23,7 +24,7 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                                     " LEFT OUTER JOIN tb_user tu " +
                                     " ON tsi.user_uno = tu.user_uno " +
                                     " WHERE tsi.fst_dml_dt BETWEEN :fromDate AND :toDate " +
-                                    " GROUP BY userId";
+                                    " GROUP BY tu.user_uno";
 
     String countByClkSearchInfo = "SELECT DATE_FORMAT(clk_dml_dt,'%Y%m%d') AS infoHistDATE " +
                                 " ,COUNT(*) AS infoHistcnt " +

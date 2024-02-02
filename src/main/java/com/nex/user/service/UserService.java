@@ -648,7 +648,7 @@ public class UserService {
 
         Workbook wb = new XSSFWorkbook();
 
-        Sheet infoSheet = wb.createSheet("화면별 접속기록");
+        Sheet infoSheet = wb.createSheet("화면별 접속 기록");
 
         Row row;
         Cell cell;
@@ -802,7 +802,7 @@ public class UserService {
         }
 
         rowNum = 0;
-        Sheet loginHistory = wb.createSheet("사용자 접속 이력");
+        Sheet loginHistory = wb.createSheet("사용자 접속 현황");
         row = loginHistory.createRow(rowNum++);
 
         cell=row.createCell(0);
@@ -868,8 +868,8 @@ public class UserService {
             cell = row.createCell(3);
             cell.setCellValue(searchInfoExcelDto.getCnt());
 
-            cell = row.createCell(4);
-            cell.setCellValue(searchInfoExcelDto.getDate());
+//            cell = row.createCell(4);
+//            cell.setCellValue(searchInfoExcelDto.getDate());
 
         }
 
@@ -907,8 +907,8 @@ public class UserService {
                 cell = row.createCell(3);
                 cell.setCellValue(monitoringHistExcelDto.getMonitoringCnt());
 
-                cell = row.createCell(4);
-                cell.setCellValue(monitoringHistExcelDto.getMonitoringDate());
+//                cell = row.createCell(4);
+//                cell.setCellValue(monitoringHistExcelDto.getMonitoringDate());
 
             } else {
                 cell = row.createCell(0);
@@ -923,8 +923,8 @@ public class UserService {
                 cell = row.createCell(3);
                 cell.setCellValue(monitoringHistExcelDto.getMonitoringCnt());
 
-                cell = row.createCell(4);
-                cell.setCellValue(monitoringHistExcelDto.getMonitoringDate());
+//                cell = row.createCell(4);
+//                cell.setCellValue(monitoringHistExcelDto.getMonitoringDate());
 
             }
         }
@@ -940,8 +940,8 @@ public class UserService {
                 cell.setCellValue(deleteReqHistExcelDto.getUserId());
                 cell = row.createCell(3);
                 cell.setCellValue(deleteReqHistExcelDto.getDeleteRequestCnt());
-                cell = row.createCell(4);
-                cell.setCellValue(deleteReqHistExcelDto.getDeleteRequestDate());
+//                cell = row.createCell(4);
+//                cell.setCellValue(deleteReqHistExcelDto.getDeleteRequestDate());
             } else {
                 cell = row.createCell(0);
                 cell.setCellValue("");
@@ -952,8 +952,8 @@ public class UserService {
                 cell.setCellValue(deleteReqHistExcelDto.getUserId());
                 cell = row.createCell(3);
                 cell.setCellValue(deleteReqHistExcelDto.getDeleteRequestCnt());
-                cell = row.createCell(4);
-                cell.setCellValue(deleteReqHistExcelDto.getDeleteRequestDate());
+//                cell = row.createCell(4);
+//                cell.setCellValue(deleteReqHistExcelDto.getDeleteRequestDate());
             }
         }
 
@@ -967,8 +967,8 @@ public class UserService {
                 cell.setCellValue(deleteComptHistExcelDto.getUserId());
                 cell = row.createCell(3);
                 cell.setCellValue(deleteComptHistExcelDto.getDeleteComptCnt());
-                cell = row.createCell(4);
-                cell.setCellValue(deleteComptHistExcelDto.getDeleteComptDate());
+//                cell = row.createCell(4);
+//                cell.setCellValue(deleteComptHistExcelDto.getDeleteComptDate());
             } else {
                 cell = row.createCell(0);
                 cell.setCellValue("");
@@ -978,13 +978,13 @@ public class UserService {
                 cell.setCellValue(deleteComptHistExcelDto.getUserId());
                 cell = row.createCell(3);
                 cell.setCellValue(deleteComptHistExcelDto.getDeleteComptCnt());
-                cell = row.createCell(4);
-                cell.setCellValue(deleteComptHistExcelDto.getDeleteComptDate());
+//                cell = row.createCell(4);
+//                cell.setCellValue(deleteComptHistExcelDto.getDeleteComptDate());
             }
         }
 
         rowNum = 0;
-        Sheet userAlltimeMonitoring = wb.createSheet("사용자별 24시 모니터링 현황");
+        Sheet userAlltimeMonitoring = wb.createSheet("24시 모니터링 그래프");
         row = userAlltimeMonitoring.createRow(rowNum++);
 
         cell=row.createCell(0);
