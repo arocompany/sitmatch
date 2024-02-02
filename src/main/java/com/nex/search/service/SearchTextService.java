@@ -30,7 +30,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -118,6 +117,48 @@ public class SearchTextService {
         else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
         else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
         return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey(), null, "google", null);
+    }
+
+    public String getGoogleImageUrl(SearchInfoEntity searchInfoEntity, String textGl, int index){
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+        String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
+        searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
+        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey(), searchImageUrl, "google_reverse_image", null);
+    }
+
+    public String getGoogleLensImageUrl(SearchInfoEntity searchInfoEntity, String textGl){
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+        String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
+        searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
+        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), 0, configData.getSerpApiKey(), searchImageUrl, "google_lens", null);
+    }
+
+    public String getGoogleLensPageTokenUrl(String textGl, String pageToken){
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), 0, configData.getSerpApiKey(), null, "google_lens_image_sources", pageToken);
+    }
+
+    public String getYandexImageUrl(SearchInfoEntity searchInfoEntity, String textGl, int index){
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+        String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
+        searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
+
+        String txtNation = "";
+        switch (textGl){
+            case "kr" -> txtNation = "135";
+            case "us" -> txtNation = "84";
+            case "cn" -> txtNation = "134";
+            case "nl" -> txtNation = "118";
+            case "th" -> txtNation = "995";
+            case "ru" -> txtNation = "225";
+        }
+
+        return sitProperties.getTextUrl()
+                + "?lr=" + txtNation
+                + "&engine=yandex_images"
+                + "&url=" + searchImageUrl
+                + "p="+index+1
+                + "&api_key=" + configData.getSerpApiKey();
     }
 
     public <INFO, RESULT> List<RESULT> searchText(int index, SearchInfoDto searchInfoDto, String tsrSns, String textGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, SearchInfoEntity siEntity) throws Exception {

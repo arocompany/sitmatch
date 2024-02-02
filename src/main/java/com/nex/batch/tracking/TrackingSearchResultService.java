@@ -160,6 +160,7 @@ public class TrackingSearchResultService{
             for(SerpServicesEntity ssInfo : ssList) {
                 String url = "";
                 int pageNo = 0;
+
                 if(isText) {
                     switch (ssInfo.getSsName()) {
                         case CommonCode.SerpAPIEngineGoogle -> {
@@ -221,11 +222,11 @@ public class TrackingSearchResultService{
                     }
                 }else{
                     switch (ssInfo.getSsName()){
-                        case CommonCode.SerpAPIEngineGoogle -> {}
-                        case CommonCode.SerpAPIEngineGoogleLens -> {}
+                        case CommonCode.SerpAPIEngineGoogle -> { url = searchTextService.getGoogleImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                        case CommonCode.SerpAPIEngineGoogleLens -> { url = searchTextService.getGoogleLensImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase());}
                         case CommonCode.SerpAPIEngineYandex -> {
                             if( !ncInfo.getNcCode().equals("vn") ){
-
+                                searchTextService.getYandexImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo);
                             }
                         }
                     }
