@@ -751,7 +751,6 @@
   const trkHistMemo = document.querySelectorAll(".memo");
   trkHistMemo.forEach((memo) => {
     memo.addEventListener('focusout', () => {
-      alert("ㅋ: "+memo.dataset.uno +" ㅋㅋ : "+memo.value);
       //XMLHttpRequest 객체 생성
       var xhr = new XMLHttpRequest();
       //요청을 보낼 방식, 주소, 비동기여부 설정
