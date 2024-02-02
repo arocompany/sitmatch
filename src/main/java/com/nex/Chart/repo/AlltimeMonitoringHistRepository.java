@@ -51,7 +51,7 @@ public interface AlltimeMonitoringHistRepository extends JpaRepository<AlltimeMo
                                     " LEFT OUTER JOIN tb_user tu " +
                                     " ON tu.user_uno = tam.user_uno " +
                                     " WHERE clk_dml_dt LIKE CONCAT(:toDate,'%') " +
-                                    " GROUP BY userId ";
+                                    " GROUP BY tu.user_uno ";
 
     String dateAllTimeCntExcelList =" SELECT tu.user_nm AS userName " +
                                     " , tu.user_id AS userId " +
