@@ -179,7 +179,20 @@
     padding: 8px 20px
 }
 
+#history .list-tit .gubun {
+    width: 8%
+}
+
+#history .dist .gubun{
+    width: 8%
+}
+
+
 #history .list-tit .dist {
+    width: 11.52%
+}
+
+#history .dist {
     width: 11.52%
 }
 
@@ -217,7 +230,7 @@
 }
 
 #history .search-history .history-list .cont .con1 {
-    margin-left: 10px;
+    margin-left: 5px;
     -webkit-box-flex: 1;
     -moz-box-flex: 1;
     -ms-flex: 1;
@@ -239,15 +252,24 @@
 }
 
 #history .search-history .counselor {
-    width: 10%;
+    width: 7%;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     padding: 0 8px
 }
 
-#history .search-history .type, #history .search-history .social {
+#history .search-history .type {
     width: 12%
+}
+
+#history .search-history .social {
+    width: 5%
+}
+
+#history .search-history .cont {
+    min-width : 10%;
+    max-width: 15%;
 }
 
 #history .search-history .type .reply, #history .search-history .social .reply {
