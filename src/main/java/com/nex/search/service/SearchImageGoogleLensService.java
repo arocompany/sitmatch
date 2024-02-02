@@ -145,8 +145,6 @@ public class SearchImageGoogleLensService {
 
             List<RESULT> results = null;
 
-//            log.debug("resultMap.getStatusCodeValue(): " + sourcesResultMap.getStatusCodeValue());
-
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
 
             if (sourcesResultMap.getStatusCodeValue() == 200) {
