@@ -31,9 +31,10 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             " FROM tb_search_info tsi " +
             " WHERE tsi.fst_dml_dt BETWEEN :fromDate AND :toDate " +
             " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') ";
-    String dateSearchInfoResultExcelList =  " SELECT tu.user_nm AS userNm " +
-                                            " ,tu.user_id AS userId " +
-                                            " ,COUNT(tsi.tsi_keyword) keywordCnt " +
+    String dateSearchInfoResultExcelList =  " SELECT " +
+//                                            " tu.user_nm AS userNm " +
+//                                            " ,tu.user_id AS userId " +
+                                            " COUNT(tsi.tsi_keyword) keywordCnt " +
                                             " ,SUM((SELECT COUNT(DISTINCT tsr.tsr_site_url) " +
                                             " from tb_search_result tsr " +
                                             " LEFT OUTER JOIN tb_search_info tsi2 " +
@@ -217,13 +218,12 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " WHERE tsi.tsr_uno IS null " +
                                 " AND fst_dml_dt BETWEEN :fromDate AND :toDate" +
                                 " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') " +
-                                " ORDER BY tsi.fst_dml_dt asc ";
+                                " ORDER BY searchDate asc ";
     String searchKeywordCnt =   " SELECT COUNT(tsi.tsi_keyword) AS searchCnt " +
                                 " FROM tb_search_info tsi " +
                                 " WHERE tsi.tsr_uno IS null " +
                                 " AND fst_dml_dt BETWEEN :fromDate AND :toDate" +
-                                " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') " +
-                                " ORDER BY tsi.fst_dml_dt asc ";
+                                " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') ";
 
     String userSearchHistoryCount = " SELECT COUNT(*) FROM tb_search_info tsi WHERE SEARCH_VALUE='0' ";
 

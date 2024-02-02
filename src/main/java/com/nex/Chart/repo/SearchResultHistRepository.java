@@ -33,7 +33,7 @@ public interface SearchResultHistRepository extends JpaRepository<SearchResultHi
                                   " COUNT(*) AS  rsltCnt " +
                                   " FROM tb_search_result_history " +
                                   " WHERE clk_dml_dt LIKE CONCAT(:toDate,'%') " +
-                                  " GROUP BY userId ";
+                                  " GROUP BY USER_ID ";
 
     @Query(value = countByClkSearchResult, nativeQuery = true)
     List<SearchResultHistDto> countByClkSearchResult(String fromDate, String toDate2);

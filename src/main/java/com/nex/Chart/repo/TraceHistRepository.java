@@ -16,8 +16,7 @@ public interface TraceHistRepository extends JpaRepository<TraceHistEntity, Long
                              " COUNT(*) AS traceCnt " +
                              " FROM tb_trace_history " +
                              " WHERE clk_dml_dt BETWEEN :fromDate AND :toDate2 " +
-                             " GROUP BY DATE_FORMAT(clk_dml_dt,'%Y%m%d') " +
-                             " ORDER BY traceDate ";
+                             " GROUP BY DATE_FORMAT(clk_dml_dt,'%Y%m%d') ";
 
     String traceExcelList = "SELECT TTH.USER_ID AS userId, USER.USER_NM AS userNm" +
                             ", DATE_FORMAT(TTH.CLK_DML_DT, '%Y%m%d') AS DATE " +
@@ -33,7 +32,7 @@ public interface TraceHistRepository extends JpaRepository<TraceHistEntity, Long
                                 " COUNT(*) AS  traceCnt " +
                                 " FROM tb_trace_history " +
                                 " WHERE clk_dml_dt LIKE CONCAT(:toDate,'%') " +
-                                " GROUP BY userId ";
+                                " GROUP BY USER_ID ";
 
     @Query(value = countByClk, nativeQuery = true)
     int countByClk();
