@@ -4,6 +4,7 @@ import com.nex.common.Consts;
 import com.nex.newKeyword.service.NewKeywordService;
 import com.nex.search.entity.NewKeywordEntity;
 import com.nex.search.entity.SearchInfoEntity;
+import com.nex.search.entity.dto.SearchInfoDto;
 import com.nex.search.repo.NewKeywordRepository;
 import com.nex.search.service.SearchService;
 import com.nex.user.entity.NewKeywordDto;
@@ -33,10 +34,7 @@ public class NewKeywordController {
     @GetMapping("/")
     public ModelAndView keyword(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
         ModelAndView modelAndView = new ModelAndView("html/keyword");
-        log.info("========= keyword 페이지 진입 ========");
-
         List<NewKeywordDto> newKeywordList = newKeywordRepository.keywordList();
-
         modelAndView.addObject("newKeywordList", newKeywordList);
         modelAndView.addObject("sessionInfo", sessionInfoDto);
 
@@ -49,30 +47,17 @@ public class NewKeywordController {
                                 , @RequestParam(required = false, defaultValue = "1") Integer searchPage
                                 , @RequestParam(required = false, defaultValue = "") String searchKeyword) {
         ModelAndView modelAndView = new ModelAndView("html/newKeyword");
-        log.info("========= keyword 페이지 진입 ========");
-        log.info("searchKeyword: "+searchKeyword);
 
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("headerMenu", "newKeyword");
 
-        Map<String, Object> newKeywordInfoList = new HashMap<>();
+        Map<String, Object> newKeywordInfoList = null;
 
-        log.info("history sessionInfoDto: " + sessionInfoDto.getUserId());
-        /*
-        if(sessionInfoDto.isAdmin()) {
-            log.info("newKeyword 검색이력 진입");
-            newKeywordInfoList = searchService.getNewKeywordInfoList(searchPage, searchKeyword);
-        } else {
-            newKeywordInfoList = searchService.getNewKeywordInfoList(searchPage, searchKeyword, sessionInfoDto.getUserUno());
-        }
-        */
         if(sessionInfoDto.isAdmin()) {
             log.info("newKeyword 검색이력 진입");
             newKeywordInfoList = newKeywordService.getNewKeywordInfoList(searchPage, searchKeyword);
-            // newKeywordInfoList = searchService.getSearchInfoList(searchPage, searchKeyword);
         } else {
             newKeywordInfoList = newKeywordService.getNewKeywordInfoList(searchPage, searchKeyword, sessionInfoDto.getUserUno());
-            //newKeywordInfoList = searchService.getSearchInfoList(searchPage, searchKeyword, sessionInfoDto.getUserUno());
         }
 
         modelAndView.addObject("userCount", searchService.getUserIdMap());
@@ -92,16 +77,12 @@ public class NewKeywordController {
     public Boolean newKeyword(@RequestParam(value="newKeywordValues", required=false) List<String> newKeywordValues,
                               @SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
                               ) throws ExecutionException, InterruptedException {
-        log.info("newKeywordValues3: " + newKeywordValues);
-        // ModelAndView modelAndView = new ModelAndView("redirect:/search/newKeyword");
         List<SearchKeywordDto> searchKeywordList  = newKeywordRepository.searchKeywordList();
 
         for(int i=0; i<searchKeywordList.size(); i++) {
-            log.info(" newKeyword for문 진입 ");
             SearchInfoEntity searchInfoEntity = new SearchInfoEntity();
+            SearchInfoDto searchInfoDto = new SearchInfoDto();
             String newKeyword = searchKeywordList.get(i).getKeyword();
-            log.info("newKeyword: " +newKeyword );
-            String tsiType="11";
 
             LocalDate now = LocalDate.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -116,38 +97,11 @@ public class NewKeywordController {
             searchInfoEntity.setTsiKeyword(newKeyword);
 
             SearchInfoEntity insertResult = newKeywordService.saveNewKeywordSearchInfo(searchInfoEntity);
-            newKeywordService.searchByText(newKeyword, insertResult, folder);
+//            newKeywordService.searchByText(newKeyword, insertResult, folder);
+            searchInfoDto.setTsiKeywordHiddenValue(newKeyword);
+            searchService.search(insertResult, searchInfoDto, folder);
         }
-
-/*
-        for(int i=0; i< nrd.size(); i++) {
-            SearchInfoEntity searchInfoEntity = new SearchInfoEntity();
-            log.info("newKeyword: "+nrd.get(i).toString());
-            String newKeyword = nrd.get(i).toString();
-
-            String tsiType="11";
-
-            LocalDate now = LocalDate.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-            String folder = now.format(formatter);
-            searchInfoEntity.setTsiType("11");
-            searchInfoEntity.setTsiGoogle((byte) 1);
-            searchInfoEntity.setTsiTwitter((byte) 1);
-            searchInfoEntity.setTsiFacebook((byte) 1);
-            searchInfoEntity.setTsiInstagram((byte) 1);
-            searchInfoEntity.setUserUno(sessionInfoDto.getUserUno());
-            searchInfoEntity.setTsiStat("11");
-            searchInfoEntity.setTsiKeyword(newKeyword);
-
-            SearchInfoEntity insertResult = newKeywordService.saveNewKeywordSearchInfo(searchInfoEntity);
-            newKeywordService.searchByText(newKeyword, insertResult, folder);
-
-        }
-
-        log.info("========= newKeyword 검색 완료 =========");
-*/
         return true;
-
     }
 
     @PostMapping("/add_keyword")

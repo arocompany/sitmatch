@@ -37,22 +37,17 @@ public class SearchResult implements ItemReader<List<ImagesResult>> {
 
     @Override
     public List<ImagesResult> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        log.info("read() 진입");
-        log.info("page1: "+page);
-
         //한번만 실행
         if (page > 0) {
             page=0;
             log.info("page2: "+page);
             return null;
         }
-        log.info("read() 진입2");
+
 
         List<ImagesResult> results = new ArrayList<>();
 
         SearchResultEntity dtoList = searchResultRepository.findByTsrUno(tsrUno);
-
-        log.info("dtoList {}", dtoList);
 
         List<Integer> tsrUnoList = new ArrayList<>();
         tsrUnoList.add(dtoList.getTsrUno());
@@ -64,7 +59,7 @@ public class SearchResult implements ItemReader<List<ImagesResult>> {
         Map<Integer, SearchInfoEntity> searchInfoEntityMapByTsrUno = searchInfoEntitiesByTsrUno.stream().collect(Collectors.toMap(SearchInfoEntity::getTsrUno, Function.identity()));
 
 //        for (SearchResultEntity searchResultEntity : dtoList) {
-            log.info(" ### searchResultEntity ### : {}", dtoList);
+//            log.info(" ### searchResultEntity ### : {}", dtoList);
 
 //            searchInfoEntityByTsiUno = searchInfoEntityMapByTsiUno.get(searchResultEntity.getTsiUno());
 //            searchInfoEntityByTsrUno = searchInfoEntityMapByTsrUno.get(searchResultEntity.getTsrUno());
@@ -87,7 +82,7 @@ public class SearchResult implements ItemReader<List<ImagesResult>> {
                     , isNotImage
             );
 
-            log.info("allResults: " + allResults);
+//            log.info("allResults: " + allResults);
 
             results.addAll(allResults);
 //        }

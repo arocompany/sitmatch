@@ -87,7 +87,6 @@ public class ChartController {
     @PostMapping("/prcuse")
     public ModelAndView user_prcuse_post(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
                                         , String fromDate, String toDate) {
-        log.info(" ==== prcuse POST 매핑 진입 ===");
         ModelAndView modelAndView = new ModelAndView("html/prcuse");
 
         String toDate2 = toDate + " 23:59:59";
@@ -264,10 +263,6 @@ public class ChartController {
 
     @GetMapping("/resultExcelList")
     public void resultExcelList(HttpServletResponse response, String tsiUno, String tsiKeyword) throws IOException {
-        log.info("========== resultExcelList 진입 ============");
-        log.info("tsiUno " + tsiUno);
-        log.info("tsiKeyword " + tsiKeyword);
-
         List<ResultListExcelDto> resultListExcelDtoList = searchInfoHistRepository.resultExcelList(tsiUno, tsiKeyword);
 
         searchService.resultExcelList(response, resultListExcelDtoList);
