@@ -26,6 +26,10 @@ public class SerpServicesEntity {
     private int ssIsActive;
 
     @Basic
+    @Column(name = "ss_is_text", nullable = false)
+    private int ssIsText;
+
+    @Basic
     @Column(name = "ss_is_image", nullable = false)
     private int ssIsImage;
 
