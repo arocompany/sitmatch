@@ -79,7 +79,6 @@ public class InitService {
             ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
             if(config.getIsBatchFlag() != null) configData.setIsBatchFlag(config.getIsBatchFlag());
-            if(config.getBatchCycleByHour() != null) configData.setBatchCycleByHour(config.getBatchCycleByHour());
             if(config.getDriverClassName() != null) configData.setDriverClassName(config.getDriverClassName());
             if(config.getUrl() != null) configData.setUrl(config.getUrl());
             if(config.getUserName() != null) configData.setUserName(config.getUserName());

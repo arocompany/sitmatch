@@ -5,7 +5,6 @@ import lombok.Data;
 @Data
 public class ConfigData {
     private Boolean isBatchFlag;
-    private Integer batchCycleByHour;
 
     private String driverClassName;
     private String url;
@@ -24,7 +23,6 @@ public class ConfigData {
     public String toString(){
         return "ConfigData{" +
                 "isBatchFlag=" + isBatchFlag +
-                ", batchCycleByHour=" + batchCycleByHour +
                 ", driverClassName='" + driverClassName + '\'' +
                 ", url='" + url + '\'' +
                 ", userName='" + userName + '\'' +

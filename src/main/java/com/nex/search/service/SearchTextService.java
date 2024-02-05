@@ -145,7 +145,7 @@ public class SearchTextService {
                 + "?lr=" + txtNation
                 + "&engine=yandex_images"
                 + "&url=" + searchImageUrl
-                + "p="+index+1
+                + "&p="+(index)
                 + "&api_key=" + configData.getSerpApiKey();
     }
 
