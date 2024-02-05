@@ -61,7 +61,7 @@ public class ScheduleTasks {
                             String val = (jobItem.getTsrCycleBatch() / 24) + "";
                             expression = String.format("0 0 0 */%s * *", val);
                         }else{
-                            expression = String.format("0 0 */5 * * *", jobItem.getTsrCycleBatch() + "");
+                            expression = String.format("*/5 * * * * *", jobItem.getTsrCycleBatch() + "");
                         }
 
                         log.info("expression === {}", expression);

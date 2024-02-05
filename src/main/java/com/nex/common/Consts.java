@@ -23,6 +23,7 @@ public interface Consts {
     String GOOGLE = "GOOGLE";
     String FACEBOOK = "FACEBOOK";
     String INSTAGRAM = "INSTAGRAM";
+    String TWITTER = "TWITTER";
 
     String MONITORING_CD_NONE = "10";
     String MONITORING_CD_ING = "20";

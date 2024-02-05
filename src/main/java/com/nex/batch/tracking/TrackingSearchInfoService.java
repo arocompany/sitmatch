@@ -82,7 +82,10 @@ public class TrackingSearchInfoService {
 //        else {
 //            searchInfoEntity.setTsiType("13");                                          //검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19: 영상
 //        }
-        if(StringUtils.hasText(searchResultEntity.getTsrImgPath()) && StringUtils.hasText(searchResultEntity.getTsrImgName())){
+        //모니터링 건이 이미지가 있고, Master 검색건에 키워드로 이미지 검색을 했다면
+        if(StringUtils.hasText(searchResultEntity.getTsrImgPath()) && StringUtils.hasText(searchResultEntity.getTsrImgName()) && StringUtils.hasText(searchInfoEntityByTsiUno.getTsiKeyword())){
+            searchInfoEntity.setTsiType(CommonCode.searchTypeKeywordImage);
+        } else if(StringUtils.hasText(searchResultEntity.getTsrImgPath()) && StringUtils.hasText(searchResultEntity.getTsrImgName())){
             searchInfoEntity.setTsiType(CommonCode.searchTypeImage);
         }else{
             searchInfoEntity.setTsiType(CommonCode.searchTypeKeyword);
