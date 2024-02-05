@@ -16,6 +16,7 @@ import com.nex.serpServices.entity.SerpServicesEntity;
 import com.nex.serpServices.repo.SerpServicesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -27,10 +28,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -88,25 +86,28 @@ public class TrackingSearchResultService{
         //모든 결과 List
         List<RESULT> allResults = new ArrayList<>();
 
-//        //구글 검색
-//        if (BooleanUtils.toBoolean(searchInfoEntity.getTsiGoogle())) {
-//            allResults.addAll(getResults(tsiKeyword, searchInfoEntity, Consts.GOOGLE, siteUrls, infoClass, getErrorFn, getSubFn, setTsiUnoCn, getLinkFn, isFacebookFn, isInstagram, isText));
-//        }
-//        //페이스북 검색
-//        if (BooleanUtils.toBoolean(searchInfoEntity.getTsiFacebook())) {
-//            allResults.addAll(getResults("페이스북 " + tsiKeyword, searchInfoEntity, Consts.FACEBOOK, siteUrls, infoClass, getErrorFn, getSubFn, setTsiUnoCn, getLinkFn, isFacebookFn, isInstagram, isText));
-//        }
-//        //인스타그램 검색
-//        if (BooleanUtils.toBoolean(searchInfoEntity.getTsiInstagram())) {
-//            allResults.addAll(getResults("인스타그램 " + tsiKeyword, searchInfoEntity, Consts.INSTAGRAM, siteUrls, infoClass, getErrorFn, getSubFn, setTsiUnoCn, getLinkFn, isFacebookFn, isInstagram, isText));
-//        }
+        //구글 검색
+        if (BooleanUtils.toBoolean(searchInfoEntity.getTsiGoogle())) {
+            allResults.addAll(getResults(tsiKeyword, searchInfoEntity, Consts.GOOGLE, siteUrls, infoClass, getErrorFn, getSubFn, setTsiUnoCn, getLinkFn, isFacebookFn, isInstagram, isTwitter, isText));
+        }
+        //페이스북 검색
+        if (BooleanUtils.toBoolean(searchInfoEntity.getTsiFacebook())) {
+            allResults.addAll(getResults("페이스북 " + tsiKeyword, searchInfoEntity, Consts.FACEBOOK, siteUrls, infoClass, getErrorFn, getSubFn, setTsiUnoCn, getLinkFn, isFacebookFn, isInstagram, isTwitter, isText));
+        }
+        //인스타그램 검색
+        if (BooleanUtils.toBoolean(searchInfoEntity.getTsiInstagram())) {
+            allResults.addAll(getResults("인스타그램 " + tsiKeyword, searchInfoEntity, Consts.INSTAGRAM, siteUrls, infoClass, getErrorFn, getSubFn, setTsiUnoCn, getLinkFn, isFacebookFn, isInstagram, isTwitter, isText));
+        }
 
-        allResults.addAll(getResults(tsiKeyword, searchInfoEntity, Consts.GOOGLE, siteUrls, infoClass, getErrorFn, getSubFn, setTsiUnoCn, getLinkFn, isFacebookFn, isInstagram, isTwitter, isText));
+        //인스타그램 검색
+        if (BooleanUtils.toBoolean(searchInfoEntity.getTsiTwitter())) {
+            allResults.addAll(getResults("트위터 " + tsiKeyword, searchInfoEntity, Consts.TWITTER, siteUrls, infoClass, getErrorFn, getSubFn, setTsiUnoCn, getLinkFn, isFacebookFn, isInstagram, isTwitter, isText));
+        }
 
         return allResults;
     }
 
-//    /**
+    //    /**
 //     * 결과 List 추출
 //     *
 //     * @param  tsiKeyword       (검색어)
@@ -157,7 +158,7 @@ public class TrackingSearchResultService{
     private <INFO, RESULT> List<RESULT> getResults(String tsiKeyword, SearchInfoEntity searchInfoEntity, String dvn, List<String> siteUrls
            , List<RESULT> results, int index, Class<INFO> infoClass, Function<INFO, String> getErrorFn
            , Function<INFO, List<RESULT>> getSubFn, BiConsumer<RESULT, Integer> setTsiUnoCn
-           , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Function<RESULT, Boolean> isTwitter) throws JsonProcessingException {
+           , Function<RESULT, String> getLinkFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagram, Function<RESULT, Boolean> isTwitter, boolean isText) throws JsonProcessingException {
         log.info("이미지 결과 목록 추출 getResults 진입, index : "+index);
 
         List<CompletableFuture<List<RESULT>>> completableFutures = new ArrayList<>();
@@ -173,7 +174,7 @@ public class TrackingSearchResultService{
                 String url = "";
                 int pageNo = 0;
 
-                url = getUrl(ssInfo, searchInfoEntity, tsiKeyword, ncInfo, pageNo, cntNation);
+                url = getUrl(ssInfo, searchInfoEntity, tsiKeyword, ncInfo, pageNo, cntNation, isText, dvn);
 
                 String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
                 searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
@@ -209,7 +210,7 @@ public class TrackingSearchResultService{
                         // 이전 API의 결과를 확인하고 다음 외부 API 호출
                         if (previousResult != null && !previousResult.isEmpty() && previousResult.get(0) != null) {
 
-                            String finalUrl = getUrl(ssInfo, searchInfoEntity, tsiKeyword, ncInfo, currentApiNumber, cntNation);
+                            String finalUrl = getUrl(ssInfo, searchInfoEntity, tsiKeyword, ncInfo, currentApiNumber, cntNation, isText, dvn);
 
                             RequestSerpApiLogEntity rsalEntitySecond = requestSerpApiLogService.init(searchInfoEntity.getTsiUno(), finalUrl, ncInfo.getNcCode().toLowerCase(), ssInfo.getSsName(), tsiKeyword, currentApiNumber, configData.getSerpApiKey(), searchImageUrl2);
 //                            RequestSerpApiLogEntity rsalEntitySecond2 = rsalEntitySecond;
@@ -465,80 +466,62 @@ public class TrackingSearchResultService{
     }
     */
 
-    private String getUrl(SerpServicesEntity ssInfo, SearchInfoEntity searchInfoEntity, String tsiKeyword, NationCodeEntity ncInfo, int pageNo, int cntNation){
+    private String getUrl(SerpServicesEntity ssInfo, SearchInfoEntity searchInfoEntity, String tsiKeyword, NationCodeEntity ncInfo, int pageNo, int cntNation, boolean isText, String tsrSns){
         String url = "";
 //        if(isText) {
         switch (searchInfoEntity.getTsiType()){
             case CommonCode.searchTypeKeyword -> {
                 switch (ssInfo.getSsName()) {
-                    case CommonCode.SerpAPIEngineGoogle -> {
-                        if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                        if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                        if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                        if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                    }
-                    case CommonCode.SerpAPIEngineYoutube -> {
-                        if (searchInfoEntity.getTsiGoogle() == 1) { url = searchYoutubeService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, ncInfo.getNcCode().toLowerCase()); }
-                        if (searchInfoEntity.getTsiInstagram() == 1) { url = searchYoutubeService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, ncInfo.getNcCode().toLowerCase()); }
-                        if (searchInfoEntity.getTsiFacebook() == 1) { url = searchYoutubeService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, ncInfo.getNcCode().toLowerCase()); }
-                        if (searchInfoEntity.getTsiTwitter() == 1) { url = searchYoutubeService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, ncInfo.getNcCode().toLowerCase()); }
-                    }
+                    case CommonCode.SerpAPIEngineGoogle -> { url = searchTextService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                    case CommonCode.SerpAPIEngineYoutube -> { url = searchYoutubeService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase()); }
                     case CommonCode.SerpAPIEngineBaidu -> {
-
-                        if (cntNation == 0) { if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextBaiduService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, pageNo); }
-                            if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextBaiduService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, pageNo); }
-                            if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextBaiduService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, pageNo); }
-                            if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextBaiduService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, pageNo); }
-                        }
+                        if (cntNation == 0) { url = searchTextBaiduService.getUrl(tsrSns, tsiKeyword, pageNo); }
                     }
                     case CommonCode.SerpAPIEngineBing -> {
-
                         if (!ncInfo.getNcCode().equals("cn") && !ncInfo.getNcCode().equals("th") && !ncInfo.getNcCode().equals("ru") && !ncInfo.getNcCode().equals("vn")) {
-                            if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextBingService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                            if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextBingService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                            if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextBingService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                            if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextBingService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                            url = searchTextBingService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo);
                         }
                     }
-                    case CommonCode.SerpAPIEngineDuckduckgo -> {
-
-                        if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextDuckduckgoService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                        if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextDuckduckgoService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                        if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextDuckduckgoService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                        if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextDuckduckgoService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                    }
-                    case CommonCode.SerpAPIEngineYahoo -> {
-
-                        if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextYahooService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                        if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextYahooService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                        if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextYahooService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                        if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextYahooService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                    }
+                    case CommonCode.SerpAPIEngineDuckduckgo -> { url = searchTextDuckduckgoService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                    case CommonCode.SerpAPIEngineYahoo -> { url = searchTextYahooService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
                     case CommonCode.SerpAPIEngineYandex -> {
-
-                        if (!ncInfo.getNcCode().equals("vn")) {
-                            if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextYandexService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                            if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextYandexService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                            if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextYandexService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                            if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextYandexService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                        }
+                        if (!ncInfo.getNcCode().equals("vn")) { url = searchTextYandexService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
                     }
                     case CommonCode.SerpAPIEngineNaver -> {
-
-                        if (cntNation == 0) {
-                            if (searchInfoEntity.getTsiGoogle() == 1) { url = searchTextNaverService.getUrl(CommonCode.snsTypeGoogle, tsiKeyword, pageNo); }
-                            if (searchInfoEntity.getTsiInstagram() == 1) { url = searchTextNaverService.getUrl(CommonCode.snsTypeInstagram, tsiKeyword, pageNo); }
-                            if (searchInfoEntity.getTsiFacebook() == 1) { url = searchTextNaverService.getUrl(CommonCode.snsTypeFacebook, tsiKeyword, pageNo); }
-                            if (searchInfoEntity.getTsiTwitter() == 1) { url = searchTextNaverService.getUrl(CommonCode.snsTypeTwitter, tsiKeyword, pageNo); }
-                        }
+                        if (cntNation == 0) { url = searchTextNaverService.getUrl(tsrSns, tsiKeyword, pageNo); }
                     }
                 }
             }
             case CommonCode.searchTypeImage -> {
                 switch (ssInfo.getSsName()) {
-                    case CommonCode.SerpAPIEngineGoogle -> { url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo, CommonCode.SerpAPIEngineGoogleReverseImage); }
+                    case CommonCode.SerpAPIEngineGoogleReverseImage -> { url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo, CommonCode.SerpAPIEngineGoogleReverseImage); }
                     case CommonCode.SerpAPIEngineGoogleLens -> { url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), null, CommonCode.SerpAPIEngineGoogleLens); }
-                    case CommonCode.SerpAPIEngineYandex -> { if (!ncInfo.getNcCode().equals("vn")) { url = searchTextService.getYandexImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo); } }
+                    case CommonCode.SerpAPIEngineYandexImage -> { if (!ncInfo.getNcCode().equals("vn")) { url = searchTextService.getYandexImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo); } }
+                }
+            }
+            case CommonCode.searchTypeKeywordImage -> {
+                switch (ssInfo.getSsName()) {
+                    case CommonCode.SerpAPIEngineGoogle -> { url = searchTextService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                    case CommonCode.SerpAPIEngineYoutube -> { url = searchYoutubeService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase());  }
+                    case CommonCode.SerpAPIEngineBaidu -> {
+                        if (cntNation == 0) { url = searchTextBaiduService.getUrl(tsrSns, tsiKeyword, pageNo); }
+                    }
+                    case CommonCode.SerpAPIEngineBing -> {
+                        if (!ncInfo.getNcCode().equals("cn") && !ncInfo.getNcCode().equals("th") && !ncInfo.getNcCode().equals("ru") && !ncInfo.getNcCode().equals("vn")) {
+                            url = searchTextBingService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo);
+                        }
+                    }
+                    case CommonCode.SerpAPIEngineDuckduckgo -> { url = searchTextDuckduckgoService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                    case CommonCode.SerpAPIEngineYahoo -> { url = searchTextYahooService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                    case CommonCode.SerpAPIEngineYandex -> {
+                        if (!ncInfo.getNcCode().equals("vn")) { url = searchTextYandexService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
+                    }
+                    case CommonCode.SerpAPIEngineNaver -> {
+                        if (cntNation == 0) { url = searchTextNaverService.getUrl(tsrSns, tsiKeyword, pageNo); }
+                    }
+                    case CommonCode.SerpAPIEngineGoogleReverseImage -> { url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo, CommonCode.SerpAPIEngineGoogleReverseImage); }
+                    case CommonCode.SerpAPIEngineGoogleLens -> { url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), null, CommonCode.SerpAPIEngineGoogleLens); }
+                    case CommonCode.SerpAPIEngineYandexImage -> { if (!ncInfo.getNcCode().equals("vn")) { url = searchTextService.getYandexImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo); } }
                 }
             }
         }

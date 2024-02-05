@@ -71,9 +71,9 @@ public class SearchYoutubeService {
 
     public String getUrl(String tsrSns, String tsiKeywordHiddenValue, String nationCode){
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
-        if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
-        else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
-        else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
+        if (Consts.INSTAGRAM.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
+        else if (Consts.FACEBOOK.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
+        else if (Consts.TWITTER.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
 
         String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, null, null, null, configData.getSerpApiKey(), null, "youtube", null);
         return url;

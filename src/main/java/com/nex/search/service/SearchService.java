@@ -231,14 +231,14 @@ public class SearchService {
                     case CommonCode.searchTypeKeywordImage -> {
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()){
-                                case CommonCode.SerpAPIEngineGoogle -> {
+                                case CommonCode.SerpAPIEngineGoogleReverseImage -> {
                                     if (param.getTsiGoogle() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
                                     if (param.getTsiInstagram() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
                                     if (param.getTsiFacebook() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
                                     if (param.getTsiTwitter() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
                                 }
                                 case CommonCode.SerpAPIEngineGoogleLens -> searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
-                                case CommonCode.SerpAPIEngineYandex -> {
+                                case CommonCode.SerpAPIEngineYandexImage -> {
                                     if(! ncInfo.getNcCode().equals("vn")) {
                                         searchImageYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
                                         if (param.getTsiGoogle() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
@@ -365,9 +365,9 @@ public class SearchService {
                     case CommonCode.searchTypeImage -> {
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()){
-                                case CommonCode.SerpAPIEngineGoogle -> searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
+                                case CommonCode.SerpAPIEngineGoogleReverseImage -> searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
                                 case CommonCode.SerpAPIEngineGoogleLens -> searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
-                                case CommonCode.SerpAPIEngineYandex -> {
+                                case CommonCode.SerpAPIEngineYandexImage -> {
                                     if( !ncInfo.getNcCode().equals("vn") ){searchImageYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase());}
                                 }
                             }
@@ -377,9 +377,9 @@ public class SearchService {
                     case CommonCode.searchTypeVideo -> {
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()) {
-                                case CommonCode.SerpAPIEngineGoogle -> searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());
+                                case CommonCode.SerpAPIEngineGoogleReverseImage -> searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());
                                 case CommonCode.SerpAPIEngineGoogleLens -> searchVideoGoogleLensService.searchByGoogleLensVideo(CommonCode.snsTypeGoogle, param, folder, ncInfo.getNcCode().toLowerCase());
-                                case CommonCode.SerpAPIEngineYandex -> {
+                                case CommonCode.SerpAPIEngineYandexImage -> {
                                     if( !ncInfo.getNcCode().equals("vn") ){searchVideoYandexService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());}
                                 }
                             }

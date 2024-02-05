@@ -42,4 +42,8 @@ public interface CommonCode {
     int RequestSerpApiLogInit = 0;
     int RequestSerpApiLogSuccess = 1;
     int RequestSerpApiLogFail = 2;
+
+    String methodSerpApiTypeGoogleReverse = "0";
+    String methodSerpApiTypeGoogleLens = "1";
+    String methodSerpApiTypeETC = "2";
 }

@@ -29,7 +29,7 @@ public class CommonStaticSearchUtil {
         sre.setTsrDownloadUrl(getOriginalFn.apply(result));
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(getLinkFn.apply(result));
-        sre.setTsrSearchValue("0");
+        sre.setTsrSearchValue(CommonCode.methodSerpApiTypeGoogleReverse);
 
 //        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");
@@ -58,7 +58,7 @@ public class CommonStaticSearchUtil {
         sre.setTsrDownloadUrl(getOriginalFn.apply(result).get("link").toString());
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(getLinkFn.apply(result));
-        sre.setTsrSearchValue("0");
+        sre.setTsrSearchValue(CommonCode.methodSerpApiTypeGoogleReverse);
 
 //        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");
@@ -183,7 +183,7 @@ public class CommonStaticSearchUtil {
         // sre.setTsrImgName(imageUrl);
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(getLinkFn.apply(result));
-        sre.setTsrSearchValue("1");
+        sre.setTsrSearchValue(CommonCode.methodSerpApiTypeGoogleLens);
 
 //        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");
@@ -212,7 +212,7 @@ public class CommonStaticSearchUtil {
         sre.setTsrDownloadUrl(getOriginalFn.apply(result));
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(getLinkFn.apply(result));
-        sre.setTsrSearchValue("2");
+        sre.setTsrSearchValue(CommonCode.methodSerpApiTypeETC);
 
 //        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
         //sre.setTsrSns("11");

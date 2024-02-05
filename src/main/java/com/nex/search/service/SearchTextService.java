@@ -113,9 +113,9 @@ public class SearchTextService {
     public String getUrl(String tsrSns, String tsiKeywordHiddenValue, String textGl, int index){
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
-        if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
-        else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
-        else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
+        if (Consts.INSTAGRAM.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
+        else if (Consts.FACEBOOK.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
+        else if (Consts.TWITTER.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
         return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey(), null, "google", null);
     }
 
@@ -145,7 +145,7 @@ public class SearchTextService {
                 + "?lr=" + txtNation
                 + "&engine=yandex_images"
                 + "&url=" + searchImageUrl
-                + "&p="+(index)
+                + "&p=" + (index)
                 + "&api_key=" + configData.getSerpApiKey();
     }
 
