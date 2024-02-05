@@ -183,4 +183,8 @@
 .serpServices input[type=checkbox], .nations input[type=checkbox] {
     background: none;
 }
+
+.serpServices span.possible{
+    font-size:1.0rem;
+}
 /* 2024 0122 유나 수정*/

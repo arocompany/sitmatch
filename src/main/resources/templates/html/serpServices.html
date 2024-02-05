@@ -9,9 +9,9 @@
                             <span class="tit">서비스</span>
                             <span class="tit">아이콘</span>
                             <span class="tit" style="margin-right: 13px;">설정여부</span>
-                            <span class="tit" style="margin-right: 10px;">텍스트 활성여부</span>
-                            <span class="tit" style="margin-right: 10px;">이미지 활성여부</span>
-                            <span class="tit" style="margin-right: 10px;">비디오 활성여부</span>
+                            <span class="tit" style="margin-right: 10px;">텍스트 검색</span>
+                            <span class="tit" style="margin-right: 10px;">이미지 검색</span>
+                            <span class="tit" style="margin-right: 10px;">비디오 검색</span>
                         </label>
                     </li>
                     <li th:each="item : ${list}">
@@ -24,14 +24,14 @@
                             <span class="select_box">
                                 <input class="checkboxService chkServiceItem" type="checkbox" th:value="${item.getSsIsActive()}" th:attr="serviceUno=${item.ssUno}" th:checked="${item.ssIsActive == 1}">
                             </span>
-                            <span class="select_box">
-                                <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsText() == 0 ? 'OFF' : 'ON'}" disabled>
+                            <span class="select_box" th:classappend="${item.getSsIsText() > 0 ? 'possible' : ''}">
+                                <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsText() == 0 ? '불가' : '가능'}" disabled>
                             </span>
-                            <span class="select_box">
-                                <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsImage() == 0 ? 'OFF' : 'ON'}" disabled>
+                            <span class="select_box" th:classappend="${item.getSsIsImage() > 0 ? 'possible' : ''}">
+                                <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsImage() == 0 ? '불가' : '가능'}" disabled>
                             </span>
-                            <span class="select_box">
-                                <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsVideo() == 0 ? 'OFF' : 'ON'}" disabled>
+                            <span class="select_box" th:classappend="${item.getSsIsVideo() > 0 ? 'possible' : ''}">
+                                <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsVideo() == 0 ? '불가' : '가능'}" disabled>
                             </span>
                         </label>
                     </li>

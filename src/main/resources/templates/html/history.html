@@ -923,8 +923,8 @@
     allTime[i].addEventListener('click', function () {
       var inputValue = this.parentElement.querySelector('.area_input').value;
 
-      if(inputValue < 6){
-        alert("최소 6시간부터 설정 가능합니다.");
+      if(! (6 <= inputValue && inputValue <= 720)){
+        alert("최소 6시간 최대 720까지 설정 가능합니다.");
         return false;
       }
 
