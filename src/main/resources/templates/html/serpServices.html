@@ -1,4 +1,4 @@
-<section class="keyword serpServices counselor-add bor10">
+<section class="keyword serpServices counselor-add bor10" style=" width: 915px;">
     <h3 class="title">서비스 설정 정보</h3>
     <div class="keyword-box btn-on bor10" style="margin-top: 30px;">
         <div class="box_wrap service_info">
@@ -8,7 +8,10 @@
                         <label class="flex">
                             <span class="tit">서비스</span>
                             <span class="tit">아이콘</span>
-                            <span class="tit">설정여부</span>
+                            <span class="tit" style="margin-right: 13px;">설정여부</span>
+                            <span class="tit" style="margin-right: 10px;">텍스트 활성여부</span>
+                            <span class="tit" style="margin-right: 10px;">이미지 활성여부</span>
+                            <span class="tit" style="margin-right: 10px;">비디오 활성여부</span>
                         </label>
                     </li>
                     <li th:each="item : ${list}">
@@ -20,6 +23,15 @@
                             </span>
                             <span class="select_box">
                                 <input class="checkboxService chkServiceItem" type="checkbox" th:value="${item.getSsIsActive()}" th:attr="serviceUno=${item.ssUno}" th:checked="${item.ssIsActive == 1}">
+                            </span>
+                            <span class="select_box">
+                                <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsText() == 0 ? 'OFF' : 'ON'}" disabled>
+                            </span>
+                            <span class="select_box">
+                                <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsImage() == 0 ? 'OFF' : 'ON'}" disabled>
+                            </span>
+                            <span class="select_box">
+                                <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsVideo() == 0 ? 'OFF' : 'ON'}" disabled>
                             </span>
                         </label>
                     </li>
