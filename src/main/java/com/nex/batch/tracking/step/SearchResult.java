@@ -74,7 +74,7 @@ public class SearchResult implements ItemReader<List<ImagesResult>> {
                     searchInfoEntityByTsrUno
                     , SerpApiImageResult.class
                     , SerpApiImageResult::getError
-                    , isNotImage ? SerpApiImageResult::getImages_results : SerpApiImageResult::getInline_images
+                    , SerpApiImageResult::getImages_results
                     , ImagesResult::setTsiUno
                     , ImagesResult::getLink
                     , ImagesResult::isFacebook

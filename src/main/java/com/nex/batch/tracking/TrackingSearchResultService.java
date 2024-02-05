@@ -208,9 +208,9 @@ public class TrackingSearchResultService{
                     String searchImageUrl2 = searchImageUrl;
                     listCompletableFuture = listCompletableFuture.thenComposeAsync(previousResult -> {
                         // 이전 API의 결과를 확인하고 다음 외부 API 호출
-                        if (previousResult != null && !previousResult.isEmpty() && previousResult.get(0) != null) {
 
-                            String finalUrl = getUrl(ssInfo, searchInfoEntity, tsiKeyword, ncInfo, currentApiNumber, cntNation, isText, dvn);
+                        String finalUrl = getUrl(ssInfo, searchInfoEntity, tsiKeyword, ncInfo, currentApiNumber, cntNation, isText, dvn);
+                        if (previousResult != null && !previousResult.isEmpty() && previousResult.get(0) != null && StringUtils.hasText(finalUrl)) {
 
                             RequestSerpApiLogEntity rsalEntitySecond = requestSerpApiLogService.init(searchInfoEntity.getTsiUno(), finalUrl, ncInfo.getNcCode().toLowerCase(), ssInfo.getSsName(), tsiKeyword, currentApiNumber, configData.getSerpApiKey(), searchImageUrl2);
 //                            RequestSerpApiLogEntity rsalEntitySecond2 = rsalEntitySecond;
@@ -426,7 +426,7 @@ public class TrackingSearchResultService{
 
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "images_results").replace("image_results", "images_results");
+                String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "images_results").replace("image_sources", "images_results").replace("image_results", "images_results").replace("inline_images", "images_results");
                 INFO info = mapper.readValue(jsonInString, infoClass);
 
                 if (getErrorFn.apply(info) == null) {
@@ -473,7 +473,7 @@ public class TrackingSearchResultService{
             case CommonCode.searchTypeKeyword -> {
                 switch (ssInfo.getSsName()) {
                     case CommonCode.SerpAPIEngineGoogle -> { url = searchTextService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                    case CommonCode.SerpAPIEngineYoutube -> { url = searchYoutubeService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase()); }
+                    case CommonCode.SerpAPIEngineYoutube -> { if(pageNo == 0) url = searchYoutubeService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase()); }
                     case CommonCode.SerpAPIEngineBaidu -> {
                         if (cntNation == 0) { url = searchTextBaiduService.getUrl(tsrSns, tsiKeyword, pageNo); }
                     }
@@ -495,14 +495,14 @@ public class TrackingSearchResultService{
             case CommonCode.searchTypeImage -> {
                 switch (ssInfo.getSsName()) {
                     case CommonCode.SerpAPIEngineGoogleReverseImage -> { url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo, CommonCode.SerpAPIEngineGoogleReverseImage); }
-                    case CommonCode.SerpAPIEngineGoogleLens -> { url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), null, CommonCode.SerpAPIEngineGoogleLens); }
+                    case CommonCode.SerpAPIEngineGoogleLens -> { if(pageNo == 0) url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), null, CommonCode.SerpAPIEngineGoogleLens); }
                     case CommonCode.SerpAPIEngineYandexImage -> { if (!ncInfo.getNcCode().equals("vn")) { url = searchTextService.getYandexImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo); } }
                 }
             }
             case CommonCode.searchTypeKeywordImage -> {
                 switch (ssInfo.getSsName()) {
                     case CommonCode.SerpAPIEngineGoogle -> { url = searchTextService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase(), pageNo); }
-                    case CommonCode.SerpAPIEngineYoutube -> { url = searchYoutubeService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase());  }
+                    case CommonCode.SerpAPIEngineYoutube -> { if(pageNo == 0) url = searchYoutubeService.getUrl(tsrSns, tsiKeyword, ncInfo.getNcCode().toLowerCase());  }
                     case CommonCode.SerpAPIEngineBaidu -> {
                         if (cntNation == 0) { url = searchTextBaiduService.getUrl(tsrSns, tsiKeyword, pageNo); }
                     }
@@ -520,7 +520,7 @@ public class TrackingSearchResultService{
                         if (cntNation == 0) { url = searchTextNaverService.getUrl(tsrSns, tsiKeyword, pageNo); }
                     }
                     case CommonCode.SerpAPIEngineGoogleReverseImage -> { url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo, CommonCode.SerpAPIEngineGoogleReverseImage); }
-                    case CommonCode.SerpAPIEngineGoogleLens -> { url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), null, CommonCode.SerpAPIEngineGoogleLens); }
+                    case CommonCode.SerpAPIEngineGoogleLens -> { if(pageNo == 0) url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), null, CommonCode.SerpAPIEngineGoogleLens); }
                     case CommonCode.SerpAPIEngineYandexImage -> { if (!ncInfo.getNcCode().equals("vn")) { url = searchTextService.getYandexImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo); } }
                 }
             }

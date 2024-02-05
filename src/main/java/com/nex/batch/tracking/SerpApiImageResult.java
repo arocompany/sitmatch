@@ -19,11 +19,11 @@ public class SerpApiImageResult {
     private List<ImagesResult> images_results;
 
     //for youtube
-    private List<Youtube_resultsByText> video_results;
-
-    //for yandex image
-    private List<Images_resultsByImageForYandex> image_results;
+//    private List<Youtube_resultsByText> video_results;
+//
+//    //for yandex image
+//    private List<Images_resultsByImageForYandex> image_results;
 
     //for google lens
-    private List<Images_resultsByGoogleLens> image_sources;
+//    private List<Images_resultsByGoogleLens> image_sources;
 }
