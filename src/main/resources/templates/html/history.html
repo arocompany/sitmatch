@@ -425,10 +425,6 @@
           <input type = "number" class="btn-off area_input" th:value="${traceHistoryList.getTsrCycleBatch()}">
           <button class="btn-off all-time all-time-btn" type = "button"  th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}" th:text="${traceHistoryList.getTsrIsBatch() ? 'OFF' : 'ON'}">OFF</button>
         </div>
-        <!--<button type="button" class="btn-off all-time" onclick="alert('작업 중입니다.'); return false;" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>-->
-        <!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()!=12999}" th:value="${traceHistoryList.getTsrUno()}">0건</button>-->
-        <!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()==12999}" th:value="${traceHistoryList.getTsrUno()}">1건</button>  th:value="${traceHistoryList.getTsr5tsruno()}"  -->
-        <!--<button class="btn-off double-chk" th:value="${traceHistoryList.getTsrUno()}" th:tsiuno="${traceHistoryList.getTsiUno()}" th:keyword="${traceHistoryList.getTsiKeyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>-->
         <button class="btn-off double-chk" style="margin-left: 5px;" th:tsiUno="${traceHistoryList.getTsi3tsiuno()}" th:tsiKeyword="${traceHistoryList.getTsi3Keyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
         <button style="border-radius: 50%; height: 22px; margin-left: 15px; " class="del-btn btn-off del2" id="traceTsrUno" onclick="traceDelete();" th:value="${traceHistoryList.getTsrUno()}">삭제</button>
         <!--<button class="btn-off double-chk" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'" th:onclick="|location.href='@{/notice(tsiUno=${traceHistoryList.getTsi3tsiuno()}, tsiKeyword=${traceHistoryList.getTsi3Keyword()} )}'|">0건</button>-->
@@ -453,9 +449,6 @@
 <script th:inline="javascript">
 
   function InfoList(tsiUno){
-    // alert("tsiUno: "+tsiUno.value)
-    // console.dir(tsiUno.value)
-
     var xhr = new XMLHttpRequest();
     //요청을 보낼 방식, 주소, 비동기여부 설정
     xhr.open('GET', 'result-detail?tsiUno=' + tsiUno.value, true);
@@ -501,7 +494,6 @@
         console.log("통신 실패");
       }
     }
-
   }
 
   function allCheckboxBtn(){
@@ -714,8 +706,6 @@
     const diffMSec = dateA.getTime() - dateB.getTime();
     const diffMin = diffMSec / (60 * 1000);
 
-    // console.info(dotTsiUno + " 번호");
-
     //XMLHttpRequest 객체 생성
     var req = new Req();
     //요청을 보낼 방식, 주소, 비동기여부 설정
@@ -837,8 +827,6 @@
         if(btn.getAttribute("tsiKeyword") !== null){
           url += '&tsiKeyword=' + btn.getAttribute("tsiKeyword");
         }
-
-        // console.info(btn.getAttribute("tsiKeyword"));
         window.location.href = url;
       }else{
         alert('조회대상이 없습니다.');
@@ -875,8 +863,6 @@
 
   })
   */
-
-
 
   imgBtn.forEach((btn) => {
     const tsrUno = btn.querySelector("#tsrUno");
@@ -925,7 +911,6 @@
             })
           })
         } else {
-          //통신 실패
           console.log("통신 실패");
         }
       }
@@ -933,12 +918,16 @@
   });
 
   // 24시간 모니터링 버튼 활성화
-  // 24시간 모니터링 버튼 활성화
   const allTime = document.querySelectorAll(".all-time");
   for (let i = 0; i < allTime.length; i++) {
     allTime[i].addEventListener('click', function () {
-
       var inputValue = this.parentElement.querySelector('.area_input').value;
+
+      if(inputValue < 6){
+        alert("최소 6시간부터 설정 가능합니다.");
+        return false;
+      }
+
       this.disabled = true;
       //XMLHttpRequest 객체 생성
       var xhr = new XMLHttpRequest();
@@ -950,12 +939,10 @@
       xhr.onload = () => {
         if (xhr.status === 200) {   //통신 성공
           this.classList.toggle('active');
-
           location.reload();
-        } else {  //통신 실패
-          //this.classList.toggle('active');
+        } else {
+          console.log('통신 실패')
         }
-
         this.disabled = false;
       }
     })
@@ -976,7 +963,6 @@
           alert("삭제가 완료되었습니다.");
           window.location.href="/history";
         }, error:function(){
-          // alert("실패")
           console.log("통신 실패");
         }
       })
@@ -1013,13 +999,10 @@
           alert("삭제가 완료되었습니다.");
           window.location.href="/history";
         }, error:function(){
-          // alert("실패")
           console.log("통신 실패");
         }
       })
-
     }
-
   }
 
   function traceList(){
@@ -1028,9 +1011,6 @@
   function monitoringList(){
     document.getElementById('traceHistoryValue').value = '10';
     const traceHistoryValue = document.getElementById('traceHistoryValue').value;
-
-    // alert('traceHistoryValue: '+traceHistoryValue)
-
       $.ajax({
         url: "/history",
         type: "get",
@@ -1038,11 +1018,8 @@
           traceHistoryValue: traceHistoryValue
         },
         success:function(data) {
-          alert("성공 .");
 
-          // window.location.href="/history";
         }, error:function(){
-          // alert("실패")
           console.log("통신 실패");
         }
       })
@@ -1053,8 +1030,6 @@
     $(".area_search_condition").hide();
 
     $("button[name='btnShow']").on("click", function(){
-      // $(this).parent().parent().find(".area_search_condition").show()
-
         document.body.style.overflow = 'hidden';
         modal.style.display = 'flex';
         modal.innerHTML = $(this).parent().parent().find(".area_search_condition").html();

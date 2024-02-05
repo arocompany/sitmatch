@@ -18,9 +18,29 @@
 </head>
 
 <style>
+
   .area_input{width:60px;margin-left: 4px;height:40px;    vertical-align: bottom;}
 
   #history .trace-history .history-list .area_box .all-time-btn{width:40px; margin-left: 4px;}
+
+  .area_search_condition{
+    display: none;
+  }
+
+  .condition_info{
+    display: flex;
+  }
+
+  .condition_info > div{
+    flex: 1;
+  }
+
+  .condition_info > div.area_img{
+    display: flex;
+    align-items: center;
+    /*margin: auto;*/
+  }
+
   .dels {
     margin: 0;
     padding: 0;
@@ -40,7 +60,109 @@
     vertical-align: baseline;
     color: inherit;
   }
+  /* 240202 */
+  .section-keyword {
+    width: 800px;
+  }
+  .keyword .keyword-wrap {
+    padding: 15px 20px 25px;
+  }
+  .btn-look {
+    padding: 2px 9px;
+  }
+  .condition-wrap {
+    flex-direction: column;
+    flex-wrap: nowrap !important;
+  }
+  .condition-wrap > div {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .tit {
+    font-weight: bold;
+    margin-right: 5px;
+    margin-bottom: 15px;
+    font-size: 18px;
+  }
+  .country-wrap div{
+    display: flex;
+    font-size: 18px;
+  }
+  .country-wrap div p+p{
+    margin-left: 15px;
+  }
+  .country-wrap p+p {
+    margin-left: 15px;
+  }
+  .condition-wrap .search-wrap {
+    justify-content: space-between;
+    margin-top: 30px;
+    align-items: normal !important;
+  }
+  .search-wrap > div:not(.tit) {
+    display: flex;
+  }
 
+  .search-wrap > div:not(.tit) > div{
+    text-align: center;
+  }
+  .search-wrap > div:not(.tit) > div + div{
+    margin-left: 20px;
+  }
+  #history .list-tit .gubun {
+    width: 6.5%;
+  }
+  #history .list-tit .dist {
+    width: 12.72%;
+  }
+  #history .dist {
+    width: 11.52%;
+    margin-right: 7px
+
+  }
+  #history .search-history .review {
+    margin-right: 5px;
+  }
+  #history .trace-history .all-time {
+    position: relative;
+  }
+  #history .trace-history .all-time .describe {
+    display: inline-block;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    background-color: #194894;
+    vertical-align: middle;
+    font-size: 12px;
+    text-align: center;
+    line-height: 14px;
+    cursor: pointer;
+    color: #f2f2f8;
+    margin-top: -2px;
+    margin-left: 3px;
+  }
+  .tooltip {
+    display: inline-block;
+    color: #fff;
+    background-color: #194894;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 100;
+    width: 220px;
+    padding: 3px 2px 4px;
+    position: absolute;
+    left: 0px;
+    bottom: 20px;
+    opacity: 0;
+    transition: all 0.2s;
+  }
+  #history .trace-history .all-time:hover .tooltip {
+    opacity: 1;
+    bottom: 25px;
+    transition: all 0.2s;
+
+  }
 </style>
 
 <body>
@@ -170,7 +292,8 @@
       <span class="cont">내용 및 검색 정보</span>
       <span class="memo">메모</span>
       <span class="state">상태</span>
-      <span class="all-time">구분</span>
+      <span class="all-time">24시간 모니터링<span class="describe">?</span><span class="tooltip">한 번 모니터링 하는 주기 시간 설정 <br> 최소 6시간 최대 720시간 (24시간 x 30일)</span></span>
+      <!--      <span class="all-time">24시간 모니터링<span class="describe" flow="up" data-html="true" tooltip="한 번 모니터링 하는 주기 시간 설정 최소 6시간 최대 720시간 (24시간 x 30일)">?</span></span>-->
       <span class="double-chk" >재유포</span>
       <button class="del-btn btn-off dels2" style="border-radius: 50%; height: 22px; margin-left: 18px; " onclick="deleteTsrunos();"></button>
       <input type="hidden" id="tsrUnoValues" name="tsrUnoValues" value="">
@@ -250,17 +373,9 @@
         <div class="area_box" style="display: block">
           <input type = "number" class="btn-off area_input" th:value="${traceHistoryList.getTsrCycleBatch()}">
           <button class="btn-off all-time all-time-btn" type = "button"  th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}" th:text="${traceHistoryList.getTsrIsBatch() ? 'OFF' : 'ON'}">OFF</button>
-
-          <p style = "font-size:0.5rem">최소 6시간, 최대 720 시간입니다.</p>
         </div>
-        <!--<button type="button" class="btn-off all-time" onclick="alert('작업 중입니다.'); return false;" th:value="${traceHistoryList.getTsrUno()}">24시간 모니터링</button>-->
-        <!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()!=12999}" th:value="${traceHistoryList.getTsrUno()}">0건</button>-->
-        <!--      <button class="btn-off double-chk" th:if="${traceHistoryList.getTsrUno()==12999}" th:value="${traceHistoryList.getTsrUno()}">1건</button>  th:value="${traceHistoryList.getTsr5tsruno()}"  -->
-        <!--<button class="btn-off double-chk" th:value="${traceHistoryList.getTsrUno()}" th:tsiuno="${traceHistoryList.getTsiUno()}" th:keyword="${traceHistoryList.getTsiKeyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>-->
         <button class="btn-off double-chk" style="margin-left: 5px;" th:tsiUno="${traceHistoryList.getTsi3tsiuno()}" th:tsiKeyword="${traceHistoryList.getTsi3Keyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
         <button style="border-radius: 50%; height: 22px; margin-left: 15px; " class="del-btn btn-off del2" id="traceTsrUno" onclick="traceDelete();" th:value="${traceHistoryList.getTsrUno()}">삭제</button>
-        <!--<button class="btn-off double-chk" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'" th:onclick="|location.href='@{/notice(tsiUno=${traceHistoryList.getTsi3tsiuno()}, tsiKeyword=${traceHistoryList.getTsi3Keyword()} )}'|">0건</button>-->
-        <!--window.location.href = '/notice?'+'&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno"); -->
       </li>
       <li th:if="${traceHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
     </ul>
@@ -299,9 +414,6 @@
   })
 
   function InfoList(tsiUno){
-    // alert("tsiUno: "+tsiUno.value)
-    console.dir(tsiUno.value)
-
     var xhr = new XMLHttpRequest();
     //요청을 보낼 방식, 주소, 비동기여부 설정
     xhr.open('GET', 'result-detail?tsiUno=' + tsiUno.value, true);
@@ -697,13 +809,17 @@
   });
 
   // 24시간 모니터링 버튼 활성화
-  // 24시간 모니터링 버튼 활성화
   const allTime = document.querySelectorAll(".all-time");
   for (let i = 0; i < allTime.length; i++) {
     allTime[i].addEventListener('click', function () {
-
       var inputValue = this.parentElement.querySelector('.area_input').value;
+
+      if(inputValue < 6){
+        alert("최소 6시간부터 설정 가능합니다.");
+        return false;
+      }
       this.disabled = true;
+
       //XMLHttpRequest 객체 생성
       var xhr = new XMLHttpRequest();
       //요청을 보낼 방식, 주소, 비동기여부 설정
@@ -716,10 +832,9 @@
           this.classList.toggle('active');
 
           location.reload();
-        } else {  //통신 실패
-          //this.classList.toggle('active');
+        } else {
+          console.log('통신 실패')
         }
-
         this.disabled = false;
       }
     })
@@ -728,7 +843,6 @@
   // 추적이력 삭제 단건
   function traceDelete(){
     const delBtn = document.getElementById('traceTsrUno');
-    // alert(delBtn.value);
     if((confirm("삭제하시겠습니까?"))) {
       $.ajax({
         url: "/deleteTsrUno",
@@ -740,7 +854,6 @@
           alert("삭제가 완료되었습니다.");
           window.location.href="/history";
         }, error:function(){
-          // alert("실패")
           console.log("통신 실패");
         }
       })
@@ -777,7 +890,6 @@
           alert("삭제가 완료되었습니다.");
           window.location.href="/history";
         }, error:function(){
-          // alert("실패")
           console.log("통신 실패");
         }
       })
