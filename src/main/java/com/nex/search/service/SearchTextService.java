@@ -126,6 +126,26 @@ public class SearchTextService {
         return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey(), searchImageUrl, engine, null);
     }
 
+    public String getRerverseImageUrl(SearchInfoEntity searchInfoEntity, String finalTextGl1, int index){
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+        String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
+        searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
+
+        String url = sitProperties.getTextUrl()
+                + "?gl=" + finalTextGl1
+                + "&no_cache=" + sitProperties.getTextNocache()
+                + "&api_key=" + configData.getSerpApiKey()
+                + "&safe=off"
+                + "&filter=0"
+                + "&nfpr=0"
+                + "&start=" + String.valueOf(index * 10)
+                // + "&tbm=" + textTbm
+                + "&engine=google_reverse_image"
+                + "&image_url=" + searchImageUrl;
+
+        return url;
+    }
+
     public String getYandexImageUrl(SearchInfoEntity searchInfoEntity, String textGl, int index){
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
         String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();

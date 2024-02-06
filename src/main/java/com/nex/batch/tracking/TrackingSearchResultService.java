@@ -494,7 +494,7 @@ public class TrackingSearchResultService{
             }
             case CommonCode.searchTypeImage -> {
                 switch (ssInfo.getSsName()) {
-                    case CommonCode.SerpAPIEngineGoogleReverseImage -> { url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo, CommonCode.SerpAPIEngineGoogleReverseImage); }
+                    case CommonCode.SerpAPIEngineGoogleReverseImage -> { url = searchTextService.getRerverseImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo); }
                     case CommonCode.SerpAPIEngineGoogleLens -> { if(pageNo == 0) url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), null, CommonCode.SerpAPIEngineGoogleLens); }
                     case CommonCode.SerpAPIEngineYandexImage -> { if (!ncInfo.getNcCode().equals("vn")) { url = searchTextService.getYandexImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo); } }
                 }
@@ -519,7 +519,7 @@ public class TrackingSearchResultService{
                     case CommonCode.SerpAPIEngineNaver -> {
                         if (cntNation == 0) { url = searchTextNaverService.getUrl(tsrSns, tsiKeyword, pageNo); }
                     }
-                    case CommonCode.SerpAPIEngineGoogleReverseImage -> { url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo, CommonCode.SerpAPIEngineGoogleReverseImage); }
+                    case CommonCode.SerpAPIEngineGoogleReverseImage -> { url = searchTextService.getRerverseImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo); }
                     case CommonCode.SerpAPIEngineGoogleLens -> { if(pageNo == 0) url = searchTextService.getImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), null, CommonCode.SerpAPIEngineGoogleLens); }
                     case CommonCode.SerpAPIEngineYandexImage -> { if (!ncInfo.getNcCode().equals("vn")) { url = searchTextService.getYandexImageUrl(searchInfoEntity, ncInfo.getNcCode().toLowerCase(), pageNo); } }
                 }
