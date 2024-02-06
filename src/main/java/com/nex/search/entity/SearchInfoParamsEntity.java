@@ -19,6 +19,7 @@ public class SearchInfoParamsEntity {
     @Basic @Column(name="TSI_IS_NATION_VN") private int tsiIsNationVn;
 
     @Basic @Column(name="TSI_IS_ENGINE_GOOGLE") private int tsiIsEngineGoogle;
+    @Basic @Column(name="TSI_IS_ENGINE_GOOGLE_REVERSE_IMAGE") private int tsiIsEngineGoogleReverseImage;
     @Basic @Column(name="TSI_IS_ENGINE_YOUTUBE") private int tsiIsEngineYoutube;
     @Basic @Column(name="TSI_IS_ENGINE_GOOGLE_LENS") private int tsiIsEngineGoogleLens;
     @Basic @Column(name="TSI_IS_ENGINE_BAIDU") private int tsiIsEngineBaidu;
@@ -26,5 +27,6 @@ public class SearchInfoParamsEntity {
     @Basic @Column(name="TSI_IS_ENGINE_DUCKDUCKGO") private int tsiIsEngineDuckduckgo;
     @Basic @Column(name="TSI_IS_ENGINE_YAHOO") private int tsiIsEngineYahoo;
     @Basic @Column(name="TSI_IS_ENGINE_YANDEX") private int tsiIsEngineYandex;
+    @Basic @Column(name="TSI_IS_ENGINE_YANDEX_IMAGE") private int tsiIsEngineYandexImage;
     @Basic @Column(name="TSI_IS_ENGINE_NAVER") private int tsiIsEngineNaver;
 }

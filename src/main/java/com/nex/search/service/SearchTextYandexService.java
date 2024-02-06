@@ -131,7 +131,7 @@ public class SearchTextYandexService {
                 + "?engine=yandex"
                 + "&text="+tsiKeywordHiddenValue
                 + "&api_key=" + configData.getSerpApiKey()
-                + "&p="+(index + 1)
+                + "&p="+index
                 + "&lr="+txtNation;
 
         return url;
@@ -162,7 +162,7 @@ public class SearchTextYandexService {
                     + "?engine=yandex"
                     + "&text="+tsiKeywordHiddenValue
                     + "&api_key=" + configData.getSerpApiKey()
-                    + "&p="+(index + 1)
+                    + "&p="+index
                     + "&lr="+txtNation;
 
 

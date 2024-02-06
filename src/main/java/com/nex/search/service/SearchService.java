@@ -1243,6 +1243,7 @@ public class SearchService {
                 for (SerpServicesEntity item : ssList) {
                     switch (item.getSsName()) {
                         case CommonCode.SerpAPIEngineGoogle -> sipEntity.setTsiIsEngineGoogle(1);
+                        case CommonCode.SerpAPIEngineGoogleReverseImage -> sipEntity.setTsiIsEngineGoogleReverseImage(1);
                         case CommonCode.SerpAPIEngineGoogleLens -> sipEntity.setTsiIsEngineGoogleLens(1);
                         case CommonCode.SerpAPIEngineYoutube -> sipEntity.setTsiIsEngineYoutube(1);
                         case CommonCode.SerpAPIEngineBaidu -> sipEntity.setTsiIsEngineBaidu(1);
@@ -1250,6 +1251,7 @@ public class SearchService {
                         case CommonCode.SerpAPIEngineDuckduckgo -> sipEntity.setTsiIsEngineDuckduckgo(1);
                         case CommonCode.SerpAPIEngineYahoo -> sipEntity.setTsiIsEngineYahoo(1);
                         case CommonCode.SerpAPIEngineYandex -> sipEntity.setTsiIsEngineYandex(1);
+                        case CommonCode.SerpAPIEngineYandexImage -> sipEntity.setTsiIsEngineYandexImage(1);
                         case CommonCode.SerpAPIEngineNaver -> sipEntity.setTsiIsEngineNaver(1);
                     }
                 }

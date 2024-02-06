@@ -117,14 +117,12 @@ public class SearchTextYahooService {
         else if (Consts.FACEBOOK.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
         else if (Consts.TWITTER.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
 
-        String url = sitProperties.getTextUrl()
-                + "?engine=yahoo"
-                + "&p="+tsiKeywordHiddenValue
-                + "&api_key=" + configData.getSerpApiKey()
-                + "&b="+(index*10)+1
-                + "&vc="+textGl;
-
-        return url;
+        return sitProperties.getTextUrl()
+                    + "?engine=yahoo"
+                    + "&p="+tsiKeywordHiddenValue
+                    + "&api_key=" + configData.getSerpApiKey()
+                    + "&b=" + (((index+1)*10)+1)
+                    + "&vc="+textGl;
     }
 
     public <INFO, RESULT> List<RESULT> searchText(int index, SearchInfoDto searchInfoDto, String tsrSns, String textGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, SearchInfoEntity siEntity) throws Exception {
@@ -142,7 +140,7 @@ public class SearchTextYahooService {
                         + "?engine=yahoo"
                         + "&p="+tsiKeywordHiddenValue
                         + "&api_key=" + configData.getSerpApiKey()
-                        + "&b="+(index*10)+1
+                        + "&b="+(index*10+1)
                         + "&vc="+textGl;
 
 //            log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
