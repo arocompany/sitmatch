@@ -21,9 +21,6 @@ public class NationService {
     public String nationUpdate(int ncUno, int ncIsActive){
         try{
             int data = nationCodeRepository.nationUpdate(ncUno, ncIsActive);
-
-            log.info("result == {}", data);
-
             if(data > 0){
                 return "success";
             }
@@ -38,9 +35,6 @@ public class NationService {
     public String nationAllUpdate(int ncIsActive){
         try{
             int data = nationCodeRepository.nationAllUpdate(ncIsActive);
-
-            log.info("result == {}", data);
-
             if(data > 0){
                 return "success";
             }

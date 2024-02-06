@@ -35,7 +35,7 @@ public class UserService {
     private final EncryptUtil encryptUtil = new EncryptUtil();
 
     public String memberSignUp(UserEntity userInfo) {
-        if(userRepository.countByUserId(userInfo.getUserId()) > 0) { // 아이디 중복 여부 확인
+        if (userRepository.countByUserId(userInfo.getUserId()) > 0) { // 아이디 중복 여부 확인
             return "중복된 아이디 입니다.";
         }
 /*
@@ -78,19 +78,19 @@ public class UserService {
     public String modifyUserInfo(UserEntity userInfo) {
         UserEntity user = userRepository.findByUserUno(userInfo.getUserUno());
 //            if(StringUtils.isNotBlank(userInfo.getUserId())) user.setUserId((userInfo.getUserId()));      // 아이디 변경 불가
-        if(StringUtils.isNotBlank(userInfo.getUserPw())) {
+        if (StringUtils.isNotBlank(userInfo.getUserPw())) {
             user.setUserPw(encryptUtil.getEncrypt(userInfo.getUserPw(), encryptUtil.getSalt()));
             user.setPwModifyDt((Timestamp.valueOf(LocalDateTime.now())));                                               // 비밀번호 변경 시간 업데이트
         }
-        if(StringUtils.isNotBlank(userInfo.getUserNm())) user.setUserNm((userInfo.getUserNm()));
-        if(StringUtils.isNotBlank(userInfo.getOrgNm())) user.setOrgNm((userInfo.getOrgNm()));
-        if(StringUtils.isNotBlank(userInfo.getUserPosition())) user.setUserPosition((userInfo.getUserPosition()));
-        if(StringUtils.isNotBlank(userInfo.getEmailId())) user.setEmailId((userInfo.getEmailId()));
-        if(StringUtils.isNotBlank(userInfo.getEmailDomain())) user.setEmailDomain((userInfo.getEmailDomain()));
-        if(StringUtils.isNotBlank(userInfo.getPhoneNum1())) user.setPhoneNum1((userInfo.getPhoneNum1()));
-        if(StringUtils.isNotBlank(userInfo.getPhoneNum2())) user.setPhoneNum2((userInfo.getPhoneNum2()));
-        if(StringUtils.isNotBlank(userInfo.getPhoneNum3())) user.setPhoneNum3((userInfo.getPhoneNum3()));
-        if(StringUtils.isNotBlank(userInfo.getBizDetail())) user.setBizDetail((userInfo.getBizDetail()));
+        if (StringUtils.isNotBlank(userInfo.getUserNm())) user.setUserNm((userInfo.getUserNm()));
+        if (StringUtils.isNotBlank(userInfo.getOrgNm())) user.setOrgNm((userInfo.getOrgNm()));
+        if (StringUtils.isNotBlank(userInfo.getUserPosition())) user.setUserPosition((userInfo.getUserPosition()));
+        if (StringUtils.isNotBlank(userInfo.getEmailId())) user.setEmailId((userInfo.getEmailId()));
+        if (StringUtils.isNotBlank(userInfo.getEmailDomain())) user.setEmailDomain((userInfo.getEmailDomain()));
+        if (StringUtils.isNotBlank(userInfo.getPhoneNum1())) user.setPhoneNum1((userInfo.getPhoneNum1()));
+        if (StringUtils.isNotBlank(userInfo.getPhoneNum2())) user.setPhoneNum2((userInfo.getPhoneNum2()));
+        if (StringUtils.isNotBlank(userInfo.getPhoneNum3())) user.setPhoneNum3((userInfo.getPhoneNum3()));
+        if (StringUtils.isNotBlank(userInfo.getBizDetail())) user.setBizDetail((userInfo.getBizDetail()));
 
         user.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
 
@@ -163,7 +163,7 @@ public class UserService {
         return userRepository.userHistExcel(fromDate, toDate2);
     }
 
-    public void excelUserHistory(HttpServletResponse response,List<LoginExcelDto> loginExcelDtoList) throws IOException {
+    public void excelUserHistory(HttpServletResponse response, List<LoginExcelDto> loginExcelDtoList) throws IOException {
         Workbook wb = new XSSFWorkbook();
 
         Sheet sheet = wb.createSheet("사용자 접속 이력");
@@ -171,17 +171,17 @@ public class UserService {
         Cell cell;
         int rowNum = 0;
 
-        row=sheet.createRow(rowNum++);
-        cell=row.createCell(0);
+        row = sheet.createRow(rowNum++);
+        cell = row.createCell(0);
         cell.setCellValue("사용자 아이디");
 
-        cell=row.createCell(1);
+        cell = row.createCell(1);
         cell.setCellValue("사용자 이름");
 
-        cell=row.createCell(2);
+        cell = row.createCell(2);
         cell.setCellValue("방문날짜");
 
-        cell=row.createCell(3);
+        cell = row.createCell(3);
         cell.setCellValue("방문횟수");
 
         for (LoginExcelDto loginExcelDto : loginExcelDtoList) {
@@ -208,26 +208,24 @@ public class UserService {
         fileName = setFileName(fileName);
 
         response.setContentType("ms-vnd/excel");
-        response.setHeader("Content-Disposition", "attachment;filename="+fileName+".xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xlsx");
 
         ServletOutputStream out = response.getOutputStream();
         wb.write(out);
         out.flush();
-        // wb.close();
-
     }
 
     public void prcuseExcel(HttpServletResponse response
-                , List<SearchInfoExcelDto> searchInfoExcelDtoList
-                , List<TraceHistExcelDto> traceHistExcelDtoList
-                , List<SearchResultExcelDto> searchResultExcelDtoList
-                , List<NoticeListExcelDto> noticeListExcelDtoList
-                , List<LoginExcelDto> loginExcelDtoList
-                , List<DateKeywordExcelDto> dateSearchInfoResultExcelList
-                , List<MonitoringHistExcelDto> dateMonitoringExcelList
-                , List<DeleteReqHistExcelDto> dateMonitoringReqExcelList
-                , List<DeleteComptHistExcelDto> dateMonitoringComptExcelList
-                , List<AllTimeCntExcelDto> dateAlltimeMonitoringExcelList) throws IOException {
+            , List<SearchInfoExcelDto> searchInfoExcelDtoList
+            , List<TraceHistExcelDto> traceHistExcelDtoList
+            , List<SearchResultExcelDto> searchResultExcelDtoList
+            , List<NoticeListExcelDto> noticeListExcelDtoList
+            , List<LoginExcelDto> loginExcelDtoList
+            , List<DateKeywordExcelDto> dateSearchInfoResultExcelList
+            , List<MonitoringHistExcelDto> dateMonitoringExcelList
+            , List<DeleteReqHistExcelDto> dateMonitoringReqExcelList
+            , List<DeleteComptHistExcelDto> dateMonitoringComptExcelList
+            , List<AllTimeCntExcelDto> dateAlltimeMonitoringExcelList) throws IOException {
 
         log.info("prcuseExcel 진입");
 
@@ -239,19 +237,19 @@ public class UserService {
         int rowNum = 0;
 
         row = infoSheet.createRow(rowNum++);
-        cell=row.createCell(0);
+        cell = row.createCell(0);
         cell.setCellValue("화면명");
 
-        cell=row.createCell(1);
+        cell = row.createCell(1);
         cell.setCellValue("사용자 이름");
 
-        cell=row.createCell(2);
+        cell = row.createCell(2);
         cell.setCellValue("사용자 아이디");
 
-        cell=row.createCell(3);
+        cell = row.createCell(3);
         cell.setCellValue("방문 날짜");
 
-        cell=row.createCell(4);
+        cell = row.createCell(4);
         cell.setCellValue("방문 횟수");
 
         for (SearchInfoExcelDto searchInfoExcelDto : searchInfoExcelDtoList) {
@@ -398,21 +396,21 @@ public class UserService {
             }
         }
 
-            rowNum = 0;
-            Sheet loginHistory = wb.createSheet("사용자 접속 이력");
-            row = loginHistory.createRow(rowNum++);
+        rowNum = 0;
+        Sheet loginHistory = wb.createSheet("사용자 접속 이력");
+        row = loginHistory.createRow(rowNum++);
 
-            cell=row.createCell(0);
-            cell.setCellValue("사용자 아이디");
+        cell = row.createCell(0);
+        cell.setCellValue("사용자 아이디");
 
-            cell=row.createCell(1);
-            cell.setCellValue("사용자 이름");
+        cell = row.createCell(1);
+        cell.setCellValue("사용자 이름");
 
-            cell=row.createCell(2);
-            cell.setCellValue("방문날짜");
+        cell = row.createCell(2);
+        cell.setCellValue("방문날짜");
 
-            cell=row.createCell(3);
-            cell.setCellValue("방문횟수");
+        cell = row.createCell(3);
+        cell.setCellValue("방문횟수");
 
         for (LoginExcelDto loginExcelDto : loginExcelDtoList) {
             row = loginHistory.createRow(rowNum++);
@@ -435,34 +433,22 @@ public class UserService {
 
         }
 
-            rowNum = 0;
-            Sheet keywordHistory = wb.createSheet("기간별 검색 키워드 현황");
-            row = keywordHistory.createRow(rowNum++);
+        rowNum = 0;
+        Sheet keywordHistory = wb.createSheet("기간별 검색 키워드 현황");
+        row = keywordHistory.createRow(rowNum++);
 
-//            cell=row.createCell(0);
-//            cell.setCellValue("사용자 이름");
-//
-//            cell=row.createCell(1);
-//            cell.setCellValue("사용자 아이디");
+        cell = row.createCell(0);
+        cell.setCellValue("검색 횟수");
 
-            cell=row.createCell(0);
-            cell.setCellValue("검색 횟수");
+        cell = row.createCell(1);
+        cell.setCellValue("키워드 결과 갯수");
 
-            cell=row.createCell(1);
-            cell.setCellValue("키워드 결과 갯수");
-
-            cell=row.createCell(2);
-            cell.setCellValue("검색 날짜");
+        cell = row.createCell(2);
+        cell.setCellValue("검색 날짜");
 
 
         for (DateKeywordExcelDto dateKeywordExcelDto : dateSearchInfoResultExcelList) {
             row = keywordHistory.createRow(rowNum++);
-
-//            cell = row.createCell(0);
-//            cell.setCellValue(dateKeywordExcelDto.getUserNm());
-//
-//            cell = row.createCell(1);
-//            cell.setCellValue(dateKeywordExcelDto.getUserId());
 
             cell = row.createCell(0);
             cell.setCellValue(dateKeywordExcelDto.getKeywordCnt());
@@ -472,27 +458,26 @@ public class UserService {
 
             cell = row.createCell(2);
             cell.setCellValue(dateKeywordExcelDto.getResultDate());
-
         }
 
-            rowNum = 0;
-            Sheet monitoringCnt = wb.createSheet("기간별 모니터링 현황");
-            row = monitoringCnt.createRow(rowNum++);
+        rowNum = 0;
+        Sheet monitoringCnt = wb.createSheet("기간별 모니터링 현황");
+        row = monitoringCnt.createRow(rowNum++);
 
-            cell=row.createCell(0);
-            cell.setCellValue("화면명");
+        cell = row.createCell(0);
+        cell.setCellValue("화면명");
 
-            cell=row.createCell(1);
-            cell.setCellValue("사용자 이름");
+        cell = row.createCell(1);
+        cell.setCellValue("사용자 이름");
 
-            cell=row.createCell(2);
-            cell.setCellValue("사용자 아이디");
+        cell = row.createCell(2);
+        cell.setCellValue("사용자 아이디");
 
-            cell=row.createCell(3);
-            cell.setCellValue("요청 갯수");
+        cell = row.createCell(3);
+        cell.setCellValue("요청 갯수");
 
-            cell=row.createCell(4);
-            cell.setCellValue("요청 날짜");
+        cell = row.createCell(4);
+        cell.setCellValue("요청 날짜");
 
         for (MonitoringHistExcelDto monitoringHistExcelDto : dateMonitoringExcelList) {
             row = monitoringCnt.createRow(rowNum++);
@@ -582,24 +567,24 @@ public class UserService {
             }
         }
 
-            rowNum = 0;
-            Sheet allTimeMonitoringCnt = wb.createSheet("기간별 24시 모니터링 현황");
-            row = allTimeMonitoringCnt.createRow(rowNum++);
+        rowNum = 0;
+        Sheet allTimeMonitoringCnt = wb.createSheet("기간별 24시 모니터링 현황");
+        row = allTimeMonitoringCnt.createRow(rowNum++);
 
-            cell = row.createCell(0);
-            cell.setCellValue("사용자 이름");
+        cell = row.createCell(0);
+        cell.setCellValue("사용자 이름");
 
-            cell = row.createCell(1);
-            cell.setCellValue("사용자 아이디");
+        cell = row.createCell(1);
+        cell.setCellValue("사용자 아이디");
 
-            cell = row.createCell(2);
-            cell.setCellValue("24시 모니터링한 갯수");
+        cell = row.createCell(2);
+        cell.setCellValue("24시 모니터링한 갯수");
 
-            cell = row.createCell(3);
-            cell.setCellValue("24시 모니터링한 갯수");
+        cell = row.createCell(3);
+        cell.setCellValue("24시 모니터링한 갯수");
 
-            cell = row.createCell(4);
-            cell.setCellValue("24시 모니터링한 날짜");
+        cell = row.createCell(4);
+        cell.setCellValue("24시 모니터링한 날짜");
 
         for (AllTimeCntExcelDto allTimeCntExcelDto : dateAlltimeMonitoringExcelList) {
             row = allTimeMonitoringCnt.createRow(rowNum++);
@@ -624,7 +609,7 @@ public class UserService {
         fileName = setFileName(fileName);
 
         response.setContentType("ms-vnd/excel");
-        response.setHeader("Content-Disposition", "attachment;filename="+fileName+".xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xlsx");
 
         ServletOutputStream out = response.getOutputStream();
         wb.write(out);
@@ -656,19 +641,16 @@ public class UserService {
         int rowNum = 0;
 
         row = infoSheet.createRow(rowNum++);
-        cell=row.createCell(0);
+        cell = row.createCell(0);
         cell.setCellValue("화면명");
 
-        cell=row.createCell(1);
+        cell = row.createCell(1);
         cell.setCellValue("사용자 이름");
 
-        cell=row.createCell(2);
+        cell = row.createCell(2);
         cell.setCellValue("사용자 아이디");
 
-//        cell=row.createCell(3);
-//        cell.setCellValue("방문 날짜");
-
-        cell=row.createCell(3);
+        cell = row.createCell(3);
         cell.setCellValue("방문 횟수");
 
         for (SearchInfoExcelDto searchInfoExcelDto : searchInfoExcelDtoList) {
@@ -684,9 +666,6 @@ public class UserService {
                 cell = row.createCell(2);
                 cell.setCellValue(searchInfoExcelDto.getUserId());
 
-//                cell = row.createCell(3);
-//                cell.setCellValue(searchInfoExcelDto.getDate());
-
                 cell = row.createCell(3);
                 cell.setCellValue(searchInfoExcelDto.getCnt());
             } else {
@@ -698,9 +677,6 @@ public class UserService {
 
                 cell = row.createCell(2);
                 cell.setCellValue(searchInfoExcelDto.getUserId());
-
-//                cell = row.createCell(3);
-//                cell.setCellValue(searchInfoExcelDto.getDate());
 
                 cell = row.createCell(3);
                 cell.setCellValue(searchInfoExcelDto.getCnt());
@@ -720,9 +696,6 @@ public class UserService {
                 cell = row.createCell(2);
                 cell.setCellValue(traceHistExcelDto.getUserId());
 
-//                cell = row.createCell(3);
-//                cell.setCellValue(traceHistExcelDto.getDate());
-
                 cell = row.createCell(3);
                 cell.setCellValue(traceHistExcelDto.getCnt());
             } else {
@@ -735,14 +708,9 @@ public class UserService {
                 cell = row.createCell(2);
                 cell.setCellValue(traceHistExcelDto.getUserId());
 
-//                cell = row.createCell(3);
-//                cell.setCellValue(traceHistExcelDto.getDate());
-
                 cell = row.createCell(3);
                 cell.setCellValue(traceHistExcelDto.getCnt());
-
             }
-
         }
 
         for (SearchResultExcelDto searchResultExcelDto : searchResultExcelDtoList) {
@@ -758,9 +726,6 @@ public class UserService {
                 cell = row.createCell(2);
                 cell.setCellValue(searchResultExcelDto.getUserId());
 
-//                cell = row.createCell(3);
-//                cell.setCellValue(searchResultExcelDto.getDate());
-
                 cell = row.createCell(3);
                 cell.setCellValue(searchResultExcelDto.getCnt());
             } else {
@@ -772,9 +737,6 @@ public class UserService {
 
                 cell = row.createCell(2);
                 cell.setCellValue(searchResultExcelDto.getUserId());
-
-//                cell = row.createCell(3);
-//                cell.setCellValue(searchResultExcelDto.getDate());
 
                 cell = row.createCell(3);
                 cell.setCellValue(searchResultExcelDto.getCnt());
@@ -794,9 +756,6 @@ public class UserService {
             cell = row.createCell(2);
             cell.setCellValue(noticeListExcelDto.getUserId());
 
-//            cell = row.createCell(3);
-//            cell.setCellValue(noticeListExcelDto.getDate());
-
             cell = row.createCell(3);
             cell.setCellValue(noticeListExcelDto.getCnt());
         }
@@ -805,54 +764,42 @@ public class UserService {
         Sheet loginHistory = wb.createSheet("사용자 접속 현황");
         row = loginHistory.createRow(rowNum++);
 
-        cell=row.createCell(0);
+        cell = row.createCell(0);
         cell.setCellValue("사용자 아이디");
 
-        cell=row.createCell(1);
+        cell = row.createCell(1);
         cell.setCellValue("사용자 이름");
 
-//        cell=row.createCell(2);
-//        cell.setCellValue("방문날짜");
-
-        cell=row.createCell(2);
+        cell = row.createCell(2);
         cell.setCellValue("방문횟수");
 
         for (LoginExcelDto loginExcelDto : loginExcelDtoList) {
             row = loginHistory.createRow(rowNum++);
             cell = row.createCell(0);
             cell.setCellValue(loginExcelDto.getUserId());
-            log.info("getUserId" + loginExcelDto.getUserId());
 
             cell = row.createCell(1);
             cell.setCellValue(loginExcelDto.getUserNm());
-            log.info("getUserNm " + loginExcelDto.getUserNm());
-
-//            cell = row.createCell(2);
-//            cell.setCellValue(loginExcelDto.getDate());
-//            log.info("getDate" + loginExcelDto.getDate());
 
             cell = row.createCell(2);
             cell.setCellValue(loginExcelDto.getCnt());
-            log.info("getCnt" + loginExcelDto.getCnt());
         }
 
         rowNum = 0;
         Sheet userSearchCntList = wb.createSheet("사용자별 검색 키워드 현황");
         row = userSearchCntList.createRow(rowNum++);
 
-        cell=row.createCell(0);
+        cell = row.createCell(0);
         cell.setCellValue("사용자 이름");
 
-        cell=row.createCell(1);
+        cell = row.createCell(1);
         cell.setCellValue("사용자 아이디");
 
-        cell=row.createCell(2);
+        cell = row.createCell(2);
         cell.setCellValue("키워드 검색 횟수");
 
-        cell=row.createCell(3);
+        cell = row.createCell(3);
         cell.setCellValue("검색 갯수 총결과");
-//        cell=row.createCell(4);
-//        cell.setCellValue("검색 날짜");
 
         for (SearchInfoExcelDto searchInfoExcelDto : userKeywordCntExcelList) {
             row = userSearchCntList.createRow(rowNum++);
@@ -867,30 +814,23 @@ public class UserService {
 
             cell = row.createCell(3);
             cell.setCellValue(searchInfoExcelDto.getCnt());
-
-//            cell = row.createCell(4);
-//            cell.setCellValue(searchInfoExcelDto.getDate());
-
         }
 
         rowNum = 0;
         Sheet userMonitoringCntList = wb.createSheet("사용자별 모니터링 현황");
         row = userMonitoringCntList.createRow(rowNum++);
 
-        cell=row.createCell(0);
+        cell = row.createCell(0);
         cell.setCellValue("화면명");
 
-        cell=row.createCell(1);
+        cell = row.createCell(1);
         cell.setCellValue("사용자 이름");
 
-        cell=row.createCell(2);
+        cell = row.createCell(2);
         cell.setCellValue("사용자 아이디");
 
-        cell=row.createCell(3);
+        cell = row.createCell(3);
         cell.setCellValue("작업 횟수");
-
-//        cell=row.createCell(4);
-//        cell.setCellValue("작업 날짜");
 
         for (MonitoringHistExcelDto monitoringHistExcelDto : userMonitoringExcelList) {
             row = userMonitoringCntList.createRow(rowNum++);
@@ -906,10 +846,6 @@ public class UserService {
 
                 cell = row.createCell(3);
                 cell.setCellValue(monitoringHistExcelDto.getMonitoringCnt());
-
-//                cell = row.createCell(4);
-//                cell.setCellValue(monitoringHistExcelDto.getMonitoringDate());
-
             } else {
                 cell = row.createCell(0);
                 cell.setCellValue("");
@@ -922,10 +858,6 @@ public class UserService {
 
                 cell = row.createCell(3);
                 cell.setCellValue(monitoringHistExcelDto.getMonitoringCnt());
-
-//                cell = row.createCell(4);
-//                cell.setCellValue(monitoringHistExcelDto.getMonitoringDate());
-
             }
         }
 
@@ -940,8 +872,6 @@ public class UserService {
                 cell.setCellValue(deleteReqHistExcelDto.getUserId());
                 cell = row.createCell(3);
                 cell.setCellValue(deleteReqHistExcelDto.getDeleteRequestCnt());
-//                cell = row.createCell(4);
-//                cell.setCellValue(deleteReqHistExcelDto.getDeleteRequestDate());
             } else {
                 cell = row.createCell(0);
                 cell.setCellValue("");
@@ -952,8 +882,6 @@ public class UserService {
                 cell.setCellValue(deleteReqHistExcelDto.getUserId());
                 cell = row.createCell(3);
                 cell.setCellValue(deleteReqHistExcelDto.getDeleteRequestCnt());
-//                cell = row.createCell(4);
-//                cell.setCellValue(deleteReqHistExcelDto.getDeleteRequestDate());
             }
         }
 
@@ -967,8 +895,6 @@ public class UserService {
                 cell.setCellValue(deleteComptHistExcelDto.getUserId());
                 cell = row.createCell(3);
                 cell.setCellValue(deleteComptHistExcelDto.getDeleteComptCnt());
-//                cell = row.createCell(4);
-//                cell.setCellValue(deleteComptHistExcelDto.getDeleteComptDate());
             } else {
                 cell = row.createCell(0);
                 cell.setCellValue("");
@@ -978,8 +904,6 @@ public class UserService {
                 cell.setCellValue(deleteComptHistExcelDto.getUserId());
                 cell = row.createCell(3);
                 cell.setCellValue(deleteComptHistExcelDto.getDeleteComptCnt());
-//                cell = row.createCell(4);
-//                cell.setCellValue(deleteComptHistExcelDto.getDeleteComptDate());
             }
         }
 
@@ -987,13 +911,13 @@ public class UserService {
         Sheet userAlltimeMonitoring = wb.createSheet("24시 모니터링 그래프");
         row = userAlltimeMonitoring.createRow(rowNum++);
 
-        cell=row.createCell(0);
+        cell = row.createCell(0);
         cell.setCellValue("사용자 이름");
-        cell=row.createCell(1);
+        cell = row.createCell(1);
         cell.setCellValue("사용자 아이디");
-        cell=row.createCell(2);
+        cell = row.createCell(2);
         cell.setCellValue("24시 모니터링한 갯수");
-        cell=row.createCell(3);
+        cell = row.createCell(3);
         cell.setCellValue("24시 모니터링 결과 갯수");
 //        cell=row.createCell(4);
 //        cell.setCellValue("검색 날짜");
@@ -1008,22 +932,20 @@ public class UserService {
             cell.setCellValue(allTimeCntExcelDto.getMonitoringCnt());
             cell = row.createCell(3);
             cell.setCellValue(allTimeCntExcelDto.getMonitoringResultCnt());
-//            cell = row.createCell(4);
-//            cell.setCellValue(allTimeCntExcelDto.getMonitoringDate());
         }
 
         String fileName = "사용자별 현황";
         fileName = setFileName(fileName);
 
         response.setContentType("ms-vnd/excel");
-        response.setHeader("Content-Disposition", "attachment;filename="+fileName+".xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xlsx");
 
         ServletOutputStream out = response.getOutputStream();
         wb.write(out);
         out.flush();
     }
 
-    public String setFileName(String fileName){
+    public String setFileName(String fileName) {
         fileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
         return fileName;
     }

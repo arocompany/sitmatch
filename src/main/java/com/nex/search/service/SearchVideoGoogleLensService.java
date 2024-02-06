@@ -54,7 +54,7 @@ public class SearchVideoGoogleLensService {
     public void searchByGoogleLensVideo(String tsrSns, SearchInfoEntity insertResult, String path, String nationCode) throws Exception {
         List<String> files = processVideo(insertResult);
 
-        for(int i=0; i<files.size(); i++) {
+        for (int i = 0; i < files.size(); i++) {
             VideoInfoEntity videoInfo = new VideoInfoEntity();
             videoInfo.setTsiUno(insertResult.getTsiUno());
             videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
@@ -86,7 +86,6 @@ public class SearchVideoGoogleLensService {
                                 }
                             }).thenApply((r) -> {
                                 try {
-//                                    log.info("R" + r);
                                     //검색 결과를 SearchResult Table에 저장 및 이미지 저장
                                     return save(
                                             r
@@ -108,7 +107,9 @@ public class SearchVideoGoogleLensService {
                             .thenApplyAsync((r) -> {
                                 try {
                                     // 검색을 통해 결과 db에 적재.
-                                    if(r == null){ return null; }
+                                    if (r == null) {
+                                        return null;
+                                    }
                                     return saveImgSearch(r, insertResult);
                                 } catch (Exception e) {
                                     log.error(e.getMessage(), e);
@@ -125,7 +126,7 @@ public class SearchVideoGoogleLensService {
         }
     }
 
-    public <INFO, RESULT> List<RESULT> search(String url,String nationCode, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, int rsalUno) throws Exception {
+    public <INFO, RESULT> List<RESULT> search(String url, String nationCode, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, int rsalUno) throws Exception {
         try {
             ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
@@ -163,21 +164,21 @@ public class SearchVideoGoogleLensService {
 
                     rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
-                }else{
+                } else {
                     rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
                 }
-            }else{
+            } else {
                 rsalEntity = requestSerpApiLogService.fail(rsalEntity, resultMap.toString());
                 requestSerpApiLogService.save(rsalEntity);
             }
 
             return results != null ? results : new ArrayList<>();
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
 
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
-            if(rsalEntity != null) {
+            if (rsalEntity != null) {
                 requestSerpApiLogService.fail(rsalEntity, e.getMessage());
                 requestSerpApiLogService.save(rsalEntity);
             }
@@ -194,42 +195,27 @@ public class SearchVideoGoogleLensService {
             return null;
         }
 
-        // RestTemplate restTemplate = new RestTemplate();
         List<SearchResultEntity> sreList = new ArrayList<>();
-
-        //SearchResultEntity sre = null;
         for (RESULT result : results) {
-//            log.info("results: " + results);
-
             try {
-//                String imageUrl = getOriginalFn.apply(result);
-//                log.info("imageUrl1: "+imageUrl);
-//                if(imageUrl == null) {
-//                    imageUrl = getThumbnailFn.apply(result);
-//                }
-//                log.info("imageUrl2: "+imageUrl);
-//                if(imageUrl != null) {
-                    //검색 결과 엔티티 추출
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultEntity2(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                //검색 결과 엔티티 추출
+                SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultEntity2(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 
-                    //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
-                    if (!tsrSns.equals(sre.getTsrSns())) {
-                        continue;
-                    }
+                //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
+                if (!tsrSns.equals(sre.getTsrSns())) {
+                    continue;
+                }
 
-//                    log.info("getThumbnailFn: "+getThumbnailFn);
-
-                    int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
-                    if(cnt > 0) {
-                        log.info("file cnt === {}", cnt);
-                    }else {
-                        //이미지 파일 저장
-                        imageService.saveImageFile(insertResult.getTsiUno(), restTemplateConfig.customRestTemplate(), sre, result, getOriginalFn, getThumbnailFn, false);
-                        CommonStaticSearchUtil.setSearchResultDefault(sre);
-                        searchResultRepository.save(sre);
-                        sreList.add(sre);
-                    }
-//                }
+                int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
+                if (cnt > 0) {
+                    log.info("file cnt === {}", cnt);
+                } else {
+                    //이미지 파일 저장
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplateConfig.customRestTemplate(), sre, result, getOriginalFn, getThumbnailFn, false);
+                    CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    searchResultRepository.save(sre);
+                    sreList.add(sre);
+                }
             } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());
                 throw new IOException(e);
@@ -242,7 +228,6 @@ public class SearchVideoGoogleLensService {
     }
 
     public List<String> processVideo(SearchInfoEntity insertResult) throws Exception {
-        // List<String> files = new ArrayList<String>();
         List<String> files = new ArrayList<>();
 
         log.debug("Python Call");
@@ -277,9 +262,7 @@ public class SearchVideoGoogleLensService {
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
-        // SearchInfoEntity updateResult = saveSearchInfo(insertResult);
-        // SearchInfoEntity updateResult = saveSearchInfo_2(insertResult);
-//        saveSearchInfo_2(insertResult);
+
         CommonStaticSearchUtil.setSearchInfoDefault_2(insertResult);
         searchInfoRepository.save(insertResult);
         List<SearchResultEntity> searchResultEntity = result;

@@ -45,9 +45,6 @@ public class ImageService {
             String imageUrl = getOriginalFn.apply(result);
             imageUrl = imageUrl != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
 
-            //        log.info("imageUrl: "+imageUrl);
-
-            //2023-03-26 에러 나는 url 처리
             byte[] imageBytes;
             if (imageUrl != null) {
                 Resource resource = resourceLoader.getResource(imageUrl);
@@ -112,43 +109,24 @@ public class ImageService {
 
     public <RESULT> void saveYoutubeImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
             , RESULT result, Function<RESULT, Map<String,String>> getThumnailFn) throws IOException {
-        // Function<RESULT, String> getPositionFn,
-        // Map<String, String> imageUrl = "11".equals(sre.getTsrSns()) ? getPositionFn.apply(result) : getThumnailFn.apply(result);
         String imageUrl = getThumnailFn.apply(result).get("static");
-        // imageUrl = imageUrl.replace("%7Bstatic%3Dhttps","https");
-
-        // imageUrl = imageUrl != null ? getPositionFn.apply(result) : getThumnailFn.apply(result);
-
-        //2023-03-26 에러 나는 url 처리
         byte[] imageBytes = null;
         if (imageUrl != null) { // .toString()
             Resource resource = resourceLoader.getResource(imageUrl);
             try {
                 imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
             } catch (Exception e) {
-                //구글인 경우 IGNORE
-//                if ("11".equals(sre.getTsrSns())) {
                 imageUrl = getThumnailFn.apply(result).toString();
                 imageUrl = imageUrl.replace("%7Bstatic%3Dhttps","https");
                 resource = resourceLoader.getResource(imageUrl);
                 imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
-//                }
-//                else {
-//                    log.error(e.getMessage(), e);
-//                    System.out.println("catch else e"+e.getMessage());
-//                    throw new RuntimeException(e);
-//                }
             }
 
             // 에러가 안나도 imageBytes 가 null 일 때가 있음
             if (imageBytes == null) {
                 imageUrl = getThumnailFn.apply(result).toString();
-                log.debug("imageUrl: "+imageUrl);
-
                 resource = resourceLoader.getResource(imageUrl);
-                log.debug("resource: " + resource);
                 imageBytes = restTemplate.getForObject(imageUrl, byte[].class);
-                log.debug("imageBytes: "+  restTemplate.getForObject(imageUrl, byte[].class) );
             }
 
             if (resource.getFilename() != null && !resource.getFilename().equalsIgnoreCase("") && imageBytes != null) {
@@ -190,7 +168,6 @@ public class ImageService {
 
     public <RESULT> void saveYandexReverseImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
             , RESULT result, Function<RESULT, Map<String, Object>> getOriginalFn, Function<RESULT, Map<String, Object>> getThumbnailFn, boolean isForGoogleLens) throws IOException {
-
         String fileName = "";
 
         if(isForGoogleLens){
@@ -202,9 +179,6 @@ public class ImageService {
         String imageUrl = getOriginalFn.apply(result).get("link").toString();
         imageUrl = imageUrl != null ? getOriginalFn.apply(result).get("link").toString() : getThumbnailFn.apply(result).get("link").toString();
 
-//        log.info("imageUrl: "+imageUrl);
-
-        //2023-03-26 에러 나는 url 처리
         byte[] imageBytes;
         if (imageUrl != null) {
             Resource resource = resourceLoader.getResource(imageUrl);

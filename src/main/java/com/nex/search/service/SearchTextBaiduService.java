@@ -49,7 +49,7 @@ public class SearchTextBaiduService {
     private Boolean loop = true;
     private final RestTemplate restTemplate;
 
-    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode, String tsrSns){
+    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode, String tsrSns) {
         this.nationCode = nationCode;
         String textGl = this.nationCode;
 
@@ -57,13 +57,12 @@ public class SearchTextBaiduService {
     }
 
     public void searchSnsByText(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String textGl) {
-        int index=0;
+        int index = 0;
 
         searchByText(index, textGl, tsrSns, insertResult, searchInfoDto);
     }
 
-    public void searchByText(int index, String textGl, String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
-//        log.info("google keyword index = {}, textGl = {}, tsrSns = {}, loop = {} baidu", index, textGl, tsrSns, loop);
+    public void searchByText(int index, String textGl, String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) {
         CompletableFuture
                 .supplyAsync(() -> {
                     try {
@@ -75,7 +74,6 @@ public class SearchTextBaiduService {
                     }
                 }).thenApply((r) -> {
                     try {
-//                        log.info("r == {}", r);
                         //검색 결과를 SearchResult Table에 저장 및 이미지 저장
                         return save(
                                 r
@@ -100,26 +98,30 @@ public class SearchTextBaiduService {
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
-                }).thenRun(()-> {
+                }).thenRun(() -> {
                     // 검색결과가 있으면 다음 페이지 진입 로직
-                    if(loop == true) {
+                    if (loop == true) {
                         CompletableFutureByText(index, tsrSns, textGl, insertResult, searchInfoDto);
-                    }else{
+                    } else {
                         log.info("==== CompletableFutureByText 함수 종료 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, textGl);
                     }
                 });
     }
 
-    public String getUrl(String tsrSns, String tsiKeywordHiddenValue, int index){
+    public String getUrl(String tsrSns, String tsiKeywordHiddenValue, int index) {
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
-        if (Consts.INSTAGRAM.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
-        else if (Consts.FACEBOOK.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
-        else if (Consts.TWITTER.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
+        if (Consts.INSTAGRAM.equals(tsrSns)) {
+            tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue;
+        } else if (Consts.FACEBOOK.equals(tsrSns)) {
+            tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
+        } else if (Consts.TWITTER.equals(tsrSns)) {
+            tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue;
+        }
 
         String url = sitProperties.getTextUrl()
                 + "?engine=baidu"
-                + "&q="+ tsiKeywordHiddenValue
-                + "&pn="+ (index * 10)
+                + "&q=" + tsiKeywordHiddenValue
+                + "&pn=" + (index * 10)
                 + "&api_key=" + configData.getSerpApiKey();
 
         return url;
@@ -131,17 +133,19 @@ public class SearchTextBaiduService {
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
         int rsalUno = 0;
         try {
-            if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
-            else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
-            else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
+            if (CommonCode.snsTypeInstagram.equals(tsrSns)) {
+                tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue;
+            } else if (CommonCode.snsTypeFacebook.equals(tsrSns)) {
+                tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
+            } else if (CommonCode.snsTypeTwitter.equals(tsrSns)) {
+                tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue;
+            }
 
             String url = sitProperties.getTextUrl()
-                        + "?engine=baidu"
-                        + "&q="+ tsiKeywordHiddenValue
-                        + "&pn="+ (index * 10)
-                        + "&api_key=" + configData.getSerpApiKey();
-
-//            log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
+                    + "?engine=baidu"
+                    + "&q=" + tsiKeywordHiddenValue
+                    + "&pn=" + (index * 10)
+                    + "&api_key=" + configData.getSerpApiKey();
 
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(siEntity.getTsiUno(), url, textGl, "baidu", tsiKeywordHiddenValue, index, configData.getSerpApiKey(), null);
             requestSerpApiLogService.save(rsalEntity);
@@ -163,11 +167,11 @@ public class SearchTextBaiduService {
 
                     rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
-                }else{
+                } else {
                     rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
                 }
-            }else{
+            } else {
                 rsalEntity = requestSerpApiLogService.fail(rsalEntity, resultMap.toString());
                 requestSerpApiLogService.save(rsalEntity);
             }
@@ -176,11 +180,11 @@ public class SearchTextBaiduService {
                 loop = false;
             }
             return results != null ? results : new ArrayList<>();
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
 
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
-            if(rsalEntity != null) {
+            if (rsalEntity != null) {
                 requestSerpApiLogService.fail(rsalEntity, e.getMessage());
                 requestSerpApiLogService.save(rsalEntity);
             }
@@ -201,34 +205,22 @@ public class SearchTextBaiduService {
         List<SearchResultEntity> sreList = new ArrayList<>();
 
         for (RESULT result : results) {
-//            log.info("result item === {}", result);
             try {
-                // original값이 없으면 thumbnail값 적용
-//                String imageUrl = getOriginalFn.apply(result);
-//
-//                if(imageUrl == null) {
-//                    imageUrl = getThumbnailFn.apply(result);
-//                }
+                SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                if (!tsrSns.equals(sre.getTsrSns())) {
+                    continue;
+                }
 
-//                if(imageUrl != null) {
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
-                    if (!tsrSns.equals(sre.getTsrSns())) {
-                        continue;
-                    }
-
-                    //sre.setTsrSerpEngine("Baidu");
-
-                    int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
-                    if(cnt > 0) {
-                        log.info("file cnt === {}", cnt);
-                    }else {
-                        //이미지 파일 저장
-                        imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
-                        CommonStaticSearchUtil.setSearchResultDefault(sre);
-                        searchResultRepository.save(sre);
-                        sreList.add(sre);
-                    }
-//                }
+                int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
+                if (cnt > 0) {
+                    log.info("file cnt === {}", cnt);
+                } else {
+                    //이미지 파일 저장
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
+                    CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    searchResultRepository.save(sre);
+                    sreList.add(sre);
+                }
             } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());
                 throw new IOException(e);
@@ -242,7 +234,7 @@ public class SearchTextBaiduService {
 
     public String saveImgSearch(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
         if (result == null) {
-            loop=false;
+            loop = false;
             return null;
         }
         insertResult.setTsiStat("13");
@@ -272,9 +264,9 @@ public class SearchTextBaiduService {
         return "저장 완료";
     }
 
-    public void CompletableFutureByText(int index, String tsrSns, String textGl, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
+    public void CompletableFutureByText(int index, String tsrSns, String textGl, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto) {
         log.info("==== CompletableFutureByText(재귀 함수 진입 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, textGl);
-        if(!loop){
+        if (!loop) {
             return;
         }
 
@@ -320,15 +312,12 @@ public class SearchTextBaiduService {
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
-        }).thenRun(()->{
-            if(loop == true){
-                CompletableFutureByText(finalIndex, tsrSns, textGl, insertResult,searchInfoDto);
-            }else{
+        }).thenRun(() -> {
+            if (loop == true) {
+                CompletableFutureByText(finalIndex, tsrSns, textGl, insertResult, searchInfoDto);
+            } else {
                 log.info("==== CompletableFutureByText(재귀 함수 종료 ==== index 값: {} sns 값: {} textGl {}", finalIndex, tsrSns, textGl);
             }
         });
-
-        // results.get();
-
     }
 }

@@ -49,31 +49,38 @@ public class SearchYoutubeService {
 
     private final SitProperties sitProperties;
 
-    public void searchYoutube(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
+    public void searchYoutube(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode) {
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
         try {
-            if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
-            else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
-            else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
+            if (CommonCode.snsTypeInstagram.equals(tsrSns)) {
+                tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue;
+            } else if (CommonCode.snsTypeFacebook.equals(tsrSns)) {
+                tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
+            } else if (CommonCode.snsTypeTwitter.equals(tsrSns)) {
+                tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue;
+            }
 
             String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, null, null, null, configData.getSerpApiKey(), null, "youtube", null);
-//            log.info("youtube keyword === {}, url === {}", tsiKeywordHiddenValue, url);
 
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(insertResult.getTsiUno(), url, nationCode, "youtube", tsiKeywordHiddenValue, null, configData.getSerpApiKey(), null);
             requestSerpApiLogService.save(rsalEntity);
             int rsalUno = rsalEntity.getRslUno();
             CompletableFutureYoutubeByResult(url, tsrSns, insertResult, rsalUno);
-        } catch (Exception e){
-            log.debug("Exception: "+e);
+        } catch (Exception e) {
+            log.debug("Exception: " + e);
         }
     }
 
-    public String getUrl(String tsrSns, String tsiKeywordHiddenValue, String nationCode){
+    public String getUrl(String tsrSns, String tsiKeywordHiddenValue, String nationCode) {
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
-        if (Consts.INSTAGRAM.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
-        else if (Consts.FACEBOOK.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
-        else if (Consts.TWITTER.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
+        if (Consts.INSTAGRAM.equals(tsrSns)) {
+            tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue;
+        } else if (Consts.FACEBOOK.equals(tsrSns)) {
+            tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
+        } else if (Consts.TWITTER.equals(tsrSns)) {
+            tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue;
+        }
 
         String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, null, null, null, configData.getSerpApiKey(), null, "youtube", null);
         return url;
@@ -110,7 +117,7 @@ public class SearchYoutubeService {
                 })
                 .thenApplyAsync((r) -> {
                     try {
-                        if(r == null) return null;
+                        if (r == null) return null;
                         // 검색을 통해 결과 db에 적재.
                         return saveImgSearch(r, insertResult);
                     } catch (Exception e) {
@@ -142,22 +149,20 @@ public class SearchYoutubeService {
 
                     rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
-                }else{
+                } else {
                     rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
                 }
-            }else{
+            } else {
                 rsalEntity = requestSerpApiLogService.fail(rsalEntity, resultMap.toString());
                 requestSerpApiLogService.save(rsalEntity);
-
-//                log.error(resultMap.getStatusCode() + "");
             }
             return results != null ? results : new ArrayList<>();
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
 
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
-            if(rsalEntity != null) {
+            if (rsalEntity != null) {
                 requestSerpApiLogService.fail(rsalEntity, e.getMessage());
                 requestSerpApiLogService.save(rsalEntity);
             }
@@ -165,20 +170,18 @@ public class SearchYoutubeService {
         return null;
     }
 
-    // ,Function<RESULT, String> getThumnailFn
     public <RESULT> List<SearchResultEntity> saveYoutube(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
-            , Function<RESULT, String> getPositionFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn ,Function<RESULT, Map<String,String>> getThumnailFn) throws Exception {
+            , Function<RESULT, String> getPositionFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn, Function<RESULT, Map<String, String>> getThumnailFn) throws Exception {
         if (results == null) {
             log.info("result null");
             return null;
         }
-        // RestTemplate restTemplate = new RestTemplate();
+
         List<SearchResultEntity> sreList = new ArrayList<>();
-        //SearchResultEntity sre = null;
         for (RESULT result : results) {
             try {
                 //검색 결과 엔티티 추출
-                SearchResultEntity sre = getYoutubeResultEntity(insertResult.getTsiUno(), result, getPositionFn,getLinkFn, getTitleFn);
+                SearchResultEntity sre = getYoutubeResultEntity(insertResult.getTsiUno(), result, getPositionFn, getLinkFn, getTitleFn);
 
                 //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                 if (!tsrSns.equals(sre.getTsrSns())) {
@@ -186,9 +189,9 @@ public class SearchYoutubeService {
                 }
 
                 int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
-                if(cnt > 0) {
+                if (cnt > 0) {
                     log.info("file cnt === {}", cnt);
-                }else {
+                } else {
                     //이미지 파일 저장
                     imageService.saveYoutubeImageFile(insertResult.getTsiUno(), restTemplateConfig.customRestTemplate(), sre, result, getThumnailFn);
                     saveSearchResult(sre);
@@ -222,8 +225,7 @@ public class SearchYoutubeService {
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
-        // SearchInfoEntity updateResult = saveSearchInfo(insertResult);
-        // SearchInfoEntity updateResult = saveSearchInfo_2(insertResult);
+
         saveSearchInfo_2(insertResult);
         List<SearchResultEntity> searchResultEntity = result;
 
@@ -259,6 +261,7 @@ public class SearchYoutubeService {
         CommonStaticSearchUtil.setSearchResultDefault(sre);
         return searchResultRepository.save(sre);
     }
+
     public SearchInfoEntity saveSearchInfo_2(SearchInfoEntity sie) {
         CommonStaticSearchUtil.setSearchInfoDefault_2(sie);
         return searchInfoRepository.save(sie);

@@ -36,9 +36,6 @@ public class SearchController {
             mv = new ModelAndView("redirect:/");
             return mv;
         }
-
-        log.info("search진입 tsiKeyword {}", searchInfoEntity.getTsiKeyword());
-
         LocalDate now = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String folder = now.format(formatter);
@@ -60,7 +57,6 @@ public class SearchController {
 
     @GetMapping("/deleteTsiUnos")
     public String deleteSearchInfo(@RequestParam(value="tsiUnosValue", required=false) List<Integer> tsiUnosValue) {
-        log.info("tsiUnos: "+tsiUnosValue);
         searchService.deleteTsiUnos(tsiUnosValue);
         return "success";
     }
@@ -134,8 +130,6 @@ public class SearchController {
             if(resultFlag){
                 scheduleTasks.reStartScheduler();
             }
-
-
         }catch(Exception e){
             log.error(e.getMessage());
         }

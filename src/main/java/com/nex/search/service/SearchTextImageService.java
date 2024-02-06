@@ -50,8 +50,7 @@ public class SearchTextImageService {
     private String nationCode = "";
     private final SitProperties sitProperties;
 
-    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode, String tsrSns){
-//        String tsrSns = "17";
+    public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode, String tsrSns) {
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
@@ -63,18 +62,18 @@ public class SearchTextImageService {
     }
 
     public void searchSnsByImage(String searchImageUrl, String tsiKeywordHiddenValue, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
-        int index=0;
+        int index = 0;
         String textGl = this.nationCode;
 
         searchByImage(index, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
-        searchByText(index, textGl,tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
+        searchByText(index, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
     }
 
     public void searchByImage(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
         CompletableFuture
                 .supplyAsync(() -> {
                     try { // text기반 검색
-                        return search(index, textGl, tsiKeywordHiddenValue, searchImageUrl,searchInfoDto, tsrSns, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images, insertResult);
+                        return search(index, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -99,16 +98,17 @@ public class SearchTextImageService {
                     }
                 }).thenApplyAsync((r) -> {
                     try { // db에 적재.
-                        if(r == null) { return null; }
+                        if (r == null) {
+                            return null;
+                        }
                         return saveImgSearch(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
                     }
-                }).thenRun(()->{
-                    if(loop == true){
-                        log.info("loop == true 진입: " + loop);
-                        CompletableFutureByImage(index, textGl,tsiKeywordHiddenValue, searchImageUrl,searchInfoDto, tsrSns,insertResult);
+                }).thenRun(() -> {
+                    if (loop == true) {
+                        CompletableFutureByImage(index, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
                     }
                 });
     }
@@ -118,9 +118,13 @@ public class SearchTextImageService {
         try {
             ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
-            if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
-            else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
-            else if (CommonCode.snsTypeTwitter.equals(tsrSns)){ tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
+            if (CommonCode.snsTypeInstagram.equals(tsrSns)) {
+                tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue;
+            } else if (CommonCode.snsTypeFacebook.equals(tsrSns)) {
+                tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue;
+            } else if (CommonCode.snsTypeTwitter.equals(tsrSns)) {
+                tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue;
+            }
 
             String url = sitProperties.getTextUrl()
                     + "?gl=" + textGl
@@ -147,8 +151,6 @@ public class SearchTextImageService {
 
             List<RESULT> results = null;
 
-//            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
-
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("image_results", "images_results");
@@ -159,11 +161,11 @@ public class SearchTextImageService {
 
                     rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
-                }else{
+                } else {
                     rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
                 }
-            }else{
+            } else {
                 rsalEntity = requestSerpApiLogService.fail(rsalEntity, resultMap.toString());
                 requestSerpApiLogService.save(rsalEntity);
             }
@@ -171,17 +173,13 @@ public class SearchTextImageService {
             if (results == null || index >= sitProperties.getTextCountLimit() - 1) {
                 loop = false;
             }
-            //        if(index>2){ loop=false; }
-
-//            log.info("results: " + results);
-//            log.debug("search loop: " + loop);
 
             return results != null ? results : new ArrayList<>();
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
 
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
-            if(rsalEntity != null) {
+            if (rsalEntity != null) {
                 requestSerpApiLogService.fail(rsalEntity, e.getMessage());
                 requestSerpApiLogService.save(rsalEntity);
             }
@@ -201,18 +199,13 @@ public class SearchTextImageService {
         // RestTemplate restTemplate = new RestTemplate();
         List<SearchResultEntity> sreList = new ArrayList<>();
 
-        //SearchResultEntity sre = null;
         for (RESULT result : results) {
-            log.info("results: " + results);
-
             try {
-                String imageUrl = getOriginalFn.apply(result) ;
-                log.info("imageUrl1: "+imageUrl);
-                if(imageUrl == null) {
+                String imageUrl = getOriginalFn.apply(result);
+                if (imageUrl == null) {
                     imageUrl = getThumbnailFn.apply(result);
                 }
-                log.info("imageUrl2: "+imageUrl);
-                if(imageUrl != null) {
+                if (imageUrl != null) {
                     //검색 결과 엔티티 추출
                     SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 
@@ -221,13 +214,10 @@ public class SearchTextImageService {
                         continue;
                     }
 
-                    log.info("getThumbnailFn: "+getThumbnailFn);
-
                     //이미지 파일 저장
-                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn,false);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
                     searchResultRepository.save(sre);
-//                    searchService.saveSearchResult(sre);
 
                     sreList.add(sre);
                 }
@@ -253,18 +243,15 @@ public class SearchTextImageService {
         if (insertResult.getTsiImgPath() != null && !insertResult.getTsiImgPath().isEmpty()) {
             insertResult.setTsiImgPath(insertResult.getTsiImgPath().replaceAll("\\\\", "/"));
         }
-        // SearchInfoEntity updateResult = saveSearchInfo(insertResult);
-//        SearchInfoEntity updateResult = searchService.saveSearchInfo_2(insertResult);
+
         CommonStaticSearchUtil.setSearchInfoDefault_2(insertResult);
         searchInfoRepository.save(insertResult);
 
         List<SearchResultEntity> searchResultEntity = result;
 
-        //SearchJobEntity sje = null;
         for (SearchResultEntity sre : searchResultEntity) {
             try {
                 SearchJobEntity sje = CommonStaticSearchUtil.getSearchJobEntity(sre);
-//                searchService.saveSearchJob(sje);
                 CommonStaticSearchUtil.setSearchJobDefault(sje);
                 searchJobRepository.save(sje);
             } catch (JpaSystemException e) {
@@ -279,7 +266,7 @@ public class SearchTextImageService {
         return "저장 완료";
     }
 
-    public void CompletableFutureByImage(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto,  String tsrSns, SearchInfoEntity insertResult) {
+    public void CompletableFutureByImage(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
         index++;
         int finalIndex = index;
 
@@ -287,7 +274,7 @@ public class SearchTextImageService {
         CompletableFuture
                 .supplyAsync(() -> {
                     try { // text기반 검색
-                        return search(finalIndex, textGl,tsiKeywordHiddenValue, searchImageUrl, searchInfoDto,tsrSns, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images, insertResult);
+                        return search(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -313,14 +300,14 @@ public class SearchTextImageService {
                     }
                 }).thenApplyAsync((r) -> {
                     try { // 검색을 통해 결과 db에 적재.
-                        if(r == null) return null;
+                        if (r == null) return null;
                         return saveImgSearch(r, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
                     }
-                }).thenRun(()->{
-                    if(loop == true){
+                }).thenRun(() -> {
+                    if (loop == true) {
                         CompletableFutureByImage(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
                     }
                 });
@@ -363,17 +350,17 @@ public class SearchTextImageService {
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
-                }).thenRun(()->{
-                    if(loop == true){
+                }).thenRun(() -> {
+                    if (loop == true) {
                         log.info("loop 값1: " + loop);
                         CompletableFutureText(index, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
                     }
                 });
     }
 
-    public void CompletableFutureText(int index, String textGl, String tsiKeywordHiddenValue,String searchImageUrl,SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
+    public void CompletableFutureText(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
         log.info("==== CompletableFutureText(재귀 함수 진입 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, textGl);
-        if(!loop){
+        if (!loop) {
             return;
         }
 
@@ -412,9 +399,8 @@ public class SearchTextImageService {
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
-                }).thenRun(()->{
-                    if(loop == true){
-                        log.info("loop 값2: " + loop);
+                }).thenRun(() -> {
+                    if (loop == true) {
                         CompletableFutureText(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
                     }
                 });
@@ -431,44 +417,33 @@ public class SearchTextImageService {
             return null;
         }
 
-        // RestTemplate restTemplate = new RestTemplate();
         List<SearchResultEntity> sreList = new ArrayList<>();
-
-        //SearchResultEntity sre = null;
         for (RESULT result : results) {
             log.info("results: " + results);
 
             try {
-//                String imageUrl = getOriginalFn.apply(result) ;
-//                log.info("imageUrl1: "+imageUrl);
-//                if(imageUrl == null) {
-//                    imageUrl = getThumbnailFn.apply(result);
-//                }
-//                log.info("imageUrl2: "+imageUrl);
-//                if(imageUrl != null) {
-                    //검색 결과 엔티티 추출
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                //검색 결과 엔티티 추출
+                SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 
-                    //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
-                    if (!tsrSns.equals(sre.getTsrSns())) {
-                        continue;
-                    }
+                //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
+                if (!tsrSns.equals(sre.getTsrSns())) {
+                    continue;
+                }
 
-                    log.info("getThumbnailFn: "+getThumbnailFn);
+                log.info("getThumbnailFn: " + getThumbnailFn);
 
-                    int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
-                    if(cnt > 0) {
-                        log.info("file cnt === {}", cnt);
-                    }else {
-                        //이미지 파일 저장
-                        imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
-                        CommonStaticSearchUtil.setSearchResultDefault(sre);
-                        searchResultRepository.save(sre);
-                        //searchService.saveSearchResult(sre);
+                int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
+                if (cnt > 0) {
+                    log.info("file cnt === {}", cnt);
+                } else {
+                    //이미지 파일 저장
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
+                    CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    searchResultRepository.save(sre);
+                    //searchService.saveSearchResult(sre);
 
-                        sreList.add(sre);
-                    }
-//                }
+                    sreList.add(sre);
+                }
             } catch (IOException e) { // IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());
                 throw new IOException(e);
@@ -476,7 +451,6 @@ public class SearchTextImageService {
                 log.error(e.getMessage());
             }
         }
-
         return sreList;
     }
 }

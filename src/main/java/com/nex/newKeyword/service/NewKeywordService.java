@@ -1,14 +1,10 @@
 package com.nex.newKeyword.service;
 
 import com.nex.common.Consts;
-import com.nex.common.SitProperties;
 import com.nex.search.entity.NewKeywordEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.repo.NewKeywordRepository;
 import com.nex.search.repo.SearchInfoRepository;
-import com.nex.search.repo.SearchJobRepository;
-import com.nex.search.repo.SearchResultRepository;
-import com.nex.search.service.ImageService;
 import com.nex.user.entity.SessionInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.SessionAttribute;
-import org.springframework.web.client.RestTemplate;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -28,13 +23,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class NewKeywordService {
     private final SearchInfoRepository searchInfoRepository;
-    private final SearchResultRepository searchResultRepository;
-    private final SearchJobRepository searchJobRepository;
-    private final ImageService imageService;
     private final NewKeywordRepository newKeywordRepository;
-    private final SitProperties sitProperties;
     private Boolean loop = true;
-    private final RestTemplate restTemplate;
 
     public NewKeywordEntity addNewKeyword(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,String addNewKeyword) {
         NewKeywordEntity nke = new NewKeywordEntity();

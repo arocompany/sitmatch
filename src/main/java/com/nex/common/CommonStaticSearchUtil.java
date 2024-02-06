@@ -22,7 +22,6 @@ public class CommonStaticSearchUtil {
     public static <RESULT> SearchResultEntity getSearchResultGoogleReverseEntity(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
-//        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
@@ -30,9 +29,6 @@ public class CommonStaticSearchUtil {
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(getLinkFn.apply(result));
         sre.setTsrSearchValue(CommonCode.methodSerpApiTypeGoogleReverse);
-
-//        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
-        //sre.setTsrSns("11");
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
         if (CommonCode.snsTypeFacebook.equals(tsrSns) && isFacebookFn.apply(result)) {
@@ -51,7 +47,6 @@ public class CommonStaticSearchUtil {
     public static <RESULT> SearchResultEntity getSearchResultYandexReverseEntity(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, Map<String, Object>> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
-//        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
@@ -59,9 +54,6 @@ public class CommonStaticSearchUtil {
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(getLinkFn.apply(result));
         sre.setTsrSearchValue(CommonCode.methodSerpApiTypeGoogleReverse);
-
-//        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
-        //sre.setTsrSns("11");
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
         if (CommonCode.snsTypeFacebook.equals(tsrSns) && isFacebookFn.apply(result)) {
@@ -109,7 +101,6 @@ public class CommonStaticSearchUtil {
         sie.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sie.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sie.setTsiMonitoringCnt(0);
-        // sie.setTsiAlltimeMonitoring(String.valueOf(Timestamp.valueOf(LocalDateTime.now())+"   "));
         sie.setDataStatCd("10");
         sie.setSearchValue("0");
 
@@ -119,7 +110,6 @@ public class CommonStaticSearchUtil {
     }
 
     public static void setSearchInfoDefault_2(SearchInfoEntity sie) {
-        // sie.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sie.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sie.setDataStatCd("10");
     }
@@ -161,21 +151,6 @@ public class CommonStaticSearchUtil {
     public static <RESULT> SearchResultEntity getSearchResultGoogleLensEntity(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) throws IOException {
-        // log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
-
-        /*
-        String imageUrl = getOriginalFn.apply(result);
-        log.info("getSearchResultGoogleLensEntity imageUrl: "+imageUrl);
-
-        try {
-            imageUrl = googleLensImageFile(imageUrl).toString();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        log.info("imageUrl: " + imageUrl);
-*/
-
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
@@ -184,9 +159,6 @@ public class CommonStaticSearchUtil {
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(getLinkFn.apply(result));
         sre.setTsrSearchValue(CommonCode.methodSerpApiTypeGoogleLens);
-
-//        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
-        //sre.setTsrSns("11");
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
         if (CommonCode.snsTypeFacebook.equals(tsrSns) && isFacebookFn.apply(result)) {
@@ -205,7 +177,6 @@ public class CommonStaticSearchUtil {
     public static <RESULT> SearchResultEntity getSearchResultTextEntity(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
-//        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
@@ -213,9 +184,6 @@ public class CommonStaticSearchUtil {
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(getLinkFn.apply(result));
         sre.setTsrSearchValue(CommonCode.methodSerpApiTypeETC);
-
-//        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
-        //sre.setTsrSns("11");
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
         if (CommonCode.snsTypeFacebook.equals(tsrSns) && isFacebookFn.apply(result)) {
@@ -234,16 +202,12 @@ public class CommonStaticSearchUtil {
     public static <RESULT> SearchResultEntity getSearchResultEntity2(int tsiUno, String tsrSns, RESULT result
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
-//        log.info("searchResultEntity: "+getTitleFn+" getLinkFn: " + getLinkFn);
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
         sre.setTsrDownloadUrl(getOriginalFn.apply(result));
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(getLinkFn.apply(result));
-
-//        log.info("setTsrSiteUrl: " + getLinkFn.apply(result));
-        //sre.setTsrSns("11");
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
         if (CommonCode.snsTypeFacebook.equals(tsrSns) && isFacebookFn.apply(result)) {

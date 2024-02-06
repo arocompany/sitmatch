@@ -63,7 +63,6 @@ public class SearchTextBingService {
     }
 
     public void searchByText(int index, String textGl, String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
-//        log.info("google keyword index = {}, textGl = {}, tsrSns = {}, loop = {} bing", index, textGl, tsrSns, loop);
         CompletableFuture
                 .supplyAsync(() -> {
                     try {
@@ -75,7 +74,6 @@ public class SearchTextBingService {
                     }
                 }).thenApply((r) -> {
                     try {
-//                        log.info("r == {}", r);
                         //검색 결과를 SearchResult Table에 저장 및 이미지 저장
                         return save(
                                 r
@@ -146,7 +144,6 @@ public class SearchTextBingService {
                     + "&cc="+textGl.toUpperCase()
                     + "&safeSearch=off";
 
-//            log.info("keyword === {}, url === {}", tsiKeywordHiddenValue, url);
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(siEntity.getTsiUno(), url, textGl, "bing", tsiKeywordHiddenValue, index, configData.getSerpApiKey(), null);
             requestSerpApiLogService.save(rsalEntity);
             rsalUno = rsalEntity.getRslUno();
@@ -204,22 +201,11 @@ public class SearchTextBingService {
         List<SearchResultEntity> sreList = new ArrayList<>();
 
         for (RESULT result : results) {
-//            log.info("result item === {}", result);
             try {
-                // original값이 없으면 thumbnail값 적용
-//                String imageUrl = getOriginalFn.apply(result);
-//
-//                if(imageUrl == null) {
-//                    imageUrl = getThumbnailFn.apply(result);
-//                }
-
-//                if(imageUrl != null) {
                     SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
                     if (!tsrSns.equals(sre.getTsrSns())) {
                         continue;
                     }
-
-                    //sre.setTsrSerpEngine("Baidu");
                     int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
                     if(cnt > 0) {
                         log.info("file cnt === {}", cnt);
@@ -230,7 +216,6 @@ public class SearchTextBingService {
                         searchResultRepository.save(sre);
                         sreList.add(sre);
                     }
-//                }
             } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());
                 throw new IOException(e);
@@ -270,7 +255,6 @@ public class SearchTextBingService {
                 e.printStackTrace();
             }
         }
-
         return "저장 완료";
     }
 
@@ -329,8 +313,5 @@ public class SearchTextBingService {
                 log.info("==== CompletableFutureByText(재귀 함수 종료 ==== index 값: {} sns 값: {} textGl {}", finalIndex, tsrSns, textGl);
             }
         });
-
-        // results.get();
-
     }
 }

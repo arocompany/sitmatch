@@ -53,7 +53,6 @@ public class NewKeywordController {
         Map<String, Object> newKeywordInfoList = null;
 
         if(sessionInfoDto.isAdmin()) {
-            log.info("newKeyword 검색이력 진입");
             newKeywordInfoList = newKeywordService.getNewKeywordInfoList(searchPage, searchKeyword);
         } else {
             newKeywordInfoList = newKeywordService.getNewKeywordInfoList(searchPage, searchKeyword, sessionInfoDto.getUserUno());
@@ -96,7 +95,6 @@ public class NewKeywordController {
             searchInfoEntity.setTsiKeyword(newKeyword);
 
             SearchInfoEntity insertResult = newKeywordService.saveNewKeywordSearchInfo(searchInfoEntity);
-//            newKeywordService.searchByText(newKeyword, insertResult, folder);
             searchInfoDto.setTsiKeywordHiddenValue(newKeyword);
             searchService.search(insertResult, searchInfoDto, folder);
         }
@@ -106,8 +104,6 @@ public class NewKeywordController {
     @PostMapping("/add_keyword")
     public List<NewKeywordDto> add_keyword(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
             , String keyword)  {
-        log.info("keyword: "+keyword);
-
         newKeywordService.addNewKeyword(sessionInfoDto, keyword);
         return newKeywordRepository.keywordList();
     }
@@ -115,13 +111,9 @@ public class NewKeywordController {
     @GetMapping("/del_keyword")
     @ResponseBody
     public List<NewKeywordDto> del_keyword(Integer idx) {
-        log.info("idx: " + idx);
-
         NewKeywordEntity nke = newKeywordRepository.findByIdx(idx);
         nke.setKeywordStus("1");
         newKeywordRepository.save(nke);
         return newKeywordRepository.keywordList();
     }
-
-
 }

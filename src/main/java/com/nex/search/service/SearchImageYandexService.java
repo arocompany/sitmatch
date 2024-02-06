@@ -54,13 +54,11 @@ public class SearchImageYandexService {
     private final RestTemplate restTemplate;
 
     public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
-
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
         String tsrSns = "11";
         String searchImageUrl = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
-        // searchImageUrl= "http://106.254.235.202:9091/imagePath/requests/20240115/05b9343c-b1d2-48c6-ae3a-27dfd3bae972.jpg";
         this.nationCode = nationCode;
 
         searchSnsByImage(searchImageUrl, searchInfoDto, tsrSns, insertResult);
@@ -114,7 +112,6 @@ public class SearchImageYandexService {
                     }
                 }).thenRun(()->{
                     if(loop == true){
-                        log.info("loop == true 진입: " + loop);
                         CompletableFutureByImage(index, finalTextGl1,searchImageUrl,searchInfoDto, tsrSns,insertResult);
                     }
                 });
@@ -153,8 +150,6 @@ public class SearchImageYandexService {
 
             List<RESULT> results = null;
 
-//            log.debug("resultMap.getStatusCodeValue(): " + resultMap.getStatusCodeValue());
-
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 String jsonInString = mapper.writeValueAsString(resultMap.getBody());
@@ -177,12 +172,6 @@ public class SearchImageYandexService {
             if (results == null || index >= sitProperties.getTextCountLimit() - 1) {
                 loop = false;
             }
-
-            // if(index >1){ loop=false;}
-
-//            log.info("results: " + results);
-//            log.debug("search loop: " + loop);
-
             return results != null ? results : new ArrayList<>();
         }catch(Exception e){
             log.error(e.getMessage());
@@ -213,8 +202,6 @@ public class SearchImageYandexService {
 
         List<SearchResultEntity> searchResultEntity = result;
 
-
-        //SearchJobEntity sje = null;
         for (SearchResultEntity sre : searchResultEntity) {
             try {
                 SearchJobEntity sje = CommonStaticSearchUtil.getSearchJobEntity(sre);
@@ -302,40 +289,27 @@ public class SearchImageYandexService {
         // RestTemplate restTemplate = new RestTemplate();
         List<SearchResultEntity> sreList = new ArrayList<>();
 
-        //SearchResultEntity sre = null;
         for (RESULT result : results) {
-//            log.info("results: " + results);
-
             try {
-//                String imageUrl = getOriginalFn.apply(result).get("link").toString();
-//                log.info("imageUrl1: "+imageUrl);
-//                if(imageUrl == null) {
-//                    imageUrl = getThumbnailFn.apply(result).get("link").toString();
-//                }
-//                log.info("imageUrl2: "+imageUrl);
-//                if(imageUrl != null) {
-                    //검색 결과 엔티티 추출
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultYandexReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                //검색 결과 엔티티 추출
+                SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultYandexReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 
-                    //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
-                    if (!tsrSns.equals(sre.getTsrSns())) {
-                        continue;
-                    }
+                //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
+                if (!tsrSns.equals(sre.getTsrSns())) {
+                    continue;
+                }
 
-//                    log.info("getThumbnailFn: "+getThumbnailFn);
+                int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
+                if (cnt > 0) {
+                    log.info("file cnt === {}", cnt);
+                } else {
+                    //이미지 파일 저장
+                    imageService.saveYandexReverseImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
+                    CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    searchResultRepository.save(sre);
 
-                    int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
-                    if(cnt > 0) {
-                        log.info("file cnt === {}", cnt);
-                    }else {
-                        //이미지 파일 저장
-                        imageService.saveYandexReverseImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
-                        CommonStaticSearchUtil.setSearchResultDefault(sre);
-                        searchResultRepository.save(sre);
-
-                        sreList.add(sre);
-                    }
-//                }
+                    sreList.add(sre);
+                }
             } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());
                 throw new IOException(e);
