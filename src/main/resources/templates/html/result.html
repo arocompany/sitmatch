@@ -158,17 +158,17 @@
                                 <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
                                 </span>
                             -->
-                            <span th:if="${(tsiType == '15' || tsiType == '19')}"> <!-- 15: 키워드+영상 / 19: 영상 --> <!-- 이미지는 17 -->
-                                <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">
-                                    (V : <span th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>
-                                <b th:if="${list.getTmrVScore() == null || list.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>
-                                <b th:if="${list.getTmrAScore() != null && list.getTmrAScore() != '0.0'}">A : <span
-                                        th:text="${list.getTmrAScore()}">100</span>%,&nbsp;</b>
-                                <b th:if="${list.getTmrAScore() == null || list.getTmrAScore() == '0.0'}">A : <span>비교없음,&nbsp;</span></b>
-                                <b th:if="${list.getTmrTScore() != null && list.getTmrTScore() != '0.0'}">T : <span
-                                        th:text="${list.getTmrTScore()}">100</span>%)</b>
-                                <b th:if="${list.getTmrTScore() == null || list.getTmrTScore() == '0.0'}">T : <span>비교없음</span>)</b>
-                            </span>
+<!--                            <span th:if="${(tsiType == '15' || tsiType == '19')}"> &lt;!&ndash; 15: 키워드+영상 / 19: 영상 &ndash;&gt; &lt;!&ndash; 이미지는 17 &ndash;&gt;-->
+<!--                                <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">-->
+<!--                                    (V : <span th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>-->
+<!--                                <b th:if="${list.getTmrVScore() == null || list.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>-->
+<!--                                <b th:if="${list.getTmrAScore() != null && list.getTmrAScore() != '0.0'}">A : <span-->
+<!--                                        th:text="${list.getTmrAScore()}">100</span>%,&nbsp;</b>-->
+<!--                                <b th:if="${list.getTmrAScore() == null || list.getTmrAScore() == '0.0'}">A : <span>비교없음,&nbsp;</span></b>-->
+<!--                                <b th:if="${list.getTmrTScore() != null && list.getTmrTScore() != '0.0'}">T : <span-->
+<!--                                        th:text="${list.getTmrTScore()}">100</span>%)</b>-->
+<!--                                <b th:if="${list.getTmrTScore() == null || list.getTmrTScore() == '0.0'}">T : <span>비교없음</span>)</b>-->
+<!--                            </span>-->
                         </span>
                     </th:block>
                 </div>
