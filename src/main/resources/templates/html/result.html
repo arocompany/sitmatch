@@ -151,7 +151,7 @@
                         <span th:case="11">
                             <span>
                                 <h2 th:if="${list.getMaxSimilarity() != null && list.getMaxSimilarity() != '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getMaxSimilarity(), '%')}">99%</h2>
-                                <h2 th:unless="${list.getTmrSimilarity() != null && list.getTmrSimilarity() != '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
+<!--                                <h2 th:unless="${list.getTmrSimilarity() != null && list.getTmrSimilarity() != '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>-->
                             </span>
                             <!--
                                 <span th:elseif="${list.getMaxSimilarity() == null || list.getMaxSimilarity() == '0'}">
