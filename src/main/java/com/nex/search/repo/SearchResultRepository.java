@@ -257,7 +257,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
                             "(case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + "+
                             "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
                             "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity" +
-                            ", pp.progressPercent as progressPercent " +
+//                            ", pp.progressPercent as progressPercent " +
+                            ", (SELECT CEILING(SUM(CASE TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ_STATUS) * 100) AS PROGRESSPERCENT  FROM tb_search_job WHERE tsi_uno = tsr.tsi_uno GROUP BY tsi_uno) progressPercent" +
                             ", (SELECT COUNT(*) " +
                             " FROM TB_SEARCH_RESULT TSR2 " +
                             " INNER JOIN TB_SEARCH_INFO TSI_2 ON TSR2.TSI_UNO = TSI_2.TSI_UNO" +
@@ -299,9 +300,10 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
                             " LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
                             " LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
                             " LEFT OUTER JOIN TB_SEARCH_INFO TSI ON TSI.TSI_UNO = TSR.TSI_UNO " +
-                            " LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, " +
-                            " CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
-                            " FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
+//                            " LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, " +
+//                            " CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
+//                            " FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO " +
+                            " LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
                             " WHERE TSR.TRK_STAT_CD IS NOT NULL " +
                             " AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') OR TSR.TSR_TITLE IS NULL) " +
                             " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";

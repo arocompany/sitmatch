@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>디지털 성범죄</title>
+    <link rel="stylesheet" href="/css/common.min.css?v=2023111401" />
+    <link rel="stylesheet" href="/css/histroy.min.css?v=2023111401">
+    <link rel="stylesheet" href="/css/trace.min.css?v=2023111401" />
+    <link rel="stylesheet" href="/css/detail.min.css?v=2023111401" />
+    <link rel="stylesheet" href="/css/dev.css" />
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="/js/footer.js"></script>
+    <script src="/js/style.js"></script>
+    <script src="/js/function.js"></script>
+</head>
+
+<style>
+    .area_input{width:60px;margin-left: 4px;height:40px;    vertical-align: bottom;}
+
+    #history .trace-history .history-list .area_box .all-time-btn{width:40px; margin-left: 4px;}
+
+    .area_search_condition{
+        display: none;
+    }
+
+    .condition_info{
+        display: flex;
+    }
+
+    .condition_info > div{
+        flex: 1;
+    }
+
+    .condition_info > div.area_img{
+        display: flex;
+        align-items: center;
+        /*margin: auto;*/
+    }
+
+    .dels {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 1px;
+        font: inherit;
+        vertical-align: baseline;
+        color: inherit;
+    }
+
+    .dels2 {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 1px;
+        font: inherit;
+        vertical-align: baseline;
+        color: inherit;
+    }
+    /* 240202 */
+    .section-keyword {
+        width: 800px;
+    }
+    .keyword .keyword-wrap {
+        padding: 15px 20px 25px;
+    }
+    .btn-look {
+        padding: 2px 9px;
+    }
+    .condition-wrap {
+        flex-direction: column;
+        flex-wrap: nowrap !important;
+    }
+    .condition-wrap > div {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    .tit {
+        font-weight: bold;
+        margin-right: 5px;
+        margin-bottom: 15px;
+        font-size: 18px;
+    }
+    .country-wrap div{
+        display: flex;
+        font-size: 18px;
+    }
+    .country-wrap div p+p{
+        margin-left: 15px;
+    }
+    .country-wrap p+p {
+        margin-left: 15px;
+    }
+    .condition-wrap .search-wrap {
+        justify-content: space-between;
+        margin-top: 30px;
+        align-items: normal !important;
+    }
+    .search-wrap > div:not(.tit) {
+        display: flex;
+    }
+
+    .search-wrap > div:not(.tit) > div{
+        text-align: center;
+    }
+    .search-wrap > div:not(.tit) > div + div{
+        margin-left: 20px;
+    }
+    #history .list-tit .gubun {
+        width: 6.5%;
+    }
+    #history .list-tit .dist {
+        width: 12.72%;
+    }
+    #history .dist {
+        width: 11.52%;
+        margin-right: 7px
+
+    }
+    #history .search-history .review {
+        margin-right: 5px;
+    }
+    #history .trace-history .all-time {
+        position: relative;
+    }
+    #history .trace-history .all-time .describe {
+        display: inline-block;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        background-color: #194894;
+        vertical-align: middle;
+        font-size: 12px;
+        text-align: center;
+        line-height: 14px;
+        cursor: pointer;
+        color: #f2f2f8;
+        margin-top: -2px;
+        margin-left: 3px;
+    }
+    .tooltip {
+        display: inline-block;
+        background-color: #194894;
+        border-radius: 5px;
+        font-size: 0;
+        font-weight: 100;
+        width: 220px;
+        padding: 3px 2px 4px;
+        position: absolute;
+        left: 0px;
+        bottom: 20px;
+        opacity: 0;
+        transition: all 0.2s;
+    }
+    #history .trace-history .all-time:hover .tooltip {
+        opacity: 1;
+        bottom: 25px;
+        transition: opacity 0.2s, bottom 0.2s;
+        height: auto;
+        font-size: 12px;
+        color: #fff;
+    }
+    /* 240202 */
+</style>
+
+<body>
+<article class="history-wrap wrapper" id="history">
+    <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
+    <h1 class="title bor10 btn-off"><span class="s-tit">검색 이력</span><span class="t-tit active">추적 이력</span> </h1>
+    <!-- 추적 이력 -->
+    <section class="trace-history layout history active">
+        <div class="searchbox">
+            <div>
+                <div>
+                    <form method="get" name="history-search" class="search-box" action="/trace/history" id="traceForm">
+                        <div class="selection selectBox">
+                            <button id="traceSelect" type="button" style="width: 110px;" th:text="${manageType}">검색어</button> <!--  th:text="${manageType}"  -->
+                            <input type="hidden" class="bor10 M-box-in" name="manageType" th:value="${manageType}" > <!--  -->
+                            <input type="hidden" name="page" > <!-- id="searchPage"  -->
+                            <ul class="option select" id="option">
+                                <li>검색어</li>
+                                <li>대상자</li>
+                            </ul>
+                        </div>
+                        <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${traceKeyword}" name="traceKeyword" id="traceKeyword" >
+                        <input type="hidden" name="tracePage" id="tracePage">
+                    </form>
+                </div>
+
+            </div>
+            <input id="traceHistoryValue" type="text" value="">
+
+            <!-- <button type="button" style="margin-right: 495px; font-weight: bold; ">엑셀</button> -->
+            <ul class="currently-state monitoring_sort_link">
+                <li onclick="traceList();"><span class="monitoring_sort_tit" >전체 :</span> <span th:text="${traceHistoryListCount}">32</span></li>
+                <li><span th:onclick="|location.href='@{/monitoringList}'|" class="monitoring_sort_tit" > 모니터링 :</span> <span th:text="${countMonitoring}">8</span></li>
+                <li><span th:onclick="|location.href='@{/monitoringDeleteReqList}'|" class="monitoring_sort_tit" >삭제 요청 :</span> <span th:text="${countDelReq}">10</span></li>
+                <li><span  th:onclick="|location.href='@{/monitoringDeleteComptList}'|" class="monitoring_sort_tit" >삭제 완료 :</span> <span th:text="${countDelCmpl}">14</span></li>
+                <li><span  th:onclick="|location.href='@{/allTimeMonitoringChkList}'|" class="monitoring_sort_tit" >24시간 모니터링 :</span> <span th:text="${allTimeMonitoringCnt}">14</span></li>
+            </ul>
+
+        </div>
+        <h2 class="list-tit">
+            <input type="checkbox" id="traceAllCheckbox" onclick="allCheckboxBtnTrace();" >
+            <span class="num">순번</span>
+            <span class="cont">내용 및 검색 정보</span>
+            <span class="memo">메모</span>
+            <span class="state">상태</span>
+            <span class="all-time">24시간 모니터링<span class="describe">?</span><span class="tooltip">한 번 모니터링 하는 주기 시간 설정 <br> 최소 6시간 최대 720시간 (24시간 x 30일)</span></span>
+            <!--      <span class="all-time">24시간 모니터링<span class="describe" flow="up" data-html="true" tooltip="한 번 모니터링 하는 주기 시간 설정 최소 6시간 최대 720시간 (24시간 x 30일)">?</span></span>-->
+            <span class="double-chk" >재유포</span>
+            <button class="del-btn btn-off dels2" style="border-radius: 50%; height: 22px; margin-left: 18px; " onclick="deleteTsrunos();"></button>
+            <input type="hidden" id="tsrUnoValues" name="tsrUnoValues" value="">
+        </h2>
+        <ul class="history-list history-trace-list">
+            <li class="btn-off bor10" th:each="traceHistoryList : ${traceHistoryList}">
+                <input type="checkbox" id="tsrUnos" name="tsrUnos" th:value="${traceHistoryList.getTsrUno()}">
+                <p class="num" th:text="${traceHistoryList.getTsrUno()}">${i}</p>
+                <div class="cont">
+                    <div class="img-box">
+                        <input type="hidden" th:value="${traceHistoryList.getTsrUno()}" id="tsrUno">
+                        <div class="img" >
+                            <img th:if="${traceHistoryList.getTsrImgPath()} != null "
+                                 th:src="${'/imagePath'+#strings.substring(traceHistoryList.getTsrImgPath(),7)+traceHistoryList.getTsrImgName()}" alt="">
+                        </div>
+                        <th:block th:switch="${traceHistoryList.getTsrSns()}">
+                            <img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">
+                            <img th:case="13" src="/img/common/sns/twitter-round.png" alt="" class="sns">
+                            <img th:case="15" src="/img/common/sns/insta-round.png" alt="" class="sns">
+                            <img th:case="17" src="/img/common/sns/facebook-round.png" alt="" class="sns">
+                        </th:block>
+                    </div>
+                    <div class="text" style="width: 100px;">
+                        <a class="url" style="width:100%" th:href="${traceHistoryList.getTsrSiteUrl()}" target="_blank" th:text="${traceHistoryList.getTsrSiteUrl()}">url이 들어갑니다</a>
+                        <p class="content" th:text="${traceHistoryList.getTsrTitle()}">내용이 들어갑니다</p>
+                        <p class="detail"><span class="detail-info">검색정보 :
+                  <th:block th:switch="${traceHistoryList.getTsiType()}">
+                    <span th:case="11">키워드</span>
+                    <span th:case="13">키워드 + 사진</span>
+                    <span th:case="15">키워드 + 영상</span>
+                    <span th:case="17">사진</span>
+                    <span th:case="19">영상</span>
+                  </th:block>
+                   /
+                  <span th:text="${traceHistoryList.tsiKeyword}">키워드가 들어갑니다</span>
+                  <span th:text="${traceHistoryList.tsrImgName}">파일명이 들어갑니다</span>
+                    </span>
+                            <span class="detail-time">
+                      검색일 : <span th:text="${#dates.format(traceHistoryList.getTsrFstDmlDt(), 'yyyy.MM.dd')}">2022.01.12</span>
+                                <!--<p th:text="${#dates.format(traceInfo.getTsrFstDmlDt(), 'yyyy-MM-dd')}">2023-01-02</p>-->
+                  </span>
+                        </p>
+                        <!--       <p class="counselor" th:text="${userIdMap.get(searchInfoList.getUserUno())}">상담사 아이디</p>-->
+                        <!--
+                        <p  class="detail">
+                          <span class="detail-info">대상자 파일명:
+                            <span th:text="${traceHistoryList.getTsiUno()}"></span>
+                          </span>
+                        </p>
+                        -->
+                        <p th:if="${traceHistoryList.getTsiUserFile() != null}" class="detail">
+                  <span class="detail-info">
+                    대상자: <span th:text="${traceHistoryList.getTsiUserFile()}" ></span>
+                  </span>
+                        </p>
+                        <p class="detail">
+                  <span class="detail-info">
+                    상담사 : <span th:text="${traceHistoryList.getTuUserId()}"></span>
+                  </span>
+                            <span style="width: 410px; color: #e87728; cursor: pointer;" th:data-uno="${traceHistoryList.getTsrUno()}" class="detail-time mdTime" id="lastMonitoringChkTime" th:if="${traceHistoryList.getLastAlltimeHist() != null}">
+                    마지막 모니터링 체크시간: <span  th:text="${#strings.replace(traceHistoryList.getLastAlltimeHist(),'.0','')}"></span>
+                  </span>
+                        </p>
+
+                        <!--<p class="">상담사 : <span th:text="${traceHistoryList.getTuUserId()}"></span></p> 원본 -->
+                    </div>
+                </div>
+                <textarea placeholder="내용 입력" class="btn-on memo" th:data-uno="${traceHistoryList.getTsrUno()}" th:text="${traceHistoryList.getTrkHistMemo()}"></textarea>
+                <div class="state">
+                    <input type="hidden" class="bor10 M-box-in" name="trace-state">
+                    <div style="margin-left: 5px;" class="selection setTraceHistory" th:data-uno="${traceHistoryList.getTsrUno()}">
+                        <th:block th:switch="${traceHistoryList.getTrkStatCd()}">
+                            <button th:case="10" style="color: #194894;">모니터링</button>
+                            <button th:case="20" style="color: #e87728;">삭제 요청</button>
+                            <button th:case="30">삭제 완료</button>
+                        </th:block>
+                        <ul class="option" >
+                            <li data-cd="30">삭제 완료</li>
+                            <li data-cd="20" style="color: #e87728;">삭제 요청</li>
+                            <li data-cd="10" style="color: #194894; ">모니터링</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="area_box" style="display: block">
+                    <input type = "number" class="btn-off area_input" th:value="${traceHistoryList.getTsrCycleBatch()}">
+                    <button class="btn-off all-time all-time-btn" type = "button"  th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}" th:text="${traceHistoryList.getTsrIsBatch() ? 'OFF' : 'ON'}">OFF</button>
+                </div>
+                <button class="btn-off double-chk" style="margin-left: 5px;" th:tsiUno="${traceHistoryList.getTsi3tsiuno()}" th:tsiKeyword="${traceHistoryList.getTsi3Keyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
+                <button style="border-radius: 50%; height: 22px; margin-left: 15px; " class="del-btn btn-off del2" id="traceTsrUno" onclick="traceDelete();" th:value="${traceHistoryList.getTsrUno()}">삭제</button>
+                <!--<button class="btn-off double-chk" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'" th:onclick="|location.href='@{/notice(tsiUno=${traceHistoryList.getTsi3tsiuno()}, tsiKeyword=${traceHistoryList.getTsi3Keyword()} )}'|">0건</button>-->
+                <!--window.location.href = '/notice?'+'&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno"); -->
+            </li>
+            <li th:if="${traceHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
+        </ul>
+        <nav>
+            <ul id="pagination" th:with="start=${(traceNumber / maxPage * maxPage) + 1}, end=(${(traceTotalPages == 0) ? 1 : ((start + maxPage - 1) < traceTotalPages ? (start + maxPage - 1) : traceTotalPages)})">
+                <li class="page-num" th:if="${start > 1}"><a th:onclick="'javascript:traceEvent('+ ${1} + ');'" class="btn-off" style="width:30px;">처음</a></li>
+                <li class="page-prev" th:if="${start > 1}"><a th:onclick="'javascript:traceEvent('+ ${start - maxPage} + ');'" class="btn-off">이전</a></li>
+                <li class="page-num" th:each="pageNum : ${#numbers.sequence(start, end)}"><a th:onclick="'javascript:traceEvent('+ ${pageNum} + ');'" class="btn-off" th:classappend="${traceNumber + 1 == pageNum} ? 'active' : ''" th:text="${pageNum}"></a></li>
+                <li class="page-next" th:if="${end < traceTotalPages}"><a th:onclick="'javascript:traceEvent('+ ${start + maxPage} + ');'" class="btn-off">다음</a></li>
+                <li class="page-num" th:if="${end < traceTotalPages}"><a th:onclick="'javascript:traceEvent('+ ${traceTotalPages} + ');'" class="btn-off" style="width:30px;">끝</a></li>
+            </ul>
+        </nav>
+    </section>
+
+    <script>
+        footer();
+    </script>
+</article>
+<script th:inline="javascript">
+
+    function InfoList(tsiUno){
+        var xhr = new XMLHttpRequest();
+        //요청을 보낼 방식, 주소, 비동기여부 설정
+        xhr.open('GET', 'result-detail?tsiUno=' + tsiUno.value, true);
+        xhr.send(null);
+
+        xhr.onload = () => {
+            //통신 성공
+            if (xhr.status == 200) {
+                document.body.style.overflow = 'hidden';
+                modal.style.display = 'block';
+                modal.innerHTML = xhr.response;
+                const esc = document.querySelector(".trace-detail .esc-btn");
+                esc.onclick = () => {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'unset';
+                }
+                const _CANVASBOX = document.querySelectorAll(`.preview-img `);
+                //비디오 태그의 메타데이터가 들어오면
+                _CANVASBOX.forEach(img => {
+                    let _VIDEO = img.querySelector('video');
+                    _VIDEO.addEventListener('loadedmetadata', function (e) {
+                        img.children[0].width = _VIDEO.videoWidth;
+                        img.children[0].height = _VIDEO.videoHeight;
+                        const time = Math.random() * _VIDEO.duration;
+                        _VIDEO.currentTime = time; //비디오의 영상길이 중 랜덤 타임을 뽑음
+                        img.children[1].getContext("2d").drawImage(_VIDEO, 0, 0, _VIDEO.videoWidth, _VIDEO.videoHeight);
+                        // 비디오 플레이
+                        const video = document.querySelectorAll(".img-box .video");
+                        if (video) {
+                            video.forEach(vid => {
+                                const btn = vid.querySelector('.play-btn');
+                                btn.onclick = () => {
+                                    vid.querySelector("video").play();
+                                    vid.querySelector("video").controls = true;
+                                    vid.querySelector(".play-wrap").style.display = 'none';
+                                }
+                            })
+                        }
+                    })
+                })
+            } else {
+                //통신 실패
+                console.log("통신 실패");
+            }
+        }
+    }
+    function allCheckboxBtnTrace() {
+        if($('#traceAllCheckbox').prop("checked")) {
+            $("input[type=checkbox]").prop("checked", true);
+        } else {
+            $("input[type=checkbox]").prop("checked", false);
+        }
+    }
+
+    // 페이징 처리 시에 탭 전환 방지
+    // const sTit = document.querySelector('.s-tit');
+    const tTit = document.querySelector('.t-tit');
+    // const searchhistory = document.querySelector('.search-history');
+    const tracehistory = document.querySelector('.trace-history');
+
+
+    // const isTabType = /*[[${tabType}]]*/;
+    const isTabType = sessionStorage.getItem('tabType') != null ? sessionStorage.getItem('tabType') : 'search';
+
+    console.log(isTabType);
+    if(isTabType !== 'search') {
+        // searchhistory.classList.remove('active');
+        tracehistory.classList.add('active');
+        // sTit.classList.remove('active');
+        tTit.classList.add('active');
+
+        console.info("검색 이력 클릭???");
+    }
+
+    // 히스토리 탭
+    // const hisTab = document.querySelectorAll('.title span');
+    // const his = document.querySelectorAll('.history');
+    //
+    // hisTab.forEach((tab, idx) => {
+    //     tab.onclick = (e) => {
+    //         // console.log(e.target.innerHTML);
+    //         if(e.target.className.substring(0,5) === 's-tit') {
+    //             sessionStorage.setItem('tabType', 'search');
+    //         } else {
+    //             sessionStorage.setItem('tabType', 'trace');
+    //         }
+    //         getSiblings(e.target).forEach(t => {
+    //             t.classList.remove('active');
+    //         });
+    //         his.forEach(gr => {
+    //             gr.classList.remove('active');
+    //         })
+    //         e.target.classList.add('active');
+    //         his[idx].classList.add('active');
+    //     }
+    // })
+
+    const searchType = document.querySelector(".selection.selectBox");
+    const option2 = document.querySelectorAll(".option.select li");
+    const tType2 = document.querySelector('input[name=manageType]');
+    const search = document.querySelector(".list-search");
+
+    searchType.addEventListener("click", (e)=>{
+        searchType.classList.toggle('active');
+        option2.forEach(btn => {
+            btn.addEventListener('click', (e)=>{
+                searchType.children[0].innerHTML = e.target.innerText;
+                tType2.value = e.target.innerText;
+            })
+        })
+    })
+
+    // 셀렉트 구현
+    const select = document.querySelectorAll(".selection.setTraceHistory");
+    select.forEach(sel => {
+        sel.addEventListener("click", (e) => {
+            sel.classList.toggle('active');
+            const option = sel.querySelectorAll(".option li");
+            option.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    let val = e.target.innerText;
+                    sel.children[0].innerHTML = val;
+                    sel.children[0].style.color = e.target.style.color;
+
+                    //XMLHttpRequest 객체 생성
+                    var xhr = new XMLHttpRequest();
+                    //요청을 보낼 방식, 주소, 비동기여부 설정
+                    xhr.open('GET', '/search/setTrkStatCd?tsrUno='+sel.dataset.uno+'&trkStatCd='+e.target.dataset.cd, true);
+                    //요청 전송
+                    xhr.send(null);
+                    //통신후 작업
+                    xhr.onload = () => {
+                        if (xhr.status === 200) {  //통신 성공
+                            console.log("통신 성공");
+                        } else {  //통신 실패
+                            console.log("통신 실패");
+                        }
+                    }
+                })
+            });
+        });
+    })
+
+    // const searchForm = document.querySelector("#searchForm");
+    // const searchPage = document.querySelector("#searchPage");
+    // const searchEvent = (pageNum) => {
+    //     searchPage.value = pageNum;
+    //     searchForm.submit();
+    // }
+
+    const traceForm = document.querySelector("#traceForm");
+    const tracePage = document.querySelector("#tracePage");
+
+    const traceEvent = (pageNum) => {
+        tracePage.value = pageNum;
+        traceForm.submit();
+    }
+
+    //검색이력 내용 넓이
+    // const context = document.querySelectorAll(".history-search-list .cont");
+    // context.forEach(con => {
+    //   if (con.querySelector('.con2').innerHTML === '') {
+    //     con.querySelector('.con2').style.display = 'none';
+    //     con.querySelector('.con1').style.maxWidth = '100%';
+    //   }
+    // })
+
+    // 검색 진행률
+    // const progress = document.querySelectorAll(".dot-wrap.progress");
+    // progress.forEach(pro => {
+    //     const per = pro.querySelector(".dot-per");
+    //     const loading = pro.querySelector(".dot");
+    //     const dotTsiUno = pro.querySelector(".dot-tsi-uon").value;
+    //     const dotTsiDate = pro.querySelector(".dot-tsi-date").value;
+    //
+    //     var tsi_uno_count = true;
+    //
+    //     var today = new Date();
+    //
+    //     var year = today.getFullYear();
+    //     var month = ('0' + (today.getMonth() + 1)).slice(-2);
+    //     var day = ('0' + today.getDate()).slice(-2);
+    //     var hours = ('0' + today.getHours()).slice(-2);
+    //     var minutes = ('0' + today.getMinutes()).slice(-2);
+    //     var seconds = ('0' + today.getSeconds()).slice(-2);
+    //     var dateString = year + '-' + month  + '-' + day + ' ' + hours + ':' + minutes  + ':' + seconds;
+    //     const dateA = new Date(dateString);
+    //     const dateB = new Date(dotTsiDate);
+    //     const diffMSec = dateA.getTime() - dateB.getTime();
+    //     const diffMin = diffMSec / (60 * 1000);
+    //
+    //     //XMLHttpRequest 객체 생성
+    //     var req = new Req();
+    //     //요청을 보낼 방식, 주소, 비동기여부 설정
+    //     req.url = '/history_tsi_uno_count';
+    //     req.data = { tsi_uno: dotTsiUno }
+    //     const result = req.async();
+    //     // console.info(result);
+    //     if(!result) {
+    //         tsi_uno_count = false;
+    //     }
+    //     //console.info(diffMin+'/diffMin');
+    //     if(diffMin>=1){
+    //         loading.style.display = 'none';
+    //         per.style.fontSize = '1rem';
+    //         per.style.cssText = "font-size:1rem; color:#545759;";
+    //         per.innerText = "100%";
+    //         pro.nextElementSibling.innerHTML = "검색결과";
+    //         pro.nextElementSibling.style.color = "#e87728";
+    //         //console.info(tsi_uno_count);
+    //         //console.info(per.innerText);
+    //     }
+    // })
+
+    function Req() {
+        this.url = undefined
+        this.data = {}
+        this.method = "POSt"
+        this.responseType = "json"
+        this.requestHeader = "application/x-www-form-urlencoded"
+        this.request = new XMLHttpRequest()
+        this.getQueryString = () => {
+            return Object.entries(this.data).map(e => e.join('=')).join('&')
+        }
+        this.async = () => {
+            if(!this.request) {
+                console.error("Can't make request.")
+                return false
+            }
+
+            this.request.open(this.method, this.url, false)
+            this.request.setRequestHeader("Content-Type", this.requestHeader)
+
+            let result = undefined
+            this.request.addEventListener("readystatechange", function (event) {
+                const { target } = event;
+                if (target.readyState === XMLHttpRequest.DONE) {
+                    const { status } = target;
+                    if (status === 0 || (status >= 200 && status < 400)) {
+                        result = target.response
+                    }
+                }
+            })
+            this.request.send(this.getQueryString())
+            return JSON.parse(result)
+        }
+    }
+
+    // // 검색 이력 삭제
+    // const delBtn = document.querySelectorAll(".del");
+    // delBtn.forEach((btn) => {
+    //     btn.addEventListener('click', () => {
+    //         if((confirm("삭제하시겠습니까?"))) {
+    //             //XMLHttpRequest 객체 생성
+    //             var xhr = new XMLHttpRequest();
+    //
+    //             //요청을 보낼 방식, 주소, 비동기여부 설정
+    //             xhr.open('GET', '/search/deleteSearchInfo?tsiUno='+btn.value, true);
+    //             //요청 전송
+    //             xhr.send(null);
+    //             //통신후 작업
+    //             xhr.onload = () => {
+    //                 if (xhr.status === 200) {  //통신 성공
+    //                     console.log("통신 성공");
+    //                     window.location.href="/history"
+    //                 } else {  //통신 실패
+    //                     console.log("통신 실패");
+    //                 }
+    //             }
+    //         }
+    //     })
+    // });
+
+    // 추적 이력 메모
+    const trkHistMemo = document.querySelectorAll(".memo");
+    trkHistMemo.forEach((memo) => {
+        memo.addEventListener('focusout', () => {
+            //XMLHttpRequest 객체 생성
+            var xhr = new XMLHttpRequest();
+            //요청을 보낼 방식, 주소, 비동기여부 설정
+            xhr.open('GET', '/search/setTrkHistMemo?tsrUno='+memo.dataset.uno+'&memo='+memo.value, true);
+            //요청 전송
+            xhr.send(null);
+            //통신후 작업
+            xhr.onload = () => {
+                if (xhr.status === 200) {  //통신 성공
+                    console.log("통신 성공");
+                } else {  //통신 실패
+                    console.log("통신 실패");
+                }
+            }
+        })
+    });
+
+    // 2차 검증 버튼
+    // const chkBtn = document.querySelectorAll(".btn-off.double-chk")
+    // chkBtn.forEach((btn) => {
+    //    btn.addEventListener('click', () => {
+    //         window.open(btn.value, '_blank');
+    //    })
+    // });
+    /*]]>*/
+
+    const chkBtn = document.querySelectorAll(".btn-off.double-chk")
+    chkBtn.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            if(btn.getAttribute("tsiUno")) {
+                let url = '/notice?tsiUno=' + btn.getAttribute("tsiUno");
+                // window.location.href = '/notice?tsrUno=' + btn.value + '&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno");
+                if(btn.getAttribute("tsiKeyword") !== null){
+                    url += '&tsiKeyword=' + btn.getAttribute("tsiKeyword");
+                }
+                window.location.href = url;
+            }else{
+                alert('조회대상이 없습니다.');
+            }
+        })
+    });
+
+    /*
+    const chkBtn = document.querySelectorAll(".btn-off.double-chk")
+    chkBtn.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if(btn.getAttribute("tsiuno")) {
+          // window.location.href = '/notice?tsrUno=' + btn.value + '&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno");
+          window.location.href = '/notice?'+'&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno");
+        }else{
+          alert('조회대상이 없습니다.');
+        }
+      })
+    });
+    */
+
+    // 대상 디테일
+    const imgBtn = document.querySelectorAll(".img-box");
+    // const tsiUnoClass = document.querySelectorAll(".history-search-list");
+    // const modal = document.querySelector("#modal");
+
+    /*
+    tsiUnoClass.forEach((btn)=> {
+      const tsiUno = btn.querySelector("#tsiUno");
+      btn.addEventListener('click', () => {
+        alert("tsiUno 임" + tsiUno)
+        xhr.open('GET', 'result-detail?tsrUno=' + tsiUno.value, true);
+      })
+
+    })
+    */
+
+    imgBtn.forEach((btn) => {
+        const tsrUno = btn.querySelector("#tsrUno");
+
+        btn.addEventListener('click', () => {
+            //XMLHttpRequest 객체 생성
+            var xhr = new XMLHttpRequest();
+            //요청을 보낼 방식, 주소, 비동기여부 설정
+            xhr.open('GET', '/trace-detail?tsrUno='+tsrUno.value, true);
+            //요청 전송
+            xhr.send(null);
+            //통신후 작업
+            xhr.onload = () => {
+                //통신 성공
+                if (xhr.status == 200) {
+                    document.body.style.overflow = 'hidden';
+                    modal.style.display = 'block';
+                    modal.innerHTML = xhr.response;
+                    const esc = document.querySelector(".trace-detail .esc-btn");
+                    esc.onclick = () => {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = 'unset';
+                    }
+                    const _CANVASBOX = document.querySelectorAll(`.preview-img `);
+                    //비디오 태그의 메타데이터가 들어오면
+                    _CANVASBOX.forEach(img => {
+                        let _VIDEO = img.querySelector('video');
+                        _VIDEO.addEventListener('loadedmetadata', function (e) {
+                            img.children[0].width = _VIDEO.videoWidth;
+                            img.children[0].height = _VIDEO.videoHeight;
+                            const time = Math.random() * _VIDEO.duration;
+                            _VIDEO.currentTime = time; //비디오의 영상길이 중 랜덤 타임을 뽑음
+                            img.children[1].getContext("2d").drawImage(_VIDEO, 0, 0, _VIDEO.videoWidth, _VIDEO.videoHeight);
+                            // 비디오 플레이
+                            const video = document.querySelectorAll(".img-box .video");
+                            if (video) {
+                                video.forEach(vid => {
+                                    const btn = vid.querySelector('.play-btn');
+                                    btn.onclick = () => {
+                                        vid.querySelector("video").play();
+                                        vid.querySelector("video").controls = true;
+                                        vid.querySelector(".play-wrap").style.display = 'none';
+                                    }
+                                })
+                            }
+                        })
+                    })
+                } else {
+                    console.log("통신 실패");
+                }
+            }
+        })
+    });
+
+    // 24시간 모니터링 버튼 활성화
+    const allTime = document.querySelectorAll(".all-time");
+    for (let i = 0; i < allTime.length; i++) {
+        allTime[i].addEventListener('click', function () {
+            var inputValue = this.parentElement.querySelector('.area_input').value;
+
+            if(! (6 <= inputValue && inputValue <= 720)){
+                alert("최소 6시간 최대 720까지 설정 가능합니다.");
+                return false;
+            }
+
+            this.disabled = true;
+            //XMLHttpRequest 객체 생성
+            var xhr = new XMLHttpRequest();
+            //요청을 보낼 방식, 주소, 비동기여부 설정
+            xhr.open('GET', '/search/monitoring/'+this.value+"/"+inputValue, true);
+            //요청 전송
+            xhr.send(null);
+            //통신후 작업
+            xhr.onload = () => {
+                if (xhr.status === 200) {   //통신 성공
+                    this.classList.toggle('active');
+                    location.reload();
+                } else {
+                    console.log('통신 실패')
+                }
+                this.disabled = false;
+            }
+        })
+    }
+
+    // 추적이력 삭제 단건
+    function traceDelete(){
+        const delBtn = document.getElementById('traceTsrUno');
+        // alert(delBtn.value);
+        if((confirm("삭제하시겠습니까?"))) {
+            $.ajax({
+                url: "/deleteTsrUno",
+                type: "post",
+                data: {
+                    tsrUno: delBtn.value
+                },
+                success:function(data) {
+                    alert("삭제가 완료되었습니다.");
+                    window.location.href="/trace/history";
+                }, error:function(){
+                    console.log("통신 실패");
+                }
+            })
+        }
+    }
+
+    // 추적이력 삭제 다건
+    function deleteTsrunos(){
+        if((confirm("일괄 삭제 하시겠습니까?"))){
+            var obj = $("[name=tsrUnos]");
+
+            var chkArray = new Array(); // 배열 선언
+
+            $('input:checkbox[name=tsrUnos]:checked').each(function() {
+                chkArray.push(this.value);
+            });
+
+            $('#tsrUnoValues').val(chkArray);
+
+            const tsrUnoValues = document.getElementById('tsrUnoValues').value;
+
+            if(tsrUnoValues === null || tsrUnoValues === "") {
+                alert("삭제할 데이터를 선택해주세요.");
+                return false;
+            }
+
+            $.ajax({
+                url: "/deleteTsrUnos",
+                type: "get",
+                data: {
+                    tsrUnoValues: $('#tsrUnoValues').val()
+                },
+                success:function(data) {
+                    alert("삭제가 완료되었습니다.");
+                    window.location.href="/trace/history";
+                }, error:function(){
+                    console.log("통신 실패");
+                }
+            })
+        }
+    }
+
+    function traceList(){
+        window.location.href = "/trace/history";
+    }
+    function monitoringList(){
+        document.getElementById('traceHistoryValue').value = '10';
+        const traceHistoryValue = document.getElementById('traceHistoryValue').value;
+        $.ajax({
+            url: "/history",
+            type: "get",
+            data: {
+                traceHistoryValue: traceHistoryValue
+            },
+            success:function(data) {
+
+            }, error:function(){
+                console.log("통신 실패");
+            }
+        })
+    }
+
+
+    $(function(){
+        $(".area_search_condition").hide();
+
+        $("button[name='btnShow']").on("click", function(){
+            document.body.style.overflow = 'hidden';
+            modal.style.display = 'flex';
+            modal.innerHTML = $(this).parent().parent().find(".area_search_condition").html();
+
+            $("#modal .esc-btn").on("click", function(){
+                modal.style.display = 'none';
+                document.body.style.overflow = 'unset';
+            });
+        });
+
+        $(".s-tit").on("click", function(){
+            location.href = "/history";
+        });
+    });
+
+</script>
+</body>
+
+</html>
