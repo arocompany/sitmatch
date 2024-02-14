@@ -96,7 +96,6 @@ public class BaseController {
     public ModelAndView loading(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
         ModelAndView modelAndView = new ModelAndView("html/loading");
         modelAndView.addObject("sessionInfo", sessionInfoDto);
-
         return modelAndView;
     }
 
@@ -115,13 +114,9 @@ public class BaseController {
     // 추적이력 단건 삭제
     @PostMapping("/deleteTsrUno")
     public String deleteTsrUno(Integer tsrUno) {
-        log.info("tsrUno: " + tsrUno);
-
         searchService.deleteTsrUno(tsrUno);
-
         return "success";
     }
-
 
     @GetMapping("/deleteTsrUnos")
     public String deleteTsrUnos(@RequestParam(value="tsrUnoValues", required=false) List<Integer> tsrUnoValues) {
@@ -142,8 +137,7 @@ public class BaseController {
 
         Map<String, Object> userSearchHistoryList;
         int userUno = sessionInfoDto.getUserUno();
-        
-        // 관리자일 때
+
         if(sessionInfoDto.isAdmin()) {
             userSearchHistoryList = searchService.getAllUserSearchHistoryList(searchPage, searchKeyword);
         } else {
@@ -165,27 +159,12 @@ public class BaseController {
     @GetMapping("/allTimeMonitoringHist")
     public ModelAndView allTimeMonitoringHist(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                                 @RequestParam int tsrUno) {
-        log.info(" === allTimeMonitoringHist 진입 === " + tsrUno);
         ModelAndView modelAndView = new ModelAndView("html/allTimeMonitoringHist");
-
         List<SearchResultMonitoringHistoryDto> searchResultMonitoringHistoryList = searchResultMonitoringRepository.searchResultMonitoringHistoryList(tsrUno);
 
         modelAndView.addObject("searchResultMonitoringHistoryList", searchResultMonitoringHistoryList);
         modelAndView.addObject("sessionInfo", sessionInfoDto);
 
         return modelAndView;
-    }
-
-    public String setManageType(String manageType) {
-        log.info("manageType: " + manageType);
-        String manage;
-        if(manageType.equals("전체")){
-            manage = "0";
-        } else if(manageType.equals("검색어")) {
-            manage = "1";
-        } else {
-            manage = "2";
-        }
-        return manage;
     }
 }

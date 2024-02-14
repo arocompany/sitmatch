@@ -89,13 +89,14 @@ public class HistoryController {
 
         Map<String, Object> traceHistoryMap;
         if(monitoringStatus.equals("0")){
+            // 검색어(타이틀) 검색
             if(manageType.equals("1")){
                 traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword);
             } else {
+                // 대상자 검색
                 traceHistoryMap = searchService.getTraceHistoryUserFileList(tracePage, traceKeyword);
             }
         }else {
-            // 검색어(타이틀) 검색
             // monitoringStatus -> 10:모니터링  20:삭제요청  30:삭제완료  40:24시간모니터링
             if(manageType.equals("1")) {
                 if(monitoringStatus.equals("10")){
@@ -107,7 +108,7 @@ public class HistoryController {
                 } else {
                     traceHistoryMap = searchService.allTimeMonitoringList(tracePage, traceKeyword);
                 }
-            } else { // 대상자 검색
+            } else {
                 if(monitoringStatus.equals("10")){
                     traceHistoryMap = searchService.getTraceHistoryMonitoringUserFileList(tracePage, traceKeyword);
                 } else if(monitoringStatus.equals("20")){
