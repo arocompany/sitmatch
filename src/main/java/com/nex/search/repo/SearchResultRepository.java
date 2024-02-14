@@ -290,7 +290,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
                                       " LEFT OUTER JOIN tb_search_result TSR9 ON TMH.TSR_UNO = TSR9.TSR_UNO " +
                                       " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
                                       " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, " +
-                                      " TSI3.TSI_USER_FILE AS tsiUserFile "+
+                                      " TSI.TSI_USER_FILE AS tsiUserFile "+
                                       " , TSR.tsr_is_batch tsrIsBatch, TSR.tsr_cycle_batch tsrCycleBatch ";
     String fromTraceHistoryQuery =  " FROM TB_SEARCH_RESULT TSR " +
                                     " LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
