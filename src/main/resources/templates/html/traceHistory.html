@@ -175,8 +175,9 @@
                 <div>
                     <form method="get" name="history-search" class="search-box" action="/trace/history" id="traceForm">
                         <div class="selection selectBox">
-                            <button id="traceSelect" type="button" style="width: 110px;" th:text="${manageType}">검색어</button> <!--  th:text="${manageType}"  -->
-                            <input type="hidden" class="bor10 M-box-in" name="manageType" th:value="${manageType}" > <!--  -->
+                            <button id="traceSelect" type="button" style="width: 110px;" th:text="${manageType}">검색어</button>
+                            <input type="hidden" id="monitoringStatus" name="monitoringStatus" th:value="${monitoringStatus}">
+                            <input type="hidden" class="bor10 M-box-in" name="manageType" th:value="${manageType}" >
                             <input type="hidden" name="page" > <!-- id="searchPage"  -->
                             <ul class="option select" id="option">
                                 <li>검색어</li>
@@ -194,10 +195,16 @@
             <!-- <button type="button" style="margin-right: 495px; font-weight: bold; ">엑셀</button> -->
             <ul class="currently-state monitoring_sort_link">
                 <li onclick="traceList();"><span class="monitoring_sort_tit" >전체 :</span> <span th:text="${traceHistoryListCount}">32</span></li>
-                <li><span th:onclick="|location.href='@{/monitoringList}'|" class="monitoring_sort_tit" > 모니터링 :</span> <span th:text="${countMonitoring}">8</span></li>
+                <li><span th:onclick="|location.href='@{/trace/history(monitoringStatus=10)}'|"  class="monitoring_sort_tit" id="monitoringList"> 모니터링 :</span> <span th:text="${countMonitoring}">8</span></li> <!-- th:onclick="|location.href='@{/monitoringList}'|" -->
+                <li><span th:onclick="|location.href='@{/trace/history(monitoringStatus=20)}'|" class="monitoring_sort_tit" >삭제 요청 :</span> <span th:text="${countDelReq}">10</span></li>
+                <li><span th:onclick="|location.href='@{/trace/history(monitoringStatus=30)}'|" class="monitoring_sort_tit" >삭제 완료 :</span> <span th:text="${countDelCmpl}">14</span></li>
+                <li><span th:onclick="|location.href='@{/trace/history(monitoringStatus=40)}'|" class="monitoring_sort_tit" >24시간 모니터링 :</span> <span th:text="${allTimeMonitoringCnt}">14</span></li>
+
+                <!--
                 <li><span th:onclick="|location.href='@{/monitoringDeleteReqList}'|" class="monitoring_sort_tit" >삭제 요청 :</span> <span th:text="${countDelReq}">10</span></li>
                 <li><span  th:onclick="|location.href='@{/monitoringDeleteComptList}'|" class="monitoring_sort_tit" >삭제 완료 :</span> <span th:text="${countDelCmpl}">14</span></li>
                 <li><span  th:onclick="|location.href='@{/allTimeMonitoringChkList}'|" class="monitoring_sort_tit" >24시간 모니터링 :</span> <span th:text="${allTimeMonitoringCnt}">14</span></li>
+                -->
             </ul>
 
         </div>
@@ -850,7 +857,6 @@
             location.href = "/history";
         });
     });
-
 </script>
 </body>
 

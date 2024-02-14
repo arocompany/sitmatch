@@ -63,9 +63,16 @@ public class HistoryController {
                                 @RequestParam(required = false, defaultValue = "1") Integer tracePage,
                                 @RequestParam(required = false, defaultValue = "") String traceKeyword,
                                 @RequestParam(required=false, defaultValue = "0") String traceHistoryValue,
-                                @RequestParam(required = false, defaultValue = "검색어") String manageType) {
+                                @RequestParam(required = false, defaultValue = "검색어") String manageType,
+                                @RequestParam(required = false, defaultValue = "0") String monitoringStatus) {
         ModelAndView modelAndView = new ModelAndView("html/traceHistory");
         modelAndView.addObject("manageType", manageType);
+
+        if(monitoringStatus.equals("0")){
+            modelAndView.addObject("monitoringStatus", monitoringStatus);
+        } else {
+            modelAndView.addObject("monitoringStatus", monitoringStatus);
+        }
 
         if (manageType.equals("검색어")) {
             manageType = "1";
@@ -80,20 +87,36 @@ public class HistoryController {
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("headerMenu", "history");
 
-        Map<String, Object> traceHistoryMap = null;
-
-        // 검색어(타이틀) 검색
-        if(manageType.equals("1")) {
-            if(traceHistoryValue.equals("0")){
+        Map<String, Object> traceHistoryMap;
+        if(monitoringStatus.equals("0")){
+            if(manageType.equals("1")){
                 traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword);
-            } else if(traceHistoryValue.equals("10")){
-                traceHistoryMap = searchService.getTraceHistoryMonitoringList(tracePage, traceKeyword);
-            }
-        } else { // 대상자 검색
-            if(traceHistoryValue.equals("0")){
+            } else {
                 traceHistoryMap = searchService.getTraceHistoryUserFileList(tracePage, traceKeyword);
-            } else if(traceHistoryValue.equals("10")){
-                traceHistoryMap = searchService.getTraceHistoryMonitoringList(tracePage, traceKeyword);
+            }
+        }else {
+            // 검색어(타이틀) 검색
+            // monitoringStatus -> 10:모니터링  20:삭제요청  30:삭제완료  40:24시간모니터링
+            if(manageType.equals("1")) {
+                if(monitoringStatus.equals("10")){
+                    traceHistoryMap = searchService.getTraceHistoryMonitoringList(tracePage, traceKeyword);
+                } else if(monitoringStatus.equals("20")){
+                    traceHistoryMap = searchService.getTraceHistoryDeleteReqList(tracePage, traceKeyword);
+                } else if(monitoringStatus.equals("30")){
+                    traceHistoryMap = searchService.getTraceHistoryDeleteComptList(tracePage, traceKeyword);
+                } else { // 24시간 모니터링
+                    traceHistoryMap = searchService.allTimeMonitoringList(tracePage, traceKeyword);
+                }
+            } else { // 대상자 검색
+                if(monitoringStatus.equals("10")){
+                    traceHistoryMap = searchService.getTraceHistoryMonitoringUserFileList(tracePage, traceKeyword);
+                } else if(monitoringStatus.equals("20")){
+                    traceHistoryMap = searchService.getTraceHistoryDeleteReqUserFileList(tracePage, traceKeyword);
+                } else if(monitoringStatus.equals("30")){
+                    traceHistoryMap = searchService.getTraceHistoryDeleteComptUserFileList(tracePage, traceKeyword);
+                } else {
+                    traceHistoryMap = searchService.allTimeMonitoringUserFileList(tracePage, traceKeyword);
+                }
             }
         }
 
