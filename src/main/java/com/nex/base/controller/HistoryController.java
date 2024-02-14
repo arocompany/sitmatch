@@ -104,7 +104,7 @@ public class HistoryController {
                     traceHistoryMap = searchService.getTraceHistoryDeleteReqList(tracePage, traceKeyword);
                 } else if(monitoringStatus.equals("30")){
                     traceHistoryMap = searchService.getTraceHistoryDeleteComptList(tracePage, traceKeyword);
-                } else { // 24시간 모니터링
+                } else {
                     traceHistoryMap = searchService.allTimeMonitoringList(tracePage, traceKeyword);
                 }
             } else { // 대상자 검색
