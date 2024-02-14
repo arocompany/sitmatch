@@ -143,10 +143,9 @@
   }
   .tooltip {
     display: inline-block;
-    color: #fff;
     background-color: #194894;
     border-radius: 5px;
-    font-size: 12px;
+    font-size: 0;
     font-weight: 100;
     width: 220px;
     padding: 3px 2px 4px;
@@ -159,8 +158,10 @@
   #history .trace-history .all-time:hover .tooltip {
     opacity: 1;
     bottom: 25px;
-    transition: all 0.2s;
-
+    transition: opacity 0.2s, bottom 0.2s;
+    height: auto;
+    font-size: 12px;
+    color: #fff;
   }
 </style>
 
