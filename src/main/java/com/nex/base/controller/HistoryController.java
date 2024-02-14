@@ -68,12 +68,6 @@ public class HistoryController {
         ModelAndView modelAndView = new ModelAndView("html/traceHistory");
         modelAndView.addObject("manageType", manageType);
 
-        if(monitoringStatus.equals("0")){
-            modelAndView.addObject("monitoringStatus", monitoringStatus);
-        } else {
-            modelAndView.addObject("monitoringStatus", monitoringStatus);
-        }
-
         if (manageType.equals("검색어")) {
             manageType = "1";
         } else {
@@ -126,6 +120,7 @@ public class HistoryController {
         modelAndView.addObject("maxPage", traceHistoryMap.get("maxPage"));
         modelAndView.addObject("traceTotalPages", traceHistoryMap.get("totalPages"));
         modelAndView.addObject("traceKeyword", traceKeyword);
+        modelAndView.addObject("monitoringStatus", monitoringStatus);
 
         modelAndView.addObject("traceHistoryListCount", searchService.getResultByTrace());
         modelAndView.addObject("countMonitoring", traceHistoryMap.get("countMonitoring")); // 모니터링
