@@ -52,7 +52,7 @@ public class HistoryController {
         modelAndView.addObject("searchNumber", searchHistMap.get("number"));
         modelAndView.addObject("maxPage", searchHistMap.get("maxPage"));
         modelAndView.addObject("searchTotalPages", searchHistMap.get("totalPages"));
-        modelAndView.addObject("tsiTypeMap", searchService.getTsiTypeMap());
+//        modelAndView.addObject("tsiTypeMap", searchService.getTsiTypeMap());
 
         return modelAndView;
     }
@@ -127,7 +127,7 @@ public class HistoryController {
         modelAndView.addObject("countDelReq", traceHistoryMap.get("countDelReq"));         // 삭제요청
         modelAndView.addObject("countDelCmpl", traceHistoryMap.get("countDelCmpl"));       // 삭제완료
         modelAndView.addObject("allTimeMonitoringCnt", traceHistoryMap.get("allTimeMonitoringCnt")); // 24시간 모니터링
-        modelAndView.addObject("tsiTypeMap", searchService.getTsiTypeMap());
+//        modelAndView.addObject("tsiTypeMap", searchService.getTsiTypeMap());
 
         return modelAndView;
     }

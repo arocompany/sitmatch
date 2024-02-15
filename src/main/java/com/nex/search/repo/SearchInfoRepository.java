@@ -80,11 +80,9 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " tsi.tsi_type AS tsiType, " +
                                     " tsi.tsr_uno AS tsrUno, " +
                                     " tsi.user_uno AS tsiUserUno, " +
-                                    " (SELECT COUNT(DISTINCT tsr.tsr_site_url)  FROM tb_search_result tsr " +
-                                    " inner JOIN tb_search_info tsi_2 " +
-                                    " ON tsr.TSI_UNO = tsi_2.tsi_uno " +
+                                    " (SELECT COUNT(*)  FROM tb_search_result tsr " +
                                     " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt, " +
-                                    " (SELECT COUNT(DISTINCT(tsr_2.tsr_site_url)) " +
+                                    " (SELECT COUNT(*) " +
                                     " FROM tb_search_result tsr_2 " +
                                     " LEFT OUTER JOIN tb_match_result tmr " +
                                     " ON tsr_2.TSR_UNO = tmr.tsr_uno " +
@@ -133,7 +131,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " LEFT OUTER JOIN TB_SEARCH_INFO_PARAMS params ON tsi.TSI_UNO = params.TSI_UNO "+
                                     " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
                                     " and tsi.SEARCH_VALUE= :searchValue" +
-                                    " and tsi.TSI_KEYWORD like '%' :keyword '%' " +
+                                    " and (tsi.TSI_KEYWORD like '%' :keyword '%'  OR tsi.TSI_KEYWORD IS NULL )" +
                                     " and tsi.TSR_UNO is null " +
                                     " order by  tsi.tsi_uno desc ";
 
