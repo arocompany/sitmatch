@@ -351,12 +351,12 @@ public class TrackingSearchResultService{
 
                             SearchResultEntity searchResultEntity = null;
                             //검색 결과 엔티티 추출
-                            if(StringUtils.hasText(getOriginalMapFn.apply(result).get("link").toString())){
-                                searchResultEntity = CommonStaticSearchUtil.getSearchResultEntity3(getTsiUnoFn.apply(result), tsrSns, result, getOriginalMapFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
-                            }else {
+//                            if(StringUtils.hasText(getOriginalMapFn.apply(result).get("link").toString())){
+//                                searchResultEntity = CommonStaticSearchUtil.getSearchResultEntity3(getTsiUnoFn.apply(result), tsrSns, result, getOriginalMapFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+//                            }else {
 
                                 searchResultEntity = CommonStaticSearchUtil.getSearchResultEntity2(getTsiUnoFn.apply(result), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
-                            }
+//                            }
 
                             try {
                                 //이미지 파일 저장
@@ -435,9 +435,9 @@ public class TrackingSearchResultService{
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "images_results").replace("image_sources", "images_results").replace("image_results", "images_results").replace("inline_images", "images_results");
-                if(rsalEntity != null && rsalEntity.getRslEngine().equals("yandex_image")) {
-                    jsonInString = jsonInString.replace("thumbnail", "thumbnailMap").replace("original_image", "orginalMap");
-                }
+//                if(rsalEntity != null && rsalEntity.getRslEngine().equals("yandex_image")) {
+//                    jsonInString = jsonInString.replace("thumbnail", "thumbnailMap").replace("original_image", "orginalMap");
+//                }
 
                 INFO info = mapper.readValue(jsonInString, infoClass);
 
