@@ -339,11 +339,7 @@
               }
             },
             scales: {
-              responsive: false,
-              y: {
-                min: 0,
-                max: 100,
-              }
+              responsive: true,
             }
           }
         });
@@ -480,15 +476,11 @@
             position: 'top',
           }, title: {
             display: true,
-            text: '사용자 접속 현황'
+            text: '화면별 사용자 접속 현황'
           }
         },
         scales: {
-          responsive: false,
-          y: {
-            min: 0,
-            max: 200,
-          }
+          responsive: true,
         }
       }
     });
@@ -544,10 +536,7 @@
             ]
           }, options: {
             responsive: true,
-            y: {
-              min: 0,
-              max: 100,
-            },plugins: {
+            plugins: {
               legend: {
                 position: 'top',
               },
@@ -617,10 +606,7 @@
             ]
           }, options: {
             responsive: true,
-            y: {
-              min: 0,
-              max: 100,
-            },plugins: {
+            plugins: {
               legend: {
                 position: 'top',
               },
@@ -745,10 +731,6 @@
         }]
       },options: {
         responsive: true,
-        y: {
-          min: 0,
-          max: 300,
-        },
         plugins: {
           legend: {
             position: 'top',
