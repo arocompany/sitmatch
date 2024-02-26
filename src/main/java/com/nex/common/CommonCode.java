@@ -36,7 +36,7 @@ public interface CommonCode {
     String SerpAPIEngineDuckduckgo = "duckduckgo";
     String SerpAPIEngineYahoo = "yahoo";
     String SerpAPIEngineYandex = "yandex";
-    String SerpAPIEngineYandexImage = "yandex_images";
+    String SerpAPIEngineYandexImage = "yandex_image";
     String SerpAPIEngineNaver = "naver";
 
     int RequestSerpApiLogInit = 0;

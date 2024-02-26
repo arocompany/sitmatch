@@ -57,6 +57,11 @@ public class SearchService {
     private final SearchImageService searchImageService;
     private final SearchImageGoogleLensService searchImageGoogleLensService;
     private final SearchTextService searchTextService;
+    private final SearchTextService searchGoogleTextService;
+    private final SearchTextService searchTwitterTextService;
+    private final SearchTextService searchInstagramTextService;
+    private final SearchTextService searchFacebookTextService;
+
     private final SearchTextImageService searchTextImageService;
     private final SearchVideoService searchVideoService;
     private final SearchVideoYandexService searchVideoYandexService;

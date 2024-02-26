@@ -56,3 +56,11 @@ tb_search_info
 tb_search_result
     tsr_title
     trk_stat_cd
+
+## yandex 이미지 검색
+- 이미지 검색시 도메인이 아닌 서버ip로 들어가서 못찾는 이슈
+- 되는 이미지 url) https://avatars.mds.yandex.net/i?id=0dbf2dd2f651671d56d6a9d6ecce203c558476a0-4576346-images-thumbs&n=13
+- 안되는 이미지 url) http://1.243.244.227:9092/imagePath/requests/20240226/45a4536f-e560-4bcb-9573-78c4a864743e.jpg
+
+
+

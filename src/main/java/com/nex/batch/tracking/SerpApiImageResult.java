@@ -1,8 +1,5 @@
 package com.nex.batch.tracking;
 
-import com.nex.search.entity.result.Images_resultsByGoogleLens;
-import com.nex.search.entity.result.Images_resultsByImageForYandex;
-import com.nex.search.entity.result.Youtube_resultsByText;
 import lombok.Data;
 
 import java.util.List;

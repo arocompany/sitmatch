@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.*;
 import com.nex.requestSerpApiLog.RequestSerpApiLogService;
 import com.nex.search.entity.*;
-import com.nex.search.entity.result.Images_resultsByImage;
-import com.nex.search.entity.result.SerpApiImageResult;
+import com.nex.search.entity.result.GoogleLensImagesByImageResult;
+import com.nex.search.entity.result.Images_resultsByGoogleLens;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
@@ -79,7 +79,7 @@ public class SearchVideoGoogleLensService {
                             .supplyAsync(() -> {
                                 try {
                                     // text기반 검색 및 결과 저장.(이미지)
-                                    return search(url, nationCode, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images, finalRsalUno);
+                                    return search(url, nationCode,  GoogleLensImagesByImageResult.class, GoogleLensImagesByImageResult::getError, GoogleLensImagesByImageResult::getImage_sources, finalRsalUno);
                                 } catch (Exception e) {
                                     log.error(e.getMessage(), e);
                                     return null;
@@ -91,13 +91,13 @@ public class SearchVideoGoogleLensService {
                                             r
                                             , tsrSns
                                             , insertResult
-                                            , Images_resultsByImage::getOriginal
-                                            , Images_resultsByImage::getThumbnail
-                                            , Images_resultsByImage::getTitle
-                                            , Images_resultsByImage::getLink
-                                            , Images_resultsByImage::isFacebook
-                                            , Images_resultsByImage::isInstagram
-                                            , Images_resultsByImage::isTwitter
+                                            , Images_resultsByGoogleLens::getOriginal
+                                            , Images_resultsByGoogleLens::getThumbnail
+                                            , Images_resultsByGoogleLens::getTitle
+                                            , Images_resultsByGoogleLens::getLink
+                                            , Images_resultsByGoogleLens::isFacebook
+                                            , Images_resultsByGoogleLens::isInstagram
+                                            , Images_resultsByGoogleLens::isTwitter
                                     );
                                 } catch (Exception e) {
                                     log.error(e.getMessage(), e);

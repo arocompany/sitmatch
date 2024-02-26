@@ -135,7 +135,7 @@ public class SearchImageYandexService {
                     + "?lr=" + txtNation
                     + "&engine=yandex_images"
                     + "&url=" + searchImageUrl
-                    + "p="+index
+                    + "&p="+index
                     + "&api_key=" + configData.getSerpApiKey();
 
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(siEntity.getTsiUno(), url, finalTextGl1, "yandex_images", null, index, configData.getSerpApiKey(), searchImageUrl);

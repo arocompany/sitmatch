@@ -7,6 +7,7 @@ public class Images_resultsByGoogleLens {
     private String title;
     private String link;
     private String thumbnail;
+    private String original;
     private String actual_image_width;
     private String actual_image_height;
 
