@@ -138,10 +138,21 @@
 .box_wrap li.nations_all_check span.tit{
     width:90px;
 }
+
 .box_wrap li {
     height: 45px;
     line-height: 40px;
 }
+
+.box_wrap li label{
+    align-items: center;
+}
+.box_wrap li label span.tit{
+    font-weight: 700;
+    width: 120px;
+    text-align: center;
+}
+
 .box_wrap th {
     min-width: 105px;
     text-align: center;
