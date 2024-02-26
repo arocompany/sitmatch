@@ -42,6 +42,7 @@
 .search .sns-check input.facebook:checked + label { background-image: url("../img/main/on04.png") }
 
 /* 20240122 유나 수정 */
+/* 2024 0226 sy 수정*/
 .keyword .keyword-box > div.box_wrap {
     height: auto;
     max-height: 280px;
@@ -141,41 +142,41 @@
     height: 45px;
     line-height: 40px;
 }
-
-.box_wrap li label{
-    align-items: center;
+.box_wrap th {
+    min-width: 105px;
+    text-align: center;
 }
-.box_wrap li label span.tit{
+.box_wrap th span.tit, .box_wrap td span.tit{
     font-weight: 700;
     width: 120px;
     text-align: center;
 }
 
-.box_wrap li label span.select_box{
+.box_wrap span.select_box{
     font-weight: 700;
     /* flex: 3; */
 }
 .service_info form {
     padding-right: 0;
 }
-.service_info li label span.icon{
+.service_info td span.icon{
     font-weight: 700;
-    width: 120px;
     text-align: center;
-}
-.service_info li label span.icon span{
     display: inline-block;
+}
+.service_info td span.icon span{
+    display: flex;
     width: 30px;
     height: 30px;
     border-radius: 3px;
     background-color: #ddd;
     box-shadow: inset 2px 2px 3px #bbb;
 }
-.service_info li label span.icon span img{
+.service_info td span.icon span img{
     display: inline-block;
     width: 80%;
 }
-.service_info li label span.select_box {
+.service_info td span.select_box {
     width: 120px;
     text-align: center;
 }
@@ -187,4 +188,21 @@
 .serpServices span.possible{
     font-size:1.0rem;
 }
+
+.serpServices td {
+    padding: 3px 5px;
+    text-align: center;
+    vertical-align: middle;
+}
+.serpServices td span {
+    vertical-align: middle;
+}
+.serpServices tbody tr:first-child td {
+    padding-top: 15px;
+}
+.serpServices.keyword form input:not([type="checkbox"]) {
+     height: auto;
+     padding: 0;
+}
 /* 2024 0122 유나 수정*/
+/* 2024 0226 sy 수정*/
