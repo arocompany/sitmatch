@@ -174,10 +174,10 @@ public class SearchService {
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()){
                                 case CommonCode.SerpAPIEngineGoogle -> {
-                                    if (param.getTsiGoogle() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                    if (param.getTsiInstagram() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                    if (param.getTsiFacebook() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                    if (param.getTsiTwitter() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
+                                    if (param.getTsiGoogle() == 1) { searchGoogleTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
+                                    if (param.getTsiInstagram() == 1) { searchInstagramTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
+                                    if (param.getTsiFacebook() == 1) { searchFacebookTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
+                                    if (param.getTsiTwitter() == 1) { searchTwitterTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
                                 }
                                 case CommonCode.SerpAPIEngineYoutube -> {
                                     if (param.getTsiGoogle() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());

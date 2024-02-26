@@ -118,12 +118,14 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     ", coalesce(params.tsi_is_nation_vn, 0) tsiIsNationVn " +
                                     ", coalesce(params.tsi_is_engine_google, 0) tsiIsEngineGoogle " +
                                     ", coalesce(params.tsi_is_engine_youtube, 0) tsiIsEngineYoutube " +
+                                    ", coalesce(params.tsi_is_engine_google_reverse_image, 0) tsiIsEngineGoogleReverseImage " +
                                     ", coalesce(params.tsi_is_engine_google_lens, 0) tsiIsEngineGoogleLens " +
                                     ", coalesce(params.tsi_is_engine_baidu, 0) tsiIsEngineBaidu " +
                                     ", coalesce(params.tsi_is_engine_bing, 0) tsiIsEngineBing " +
                                     ", coalesce(params.tsi_is_engine_duckduckgo, 0) tsiIsEngineDuckduckgo " +
                                     ", coalesce(params.tsi_is_engine_yahoo, 0) tsiIsEngineYahoo " +
                                     ", coalesce(params.tsi_is_engine_yandex, 0) tsiIsEngineYandex " +
+                                    ", coalesce(params.tsi_is_engine_yandex_image, 0) tsiIsEngineYandexImage " +
                                     ", coalesce(params.tsi_is_engine_naver, 0) tsiIsEngineNaver " +
                                     " from tb_search_info tsi " +
 

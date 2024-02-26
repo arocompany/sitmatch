@@ -40,11 +40,13 @@ public interface ResultCntQueryDtoInterface {
     Integer getTsiIsNationVn();
     Integer getTsiIsEngineGoogle();
     Integer getTsiIsEngineYoutube();
+    Integer getTsiIsEngineGoogleReverseImage();
     Integer getTsiIsEngineGoogleLens();
     Integer getTsiIsEngineBaidu();
     Integer getTsiIsEngineBing();
     Integer getTsiIsEngineDuckduckgo();
     Integer getTsiIsEngineYahoo();
     Integer getTsiIsEngineYandex();
+    Integer getTsiIsEngineYandexImage();
     Integer getTsiIsEngineNaver();
 }
