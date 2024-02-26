@@ -28,10 +28,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -332,7 +329,9 @@ public class TrackingSearchResultService{
      * @param  <RESULT>                 (결과)
      */
     public <RESULT> List<SearchResultEntity> resultsToSearchResultEntity(List<RESULT> results, Function<RESULT, Integer> getTsiUnoFn
-           , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+           , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn
+           , Function<RESULT, Map<String, Object>> getOriginalMapFn, Function<RESULT, Map<String, Object>> getThumbnailMapFn
+           , Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
         List<CompletableFuture<SearchResultEntity>> completableFutures = new ArrayList<>();
 
@@ -350,8 +349,14 @@ public class TrackingSearchResultService{
                             else if (isTwitterFn.apply(result)) { tsrSns = CommonCode.snsTypeTwitter; }
                             else { tsrSns = CommonCode.snsTypeGoogle; }
 
+                            SearchResultEntity searchResultEntity = null;
                             //검색 결과 엔티티 추출
-                            SearchResultEntity searchResultEntity = CommonStaticSearchUtil.getSearchResultEntity2(getTsiUnoFn.apply(result), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                            if(StringUtils.hasText(getOriginalMapFn.apply(result).get("link").toString())){
+                                searchResultEntity = CommonStaticSearchUtil.getSearchResultEntity3(getTsiUnoFn.apply(result), tsrSns, result, getOriginalMapFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                            }else {
+
+                                searchResultEntity = CommonStaticSearchUtil.getSearchResultEntity2(getTsiUnoFn.apply(result), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                            }
 
                             try {
                                 //이미지 파일 저장
@@ -430,6 +435,10 @@ public class TrackingSearchResultService{
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "images_results").replace("image_sources", "images_results").replace("image_results", "images_results").replace("inline_images", "images_results");
+                if(rsalEntity != null && rsalEntity.getRslEngine().equals("yandex_image")) {
+                    jsonInString = jsonInString.replace("thumbnail", "thumbnailMap").replace("original_image", "orginalMap");
+                }
+
                 INFO info = mapper.readValue(jsonInString, infoClass);
 
                 if (getErrorFn.apply(info) == null) {

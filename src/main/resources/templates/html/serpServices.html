@@ -50,23 +50,25 @@
                     </thead>
                     <tbody>
                         <tr th:each="item : ${list}">
-                            <td><span class="tit" th:text="${item.getSsName()}"></span></td>
-                            <td><span class="icon">
-                                <span class="icon_box flex flex_cnt"><img th:src="${item.getSsIconPath()}" >
-                                </span>
-                            </span></td>
-                            <td><span class="select_box">
-                                <input class="checkboxService chkServiceItem" type="checkbox" th:value="${item.getSsIsActive()}" th:attr="serviceUno=${item.ssUno}" th:checked="${item.ssIsActive == 1}">
-                            </span></td>
-                            <td><span class="select_box" th:classappend="${item.getSsIsText() > 0 ? 'possible' : ''}">
-                                <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsText() == 0 ? '불가' : '가능'}" disabled>
-                            </span></td>
-                            <td><span class="select_box" th:classappend="${item.getSsIsImage() > 0 ? 'possible' : ''}">
-                                <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsImage() == 0 ? '불가' : '가능'}" disabled>
-                            </span></td>
-                            <td><span class="select_box" th:classappend="${item.getSsIsVideo() > 0 ? 'possible' : ''}">
-                                <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsVideo() == 0 ? '불가' : '가능'}" disabled>
-                            </span></td>
+                            <th:block th:if="${! #strings.equals(item.ssName, 'yandex_image')}">
+                                <td><span class="tit" th:text="${item.getSsName()}"></span></td>
+                                <td><span class="icon">
+                                    <span class="icon_box flex flex_cnt"><img th:src="${item.getSsIconPath()}" >
+                                    </span>
+                                </span></td>
+                                <td><span class="select_box">
+                                    <input class="checkboxService chkServiceItem" type="checkbox" th:value="${item.getSsIsActive()}" th:attr="serviceUno=${item.ssUno}" th:checked="${item.ssIsActive == 1}">
+                                </span></td>
+                                <td><span class="select_box" th:classappend="${item.getSsIsText() > 0 ? 'possible' : ''}">
+                                    <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsText() == 0 ? '불가' : '가능'}" disabled>
+                                </span></td>
+                                <td><span class="select_box" th:classappend="${item.getSsIsImage() > 0 ? 'possible' : ''}">
+                                    <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsImage() == 0 ? '불가' : '가능'}" disabled>
+                                </span></td>
+                                <td><span class="select_box" th:classappend="${item.getSsIsVideo() > 0 ? 'possible' : ''}">
+                                    <input class="checkboxService chkServiceItem" type="button" th:text="${item.getSsIsVideo() == 0 ? '불가' : '가능'}" disabled>
+                                </span></td>
+                            </th:block>
                         </tr>
                     </tbody>
 

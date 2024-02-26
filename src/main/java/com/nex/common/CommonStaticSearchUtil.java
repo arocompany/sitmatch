@@ -223,6 +223,30 @@ public class CommonStaticSearchUtil {
         return sre;
     }
 
+    public static <RESULT> SearchResultEntity getSearchResultEntity3(int tsiUno, String tsrSns, RESULT result
+            , Function<RESULT, Map<String, Object>> getOriginalMapFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
+        SearchResultEntity sre = new SearchResultEntity();
+        sre.setTsiUno(tsiUno);
+        sre.setTsrJson(result.toString());
+        sre.setTsrDownloadUrl(getOriginalMapFn.apply(result).get("link").toString());
+        sre.setTsrTitle(getTitleFn.apply(result));
+        sre.setTsrSiteUrl(getLinkFn.apply(result));
+
+        // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
+        if (CommonCode.snsTypeFacebook.equals(tsrSns) && isFacebookFn.apply(result)) {
+            sre.setTsrSns(CommonCode.snsTypeFacebook);
+        } else if(CommonCode.snsTypeTwitter.equals(tsrSns) && isTwitterFn.apply(result)){
+            sre.setTsrSns(CommonCode.snsTypeTwitter);
+        } else if (CommonCode.snsTypeInstagram.equals(tsrSns) && isInstagramFn.apply(result)) {
+            sre.setTsrSns(CommonCode.snsTypeInstagram);
+        } else {
+            sre.setTsrSns(CommonCode.snsTypeGoogle);
+        }
+
+        return sre;
+    }
+
     public static String getSerpApiUrl(String url, String keyword, String country, String noCache, String location, Integer pageNo, String key, String imageUrl, String engine, String pageToken){
 
         StringBuilder queryString = new StringBuilder();

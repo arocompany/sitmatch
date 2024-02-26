@@ -180,6 +180,8 @@ public class SearchResult implements ItemReader<List<ImagesResult>> {
                         , ImagesResult::getTsiUno
                         , ImagesResult::getOriginal
                         , ImagesResult::getThumbnail
+                        , ImagesResult::getOrginalMap
+                        , ImagesResult::getThumbnailMap
                         , ImagesResult::getTitle
                         , ImagesResult::getLink
                         , ImagesResult::isFacebook

@@ -3,6 +3,8 @@ package com.nex.batch.tracking;
 import com.nex.search.entity.RequestSerpApiLogEntity;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 public class ImagesResult {
     private Integer tsiUno;
@@ -15,6 +17,9 @@ public class ImagesResult {
     private int position;
     private int original_width;
     private int original_height;
+
+    private Map<String, Object> thumbnailMap;
+    private Map<String, Object> orginalMap;
 
     private RequestSerpApiLogEntity rslInfo;
 
