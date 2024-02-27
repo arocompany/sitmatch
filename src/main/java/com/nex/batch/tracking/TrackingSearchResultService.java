@@ -351,7 +351,7 @@ public class TrackingSearchResultService{
 
                             SearchResultEntity searchResultEntity = null;
                             //검색 결과 엔티티 추출
-//                            if(StringUtils.hasText(getOriginalMapFn.apply(result).get("link").toString())){
+//                            if(StringUtils.hasText(getOriginalMapFn.apply(result).get("link"))){
 //                                searchResultEntity = CommonStaticSearchUtil.getSearchResultEntity3(getTsiUnoFn.apply(result), tsrSns, result, getOriginalMapFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 //                            }else {
 
