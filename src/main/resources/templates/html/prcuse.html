@@ -16,7 +16,7 @@
     <script src="/js/style.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.debug.js'></script>
-    <script src="html2canvas.hertzen.com/dist/html2canvas.js"></script>
+<!--    <script src="html2canvas.hertzen.com/dist/html2canvas.js"></script>-->
     <!--    <script src="ttps://html2canvas.hertzen.com/dist/html2canvas.js"></script>-->
 </head>
 <style>
@@ -420,10 +420,8 @@
                                 text: '사용자 접속 현황'
                             }
                         }, scales: {
-                            responsive: false,
                             y: {
                                 min: 0,
-                                max: 100,
                             }
                         }
                     }
@@ -628,7 +626,7 @@
                     }
                 },
                 scales: {
-                    responsive: true,
+                    // responsive: true,
                     y: {
                         min: 0
                     }
@@ -865,7 +863,7 @@
     }
 
     function getMonitoring() {
-        // const exampleMonitoring = document.querySelector('#myChart5').getContext('2d');
+        const exampleMonitoring = document.querySelector('#myChart5').getContext('2d');
         const fromDate = document.getElementById("fromDate").value;
         const toDate = document.getElementById("toDate").value;
 
