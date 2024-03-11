@@ -199,7 +199,10 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " else 1 end)) * 100))),SIGNED)" +
             " FROM TB_MATCH_RESULT " +
             " WHERE tsr.tsi_uno = tsi_uno " +
-            ") AS maxSimilarity ";
+            ") AS maxSimilarity" +
+            ",ROUND(tmr.TMR_AGE_SCORE, 2)* 100 AS tmrAgeScore" +
+            ",ROUND(tmr.TMR_OBJECT_SCORE, 2)* 100 AS tmrObjectScore" +
+            ",ROUND(tmr.TMR_OCW_SCORE, 2)* 100 AS tmrOcwScore ";
 
     // String defaultQeury_6 = "SELECT tsr.TSR_SITE_URL as tsrSiteUrl";
 
