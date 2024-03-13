@@ -96,6 +96,9 @@
                     </div>
                     <img th:if="${!#strings.isEmpty(keyword)}" src="/img/result/double-right.png" alt=""
                          class="next research" style="display: block">
+<!--                    <div class="tab research" th:if="${!#strings.isEmpty(searchInfo.getTsiKeyword())}">-->
+<!--                        <p>"<span th:text="${searchInfo.getTsiKeyword()}">sitting</span>" 로 검색된 결과 입니다.</p>-->
+<!--                    </div>-->
                     <div class="tab research" th:if="${!#strings.isEmpty(keyword)}">
                         <p>"<span th:text="${keyword}">sitting</span>"에 대한 검색 결과 입니다.</p>
                     </div>

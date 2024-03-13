@@ -427,7 +427,7 @@ public class SearchService {
     public Page<DefaultQueryDtoInterface> getSearchResultList(Integer tsiUno, String keyword, Integer page, String priority,
                                                               String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
                                                               String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, String order_type) {
-        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        PageRequest pageRequest = PageRequest.of(page - 1, 10);
 
         log.debug("priority => {}", priority);
 
@@ -512,7 +512,7 @@ public class SearchService {
 
     public Map<String, Object> getTraceHistoryList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        PageRequest pageRequest = PageRequest.of(page - 1, 10);
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryList(keyword, pageRequest);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
@@ -527,7 +527,7 @@ public class SearchService {
 
     public Map<String, Object> getTraceHistoryUserFileList(Integer page, String keyword) {
         Map<String, Object> outMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        PageRequest pageRequest = PageRequest.of(page - 1, 10);
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceUserFileList(keyword, pageRequest);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
@@ -945,7 +945,7 @@ public class SearchService {
     public Map<String, Object> getSearchInfoList(Integer page, String keyword) {
         log.info("getSearchInfoList page: " + page);
         Map<String, Object> outMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        PageRequest pageRequest = PageRequest.of(page - 1, 10);
         Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getSearchInfoResultCnt("10","0", keyword, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
@@ -960,7 +960,7 @@ public class SearchService {
     // admin 아닐 때
     public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno) {
         Map<String, Object> outMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        PageRequest pageRequest = PageRequest.of(page - 1, 10);
         Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getUserSearchInfoList("10","0", keyword, userUno, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);

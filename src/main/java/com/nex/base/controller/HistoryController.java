@@ -2,6 +2,7 @@ package com.nex.base.controller;
 
 import com.nex.common.Consts;
 import com.nex.search.entity.dto.DefaultQueryDtoInterface;
+import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.service.SearchService;
 import com.nex.user.entity.SessionInfoDto;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.Optional;
 @RequestMapping("/")
 public class HistoryController {
     private final SearchService searchService;
+    private final SearchInfoRepository searchInfoRepository;
 
     @GetMapping("/history")
     public ModelAndView history(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
@@ -296,6 +298,7 @@ public class HistoryController {
         modelAndView.addObject("listType", listType);
         modelAndView.addObject("keyword", keyword);
         modelAndView.addObject("userId", searchService.getUserIdByTsiUnoMap().get(tsiUno.get()));
+        modelAndView.addObject("searchInfo", searchInfoRepository.findByTsiUno(tsiUno.get()));
 
         return modelAndView;
     }

@@ -280,7 +280,7 @@
           <span class="dot"></span>
           <span class="dot-per" th:text="${getProgressPercentMap.get(searchInfoList.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(searchInfoList.getTsiUno())}"></span>
         </p>
-        <button class="btn-off review gubun" th:onclick="|location.href='@{/result(tsiUno=${searchInfoList.getTsiUno()}, tsiKeyword=${searchInfoList.getTsiKeyword()}, keyword=${searchInfoList.getTsiKeyword()})}'|">검색중</button>
+        <button class="btn-off review gubun" th:onclick="|location.href='@{/result(tsiUno=${searchInfoList.getTsiUno()}, tsiKeyword=${searchInfoList.getTsiKeyword()}, keyword=)}'|">검색중</button>
         <p style="margin-right: 17px;" class = "dist"> 총 <span th:text="${searchInfoList.getResultCnt()}" />건,
           &nbsp; 유사도: <span th:text="${searchInfoList.getTmrSimilarityCnt()}" />건
         </p>
