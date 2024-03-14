@@ -938,8 +938,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD IS NOT NULL AND TSI3.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') AND TSR.MONITORING_CD = '20' AND TSR.TSI_UNO = :tsiUno " +
             " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
 
-    String from = " FROM TB_SEARCH_RESULT TSR INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO";
-    String from2 = " FROM TB_SEARCH_RESULT TSR INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO";
+    String from = " FROM TB_SEARCH_RESULT TSR INNER JOIN (SELECT MIN(tsr_uno) tsr_uno from tb_search_result GROUP BY tsr_site_url) tsr2 ON tsr.tsr_uno = tsr2.tsr_uno INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO";
+    String from2 = " FROM TB_SEARCH_RESULT TSR INNER JOIN (SELECT MIN(tsr_uno) tsr_uno from tb_search_result GROUP BY tsr_site_url) tsr2 ON tsr.tsr_uno = tsr2.tsr_uno INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO";
 
     // WHERE
     String whereTsiUnoTsrTitleLikeTsrStatusIn = " WHERE TSI.TSI_UNO = :tsiUno AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') or TSR.TSR_TITLE is null) " +
@@ -1035,7 +1035,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String countQuery = "SELECT COUNT(TSR.TSR_UNO)";
     String countQuery2 = "SELECT DISTINCT(COUNT(TSR.TSR_UNO))";
 
-    String countQuery3 = "SELECT COUNT(DISTINCT TSR.tsr_site_url) ";
+    String countQuery3 = "SELECT COUNT(*) ";
     String limit4 = " LIMIT 4 ";
 
     String InfoImgSrc = " select " +
@@ -1100,7 +1100,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     Page<DefaultQueryDtoInterface> allTimeMonitoringTsiUnoUserFileList(String keyword, Pageable pageable, Integer tsiUno);
 
     // 검색 결과 검색 이력
-    @Query(value = defaultQeury_5+from2+whereTsiUnoTsrTitleLikeTsrStatusIn2+orderByTmrSimilarityDesc, nativeQuery = true, countQuery = countQuery3+from+whereTsiUnoTsrTitleLikeTsrStatusIn2)
+    @Query(value = defaultQeury_5+from2+whereTsiUnoTsrTitleLikeTsrStatusIn2+orderByTmrSimilarityDesc, nativeQuery = true, countQuery = countQuery3+from2+whereTsiUnoTsrTitleLikeTsrStatusIn2)
     Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, Pageable pageable);
     @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_1, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn)
     Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_1(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, Pageable pageable);
