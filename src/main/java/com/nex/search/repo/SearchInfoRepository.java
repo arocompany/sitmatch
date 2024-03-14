@@ -79,7 +79,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " tsi.tsi_type AS tsiType, " +
                                     " tsi.tsr_uno AS tsrUno, " +
                                     " tsi.user_uno AS tsiUserUno, " +
-                                    " (SELECT COUNT(*)  FROM tb_search_result tsr " +
+                                    " (SELECT COUNT(distinct tsr_site_url)  FROM tb_search_result tsr " +
                                     " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt, " +
                                     " (SELECT COUNT(*) " +
                                     " FROM tb_search_result tsr_2 " +
