@@ -97,7 +97,7 @@
           <span class="dot"></span>
           <span class="dot-per" th:text="${getProgressPercentMap.get(newKeywordInfoList.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(newKeywordInfoList.getTsiUno())}"></span>
         </p>
-        <button class="btn-off review" th:onclick="|location.href='@{/result(tsiUno=${newKeywordInfoList.getTsiUno()}, tsiKeyword=${newKeywordInfoList.getTsiKeyword()}, keyword=${newKeywordInfoList.getTsiKeyword()})}'|">검색중</button>
+        <button class="btn-off review" th:onclick="|location.href='@{/result(tsiUno=${newKeywordInfoList.getTsiUno()}, tsiKeyword=${newKeywordInfoList.getTsiKeyword()})}'|">검색중</button>
         <!--총 <p>건</p>, 유사도: <p>건</p>-->
         <!--<button class="del-btn btn-off del" >삭제</button>-->
       </li>
