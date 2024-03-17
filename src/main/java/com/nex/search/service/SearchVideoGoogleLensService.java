@@ -51,9 +51,9 @@ public class SearchVideoGoogleLensService {
     private final RequestSerpApiLogService requestSerpApiLogService;
 
     @Async
-    public void searchByGoogleLensVideo(String tsrSns, SearchInfoEntity insertResult, String path, String nationCode) throws Exception {
-        List<String> files = processVideo(insertResult);
-
+    public void searchByGoogleLensVideo(String tsrSns, SearchInfoEntity insertResult, String path, String nationCode, List<String> files) throws Exception {
+//        List<String> files = processVideo(insertResult);
+        if(files == null) return;
         for (int i = 0; i < files.size(); i++) {
             VideoInfoEntity videoInfo = new VideoInfoEntity();
             videoInfo.setTsiUno(insertResult.getTsiUno());
