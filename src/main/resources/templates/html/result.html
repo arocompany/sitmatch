@@ -178,7 +178,7 @@
                             </th:block>
                         </span>
                     </th:block>
-                    <span th:if="${(list.getTmrAgeScore() != null && list.getTmrObjectScore() != null && list.getTmrOcwScore() != null) && (list.getTmrAgeScore()+list.getTmrObjectScore()+list.getTmrOcwScore() > 0) }">
+                    <span th:if="${(list.getTmrAgeScore() != null && list.getTmrObjectScore() != null && list.getTmrOcwScore() != null) }">
                         아청물
                         <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() != '0.0'}">
                             ( 나이 : <span th:text="${list.getTmrAgeScore()}">100</span>%,&nbsp;</b>
