@@ -99,12 +99,12 @@ public class SearchTextBaiduService {
                         log.error(e.getMessage(), e);
                     }
                 }).thenRun(() -> {
-                    // 검색결과가 있으면 다음 페이지 진입 로직
-                    if (loop == true) {
-                        CompletableFutureByText(index, tsrSns, textGl, insertResult, searchInfoDto);
-                    } else {
-                        log.info("==== CompletableFutureByText 함수 종료 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, textGl);
-                    }
+//                    // 검색결과가 있으면 다음 페이지 진입 로직
+//                    if (loop == true) {
+//                        CompletableFutureByText(index, tsrSns, textGl, insertResult, searchInfoDto);
+//                    } else {
+//                        log.info("==== CompletableFutureByText 함수 종료 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, textGl);
+//                    }
                 });
     }
 
