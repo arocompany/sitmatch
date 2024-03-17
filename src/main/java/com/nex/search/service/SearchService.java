@@ -168,7 +168,16 @@ public class SearchService {
 
             List<String> files = null;
             if(param.getTsiType().equals(CommonCode.searchTypeVideo) || param.getTsiType().equals(CommonCode.searchTypeKeywordVideo)){
-                files = searchVideoService.processVideo(param);
+                String DATA_DIRECTORY = param.getTsiImgPath() + param.getTsiUno() + "/";
+                File dir = new File(DATA_DIRECTORY);
+                if(! dir.exists()){
+                    dir.mkdirs();
+                }
+                try {
+                    files = searchVideoService.processVideo(param);
+                }catch(Exception e){
+                    log.error(e.getMessage());
+                }
             }
 
             int cntNation = 0;
