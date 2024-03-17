@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -159,251 +160,445 @@ public class SearchService {
         return saveSearchInfo(param);
     }
     public void search(SearchInfoEntity param, SearchInfoDto siDto, String folder){
-        try {
-            // 활성화된 언어 리스트
-            List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
-            // 활성화된 검색엔진 리스트
-            List<SerpServicesEntity> ssList = serpServicesRepository.findBySsIsActive(1);
+        CompletableFuture
+            .supplyAsync(() -> {
+                try {
+                    // 활성화된 언어 리스트
+                    List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
+                    // 활성화된 검색엔진 리스트
+                    List<SerpServicesEntity> ssList = serpServicesRepository.findBySsIsActive(1);
 
-            List<String> files = null;
-            if(param.getTsiType().equals(CommonCode.searchTypeVideo) || param.getTsiType().equals(CommonCode.searchTypeKeywordVideo)){
-                files = searchVideoService.processVideo(param);
-            }
+                    List<String> files = null;
+                    if (param.getTsiType().equals(CommonCode.searchTypeVideo) || param.getTsiType().equals(CommonCode.searchTypeKeywordVideo)) {
+                        files = searchVideoService.processVideo(param);
+                    }
 
-            int cntNation = 0;
-            for (NationCodeEntity ncInfo : ncList) {
-                // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19:영상
-                switch (param.getTsiType()) {
-                    // 11:키워드
-                    case CommonCode.searchTypeKeyword -> {
-                        for(SerpServicesEntity ssInfo : ssList) {
-                            switch (ssInfo.getSsName()){
-                                case CommonCode.SerpAPIEngineGoogle -> {
-                                    if (param.getTsiGoogle() == 1) { searchGoogleTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                    if (param.getTsiInstagram() == 1) { searchInstagramTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                    if (param.getTsiFacebook() == 1) { searchFacebookTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                    if (param.getTsiTwitter() == 1) { searchTwitterTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                }
-                                case CommonCode.SerpAPIEngineYoutube -> {
-                                    if (param.getTsiGoogle() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
-                                    if (param.getTsiInstagram() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeInstagram, param, siDto, ncInfo.getNcCode().toLowerCase());
-                                    if (param.getTsiFacebook() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeFacebook, param, siDto, ncInfo.getNcCode().toLowerCase());
-                                    if (param.getTsiTwitter() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeTwitter, param, siDto, ncInfo.getNcCode().toLowerCase());
-                                }
-                                case CommonCode.SerpAPIEngineBaidu -> {
-                                    if(cntNation == 0) {
-                                        if (param.getTsiGoogle() == 1){ searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                        if (param.getTsiInstagram() == 1){searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                        if (param.getTsiFacebook() == 1){searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                        if (param.getTsiTwitter() == 1){searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                    }
-                                }
-                                case CommonCode.SerpAPIEngineBing -> {
-                                    if(! ncInfo.getNcCode().equals("cn") && ! ncInfo.getNcCode().equals("th") && ! ncInfo.getNcCode().equals("ru") && ! ncInfo.getNcCode().equals("vn")) {
-                                        if (param.getTsiGoogle() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                        if (param.getTsiInstagram() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                        if (param.getTsiFacebook() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                        if (param.getTsiTwitter() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                    }
-                                }
-                                case CommonCode.SerpAPIEngineDuckduckgo -> {
-                                    if (param.getTsiGoogle() == 1){searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                    if (param.getTsiInstagram() == 1){searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                    if (param.getTsiFacebook() == 1){searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                    if (param.getTsiTwitter() == 1){searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                }
-                                case CommonCode.SerpAPIEngineYahoo -> {
-                                    if (param.getTsiGoogle() == 1){searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                    if (param.getTsiInstagram() == 1){searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                    if (param.getTsiFacebook() == 1){searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                    if (param.getTsiTwitter() == 1){searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                }
-                                case CommonCode.SerpAPIEngineYandex -> {
-                                    if(! ncInfo.getNcCode().equals("vn")) {
-                                        if (param.getTsiGoogle() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                        if (param.getTsiInstagram() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                        if (param.getTsiFacebook() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                        if (param.getTsiTwitter() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                    }
-                                }
-                                case CommonCode.SerpAPIEngineNaver -> {
-                                    if(cntNation == 0) {
-                                        if (param.getTsiGoogle() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                        if (param.getTsiInstagram() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                        if (param.getTsiFacebook() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                        if (param.getTsiTwitter() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
+                    int cntNation = 0;
+                    for (NationCodeEntity ncInfo : ncList) {
+                        // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19:영상
+                        switch (param.getTsiType()) {
+                            // 11:키워드
+                            case CommonCode.searchTypeKeyword -> {
+                                for (SerpServicesEntity ssInfo : ssList) {
+                                    switch (ssInfo.getSsName()) {
+                                        case CommonCode.SerpAPIEngineGoogle -> {
+                                            if (param.getTsiGoogle() == 1) {
+                                                searchGoogleTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                            }
+                                            if (param.getTsiInstagram() == 1) {
+                                                searchInstagramTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                            }
+                                            if (param.getTsiFacebook() == 1) {
+                                                searchFacebookTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                            }
+                                            if (param.getTsiTwitter() == 1) {
+                                                searchTwitterTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineYoutube -> {
+                                            if (param.getTsiGoogle() == 1)
+                                                searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                            if (param.getTsiInstagram() == 1)
+                                                searchYoutubeService.searchYoutube(CommonCode.snsTypeInstagram, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                            if (param.getTsiFacebook() == 1)
+                                                searchYoutubeService.searchYoutube(CommonCode.snsTypeFacebook, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                            if (param.getTsiTwitter() == 1)
+                                                searchYoutubeService.searchYoutube(CommonCode.snsTypeTwitter, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                        }
+                                        case CommonCode.SerpAPIEngineBaidu -> {
+                                            if (cntNation == 0) {
+                                                if (param.getTsiGoogle() == 1) {
+                                                    searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                                }
+                                                if (param.getTsiInstagram() == 1) {
+                                                    searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                                }
+                                                if (param.getTsiFacebook() == 1) {
+                                                    searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                                }
+                                                if (param.getTsiTwitter() == 1) {
+                                                    searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                                }
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineBing -> {
+                                            if (!ncInfo.getNcCode().equals("cn") && !ncInfo.getNcCode().equals("th") && !ncInfo.getNcCode().equals("ru") && !ncInfo.getNcCode().equals("vn")) {
+                                                if (param.getTsiGoogle() == 1) {
+                                                    searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                                }
+                                                if (param.getTsiInstagram() == 1) {
+                                                    searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                                }
+                                                if (param.getTsiFacebook() == 1) {
+                                                    searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                                }
+                                                if (param.getTsiTwitter() == 1) {
+                                                    searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                                }
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineDuckduckgo -> {
+                                            if (param.getTsiGoogle() == 1) {
+                                                searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                            }
+                                            if (param.getTsiInstagram() == 1) {
+                                                searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                            }
+                                            if (param.getTsiFacebook() == 1) {
+                                                searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                            }
+                                            if (param.getTsiTwitter() == 1) {
+                                                searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineYahoo -> {
+                                            if (param.getTsiGoogle() == 1) {
+                                                searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                            }
+                                            if (param.getTsiInstagram() == 1) {
+                                                searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                            }
+                                            if (param.getTsiFacebook() == 1) {
+                                                searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                            }
+                                            if (param.getTsiTwitter() == 1) {
+                                                searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineYandex -> {
+                                            if (!ncInfo.getNcCode().equals("vn")) {
+                                                if (param.getTsiGoogle() == 1) {
+                                                    searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                                }
+                                                if (param.getTsiInstagram() == 1) {
+                                                    searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                                }
+                                                if (param.getTsiFacebook() == 1) {
+                                                    searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                                }
+                                                if (param.getTsiTwitter() == 1) {
+                                                    searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                                }
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineNaver -> {
+                                            if (cntNation == 0) {
+                                                if (param.getTsiGoogle() == 1) {
+                                                    searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                                }
+                                                if (param.getTsiInstagram() == 1) {
+                                                    searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                                }
+                                                if (param.getTsiFacebook() == 1) {
+                                                    searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                                }
+                                                if (param.getTsiTwitter() == 1) {
+                                                    searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }
-                    // 13:키워드+이미지
-                    case CommonCode.searchTypeKeywordImage -> {
-                        for(SerpServicesEntity ssInfo : ssList) {
-                            switch (ssInfo.getSsName()){
-                                case CommonCode.SerpAPIEngineGoogleReverseImage -> {
-                                    if (param.getTsiGoogle() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                    if (param.getTsiInstagram() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                    if (param.getTsiFacebook() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                    if (param.getTsiTwitter() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                }
-                                case CommonCode.SerpAPIEngineGoogleLens -> searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
-                                case CommonCode.SerpAPIEngineYandexImage -> {
-                                    if(! ncInfo.getNcCode().equals("vn")) {
-                                        searchImageYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
-                                        if (param.getTsiGoogle() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                        if (param.getTsiInstagram() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                        if (param.getTsiFacebook() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                        if (param.getTsiTwitter() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                    }
-                                }
+                            // 13:키워드+이미지
+                            case CommonCode.searchTypeKeywordImage -> {
+                                for (SerpServicesEntity ssInfo : ssList) {
+                                    switch (ssInfo.getSsName()) {
+                                        case CommonCode.SerpAPIEngineGoogleReverseImage -> {
+                                            if (param.getTsiGoogle() == 1) {
+                                                searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                            }
+                                            if (param.getTsiInstagram() == 1) {
+                                                searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                            }
+                                            if (param.getTsiFacebook() == 1) {
+                                                searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                            }
+                                            if (param.getTsiTwitter() == 1) {
+                                                searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineGoogleLens ->
+                                                searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
+                                        case CommonCode.SerpAPIEngineYandexImage -> {
+                                            if (!ncInfo.getNcCode().equals("vn")) {
+                                                searchImageYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
+                                                if (param.getTsiGoogle() == 1) {
+                                                    searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                                }
+                                                if (param.getTsiInstagram() == 1) {
+                                                    searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                                }
+                                                if (param.getTsiFacebook() == 1) {
+                                                    searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                                }
+                                                if (param.getTsiTwitter() == 1) {
+                                                    searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                                }
+                                            }
+                                        }
 
-                                /* 키워드 검색엔진 부분 */
-                                case CommonCode.SerpAPIEngineYoutube -> {
-                                    if (param.getTsiGoogle() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
-                                    if (param.getTsiInstagram() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeInstagram, param, siDto, ncInfo.getNcCode().toLowerCase());
-                                    if (param.getTsiFacebook() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeFacebook, param, siDto, ncInfo.getNcCode().toLowerCase());
-                                    if (param.getTsiTwitter() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeTwitter, param, siDto, ncInfo.getNcCode().toLowerCase());
-                                }
-                                case CommonCode.SerpAPIEngineBaidu -> {
-                                    if(cntNation == 0) {
-                                        if (param.getTsiGoogle() == 1){ searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                        if (param.getTsiInstagram() == 1){searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                        if (param.getTsiFacebook() == 1){searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                        if (param.getTsiTwitter() == 1){searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                    }
-                                }
-                                case CommonCode.SerpAPIEngineBing -> {
-                                    if(! ncInfo.getNcCode().equals("cn") && ! ncInfo.getNcCode().equals("th") && ! ncInfo.getNcCode().equals("ru") && ! ncInfo.getNcCode().equals("vn")) {
-                                        if (param.getTsiGoogle() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                        if (param.getTsiInstagram() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                        if (param.getTsiFacebook() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                        if (param.getTsiTwitter() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                    }
-                                }
-                                case CommonCode.SerpAPIEngineDuckduckgo -> {
-                                    if (param.getTsiGoogle() == 1){searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                    if (param.getTsiInstagram() == 1){searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                    if (param.getTsiFacebook() == 1){searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                    if (param.getTsiTwitter() == 1){searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                }
-                                case CommonCode.SerpAPIEngineYahoo -> {
-                                    if (param.getTsiGoogle() == 1){searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                    if (param.getTsiInstagram() == 1){searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                    if (param.getTsiFacebook() == 1){searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                    if (param.getTsiTwitter() == 1){searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                }
-                                case CommonCode.SerpAPIEngineNaver -> {
-                                    if(cntNation == 0) {
-                                        if (param.getTsiGoogle() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                        if (param.getTsiInstagram() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                        if (param.getTsiFacebook() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                        if (param.getTsiTwitter() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
+                                        /* 키워드 검색엔진 부분 */
+                                        case CommonCode.SerpAPIEngineYoutube -> {
+                                            if (param.getTsiGoogle() == 1)
+                                                searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                            if (param.getTsiInstagram() == 1)
+                                                searchYoutubeService.searchYoutube(CommonCode.snsTypeInstagram, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                            if (param.getTsiFacebook() == 1)
+                                                searchYoutubeService.searchYoutube(CommonCode.snsTypeFacebook, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                            if (param.getTsiTwitter() == 1)
+                                                searchYoutubeService.searchYoutube(CommonCode.snsTypeTwitter, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                        }
+                                        case CommonCode.SerpAPIEngineBaidu -> {
+                                            if (cntNation == 0) {
+                                                if (param.getTsiGoogle() == 1) {
+                                                    searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                                }
+                                                if (param.getTsiInstagram() == 1) {
+                                                    searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                                }
+                                                if (param.getTsiFacebook() == 1) {
+                                                    searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                                }
+                                                if (param.getTsiTwitter() == 1) {
+                                                    searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                                }
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineBing -> {
+                                            if (!ncInfo.getNcCode().equals("cn") && !ncInfo.getNcCode().equals("th") && !ncInfo.getNcCode().equals("ru") && !ncInfo.getNcCode().equals("vn")) {
+                                                if (param.getTsiGoogle() == 1) {
+                                                    searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                                }
+                                                if (param.getTsiInstagram() == 1) {
+                                                    searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                                }
+                                                if (param.getTsiFacebook() == 1) {
+                                                    searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                                }
+                                                if (param.getTsiTwitter() == 1) {
+                                                    searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                                }
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineDuckduckgo -> {
+                                            if (param.getTsiGoogle() == 1) {
+                                                searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                            }
+                                            if (param.getTsiInstagram() == 1) {
+                                                searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                            }
+                                            if (param.getTsiFacebook() == 1) {
+                                                searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                            }
+                                            if (param.getTsiTwitter() == 1) {
+                                                searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineYahoo -> {
+                                            if (param.getTsiGoogle() == 1) {
+                                                searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                            }
+                                            if (param.getTsiInstagram() == 1) {
+                                                searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                            }
+                                            if (param.getTsiFacebook() == 1) {
+                                                searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                            }
+                                            if (param.getTsiTwitter() == 1) {
+                                                searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineNaver -> {
+                                            if (cntNation == 0) {
+                                                if (param.getTsiGoogle() == 1) {
+                                                    searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                                }
+                                                if (param.getTsiInstagram() == 1) {
+                                                    searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                                }
+                                                if (param.getTsiFacebook() == 1) {
+                                                    searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                                }
+                                                if (param.getTsiTwitter() == 1) {
+                                                    searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }
-                    // 15:키워드+영상
-                    case CommonCode.searchTypeKeywordVideo -> {
-                        for(SerpServicesEntity ssInfo : ssList) {
-                            switch (ssInfo.getSsName()){
-                                case CommonCode.SerpAPIEngineGoogle -> {
-                                    if (param.getTsiGoogle() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);}
-                                    if (param.getTsiFacebook() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeFacebook, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files); }
-                                    if (param.getTsiInstagram() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeInstagram, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files); }
-                                    if (param.getTsiTwitter() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeTwitter, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files); }
-                                }
-                                case CommonCode.SerpAPIEngineGoogleLens -> searchVideoGoogleLensService.searchByGoogleLensVideo(CommonCode.snsTypeGoogle, param, folder, ncInfo.getNcCode().toLowerCase(), files);
-                                case CommonCode.SerpAPIEngineYandex -> {
-                                    if(! ncInfo.getNcCode().equals("vn")) {
-                                        searchVideoYandexService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);
-                                        if (param.getTsiGoogle() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                        if (param.getTsiInstagram() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                        if (param.getTsiFacebook() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                        if (param.getTsiTwitter() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                    }
-                                }
+                            // 15:키워드+영상
+                            case CommonCode.searchTypeKeywordVideo -> {
+                                for (SerpServicesEntity ssInfo : ssList) {
+                                    switch (ssInfo.getSsName()) {
+                                        case CommonCode.SerpAPIEngineGoogle -> {
+                                            if (param.getTsiGoogle() == 1) {
+                                                searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);
+                                            }
+                                            if (param.getTsiFacebook() == 1) {
+                                                searchVideoService.searchByTextVideo(CommonCode.snsTypeFacebook, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);
+                                            }
+                                            if (param.getTsiInstagram() == 1) {
+                                                searchVideoService.searchByTextVideo(CommonCode.snsTypeInstagram, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);
+                                            }
+                                            if (param.getTsiTwitter() == 1) {
+                                                searchVideoService.searchByTextVideo(CommonCode.snsTypeTwitter, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineGoogleLens ->
+                                                searchVideoGoogleLensService.searchByGoogleLensVideo(CommonCode.snsTypeGoogle, param, folder, ncInfo.getNcCode().toLowerCase(), files);
+                                        case CommonCode.SerpAPIEngineYandex -> {
+                                            if (!ncInfo.getNcCode().equals("vn")) {
+                                                searchVideoYandexService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);
+                                                if (param.getTsiGoogle() == 1) {
+                                                    searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                                }
+                                                if (param.getTsiInstagram() == 1) {
+                                                    searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                                }
+                                                if (param.getTsiFacebook() == 1) {
+                                                    searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                                }
+                                                if (param.getTsiTwitter() == 1) {
+                                                    searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                                }
+                                            }
+                                        }
 
-                                /* 키워드 검색엔진 부분 */
-                                case CommonCode.SerpAPIEngineYoutube -> {
-                                    if (param.getTsiGoogle() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
-                                    if (param.getTsiInstagram() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeInstagram, param, siDto, ncInfo.getNcCode().toLowerCase());
-                                    if (param.getTsiFacebook() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeFacebook, param, siDto, ncInfo.getNcCode().toLowerCase());
-                                    if (param.getTsiTwitter() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeTwitter, param, siDto, ncInfo.getNcCode().toLowerCase());
-                                }
-                                case CommonCode.SerpAPIEngineBaidu -> {
-                                    if(cntNation == 0) {
-                                        if (param.getTsiGoogle() == 1){ searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                        if (param.getTsiInstagram() == 1){searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                        if (param.getTsiFacebook() == 1){searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                        if (param.getTsiTwitter() == 1){searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                    }
-                                }
-                                case CommonCode.SerpAPIEngineBing -> {
-                                    if(! ncInfo.getNcCode().equals("cn") && ! ncInfo.getNcCode().equals("th") && ! ncInfo.getNcCode().equals("ru") && ! ncInfo.getNcCode().equals("vn")) {
-                                        if (param.getTsiGoogle() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                        if (param.getTsiInstagram() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                        if (param.getTsiFacebook() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                        if (param.getTsiTwitter() == 1) { searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                    }
-                                }
-                                case CommonCode.SerpAPIEngineDuckduckgo -> {
-                                    if (param.getTsiGoogle() == 1){searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                    if (param.getTsiInstagram() == 1){searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                    if (param.getTsiFacebook() == 1){searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                    if (param.getTsiTwitter() == 1){searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                }
-                                case CommonCode.SerpAPIEngineYahoo -> {
-                                    if (param.getTsiGoogle() == 1){searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                    if (param.getTsiInstagram() == 1){searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                    if (param.getTsiFacebook() == 1){searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                    if (param.getTsiTwitter() == 1){searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
-                                }
-                                case CommonCode.SerpAPIEngineNaver -> {
-                                    if(cntNation == 0) {
-                                        if (param.getTsiGoogle() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                        if (param.getTsiInstagram() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                        if (param.getTsiFacebook() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                        if (param.getTsiTwitter() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
+                                        /* 키워드 검색엔진 부분 */
+                                        case CommonCode.SerpAPIEngineYoutube -> {
+                                            if (param.getTsiGoogle() == 1)
+                                                searchYoutubeService.searchYoutube(CommonCode.snsTypeGoogle, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                            if (param.getTsiInstagram() == 1)
+                                                searchYoutubeService.searchYoutube(CommonCode.snsTypeInstagram, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                            if (param.getTsiFacebook() == 1)
+                                                searchYoutubeService.searchYoutube(CommonCode.snsTypeFacebook, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                            if (param.getTsiTwitter() == 1)
+                                                searchYoutubeService.searchYoutube(CommonCode.snsTypeTwitter, param, siDto, ncInfo.getNcCode().toLowerCase());
+                                        }
+                                        case CommonCode.SerpAPIEngineBaidu -> {
+                                            if (cntNation == 0) {
+                                                if (param.getTsiGoogle() == 1) {
+                                                    searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                                }
+                                                if (param.getTsiInstagram() == 1) {
+                                                    searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                                }
+                                                if (param.getTsiFacebook() == 1) {
+                                                    searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                                }
+                                                if (param.getTsiTwitter() == 1) {
+                                                    searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                                }
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineBing -> {
+                                            if (!ncInfo.getNcCode().equals("cn") && !ncInfo.getNcCode().equals("th") && !ncInfo.getNcCode().equals("ru") && !ncInfo.getNcCode().equals("vn")) {
+                                                if (param.getTsiGoogle() == 1) {
+                                                    searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                                }
+                                                if (param.getTsiInstagram() == 1) {
+                                                    searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                                }
+                                                if (param.getTsiFacebook() == 1) {
+                                                    searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                                }
+                                                if (param.getTsiTwitter() == 1) {
+                                                    searchTextBingService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                                }
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineDuckduckgo -> {
+                                            if (param.getTsiGoogle() == 1) {
+                                                searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                            }
+                                            if (param.getTsiInstagram() == 1) {
+                                                searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                            }
+                                            if (param.getTsiFacebook() == 1) {
+                                                searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                            }
+                                            if (param.getTsiTwitter() == 1) {
+                                                searchTextDuckduckgoService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineYahoo -> {
+                                            if (param.getTsiGoogle() == 1) {
+                                                searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                            }
+                                            if (param.getTsiInstagram() == 1) {
+                                                searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                            }
+                                            if (param.getTsiFacebook() == 1) {
+                                                searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                            }
+                                            if (param.getTsiTwitter() == 1) {
+                                                searchTextYahooService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                            }
+                                        }
+                                        case CommonCode.SerpAPIEngineNaver -> {
+                                            if (cntNation == 0) {
+                                                if (param.getTsiGoogle() == 1) {
+                                                    searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle);
+                                                }
+                                                if (param.getTsiInstagram() == 1) {
+                                                    searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram);
+                                                }
+                                                if (param.getTsiFacebook() == 1) {
+                                                    searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook);
+                                                }
+                                                if (param.getTsiTwitter() == 1) {
+                                                    searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter);
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }
-                    // 17:이미지
-                    case CommonCode.searchTypeImage -> {
-                        for(SerpServicesEntity ssInfo : ssList) {
-                            switch (ssInfo.getSsName()){
-                                case CommonCode.SerpAPIEngineGoogleReverseImage -> searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
-                                case CommonCode.SerpAPIEngineGoogleLens -> searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
-                                case CommonCode.SerpAPIEngineYandexImage -> {
-                                    if( !ncInfo.getNcCode().equals("vn") ){searchImageYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase());}
+                            // 17:이미지
+                            case CommonCode.searchTypeImage -> {
+                                for (SerpServicesEntity ssInfo : ssList) {
+                                    switch (ssInfo.getSsName()) {
+                                        case CommonCode.SerpAPIEngineGoogleReverseImage ->
+                                                searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
+                                        case CommonCode.SerpAPIEngineGoogleLens ->
+                                                searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
+                                        case CommonCode.SerpAPIEngineYandexImage -> {
+                                            if (!ncInfo.getNcCode().equals("vn")) {
+                                                searchImageYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
+                                            }
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
-                    // 19: 영상
-                    case CommonCode.searchTypeVideo -> {
-                        if(files != null) {
-                            for (SerpServicesEntity ssInfo : ssList) {
-                                switch (ssInfo.getSsName()) {
-                                    case CommonCode.SerpAPIEngineGoogleReverseImage -> searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);
-                                    case CommonCode.SerpAPIEngineGoogleLens -> searchVideoGoogleLensService.searchByGoogleLensVideo(CommonCode.snsTypeGoogle, param, folder, ncInfo.getNcCode().toLowerCase(), files);
-                                    case CommonCode.SerpAPIEngineYandexImage -> {
-                                        if (!ncInfo.getNcCode().equals("vn")) { searchVideoYandexService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);
+                            // 19: 영상
+                            case CommonCode.searchTypeVideo -> {
+                                if (files != null) {
+                                    for (SerpServicesEntity ssInfo : ssList) {
+                                        switch (ssInfo.getSsName()) {
+                                            case CommonCode.SerpAPIEngineGoogleReverseImage ->
+                                                    searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);
+                                            case CommonCode.SerpAPIEngineGoogleLens ->
+                                                    searchVideoGoogleLensService.searchByGoogleLensVideo(CommonCode.snsTypeGoogle, param, folder, ncInfo.getNcCode().toLowerCase(), files);
+                                            case CommonCode.SerpAPIEngineYandexImage -> {
+                                                if (!ncInfo.getNcCode().equals("vn")) {
+                                                    searchVideoYandexService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+                        cntNation++;
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    log.error(e.getMessage());
                 }
-                cntNation++;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-            log.error(e.getMessage());
+                return null;
+            });
         }
     }
 

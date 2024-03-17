@@ -233,10 +233,10 @@ public class SearchVideoService {
         command[2] = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         command[3] = insertResult.getTsiImgPath() + insertResult.getTsiUno();
         try {
-            execPython(command);
-
             String DATA_DIRECTORY = insertResult.getTsiImgPath() + insertResult.getTsiUno() + "/";
             File dir = new File(DATA_DIRECTORY);
+
+            execPython(command);
 
             String[] filenames = dir.list();
             for (String filename : filenames) {
