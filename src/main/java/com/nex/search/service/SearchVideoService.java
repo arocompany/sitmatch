@@ -233,19 +233,15 @@ public class SearchVideoService {
         command[2] = insertResult.getTsiImgPath() + insertResult.getTsiImgName();
         command[3] = insertResult.getTsiImgPath() + insertResult.getTsiUno();
         try {
-            String DATA_DIRECTORY = insertResult.getTsiImgPath() + insertResult.getTsiUno() + "/";
-            File dir = new File(DATA_DIRECTORY);
-
             execPython(command);
-
-            String[] filenames = dir.list();
-            for (String filename : filenames) {
-                files.add(insertResult.getTsiImgPath() + insertResult.getTsiUno() + "/" + filename);
-            }
-
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception(e);
+        }
+        String DATA_DIRECTORY = insertResult.getTsiImgPath() + insertResult.getTsiUno() + "/";
+        File dir = new File(DATA_DIRECTORY);
+        String[] filenames = dir.list();
+        for (String filename : filenames) {
+            files.add(insertResult.getTsiImgPath() + insertResult.getTsiUno() + "/" + filename);
         }
 
         return files;
