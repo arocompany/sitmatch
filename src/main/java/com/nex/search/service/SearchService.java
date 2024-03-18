@@ -500,8 +500,8 @@ public class SearchService {
         return searchResultRepository.getNoticeListMain(percent);
     }
 
-    public DefaultQueryDtoInterface getInfoList(Integer tsiUno) {
-        return searchResultRepository.getInfoList(tsiUno);
+    public DefaultQueryDtoInterface getResultInfo(Integer tsrUno) {
+        return searchResultRepository.getResultInfo(tsrUno);
     }
 
     public Page<DefaultQueryDtoInterface> getTraceList(Integer page, String trkStatCd, String keyword) {
