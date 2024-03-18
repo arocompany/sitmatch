@@ -84,7 +84,7 @@ public class SearchVideoService {
                 try {
                     String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, sitProperties.getTextNocache(), sitProperties.getTextLocation(), null, configData.getSerpApiKey(), searchImageUrl, "google_reverse_image", null);
 
-                    RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(insertResult.getTsiUno(), url, nationCode, "yandex_images", tsiKeywordHiddenValue, null, configData.getSerpApiKey(), searchImageUrl);
+                    RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(insertResult.getTsiUno(), url, nationCode, "google_reverse_image", tsiKeywordHiddenValue, null, configData.getSerpApiKey(), searchImageUrl);
                     requestSerpApiLogService.save(rsalEntity);
                     rsalUno = rsalEntity.getRslUno();
                     int finalRsalUno = rsalUno;
