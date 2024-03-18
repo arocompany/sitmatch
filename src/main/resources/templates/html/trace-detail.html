@@ -24,12 +24,20 @@
             <p th:case="11"><b th:text="${#strings.concat(traceInfo.getTmrSimilarity(), '%')}">99%</b>
               <span th:if="${(traceInfo.getTsiType == '15' || traceInfo.getTsiType == '19')}">
                   <b th:if="${traceInfo.getTmrVScore() != null && traceInfo.getTmrVScore() != '0.0'}">(V : <span th:text="${traceInfo.getTmrVScore()}">100</span>%,&nbsp;</b>
-                  <b th:if="${traceInfo.getTmrVScore() == null || traceInfo.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>
+                  <b th:unless="${traceInfo.getTmrVScore() != null && traceInfo.getTmrVScore() != '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>
                   <b th:if="${traceInfo.getTmrAScore() != null && traceInfo.getTmrAScore() != '0.0'}">A : <span th:text="${traceInfo.getTmrAScore()}">100</span>%,&nbsp;</b>
-                  <b th:if="${traceInfo.getTmrAScore() == null || traceInfo.getTmrAScore() == '0.0'}">A : <span>비교없음,</span>&nbsp;</b>
+                  <b th:unless="${traceInfo.getTmrAScore() != null && traceInfo.getTmrAScore() != '0.0'}">A : <span>비교없음,</span>&nbsp;</b>
                   <b th:if="${traceInfo.getTmrTScore() != null && traceInfo.getTmrTScore() != '0.0'}">T : <span th:text="${traceInfo.getTmrTScore()}">100</span>%)</b>
-                  <b th:if="${traceInfo.getTmrTScore() == null || traceInfo.getTmrTScore() == '0.0'}">T : <span>비교없음</span>)</b>
+                  <b th:unless="${traceInfo.getTmrTScore() != null && traceInfo.getTmrTScore() != '0.0'}">T : <span>비교없음</span>)</b>
               </span>
+<!--              <span th:if="${(traceInfo.getTsiType == '15' || traceInfo.getTsiType == '19')}">-->
+<!--                  <b th:if="${traceInfo.getTmrVScore() != null && traceInfo.getTmrVScore() != '0.0'}">(V : <span th:text="${traceInfo.getTmrVScore()}">100</span>%,&nbsp;</b>-->
+<!--                  <b th:if="${traceInfo.getTmrVScore() == null || traceInfo.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>-->
+<!--                  <b th:if="${traceInfo.getTmrAScore() != null && traceInfo.getTmrAScore() != '0.0'}">A : <span th:text="${traceInfo.getTmrAScore()}">100</span>%,&nbsp;</b>-->
+<!--                  <b th:if="${traceInfo.getTmrAScore() == null || traceInfo.getTmrAScore() == '0.0'}">A : <span>비교없음,</span>&nbsp;</b>-->
+<!--                  <b th:if="${traceInfo.getTmrTScore() != null && traceInfo.getTmrTScore() != '0.0'}">T : <span th:text="${traceInfo.getTmrTScore()}">100</span>%)</b>-->
+<!--                  <b th:if="${traceInfo.getTmrTScore() == null || traceInfo.getTmrTScore() == '0.0'}">T : <span>비교없음</span>)</b>-->
+<!--              </span>-->
             </p>
           </th:block>
 

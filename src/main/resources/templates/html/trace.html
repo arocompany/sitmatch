@@ -62,20 +62,22 @@
         </th:block>
         <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url"><p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p></a>
         <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
-<!--        <p class="" th:text="'상담사 : '+${list.getTuUserId()}">상담사 : tester001</p>-->
         <p class="detail" >
-          <!--<span class="detail-info" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),', ','파일명 : ',list.getTsrImgName())}">검색정보 들어갑니다.</span>-->
-
           <span style="margin-right: -450px;" class="detail-info" th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgExt()} != ''" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),',')}" ></span>
           <span class="detail-info" th:if="${list.getTsrImgName()} != null and ${list.getTsrImgName()} != ''" th:text="${#strings.concat('파일명 : ',list.getTsrImgName())}" ></span>
-          <span class="detail-info" th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == null" >파일 정보가 없습니다.</span>
-          <span class="detail-info" th:if="${list.getTsrImgExt()} == '' and ${list.getTsrImgName()} == ''" >파일 정보가 없습니다.</span>
-          <span class="detail-info" th:if="${list.getTsrImgExt()} == '' and ${list.getTsrImgName()} == null" >파일 정보가 없습니다.</span>
-          <span class="detail-info" th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == ''" >파일 정보가 없습니다.</span>
-
-<!--        <span class="detail-info" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),', ','파일명 : ',list.getTsrImgName())}">검색정보 들어갑니다.</span>-->
+          <span class="detail-info" th:unless="${list.getTsrImgName()} != null and ${list.getTsrImgName()} != ''"  >파일 정보가 없습니다.</span>
           <span class="detail-time" ><span th:text="'상담사 : '+${list.getTuUserId()}+' | '">상담사 : tester001</span><span th:text="${#dates.format(list.getTsrFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}">추가일이 들어갑니다</span></span>
         </p>
+
+<!--        <p class="detail" >-->
+<!--          <span style="margin-right: -450px;" class="detail-info" th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgExt()} != ''" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),',')}" ></span>-->
+<!--          <span class="detail-info" th:if="${list.getTsrImgName()} != null and ${list.getTsrImgName()} != ''" th:text="${#strings.concat('파일명 : ',list.getTsrImgName())}" ></span>-->
+<!--          <span class="detail-info" th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == null" >파일 정보가 없습니다.</span>-->
+<!--          <span class="detail-info" th:if="${list.getTsrImgExt()} == '' and ${list.getTsrImgName()} == ''" >파일 정보가 없습니다.</span>-->
+<!--          <span class="detail-info" th:if="${list.getTsrImgExt()} == '' and ${list.getTsrImgName()} == null" >파일 정보가 없습니다.</span>-->
+<!--          <span class="detail-info" th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == ''" >파일 정보가 없습니다.</span>-->
+<!--          <span class="detail-time" ><span th:text="'상담사 : '+${list.getTuUserId()}+' | '">상담사 : tester001</span><span th:text="${#dates.format(list.getTsrFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}">추가일이 들어갑니다</span></span>-->
+<!--        </p>-->
         <button class="del del-btn btn-off" th:value="${list.getTsrUno()}">삭제</button>
       </section>
       <section style="text-align: center;" class="" th:if="${traceListCount == 0}">조회 결과가 없습니다.</section>
@@ -132,7 +134,6 @@ const select = document.querySelector(".selection");
 const option = document.querySelectorAll(".selection .option li");
 const tType = document.querySelector('input[name=trkStatCd]');
 select.addEventListener("click", (e) => {
-  alert("이미지클릭1")
   select.classList.toggle('active');
   option.forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -148,7 +149,6 @@ const modal = document.querySelector("#modal");
 imgBtn.forEach((btn) => {
   const tsrUno = btn.querySelector("#tsrUno");
   btn.addEventListener('click', () => {
-
     //XMLHttpRequest 객체 생성
     var xhr = new XMLHttpRequest();
     //요청을 보낼 방식, 주소, 비동기여부 설정
