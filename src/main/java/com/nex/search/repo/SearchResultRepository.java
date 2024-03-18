@@ -1134,8 +1134,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     DefaultQueryDtoInterface getResultInfo(Integer tsrUno);
 
 
-//    @Query(value = InfoImgSrc, nativeQuery = true)
-//    DefaultQueryDtoInterface getInfoList(Integer tsiUno);
+    @Query(value = InfoImgSrc, nativeQuery = true)
+    DefaultQueryDtoInterface getInfoList(Integer tsiUno);
 
 /*
     // index 추적대상 4개
