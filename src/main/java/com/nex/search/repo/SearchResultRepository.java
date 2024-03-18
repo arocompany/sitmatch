@@ -1147,7 +1147,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     Page<DefaultQueryDtoInterface> getTraceList(String tsrDataStatCd, String trkStatCd, String trkStatCd2, String keyword, Pageable pageable); */
 
     // 모니터링 팝업
-    @Query(value = defaultQeury+from+whereTsrUno, nativeQuery = true, countQuery = countQuery+from+whereTsrUno)
+    @Query(value = defaultQeury+fromForMonitoring+whereTsrUno, nativeQuery = true, countQuery = countQuery+fromForMonitoring+whereTsrUno)
     DefaultQueryDtoInterface getTraceInfo(Integer tsrUno);
 
     @Query(value = "SELECT TRK_STAT_CD FROM tb_search_result WHERE TSR_UNO = :tsrUno", nativeQuery = true)
