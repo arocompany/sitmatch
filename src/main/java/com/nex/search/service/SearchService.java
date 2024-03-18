@@ -58,12 +58,7 @@ public class SearchService {
     private final SearchImageService searchImageService;
     private final SearchImageGoogleLensService searchImageGoogleLensService;
     private final SearchTextService searchTextService;
-    private final SearchTextService searchGoogleTextService;
-    private final SearchTextService searchTwitterTextService;
-    private final SearchTextService searchInstagramTextService;
-    private final SearchTextService searchFacebookTextService;
 
-    private final SearchTextImageService searchTextImageService;
     private final SearchVideoService searchVideoService;
     private final SearchVideoYandexService searchVideoYandexService;
     private final SearchYoutubeService searchYoutubeService;
@@ -252,10 +247,15 @@ public class SearchService {
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()){
                                 case CommonCode.SerpAPIEngineGoogleReverseImage -> {
-                                    if (param.getTsiGoogle() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
-                                    if (param.getTsiInstagram() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
-                                    if (param.getTsiFacebook() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
-                                    if (param.getTsiTwitter() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
+                                    if (param.getTsiGoogle() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
+                                    if (param.getTsiInstagram() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
+                                    if (param.getTsiFacebook() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
+                                    if (param.getTsiTwitter() == 1) { searchTextService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
+                                    searchImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase());
+//                                    if (param.getTsiGoogle() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
+//                                    if (param.getTsiInstagram() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
+//                                    if (param.getTsiFacebook() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
+//                                    if (param.getTsiTwitter() == 1) { searchTextImageService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeTwitter); }
                                 }
                                 case CommonCode.SerpAPIEngineGoogleLens -> searchImageGoogleLensService.searchByGoogleLensImage(CommonCode.snsTypeGoogle, param, ncInfo.getNcCode().toLowerCase());
                                 case CommonCode.SerpAPIEngineYandexImage -> {
