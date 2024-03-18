@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -164,6 +165,20 @@ public class SearchService {
             List<NationCodeEntity> ncList = nationCodeRepository.findByNcIsActive(1);
             // 활성화된 검색엔진 리스트
             List<SerpServicesEntity> ssList = serpServicesRepository.findBySsIsActive(1);
+
+            List<String> files = null;
+            if(param.getTsiType().equals(CommonCode.searchTypeVideo) || param.getTsiType().equals(CommonCode.searchTypeKeywordVideo)){
+                String DATA_DIRECTORY = param.getTsiImgPath() + param.getTsiUno() + "/";
+                File dir = new File(DATA_DIRECTORY);
+                if(! dir.exists()){
+                    dir.mkdirs();
+                }
+                try {
+                    files = searchVideoService.processVideo(param);
+                }catch(Exception e){
+                    log.error(e.getMessage());
+                }
+            }
 
             int cntNation = 0;
             for (NationCodeEntity ncInfo : ncList) {
@@ -304,15 +319,15 @@ public class SearchService {
                         for(SerpServicesEntity ssInfo : ssList) {
                             switch (ssInfo.getSsName()){
                                 case CommonCode.SerpAPIEngineGoogle -> {
-                                    if (param.getTsiGoogle() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());}
-                                    if (param.getTsiFacebook() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeFacebook, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
-                                    if (param.getTsiInstagram() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeInstagram, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
-                                    if (param.getTsiTwitter() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeTwitter, param, siDto, folder, ncInfo.getNcCode().toLowerCase()); }
+                                    if (param.getTsiGoogle() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);}
+                                    if (param.getTsiFacebook() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeFacebook, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files); }
+                                    if (param.getTsiInstagram() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeInstagram, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files); }
+                                    if (param.getTsiTwitter() == 1) { searchVideoService.searchByTextVideo(CommonCode.snsTypeTwitter, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files); }
                                 }
-                                case CommonCode.SerpAPIEngineGoogleLens -> searchVideoGoogleLensService.searchByGoogleLensVideo(CommonCode.snsTypeGoogle, param, folder, ncInfo.getNcCode().toLowerCase());
+                                case CommonCode.SerpAPIEngineGoogleLens -> searchVideoGoogleLensService.searchByGoogleLensVideo(CommonCode.snsTypeGoogle, param, folder, ncInfo.getNcCode().toLowerCase(), files);
                                 case CommonCode.SerpAPIEngineYandex -> {
                                     if(! ncInfo.getNcCode().equals("vn")) {
-                                        searchVideoYandexService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());
+                                        searchVideoYandexService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);
                                         if (param.getTsiGoogle() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
                                         if (param.getTsiInstagram() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
                                         if (param.getTsiFacebook() == 1){searchTextYandexService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
@@ -380,12 +395,15 @@ public class SearchService {
                     }
                     // 19: 영상
                     case CommonCode.searchTypeVideo -> {
-                        for(SerpServicesEntity ssInfo : ssList) {
-                            switch (ssInfo.getSsName()) {
-                                case CommonCode.SerpAPIEngineGoogleReverseImage -> searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());
-                                case CommonCode.SerpAPIEngineGoogleLens -> searchVideoGoogleLensService.searchByGoogleLensVideo(CommonCode.snsTypeGoogle, param, folder, ncInfo.getNcCode().toLowerCase());
-                                case CommonCode.SerpAPIEngineYandexImage -> {
-                                    if( !ncInfo.getNcCode().equals("vn") ){searchVideoYandexService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase());}
+                        if(files != null) {
+                            for (SerpServicesEntity ssInfo : ssList) {
+                                switch (ssInfo.getSsName()) {
+                                    case CommonCode.SerpAPIEngineGoogleReverseImage -> searchVideoService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);
+                                    case CommonCode.SerpAPIEngineGoogleLens -> searchVideoGoogleLensService.searchByGoogleLensVideo(CommonCode.snsTypeGoogle, param, folder, ncInfo.getNcCode().toLowerCase(), files);
+                                    case CommonCode.SerpAPIEngineYandexImage -> {
+                                        if (!ncInfo.getNcCode().equals("vn")) { searchVideoYandexService.searchByTextVideo(CommonCode.snsTypeGoogle, param, siDto, folder, ncInfo.getNcCode().toLowerCase(), files);
+                                        }
+                                    }
                                 }
                             }
                         }
