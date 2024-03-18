@@ -305,12 +305,12 @@ public class HistoryController {
 
     @GetMapping("/result-detail")
     public ModelAndView result_detail(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
-                                      @RequestParam Integer tsiUno) {
+                                      @RequestParam Integer tsrUno) {
 
         ModelAndView modelAndView = new ModelAndView("html/result-detail");
 
         modelAndView.addObject("sessionInfo", sessionInfoDto);
-        modelAndView.addObject("searchResultInfo", searchService.getInfoList(tsiUno));
+        modelAndView.addObject("searchResultInfo", searchService.getResultInfo(tsrUno));
 
         return modelAndView;
     }

@@ -50,7 +50,7 @@ public class SearchImageYandexService {
 
     private String nationCode = "";
     private final SitProperties sitProperties;
-    private Boolean loop = true;
+//    private Boolean loop = true;
     private final RestTemplate restTemplate;
 
     public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
@@ -80,7 +80,7 @@ public class SearchImageYandexService {
                         return search(index, finalTextGl1,searchImageUrl,searchInfoDto, tsrSns, SerpApiImageResultForYandex.class, SerpApiImageResultForYandex::getError, SerpApiImageResultForYandex::getImage_results, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
-                        loop = false;
+//                        loop = false;
                         return null;
                     }
                 }).thenApply((r) -> {
@@ -110,11 +110,13 @@ public class SearchImageYandexService {
                         log.error(e.getMessage(), e);
                         return null;
                     }
-                }).thenRun(()->{
-                    if(loop == true){
-                        CompletableFutureByImage(index, finalTextGl1,searchImageUrl,searchInfoDto, tsrSns,insertResult);
-                    }
-                });
+                })
+//                .thenRun(()->{
+//                    if(loop == true){
+//                        CompletableFutureByImage(index, finalTextGl1,searchImageUrl,searchInfoDto, tsrSns,insertResult);
+//                    }
+//                })
+        ;
     }
 
     public <INFO, RESULT> List<RESULT> search(int index,String finalTextGl1, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, SearchInfoEntity siEntity) throws Exception {
@@ -160,6 +162,14 @@ public class SearchImageYandexService {
 
                     rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
+
+                    if(results.size() > 0) {
+                        Integer limit = sitProperties.getTextCountLimit();
+                        if(limit == null) limit = 10;
+                        if (index < limit) {
+                            searchByImage(index, finalTextGl1, searchImageUrl, searchInfoDto, tsrSns, siEntity);
+                        }
+                    }
                 }else{
                     rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
@@ -169,9 +179,9 @@ public class SearchImageYandexService {
                 requestSerpApiLogService.save(rsalEntity);
             }
 
-            if (results == null || index >= sitProperties.getTextCountLimit() - 1) {
-                loop = false;
-            }
+//            if (results == null || index >= sitProperties.getTextCountLimit() - 1) {
+//                loop = false;
+//            }
             return results != null ? results : new ArrayList<>();
         }catch(Exception e){
             log.error(e.getMessage());
@@ -188,7 +198,7 @@ public class SearchImageYandexService {
 
     public String saveImgSearch(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
         if (result == null) {
-            loop = false;
+//            loop = false;
             return null;
         }
         insertResult.setTsiStat("13");
@@ -218,64 +228,64 @@ public class SearchImageYandexService {
         return "저장 완료";
     }
 
-    public void CompletableFutureByImage(int index, String finalTextGl1, String searchImageUrl,SearchInfoDto searchInfoDto,  String tsrSns, SearchInfoEntity insertResult) {
-        log.info("==== CompletableFutureByImage(재귀 함수 진입 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, finalTextGl1);
-        if(!loop){
-            return;
-        }
-
-        index++;
-        int finalIndex = index;
-
-        // 이미지
-        CompletableFuture
-                .supplyAsync(() -> {
-                    try {
-                        // text기반 검색
-                        return search(finalIndex, finalTextGl1, searchImageUrl, searchInfoDto,tsrSns, SerpApiImageResultForYandex.class, SerpApiImageResultForYandex::getError, SerpApiImageResultForYandex::getImage_results, insertResult);
-                    } catch (Exception e) {
-                        loop = false;
-                        log.error(e.getMessage(), e);
-                        return null;
-                    }
-                })
-                .thenApply((r) -> {
-                    try {
-                        if (r == null) {
-                            loop = false;
-                        }
-                        // 결과 저장.(이미지)
-                        return save(
-                                r
-                                , tsrSns
-                                , insertResult
-                                , Images_resultsByImageForYandex::getOriginal_image
-                                , Images_resultsByImageForYandex::getThumbnail
-                                , Images_resultsByImageForYandex::getTitle
-                                , Images_resultsByImageForYandex::getSource
-                                , Images_resultsByImageForYandex::isFacebook
-                                , Images_resultsByImageForYandex::isInstagram
-                                , Images_resultsByImageForYandex::isTwitter
-                        );
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
-                        return null;
-                    }
-                }).thenApplyAsync((r) -> {
-                    try {
-                        // yandex검색을 통해 결과 db에 적재.
-                        if(r==null){ return null; }
-                        return saveImgSearch(r, insertResult);
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
-                        return null;
-                    }
-                }).thenRun(()->{
-                    if(loop == true){
-                        CompletableFutureByImage(finalIndex, finalTextGl1,searchImageUrl,searchInfoDto, tsrSns,insertResult);
-                    }
-                });
-    }
+//    public void CompletableFutureByImage(int index, String finalTextGl1, String searchImageUrl,SearchInfoDto searchInfoDto,  String tsrSns, SearchInfoEntity insertResult) {
+//        log.info("==== CompletableFutureByImage(재귀 함수 진입 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, finalTextGl1);
+//        if(!loop){
+//            return;
+//        }
+//
+//        index++;
+//        int finalIndex = index;
+//
+//        // 이미지
+//        CompletableFuture
+//                .supplyAsync(() -> {
+//                    try {
+//                        // text기반 검색
+//                        return search(finalIndex, finalTextGl1, searchImageUrl, searchInfoDto,tsrSns, SerpApiImageResultForYandex.class, SerpApiImageResultForYandex::getError, SerpApiImageResultForYandex::getImage_results, insertResult);
+//                    } catch (Exception e) {
+//                        loop = false;
+//                        log.error(e.getMessage(), e);
+//                        return null;
+//                    }
+//                })
+//                .thenApply((r) -> {
+//                    try {
+//                        if (r == null) {
+//                            loop = false;
+//                        }
+//                        // 결과 저장.(이미지)
+//                        return save(
+//                                r
+//                                , tsrSns
+//                                , insertResult
+//                                , Images_resultsByImageForYandex::getOriginal_image
+//                                , Images_resultsByImageForYandex::getThumbnail
+//                                , Images_resultsByImageForYandex::getTitle
+//                                , Images_resultsByImageForYandex::getSource
+//                                , Images_resultsByImageForYandex::isFacebook
+//                                , Images_resultsByImageForYandex::isInstagram
+//                                , Images_resultsByImageForYandex::isTwitter
+//                        );
+//                    } catch (Exception e) {
+//                        log.error(e.getMessage(), e);
+//                        return null;
+//                    }
+//                }).thenApplyAsync((r) -> {
+//                    try {
+//                        // yandex검색을 통해 결과 db에 적재.
+//                        if(r==null){ return null; }
+//                        return saveImgSearch(r, insertResult);
+//                    } catch (Exception e) {
+//                        log.error(e.getMessage(), e);
+//                        return null;
+//                    }
+//                }).thenRun(()->{
+//                    if(loop == true){
+//                        CompletableFutureByImage(finalIndex, finalTextGl1,searchImageUrl,searchInfoDto, tsrSns,insertResult);
+//                    }
+//                });
+//    }
 
     public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, Map<String, Object>> getOriginalFn, Function<RESULT, Map<String, Object>> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn

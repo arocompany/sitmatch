@@ -96,9 +96,9 @@
                     </div>
                     <img th:if="${!#strings.isEmpty(keyword)}" src="/img/result/double-right.png" alt=""
                          class="next research" style="display: block">
-<!--                    <div class="tab research" th:if="${!#strings.isEmpty(searchInfo.getTsiKeyword())}">-->
-<!--                        <p>"<span th:text="${searchInfo.getTsiKeyword()}">sitting</span>" 로 검색된 결과 입니다.</p>-->
-<!--                    </div>-->
+                    <!--                    <div class="tab research" th:if="${!#strings.isEmpty(searchInfo.getTsiKeyword())}">-->
+                    <!--                        <p>"<span th:text="${searchInfo.getTsiKeyword()}">sitting</span>" 로 검색된 결과 입니다.</p>-->
+                    <!--                    </div>-->
                     <div class="tab research" th:if="${!#strings.isEmpty(keyword)}">
                         <p>"<span th:text="${keyword}">sitting</span>"에 대한 검색 결과 입니다.</p>
                     </div>
@@ -154,7 +154,7 @@
                         <span th:case="11">
                             <span>
                                 <h2 th:if="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
-<!--                                <h2 th:unless="${list.getMaxSimilarity() != null && list.getMaxSimilarity() > '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getMaxSimilarity(), '%')}">99%</h2>-->
+                                <!--                                <h2 th:unless="${list.getMaxSimilarity() != null && list.getMaxSimilarity() > '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getMaxSimilarity(), '%')}">99%</h2>-->
                             </span>
                             <!--
                                 <span th:elseif="${list.getMaxSimilarity() == null || list.getMaxSimilarity() == '0'}">

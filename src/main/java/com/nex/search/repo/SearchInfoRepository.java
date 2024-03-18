@@ -80,6 +80,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " tsi.tsr_uno AS tsrUno, " +
                                     " tsi.user_uno AS tsiUserUno, " +
                                     " (SELECT COUNT(distinct tsr_site_url)  FROM tb_search_result tsr " +
+                                    " INNER JOIN tb_search_job tsj ON tsr.TSI_UNO = tsj.tsi_uno AND tsr.tsr_uno = tsj.tsr_uno" +
                                     " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt, " +
                                     " (SELECT COUNT(*) " +
                                     " FROM tb_search_result tsr_2 " +
@@ -107,7 +108,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " end + case " +
                                     " when isnull(tmr.TMR_T_SCORE) then 0 " +
                                     " else 1 " +
-                                    " end)) * 1000)) > 1) AS tmrSimilarityCnt " +
+                                    " end)) * 100)) > 1) AS tmrSimilarityCnt " +
 
                                     ", coalesce(params.tsi_is_nation_kr, 0) tsiIsNationKr " +
                                     ", coalesce(params.tsi_is_nation_us, 0) tsiIsNationUs " +
@@ -188,7 +189,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " end + case " +
                                 " when isnull(tmr.TMR_T_SCORE) then 0 " +
                                 " else 1 " +
-                                " end)) * 1000)) > 1) AS tmrSimilarityCnt " +
+                                " end)) * 100)) > 1) AS tmrSimilarityCnt " +
                                 " from tb_search_info tsi " +
                                 " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
                                 " and tsi.SEARCH_VALUE= :searchValue" +
