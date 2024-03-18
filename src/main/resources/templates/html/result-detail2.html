@@ -1,0 +1,62 @@
+<html lagn="ko" xmlns:th="http://www.thymeleaf.org">
+<!-- <div class="modal bor10 searchmodal"></div> -->
+<div class="trace-detail modal bor10 layout" style="width: 370px; height: 325px;">
+  <button class="esc-btn">닫기</button>
+  <section class="detail-box">
+    <img style="width: 295px; height: 245px; margin-top: 52px;"
+            th:src="${'/imagePath'+#strings.substring(searchResultInfo.getTsiImgPath(),7)+searchResultInfo.getTsiImgName()}" alt="">
+<!--    <h2 class="tit">
+      대상추가 정보
+    </h2>-->
+  <!--
+  <div class="detail-content M-box-up bor10">
+
+      &lt;!&ndash;
+      <div class="trace-img bor10 img-box">
+
+        &lt;!&ndash;
+        <div class="img" th:if="${searchResultInfo.getTsiImgPath()} != null ">
+
+&lt;!&ndash;          <div class="video" th:if="${searchResultInfo.getTsiType() != '15' || searchResultInfo.getTsiType() != '19'}">
+            <video th:if="${searchResultInfo.getTsiType() == '15' && searchResultInfo.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchResultInfo.getTsiImgPath(),7)}+${searchResultInfo.getTsrImgName()}" controls></video>
+          </div>&ndash;&gt;
+        </div>&ndash;&gt;
+      </div>
+      &ndash;&gt;
+     &lt;!&ndash;
+      <div class="img-info">
+        <div>
+          <h3>SNS분류</h3>
+          &lt;!&ndash;<th:block th:switch="${searchResultInfo.getTsrSns()}"><p th:case="11">구글</p><p th:case="13">트위터</p><p th:case="15">인스타그램</p><p th:case="17">페이스북</p></th:block>&ndash;&gt;
+        </div>
+        <div>
+          <h3>URL</h3>
+          <p th:text="${searchResultInfo.getTsrSiteUrl()}"></p>
+        </div>
+        <div>
+          <h3>게시글 </h3>
+          <p th:text="${searchResultInfo.getTsrTitle()}">내용이요</p>
+        </div>
+        <div th:if="${searchResultInfo.getTsrImgName() != null}">
+          <h3>파일명</h3>
+          <p th:text="${searchResultInfo.getTsrImgName()}">-</p>
+        </div>
+        <div th:if="${searchResultInfo.getTsrImgExt() != null}">
+          <h3>파일유형</h3>
+          <p th:text="${searchResultInfo.getTsrImgExt()}">-</p>
+        </div>
+        <div th:if="${searchResultInfo.getTsrImgSize() != null}">
+          <h3>파일크기</h3>
+          <p th:text="${searchResultInfo.getTsrImgSize()+'KB'}">-</p>
+        </div>
+        <div th:if="${searchResultInfo.getTsrImgWidth() != null}">
+          <h3>사진크기</h3>
+          <p th:text="${searchResultInfo.getTsrImgWidth() + ' x ' +searchResultInfo.getTsrImgHeight()}"></p>
+        </div>
+      </div>
+      &ndash;&gt;
+    </div>
+    -->
+  </section>
+</div>
+</html>

@@ -314,4 +314,16 @@ public class HistoryController {
 
         return modelAndView;
     }
+
+    @GetMapping("/result-detail2")
+    public ModelAndView result_detail_for_tsi_uno(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
+                                      @RequestParam Integer tsiUno) {
+
+        ModelAndView modelAndView = new ModelAndView("html/result-detail2");
+
+        modelAndView.addObject("sessionInfo", sessionInfoDto);
+        modelAndView.addObject("searchResultInfo", searchService.getSearchInfo(tsiUno));
+
+        return modelAndView;
+    }
 }

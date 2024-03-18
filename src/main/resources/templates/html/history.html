@@ -307,9 +307,10 @@
 <script th:inline="javascript">
 
   function InfoList(tsiUno){
+    console.info(tsiUno);
     var xhr = new XMLHttpRequest();
     //요청을 보낼 방식, 주소, 비동기여부 설정
-    xhr.open('GET', 'result-detail?tsiUno=' + tsiUno.value, true);
+    xhr.open('GET', 'result-detail2?tsiUno=' + tsiUno.value, true);
     xhr.send(null);
 
     xhr.onload = () => {

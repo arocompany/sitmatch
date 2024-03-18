@@ -504,6 +504,11 @@ public class SearchService {
         return searchResultRepository.getResultInfo(tsrUno);
     }
 
+    public DefaultQueryDtoInterface getSearchInfo(Integer tsiUno) {
+        return searchResultRepository.getInfoList(tsiUno);
+    }
+
+
     public Page<DefaultQueryDtoInterface> getTraceList(Integer page, String trkStatCd, String keyword) {
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         if (trkStatCd.equals("삭제 요청 중")) {
