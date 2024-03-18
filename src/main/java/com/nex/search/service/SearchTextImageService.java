@@ -45,7 +45,7 @@ public class SearchTextImageService {
     private final SearchResultRepository searchResultRepository;
     private final SearchJobRepository searchJobRepository;
     private final RequestSerpApiLogService requestSerpApiLogService;
-    private Boolean loop = true;
+//    private Boolean loop = true;
     private final RestTemplate restTemplate;
     private String nationCode = "";
     private final SitProperties sitProperties;
@@ -106,11 +106,13 @@ public class SearchTextImageService {
                         log.error(e.getMessage(), e);
                         return null;
                     }
-                }).thenRun(() -> {
-                    if (loop == true) {
-                        CompletableFutureByImage(index, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
-                    }
-                });
+                })
+//                .thenRun(() -> {
+//                    if (loop == true) {
+//                        CompletableFutureByImage(index, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
+//                    }
+//                })
+        ;
     }
 
     public <INFO, RESULT> List<RESULT> search(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, SearchInfoEntity siEntity) throws Exception {
@@ -161,6 +163,14 @@ public class SearchTextImageService {
 
                     rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
+
+                    if(results.size() > 0) {
+                        Integer limit = sitProperties.getTextCountLimit();
+                        if(limit == null) limit = 10;
+                        if (index < limit) {
+                            searchByImage( index + 1, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, siEntity);
+                        }
+                    }
                 } else {
                     rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
@@ -170,9 +180,9 @@ public class SearchTextImageService {
                 requestSerpApiLogService.save(rsalEntity);
             }
 
-            if (results == null || index >= sitProperties.getTextCountLimit() - 1) {
-                loop = false;
-            }
+//            if (results == null || index >= sitProperties.getTextCountLimit() - 1) {
+//                loop = false;
+//            }
 
             return results != null ? results : new ArrayList<>();
         } catch (Exception e) {
@@ -236,7 +246,7 @@ public class SearchTextImageService {
         insertResult.setTsiStat("13");
 
         if (result == null) {
-            loop = false;
+//            loop = false;
             return null;
         }
 
@@ -266,52 +276,52 @@ public class SearchTextImageService {
         return "저장 완료";
     }
 
-    public void CompletableFutureByImage(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
-        index++;
-        int finalIndex = index;
-
-        // 이미지
-        CompletableFuture
-                .supplyAsync(() -> {
-                    try { // text기반 검색
-                        return search(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images, insertResult);
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
-                        return null;
-                    }
-                })
-                .thenApply((r) -> {
-                    try { // 결과 저장.(이미지)
-                        return saveImage(
-                                r
-                                , tsrSns
-                                , insertResult
-                                , Images_resultsByImage::getOriginal
-                                , Images_resultsByImage::getThumbnail
-                                , Images_resultsByImage::getTitle
-                                , Images_resultsByImage::getSource
-                                , Images_resultsByImage::isFacebook
-                                , Images_resultsByImage::isInstagram
-                                , Images_resultsByImage::isTwitter
-                        );
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
-                        return null;
-                    }
-                }).thenApplyAsync((r) -> {
-                    try { // 검색을 통해 결과 db에 적재.
-                        if (r == null) return null;
-                        return saveImgSearch(r, insertResult);
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
-                        return null;
-                    }
-                }).thenRun(() -> {
-                    if (loop == true) {
-                        CompletableFutureByImage(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
-                    }
-                });
-    }
+//    public void CompletableFutureByImage(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
+//        index++;
+//        int finalIndex = index;
+//
+//        // 이미지
+//        CompletableFuture
+//                .supplyAsync(() -> {
+//                    try { // text기반 검색
+//                        return search(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, SerpApiImageResult.class, SerpApiImageResult::getError, SerpApiImageResult::getInline_images, insertResult);
+//                    } catch (Exception e) {
+//                        log.error(e.getMessage(), e);
+//                        return null;
+//                    }
+//                })
+//                .thenApply((r) -> {
+//                    try { // 결과 저장.(이미지)
+//                        return saveImage(
+//                                r
+//                                , tsrSns
+//                                , insertResult
+//                                , Images_resultsByImage::getOriginal
+//                                , Images_resultsByImage::getThumbnail
+//                                , Images_resultsByImage::getTitle
+//                                , Images_resultsByImage::getSource
+//                                , Images_resultsByImage::isFacebook
+//                                , Images_resultsByImage::isInstagram
+//                                , Images_resultsByImage::isTwitter
+//                        );
+//                    } catch (Exception e) {
+//                        log.error(e.getMessage(), e);
+//                        return null;
+//                    }
+//                }).thenApplyAsync((r) -> {
+//                    try { // 검색을 통해 결과 db에 적재.
+//                        if (r == null) return null;
+//                        return saveImgSearch(r, insertResult);
+//                    } catch (Exception e) {
+//                        log.error(e.getMessage(), e);
+//                        return null;
+//                    }
+//                }).thenRun(() -> {
+//                    if (loop == true) {
+//                        CompletableFutureByImage(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
+//                    }
+//                });
+//    }
 
     // ----------------------------------------------------------------------------------------------------------- //
 
@@ -350,62 +360,64 @@ public class SearchTextImageService {
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
-                }).thenRun(() -> {
-                    if (loop == true) {
-                        log.info("loop 값1: " + loop);
-                        CompletableFutureText(index, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
-                    }
-                });
+                })
+//                .thenRun(() -> {
+//                    if (loop == true) {
+//                        log.info("loop 값1: " + loop);
+//                        CompletableFutureText(index, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
+//                    }
+//                })
+        ;
     }
 
-    public void CompletableFutureText(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
-        log.info("==== CompletableFutureText(재귀 함수 진입 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, textGl);
-        if (!loop) {
-            return;
-        }
-
-        index++;
-        int finalIndex = index;
-
-        CompletableFuture
-                .supplyAsync(() -> {
-                    try { // text기반 검색
-                        return search(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results, insertResult);
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
-                        return null;
-                    }
-                }).thenApply((r) -> {
-                    try { // 결과 저장.(이미지)
-                        return save(
-                                r
-                                , tsrSns
-                                , insertResult
-                                , Images_resultsByText::getOriginal
-                                , Images_resultsByText::getThumbnail
-                                , Images_resultsByText::getTitle
-                                , Images_resultsByText::getLink
-                                , Images_resultsByText::isFacebook
-                                , Images_resultsByText::isInstagram
-                                , Images_resultsByText::isTwitter
-                        );
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
-                        return null;
-                    }
-                }).thenAccept((r) -> {
-                    try { // 검색을 통해 결과 db에 적재.
-                        saveImgSearch(r, insertResult);
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
-                    }
-                }).thenRun(() -> {
-                    if (loop == true) {
-                        CompletableFutureText(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
-                    }
-                });
-
-    }
+//    public void CompletableFutureText(int index, String textGl, String tsiKeywordHiddenValue, String searchImageUrl, SearchInfoDto searchInfoDto, String tsrSns, SearchInfoEntity insertResult) {
+//        log.info("==== CompletableFutureText(재귀 함수 진입 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, textGl);
+//        if (!loop) {
+//            return;
+//        }
+//
+//        index++;
+//        int finalIndex = index;
+//
+//        CompletableFuture
+//                .supplyAsync(() -> {
+//                    try { // text기반 검색
+//                        return search(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results, insertResult);
+//                    } catch (Exception e) {
+//                        log.error(e.getMessage(), e);
+//                        return null;
+//                    }
+//                }).thenApply((r) -> {
+//                    try { // 결과 저장.(이미지)
+//                        return save(
+//                                r
+//                                , tsrSns
+//                                , insertResult
+//                                , Images_resultsByText::getOriginal
+//                                , Images_resultsByText::getThumbnail
+//                                , Images_resultsByText::getTitle
+//                                , Images_resultsByText::getLink
+//                                , Images_resultsByText::isFacebook
+//                                , Images_resultsByText::isInstagram
+//                                , Images_resultsByText::isTwitter
+//                        );
+//                    } catch (Exception e) {
+//                        log.error(e.getMessage(), e);
+//                        return null;
+//                    }
+//                }).thenAccept((r) -> {
+//                    try { // 검색을 통해 결과 db에 적재.
+//                        saveImgSearch(r, insertResult);
+//                    } catch (Exception e) {
+//                        log.error(e.getMessage(), e);
+//                    }
+//                }).thenRun(() -> {
+//                    if (loop == true) {
+//                        CompletableFutureText(finalIndex, textGl, tsiKeywordHiddenValue, searchImageUrl, searchInfoDto, tsrSns, insertResult);
+//                    }
+//                });
+//
+//    }
 
 
     public <RESULT> List<SearchResultEntity> saveImage(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult

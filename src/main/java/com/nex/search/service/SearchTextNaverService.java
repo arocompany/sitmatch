@@ -46,7 +46,7 @@ public class SearchTextNaverService {
     private String nationCode = "";
     private final SitProperties sitProperties;
 
-    private Boolean loop = true;
+//    private Boolean loop = true;
     private final RestTemplate restTemplate;
 
     public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode, String tsrSns){
@@ -98,14 +98,16 @@ public class SearchTextNaverService {
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
-                }).thenRun(()-> {
-                    // 검색결과가 있으면 다음 페이지 진입 로직
-                    if(loop == true) {
-                        CompletableFutureByText(index, tsrSns, textGl, insertResult, searchInfoDto);
-                    }else{
-                        log.info("==== CompletableFutureByText 함수 종료 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, textGl);
-                    }
-                });
+                })
+//                .thenRun(()-> {
+//                    // 검색결과가 있으면 다음 페이지 진입 로직
+//                    if(loop == true) {
+//                        CompletableFutureByText(index, tsrSns, textGl, insertResult, searchInfoDto);
+//                    }else{
+//                        log.info("==== CompletableFutureByText 함수 종료 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, textGl);
+//                    }
+//                })
+        ;
     }
 
     public String getUrl(String tsrSns, String tsiKeywordHiddenValue, int index){
@@ -162,6 +164,14 @@ public class SearchTextNaverService {
 
                     rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
+
+                    if(results.size() > 0) {
+                        Integer limit = sitProperties.getTextCountLimit();
+                        if(limit == null) limit = 10;
+                        if (index < limit) {
+                            searchByText( index + 1, textGl, tsrSns, siEntity, searchInfoDto);
+                        }
+                    }
                 }else{
                     rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
@@ -171,9 +181,9 @@ public class SearchTextNaverService {
                 requestSerpApiLogService.save(rsalEntity);
             }
 
-            if (results == null || index >= sitProperties.getTextCountLimit() - 1) {
-                loop = false;
-            }
+//            if (results == null || index >= sitProperties.getTextCountLimit() - 1) {
+//                loop = false;
+//            }
             return results != null ? results : new ArrayList<>();
         }catch(Exception e){
             log.error(e.getMessage());
@@ -193,7 +203,7 @@ public class SearchTextNaverService {
 
         // 검색결과가 없으면 false처리 후 return
         if (results == null) {
-            loop = false;
+//            loop = false;
             return null;
         }
 
@@ -229,7 +239,7 @@ public class SearchTextNaverService {
 
     public String saveImgSearch(List<SearchResultEntity> result, SearchInfoEntity insertResult) {
         if (result == null) {
-            loop=false;
+//            loop=false;
             return null;
         }
         insertResult.setTsiStat("13");
@@ -259,60 +269,60 @@ public class SearchTextNaverService {
         return "저장 완료";
     }
 
-    public void CompletableFutureByText(int index, String tsrSns, String textGl, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
-        log.info("==== CompletableFutureByText(재귀 함수 진입 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, textGl);
-        if(!loop){
-            return;
-        }
-
-        index++;
-        int finalIndex = index;
-
-        CompletableFuture.supplyAsync(() -> {
-            try {
-                // text기반 검색
-                return searchText(finalIndex, searchInfoDto, tsrSns, textGl, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results, insertResult);
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                return null;
-            }
-        }).thenApply((r) -> {
-            try {
-                if (r == null) {
-                    loop = false;
-                }
-                // 결과 저장.(이미지)
-                return save(
-                        r
-                        , tsrSns
-                        , insertResult
-                        , Images_resultsByText::getOriginal
-                        , Images_resultsByText::getThumbnail
-                        , Images_resultsByText::getTitle
-                        , Images_resultsByText::getLink
-                        , Images_resultsByText::isFacebook
-                        , Images_resultsByText::isInstagram
-                        , Images_resultsByText::isTwitter
-                );
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                return null;
-            }
-        }).thenAccept((r) -> {
-            try {
-                if (r != null) {
-                    // 검색을 통해 결과 db에 적재.
-                    saveImgSearch(r, insertResult);
-                }
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
-        }).thenRun(()->{
-            if(loop == true){
-                CompletableFutureByText(finalIndex, tsrSns, textGl, insertResult,searchInfoDto);
-            }else{
-                log.info("==== CompletableFutureByText(재귀 함수 종료 ==== index 값: {} sns 값: {} textGl {}", finalIndex, tsrSns, textGl);
-            }
-        });
-    }
+//    public void CompletableFutureByText(int index, String tsrSns, String textGl, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
+//        log.info("==== CompletableFutureByText(재귀 함수 진입 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, textGl);
+//        if(!loop){
+//            return;
+//        }
+//
+//        index++;
+//        int finalIndex = index;
+//
+//        CompletableFuture.supplyAsync(() -> {
+//            try {
+//                // text기반 검색
+//                return searchText(finalIndex, searchInfoDto, tsrSns, textGl, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results, insertResult);
+//            } catch (Exception e) {
+//                log.error(e.getMessage(), e);
+//                return null;
+//            }
+//        }).thenApply((r) -> {
+//            try {
+//                if (r == null) {
+//                    loop = false;
+//                }
+//                // 결과 저장.(이미지)
+//                return save(
+//                        r
+//                        , tsrSns
+//                        , insertResult
+//                        , Images_resultsByText::getOriginal
+//                        , Images_resultsByText::getThumbnail
+//                        , Images_resultsByText::getTitle
+//                        , Images_resultsByText::getLink
+//                        , Images_resultsByText::isFacebook
+//                        , Images_resultsByText::isInstagram
+//                        , Images_resultsByText::isTwitter
+//                );
+//            } catch (Exception e) {
+//                log.error(e.getMessage(), e);
+//                return null;
+//            }
+//        }).thenAccept((r) -> {
+//            try {
+//                if (r != null) {
+//                    // 검색을 통해 결과 db에 적재.
+//                    saveImgSearch(r, insertResult);
+//                }
+//            } catch (Exception e) {
+//                log.error(e.getMessage(), e);
+//            }
+//        }).thenRun(()->{
+//            if(loop == true){
+//                CompletableFutureByText(finalIndex, tsrSns, textGl, insertResult,searchInfoDto);
+//            }else{
+//                log.info("==== CompletableFutureByText(재귀 함수 종료 ==== index 값: {} sns 값: {} textGl {}", finalIndex, tsrSns, textGl);
+//            }
+//        });
+//    }
 }
