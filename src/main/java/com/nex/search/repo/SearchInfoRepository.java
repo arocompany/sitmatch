@@ -108,7 +108,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " end + case " +
                                     " when isnull(tmr.TMR_T_SCORE) then 0 " +
                                     " else 1 " +
-                                    " end)) * 1000)) > 1) AS tmrSimilarityCnt " +
+                                    " end)) * 100)) > 1) AS tmrSimilarityCnt " +
 
                                     ", coalesce(params.tsi_is_nation_kr, 0) tsiIsNationKr " +
                                     ", coalesce(params.tsi_is_nation_us, 0) tsiIsNationUs " +
@@ -189,7 +189,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " end + case " +
                                 " when isnull(tmr.TMR_T_SCORE) then 0 " +
                                 " else 1 " +
-                                " end)) * 1000)) > 1) AS tmrSimilarityCnt " +
+                                " end)) * 100)) > 1) AS tmrSimilarityCnt " +
                                 " from tb_search_info tsi " +
                                 " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
                                 " and tsi.SEARCH_VALUE= :searchValue" +

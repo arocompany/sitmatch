@@ -177,7 +177,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 //                    "(case when isnull(tmr.TMR_V_SCORE) || tmr.TMR_V_SCORE = 0 then 0 else 1 end + "+
             "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
 //                    "case when isnull(tmr.TMR_A_SCORE) || tmr.TMR_A_SCORE = 0 then 0 else 1 end + "+
-            " case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 1000)),SIGNED)/10 as tmrSimilarity, " +
+            " case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)),SIGNED) as tmrSimilarity, " +
             " (SELECT " +
             " CONVERT(MAX(if(TMR_V_SCORE + TMR_A_SCORE + TMR_T_SCORE = 0, '0', ceiling(((case " +
             " when isnull(TMR_V_SCORE) then 0 " +
@@ -196,10 +196,10 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " else 1 " +
             " end + case " +
             " when isnull(TMR_T_SCORE) then 0 " +
-            " else 1 end)) * 1000))),SIGNED)" +
+            " else 1 end)) * 100))),SIGNED)" +
             " FROM TB_MATCH_RESULT " +
             " WHERE tsr.tsi_uno = tsi_uno " +
-            ")/10 AS maxSimilarity" +
+            ") AS maxSimilarity" +
             ",ROUND(tmr.TMR_AGE_SCORE, 2)* 100 AS tmrAgeScore" +
             ",ROUND(tmr.TMR_OBJECT_SCORE, 2)* 100 AS tmrObjectScore" +
             ",ROUND(tmr.TMR_OCW_SCORE, 2)* 100 AS tmrOcwScore ";
