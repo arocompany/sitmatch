@@ -96,9 +96,9 @@
                     </div>
                     <img th:if="${!#strings.isEmpty(keyword)}" src="/img/result/double-right.png" alt=""
                          class="next research" style="display: block">
-<!--                    <div class="tab research" th:if="${!#strings.isEmpty(searchInfo.getTsiKeyword())}">-->
-<!--                        <p>"<span th:text="${searchInfo.getTsiKeyword()}">sitting</span>" 로 검색된 결과 입니다.</p>-->
-<!--                    </div>-->
+                    <!--                    <div class="tab research" th:if="${!#strings.isEmpty(searchInfo.getTsiKeyword())}">-->
+                    <!--                        <p>"<span th:text="${searchInfo.getTsiKeyword()}">sitting</span>" 로 검색된 결과 입니다.</p>-->
+                    <!--                    </div>-->
                     <div class="tab research" th:if="${!#strings.isEmpty(keyword)}">
                         <p>"<span th:text="${keyword}">sitting</span>"에 대한 검색 결과 입니다.</p>
                     </div>
@@ -153,9 +153,8 @@
                         <span th:case="10">SKIP</span>
                         <span th:case="11">
                             <span>
-
-                                <h2 th:if="${list.getMaxSimilarity() != null && list.getMaxSimilarity() != '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getMaxSimilarity(), '%')}">99%</h2>
-                                <h2 th:unless="${list.getTmrSimilarity() != null && list.getTmrSimilarity() != '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
+                                <h2 th:if="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
+                                <!--                                <h2 th:unless="${list.getMaxSimilarity() != null && list.getMaxSimilarity() > '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getMaxSimilarity(), '%')}">99%</h2>-->
                             </span>
                             <!--
                                 <span th:elseif="${list.getMaxSimilarity() == null || list.getMaxSimilarity() == '0'}">
@@ -163,33 +162,39 @@
                                 </span>
                             -->
                             <th:block th:if="${(tsiType == '15' || tsiType == '19')}"> <!-- 15: 키워드+영상 / 19: 영상 --> <!-- 이미지는 17 -->
-                                <span >
-                                    <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">
+                                <span>
+                                    <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() > '0.0'}">
                                         (V : <span th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>
-                                    <b th:if="${list.getTmrVScore() == null || list.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>
-                                    <b th:if="${list.getTmrAScore() != null && list.getTmrAScore() != '0.0'}">
+                                    <b th:unless="${list.getTmrVScore() != null && list.getTmrVScore() > '0.0'}">
+                                        (V : <span>비교없음,</span>&nbsp;</b>
+                                    <b th:if="${list.getTmrAScore() != null && list.getTmrAScore() > '0.0'}">
                                         A : <span th:text="${list.getTmrAScore()}">100</span>%,&nbsp;</b>
-                                    <b th:if="${list.getTmrAScore() == null || list.getTmrAScore() == '0.0'}">A : <span>비교없음,&nbsp;</span></b>
-                                    <b th:if="${list.getTmrTScore() != null && list.getTmrTScore() != '0.0'}">
+                                    <b th:unless="${list.getTmrAScore() != null && list.getTmrAScore() > '0.0'}">
+                                        A : <span>비교없음,&nbsp;</span></b>
+                                    <b th:if="${list.getTmrTScore() != null && list.getTmrTScore() > '0.0'}">
                                         T : <span th:text="${list.getTmrTScore()}">100</span>%)</b>
-                                    <b th:if="${list.getTmrTScore() == null || list.getTmrTScore() == '0.0'}">T : <span>비교없음</span>)</b>
+                                    <b th:unless="${list.getTmrTScore() != null && list.getTmrTScore() > '0.0'}">
+                                        T : <span>비교없음</span>)</b>
                                 </span>
 
                                 /
                             </th:block>
                         </span>
                     </th:block>
-                    <span th:unless="${(list.getTmrAgeScore() == null && list.getTmrObjectScore()  == null && list.getTmrOcwScore() == null) || (list.getTmrAgeScore()+list.getTmrObjectScore()+list.getTmrOcwScore() == 0) }">
+                    <span th:if="${(list.getTmrAgeScore() != null && list.getTmrObjectScore() != null && list.getTmrOcwScore() != null) }">
                         아청물
-                        <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() != '0.0'}">
+                        <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() > '0'}">
                             ( 나이 : <span th:text="${list.getTmrAgeScore()}">100</span>%,&nbsp;</b>
-                        <b th:if="${list.getTmrAgeScore() == null || list.getTmrAgeScore() == '0.0'}">( 나이 : <span>비교없음,</span>&nbsp;</b>
-                        <b th:if="${list.getTmrObjectScore() != null && list.getTmrObjectScore() != '0.0'}">
+                        <b th:unless="${list.getTmrAgeScore() != null && list.getTmrAgeScore() > '0'}">
+                            ( 나이 : <span>비교없음,</span>&nbsp;</b>
+                        <b th:if="${list.getTmrObjectScore() != null && list.getTmrObjectScore() > '0'}">
                             사물 : <span th:text="${list.getTmrObjectScore()}">100</span>%,&nbsp;</b>
-                        <b th:if="${list.getTmrObjectScore() == null || list.getTmrObjectScore() == '0.0'}">사물 : <span>비교없음,&nbsp;</span></b>
-                        <b th:if="${list.getTmrOcwScore() != null && list.getTmrOcwScore() != '0.0'}">
+                        <b th:unless="${list.getTmrObjectScore() != null && list.getTmrObjectScore() > '0'}">
+                            사물 : <span>비교없음,&nbsp;</span></b>
+                        <b th:if="${list.getTmrOcwScore() != null && list.getTmrOcwScore() > '0'}">
                             텍스트 : <span th:text="${list.getTmrOcwScore()}">100</span>%)</b>
-                        <b th:if="${list.getTmrOcwScore() == null || list.getTmrOcwScore() == '0.0'}">텍스트 : <span>비교없음</span>)</b>
+                        <b th:unless="${list.getTmrOcwScore() != null && list.getTmrOcwScore() > '0'}">
+                            텍스트 : <span>비교없음</span>)</b>
                     </span>
                 </div>
                 <!--        <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span><span th:case="11"><h2 class="unity" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h2></span></th:block>-->
