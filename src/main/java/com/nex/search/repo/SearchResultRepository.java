@@ -1061,7 +1061,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " where s1_0.tsi_uno = :tsiUno ";
 
     String tsrUnoisNotNUll = " WHERE TSI.TSR_UNO IS NOT NULL ";
-    String setTmrStat11 = " AND TMR.TMR_STAT = '11' ";
+    String setTmrStat11 = " ";
+//    String setTmrStat11 = " AND TMR.TMR_STAT = '11' ";
 
     // 추적이력 (검색어(타이틀) 검색)
     @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceHistoryList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTrkStatCdNotNullAndTsrTitleContaining)
