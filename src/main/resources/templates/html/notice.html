@@ -62,6 +62,7 @@
           <div class="img">
             <!--            <img src="./img/replace/man.png" alt="" loading="lazy" >-->
             <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="" loading="lazy" >
+            <img th:unless="${not #strings.isEmpty(list.getTsrImgPath())}" src="/img/common/noImage.jpg">
           </div>
           <!--          <div class="video">-->
           <!--            <video src="./img/replace/replacevideo.mp4" loading="lazy"></video>-->
