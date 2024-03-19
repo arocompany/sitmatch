@@ -10,7 +10,7 @@
         <div class="img" th:if="${traceInfo.getTsrImgPath()} != null ">
           <img  th:if="${traceInfo.getTsiType() != '15' && traceInfo.getTsiType() != '19'}"  th:src="${'/imagePath'+#strings.substring(traceInfo.getTsrImgPath(),7)+traceInfo.getTsrImgName()}" alt="">
           <div class="video" th:unless="${traceInfo.getTsiType() != '15' && traceInfo.getTsiType() != '19'}">
-            <video th:if="${traceInfo.getTsiType() == '15' || traceInfo.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(traceInfo.getTsiImgPath(),7)}+${traceInfo.getTsrImgName()}" controls></video>
+            <video th:if="${traceInfo.getTsiType() == '15' || traceInfo.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(traceInfo.getTsrImgPath(),7)}+${traceInfo.getTsrImgName()}" controls></video>
           </div>
         </div>
       </div>
@@ -212,7 +212,7 @@
         <h3 class="preview-tit">영상 미리보기</h3>
         <div class="preview-box ">
           <div class="preview-img bor10" th:each="list:${videoInfoList}">
-            <video th:src="|${list.getTviImgRealPath()}${list.getTviImgName()}|"></video>
+            <video th:src="'/imagePath'+${#strings.substring(list.getTviImgPath(),7)} + ${list.getTviImgName()}"></video>
             <canvas></canvas>
           </div>
         </div>
