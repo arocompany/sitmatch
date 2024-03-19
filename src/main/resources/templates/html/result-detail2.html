@@ -3,8 +3,8 @@
 <div class="trace-detail modal bor10 layout" style="width: 370px; height: 325px;">
   <button class="esc-btn">닫기</button>
   <section class="detail-box">
-    <img th:if="${not #strings.isEmpty(searchResultInfo.getTsiImgName())}" style="width: 295px; height: 245px; margin-top: 52px;" th:src="${'/imagePath'+#strings.substring(searchResultInfo.getTsiImgPath(),7)+searchResultInfo.getTsiImgName()}" alt="">
-    <img th:unless="${not #strings.isEmpty(searchResultInfo.getTsiImgName())}" src="/img/common/noImage.jpg">
+    <img style="width: 295px; height: 245px; margin-top: 52px;" th:if="${not #strings.isEmpty(searchResultInfo.getTsiImgName())}" style="width: 295px; height: 245px; margin-top: 52px;" th:src="${'/imagePath'+#strings.substring(searchResultInfo.getTsiImgPath(),7)+searchResultInfo.getTsiImgName()}" alt="">
+    <img style="width: 295px; height: 245px; margin-top: 52px;" th:unless="${not #strings.isEmpty(searchResultInfo.getTsiImgName())}" src="/img/common/noImage.jpg">
 <!--    <h2 class="tit">
       대상추가 정보
     </h2>-->
