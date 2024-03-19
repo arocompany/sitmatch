@@ -47,7 +47,10 @@
       <section class="list M-box-up bor10" th:each="list:${traceList}">
         <div class="img-box">
           <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
-          <div class="img"><img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="" loading="lazy" ></div>
+          <div class="img">
+            <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="" loading="lazy" >
+            <img th:unless="${not #strings.isEmpty(list.getTsrImgPath())}" src="/img/common/noImage.jpg">
+          </div>
           <th:block th:switch="${list.getTsrSns()}">
             <img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">
             <img th:case="13" src="/img/common/sns/twitter-round.png" alt="" class="sns">

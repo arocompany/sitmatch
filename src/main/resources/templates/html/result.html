@@ -127,9 +127,9 @@
                 <div class="img-box">
                     <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
                     <div class="img">
-                        <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}"
-                             alt=""
-                             loading="lazy">
+                            <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}"
+                                 alt="" loading="lazy">
+                            <img th:unless="${not #strings.isEmpty(list.getTsrImgPath())}" src="/img/common/noImage.jpg">
                     </div>
 
                     <!--          <div class="video">-->
