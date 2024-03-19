@@ -212,8 +212,8 @@
         <h3 class="preview-tit">영상 미리보기</h3>
         <div class="preview-box ">
           <div class="preview-img bor10" th:each="list:${videoInfoList}">
-            <img th:src="'/imagePath'+${#strings.substring(list.getTviImgRealPath(),7)} + ${list.getTviImgName()}"/>
-<!--            <canvas></canvas>-->
+            <video th:src="'/imagePath'+${#strings.substring(list.getTviImgRealPath(),7)} + ${list.getTviImgName()}"></video>
+            <canvas></canvas>
           </div>
         </div>
       </div>
