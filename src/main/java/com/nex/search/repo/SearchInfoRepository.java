@@ -89,7 +89,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " ON tsr_2.TSR_UNO = tmr.tsr_uno " +
                                     " WHERE tmr.tsi_uno = tsi.tsi_uno " +
                                     " AND tsr_2.tsi_uno = tsi.tsi_uno " +
-                                    " AND tmr.tmr_stat=11 " +
+//                                    " AND tmr.tmr_stat=11 " +
                                     " AND if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', " +
                                     " ceiling(((case " +
                                     " when isnull(tmr.TMR_V_SCORE) then 0 " +
@@ -170,7 +170,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " ON tsr_2.TSR_UNO = tmr.tsr_uno " +
                                 " WHERE tmr.tsi_uno = tsi.tsi_uno " +
                                 " AND tsr_2.tsi_uno = tsi.tsi_uno " +
-                                " AND tmr.tmr_stat=11 " +
+//                                " AND tmr.tmr_stat=11 " +
                                 " AND if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', " +
                                 " ceiling(((case " +
                                 " when isnull(tmr.TMR_V_SCORE) then 0 " +
