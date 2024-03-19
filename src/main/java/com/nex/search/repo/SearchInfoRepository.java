@@ -84,6 +84,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt, " +
                                     " (SELECT COUNT(*) " +
                                     " FROM tb_search_result tsr_2 " +
+                                    " INNER JOIN (SELECT MIN(tsr_uno) tsr_uno from tb_search_result WHERE tsi_uno = tsi.tsi_uno GROUP BY tsr_site_url) tsr2 ON tsr_2.tsr_uno = tsr2.tsr_uno " +
                                     " LEFT OUTER JOIN tb_match_result tmr " +
                                     " ON tsr_2.TSR_UNO = tmr.tsr_uno " +
                                     " WHERE tmr.tsi_uno = tsi.tsi_uno " +
