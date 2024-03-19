@@ -124,6 +124,7 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                             "                tu.USER_ID as userId " +
                             "    FROM " +
                             "        TB_SEARCH_RESULT TSR " +
+                            "    INNER JOIN (SELECT MIN(tsr_uno) tsr_uno from tb_search_result WHERE (:tsiUno is null or tsi_uno = :tsiUno) GROUP BY tsr_site_url) tsr2 ON tsr.tsr_uno = tsr2.tsr_uno " +
                             "    INNER JOIN " +
                             "        TB_SEARCH_INFO TSI " +
                             "            ON TSR.TSI_UNO = TSI.TSI_UNO " +
