@@ -226,7 +226,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " AND fst_dml_dt BETWEEN :fromDate AND :toDate" +
                                 " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') ";
 
-    String userSearchHistoryCount = " SELECT COUNT(*) FROM tb_search_info tsi WHERE SEARCH_VALUE='0' ";
+    String userSearchHistoryCount = " SELECT COUNT(*) FROM tb_search_info tsi WHERE tsi.tsi_user_file LIKE CONCAT('%',:searchKeyword,'%') AND SEARCH_VALUE='0' AND DATA_STAT_CD= '10' ";
 
     String allUserSearchHistoryList =  " SELECT " +
                                     " tsi.tsi_uno AS tsiUno, " +
@@ -272,6 +272,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " FROM  tb_search_info tsi " +
                                     " WHERE tsi.tsi_user_file LIKE CONCAT('%',:searchKeyword,'%')  " +
                                     " AND SEARCH_VALUE = '0' "+
+                                    " AND DATA_STAT_CD= '10' "+
                                     " ORDER BY tsi.tsi_uno DESC   ";
     String userSearchHistoryList =  " SELECT " +
                                     " tsi.tsi_uno AS tsiUno, " +
