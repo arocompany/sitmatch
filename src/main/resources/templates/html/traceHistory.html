@@ -162,6 +162,51 @@
         visibility: visible;
         transition: all 0.2s;
     }
+    .flex {
+        display: inline-flex;
+        width: 35px;
+        vertical-align: super;
+    }
+    .switch {
+        display: inline-block;
+        width: 100%;
+    }
+    .switch .chkItem {
+        width: 100% !important;
+    }
+    .switch input[type="checkbox"] {
+        appearance: none;
+        position: relative;
+        border-radius: 1.25em;
+        width: 2.25em;
+        height: 1.25em;
+        background-color: #ddd;
+        box-shadow: inset 1px 2px 3px;
+        cursor: pointer;
+    }
+    .switch input[type=checkbox], .nations input[type=checkbox] {
+        background: none;
+    }
+    .switch input[type="checkbox"].chkItem:checked {
+        background-color: #194894;
+        border-color: #194894;
+    }
+    .switch input[type="checkbox"]::before {
+        content: "";
+        position: absolute;
+        left: 2px;
+        top: 2px;
+        width: 1em;
+        height: 1em;
+        border-radius: 50%;
+        transform: scale(0.8);
+        background-color: #fff;
+        transition: left 250ms linear;
+    }
+    .switch input[type="checkbox"]:checked::before {
+        background-color: white;
+        left: 1.2em;
+    }
 </style>
 
 <body>
@@ -301,7 +346,14 @@
                 </div>
                 <div class="area_box" style="display: block">
                     <input type = "number" class="btn-off area_input" th:value="${traceHistoryList.getTsrCycleBatch()}">
-                    <button class="btn-off all-time all-time-btn" type = "button"  th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}" th:text="${traceHistoryList.getTsrIsBatch() ? 'OFF' : 'ON'}">OFF</button>
+<!--                    <button class="btn-off all-time all-time-btn" type = "button"  th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}" th:text="${traceHistoryList.getTsrIsBatch() ? 'OFF' : 'ON'}">OFF</button>-->
+
+                    <label class="flex">
+                        <span class="select_box nationUno switch">
+                                <!--<input class="checkboxNationUno" type="hidden" th:value="${item.getNcUno()}">-->
+                                <input class="checkboxNation chkItem all-time" type="checkbox" th:value="${traceHistoryList.getTsrUno()}" th:checked="${traceHistoryList.getTsrIsBatch() == '1'}">
+                            </span>
+                    </label>
                 </div>
                 <button class="btn-off double-chk" style="margin-left: 5px;" th:tsiUno="${traceHistoryList.getTsi3tsiuno()}" th:tsiKeyword="${traceHistoryList.getTsi3Keyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
                 <button style="border-radius: 50%; height: 22px; margin-left: 15px; " class="del-btn btn-off del2" id="traceTsrUno" onclick="traceDelete();" th:value="${traceHistoryList.getTsrUno()}">삭제</button>
@@ -399,7 +451,7 @@
         // sTit.classList.remove('active');
         tTit.classList.add('active');
 
-        console.info("검색 이력 클릭???");
+        // console.info("검색 이력 클릭???");
     }
 
     // 히스토리 탭
@@ -734,12 +786,15 @@
     const allTime = document.querySelectorAll(".all-time");
     for (let i = 0; i < allTime.length; i++) {
         allTime[i].addEventListener('click', function () {
-            var inputValue = this.parentElement.querySelector('.area_input').value;
+            let inputValue = $(this).parents(".area_box").find('.area_input').val();
 
             if(! (6 <= inputValue && inputValue <= 720)){
                 alert("최소 6시간 최대 720까지 설정 가능합니다.");
+                $(this).prop("checked", !$(this).prop("checked"));
                 return false;
             }
+
+            console.info(this.value);
 
             this.disabled = true;
             //XMLHttpRequest 객체 생성
@@ -751,7 +806,7 @@
             //통신후 작업
             xhr.onload = () => {
                 if (xhr.status === 200) {   //통신 성공
-                    this.classList.toggle('active');
+                    // this.classList.toggle('active');
                     location.reload();
                 } else {
                     console.log('통신 실패')

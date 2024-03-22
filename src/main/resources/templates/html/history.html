@@ -163,6 +163,10 @@
 
   }
   /* 240202 */
+
+  .image-wrap img{
+    width:100px; height:auto;
+  }
 </style>
 
 <body>
@@ -221,8 +225,25 @@
         <div class = "area_search_condition">
           <section class="keyword section-keyword serpServices counselor-add bor10">
             <h3 class="title">검색 조건</h3>
+
+            <th:block th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}">
+              <button class="btnShowMovieImg btn-off btn-look" type="button">이미지 다운</button>
+              <div style = "display:none;">
+              <th:block th:each="item:${videoList.get(searchInfoList.getTsiUno())}">
+                <a class="movieImg" download th:href = "'/imagePath'+${item.getTviImgRealPath().substring(7) + item.getTviImgName()}">down</a>
+              </th:block>
+              </div>
+            </th:block>
+
             <div class="keyword-box btn-on bor10 keyword-wrap" style="margin-top: 30px;">
               <div class="box_wrap condition_info condition-wrap">
+                <div class="image-wrap">
+                  <div>
+                    <th:block th:each="item:${videoList.get(searchInfoList.getTsiUno())}">
+                      <img th:src = "'/imagePath'+${item.getTviImgRealPath().substring(7) + item.getTviImgName()}">
+                    </th:block>
+                  </div>
+                </div>
                 <div class="country-wrap">
                   <p class="tit">나라별</p>
                   <div>
@@ -263,6 +284,7 @@
               <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="" />
             </div>
           </div>
+
           <p class="con1">
             <span class="con1 text_escape" th:text="${searchInfoList.getTsiKeyword()}"></span>
           </p>
@@ -893,15 +915,24 @@
         modal.style.display = 'flex';
         modal.innerHTML = $(this).parent().parent().find(".area_search_condition").html();
 
-      $("#modal .esc-btn").on("click", function(){
-        modal.style.display = 'none';
-        document.body.style.overflow = 'unset';
-      });
+        $("#modal .esc-btn").on("click", function(){
+          modal.style.display = 'none';
+          document.body.style.overflow = 'unset';
+        });
+
+        $(".btnShowMovieImg").on("click", function(){
+          console.info("123");
+          $.each($(this).next().find(".movieImg"), function(item, idx){
+            this.click();
+          });
+        });
     });
 
     $(".t-tit").on("click", function(){
       location.href = "/trace/history";
     });
+
+
   });
 
 </script>

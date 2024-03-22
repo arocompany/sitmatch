@@ -79,7 +79,7 @@
       <span class="social">24시 모니터링 <br> 유무</span>
       <span class="time" >24시 모니터링 <br> 횟수</span>
       <span class="progress" >24시 모니터링 <br> 시간</span>
-      <span class="dist">24시 모니터링<br> 재유포 건수</span>
+      <span class="dist">24시 모니터링<br> 중인 건수</span>
       <span class="dist" >총 검색 <br> 결과 </span>
     </h2>
 
@@ -123,30 +123,38 @@
 
   const monitoringBtn = document.querySelectorAll(".monitoring")
   monitoringBtn.forEach((btn) => {
-    btn.addEventListener('click', () =>{
+    btn.addEventListener('click', (e) =>{
       // alert("모니터링버튼 클릭" + btn.getAttribute("tsiUno"))
-      window.location.href = '/monitoringList?'+'tsiUno='+btn.getAttribute("tsiUno");
+      let userFile = $(e.target).parent().find("p.num").text();
+      userFile = "대상자";
+      window.location.href = '/trace/history?monitoringStatus=10&manageType='+userFile+'&tsiUno='+btn.getAttribute("tsiUno");
     })
   })
 
   const deleteReqBtn = document.querySelectorAll(".deleteReq")
   deleteReqBtn.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      window.location.href = '/monitoringDeleteReqList?'+'tsiUno='+btn.getAttribute("tsiUno");
+    btn.addEventListener('click', (e) => {
+      let userFile = $(e.target).parent().find("p.num").text();
+      userFile = "대상자";
+      window.location.href = '/trace/history?monitoringStatus=20&manageType='+userFile+'&tsiUno='+btn.getAttribute("tsiUno");
     })
   })
 
   const deleteComptBtn = document.querySelectorAll(".deleteCompt")
   deleteComptBtn.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      window.location.href = '/monitoringDeleteComptList?'+'tsiUno='+btn.getAttribute("tsiUno");
+    btn.addEventListener('click', (e) => {
+      let userFile = $(e.target).parent().find("p.num").text();
+      userFile = "대상자";
+      window.location.href = '/trace/history?monitoringStatus=30&manageType='+userFile+'&tsiUno='+btn.getAttribute("tsiUno");
     })
   })
 
   const allTimeResultCntBtn = document.querySelectorAll(".allTimeResultCnt")
   allTimeResultCntBtn.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      window.location.href='/allTimeMonitoringChkList?'+'tsiUno='+btn.getAttribute("tsiUno");
+    btn.addEventListener('click', (e) => {
+      let userFile = $(e.target).parent().find("p.num").text();
+      userFile = "대상자";
+      window.location.href='/trace/history?monitoringStatus=40&manageType='+userFile+'&tsiUno='+btn.getAttribute("tsiUno");
     })
   })
 
