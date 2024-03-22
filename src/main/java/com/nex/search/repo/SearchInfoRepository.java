@@ -226,7 +226,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " AND fst_dml_dt BETWEEN :fromDate AND :toDate" +
                                 " GROUP BY DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') ";
 
-    String userSearchHistoryCount = " SELECT COUNT(*) FROM tb_search_info tsi WHERE SEARCH_VALUE='0' ";
+    String userSearchHistoryCount = " SELECT COUNT(*) FROM tb_search_info tsi WHERE tsi.tsi_user_file LIKE CONCAT('%',:searchKeyword,'%') AND SEARCH_VALUE='0' AND DATA_STAT_CD= '10' ";
 
     String allUserSearchHistoryList =  " SELECT " +
                                     " tsi.tsi_uno AS tsiUno, " +
@@ -272,6 +272,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " FROM  tb_search_info tsi " +
                                     " WHERE tsi.tsi_user_file LIKE CONCAT('%',:searchKeyword,'%')  " +
                                     " AND SEARCH_VALUE = '0' "+
+                                    " AND DATA_STAT_CD= '10' "+
                                     " ORDER BY tsi.tsi_uno DESC   ";
     String userSearchHistoryList =  " SELECT " +
                                     " tsi.tsi_uno AS tsiUno, " +
@@ -317,8 +318,11 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " FROM  tb_search_info tsi " +
                                     " WHERE tsi.tsi_user_file LIKE CONCAT('%',:searchKeyword,'%')  " +
                                     " AND SEARCH_VALUE = '0' "+
+                                    " AND TSI.DATA_STAT_CD = '10' "+
                                     " AND TSI.USER_UNO = :userUno"+
                                     " ORDER BY tsi.tsi_uno DESC   ";
+
+    String userSearchHistoryCount2 = " SELECT COUNT(*) FROM tb_search_info tsi WHERE tsi.tsi_user_file LIKE CONCAT('%',:searchKeyword,'%') AND SEARCH_VALUE='0' AND DATA_STAT_CD= '10' AND USER_UNO = :userUno ";
 
     List<SearchInfoEntity> findAllByOrderByTsiUnoDesc();
     Page<SearchInfoEntity> findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd, String keyword, Pageable pageable);
@@ -335,7 +339,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
     @Query(value = allUserSearchHistoryList, nativeQuery = true, countQuery=userSearchHistoryCount)
     Page<UserSearchHistoryDtoInterface> getAllUserSearchHistoryList(Pageable pageable, String searchKeyword);
 
-    @Query(value = userSearchHistoryList, nativeQuery = true, countQuery=userSearchHistoryCount)
+    @Query(value = userSearchHistoryList, nativeQuery = true, countQuery=userSearchHistoryCount2)
     Page<UserSearchHistoryDtoInterface> getUserSearchHistoryList(Pageable pageable, String searchKeyword, int userUno);
 
     @Query(value = "SELECT TU.USER_UNO as userUno, TU.USER_ID as userId FROM TB_USER TU", nativeQuery = true)
