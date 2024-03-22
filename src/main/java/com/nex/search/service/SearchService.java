@@ -595,7 +595,7 @@ public class SearchService {
     public Map<String, Object> getTraceHistoryMonitoringTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringTsiUnoList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringTsiUnoUserFileList(keyword, pageRequest, tsiUno);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 

@@ -444,6 +444,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " WHERE TMH.TSR_UNO = TSR.TSR_UNO " +
             " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, " +
             " TSI3.TSI_USER_FILE AS tsiUserFile "+
+            " , TSR.tsr_is_batch tsrIsBatch, TSR.tsr_cycle_batch tsrCycleBatch "+
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
             "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
@@ -455,7 +456,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '10' AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') OR TSR.TSR_TITLE IS NULL)  AND TSR.TSI_UNO = :tsiUno " +
             " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
 
-    /*
+
     String traceHistoryMonitoringTsiUnoUserFileList = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
@@ -514,9 +515,9 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, " +
             "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
             "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
-            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '10' AND TSI3.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno " +
+            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '10' AND TSI.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno " +
             " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
-            */
+
 
     String defaultQeury_15 = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsi3.tsi_uno as tsi3tsiuno, tsi3.tsi_keyword as tsi3keyword, "+
@@ -583,7 +584,6 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI ON TSI.TSI_UNO = TSR.TSI_UNO " +
             "LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, " +
             "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
-
             "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
             " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '20' AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno " +
             " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
@@ -655,7 +655,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
 
             "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
-            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '20' AND TSI3.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno " +
+            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '20' AND TSI.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno " +
             " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
 
     String defaultQeury_16 = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
@@ -795,7 +795,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
 
             "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
-            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '30' AND TSI3.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno " +
+            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '30' AND TSI.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno " +
             " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
 
     String defaultQeury_17 = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
@@ -935,7 +935,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
 
             "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
-            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD IS NOT NULL AND TSI3.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') AND TSR.MONITORING_CD = '20' AND TSR.TSI_UNO = :tsiUno " +
+            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD IS NOT NULL AND TSI.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') AND TSR.MONITORING_CD = '20' AND TSR.TSI_UNO = :tsiUno " +
             " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
 
     String from = " FROM TB_SEARCH_RESULT TSR INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO";
@@ -1091,6 +1091,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     @Query(value = defaultQeury_14, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno)
     Page<DefaultQueryDtoInterface> getTraceHistoryMonitoringTsiUnoList(String keyword, Pageable pageable, Integer tsiUno);
+    @Query(value = traceHistoryMonitoringTsiUnoUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno)
+    Page<DefaultQueryDtoInterface> getTraceHistoryMonitoringTsiUnoUserFileList(String keyword, Pageable pageable, Integer tsiUno);
     @Query(value = defaultQeury_15, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno + setTrkStatCd20 )
     Page<DefaultQueryDtoInterface> getTraceHistoryDeleteReqTsiUnoList(String keyword, Pageable pageable, Integer tsiUno);
     @Query(value = traceHistoryDeleteReqTsiUnoUserFileList, nativeQuery = true, countQuery = countQuery2+from+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno + setTrkStatCd20)
