@@ -216,6 +216,18 @@
             <span th:case="${'17'}">사진</span>
             <span th:case="${'19'}">영상</span>
           </th:block>
+
+          <th:block th:switch="${searchInfoList.getTsiType()}">
+            <button th:case="${'15'}" onclick="btnShowMovieImg">test</button>
+            <button th:case="${'19'}">test</button>
+            <div class = "area_search_movie_img_list">
+              <th:block th:each="item=searchInfoList">
+
+<!--                <img src = "">-->
+              </th:block>
+
+            </div>
+          </th:block>
         </p>
         <div style = "width:5%"><button type = "button" name = "btnShow" class = "btn-off btn-look">보기</button></div>
         <div class = "area_search_condition">
@@ -902,6 +914,10 @@
     $(".t-tit").on("click", function(){
       location.href = "/trace/history";
     });
+
+    $("#btnShowMovieImg").onc("click", function(){
+
+    })
   });
 
 </script>

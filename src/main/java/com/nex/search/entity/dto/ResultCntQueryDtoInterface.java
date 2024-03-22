@@ -1,8 +1,10 @@
 package com.nex.search.entity.dto;
 
 import com.nex.search.entity.SearchInfoParamsEntity;
+import com.nex.search.entity.VideoInfoEntity;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public interface ResultCntQueryDtoInterface {
     Integer getTsrUno();
@@ -49,4 +51,7 @@ public interface ResultCntQueryDtoInterface {
     Integer getTsiIsEngineYandex();
     Integer getTsiIsEngineYandexImage();
     Integer getTsiIsEngineNaver();
+
+    List<VideoInfoEntity> getVideoList();
+    void setVideoList(List<VideoInfoEntity> list);
 }
