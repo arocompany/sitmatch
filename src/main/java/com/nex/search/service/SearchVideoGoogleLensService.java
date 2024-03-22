@@ -54,13 +54,13 @@ public class SearchVideoGoogleLensService {
     public void searchByGoogleLensVideo(String tsrSns, SearchInfoEntity insertResult, String path, String nationCode, List<String> files) throws Exception {
 //        List<String> files = processVideo(insertResult);
         if(files == null) return;
-        for (int i = 0; i < files.size(); i++) {
-            VideoInfoEntity videoInfo = new VideoInfoEntity();
-            videoInfo.setTsiUno(insertResult.getTsiUno());
-            videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
-            videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
-            saveVideoInfo(videoInfo);
-        }
+//        for (int i = 0; i < files.size(); i++) {
+//            VideoInfoEntity videoInfo = new VideoInfoEntity();
+//            videoInfo.setTsiUno(insertResult.getTsiUno());
+//            videoInfo.setTviImgName(files.get(i).substring(files.get(i).lastIndexOf("/") + 1));
+//            videoInfo.setTviImgRealPath(files.get(i).substring(0, files.get(i).lastIndexOf("/") + 1));
+//            saveVideoInfo(videoInfo);
+//        }
 
         try {
             ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
@@ -206,16 +206,16 @@ public class SearchVideoGoogleLensService {
                     continue;
                 }
 
-                int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
-                if (cnt > 0) {
-                    log.info("file cnt === {}", cnt);
-                } else {
+//                int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
+//                if (cnt > 0) {
+//                    log.info("file cnt === {}", cnt);
+//                } else {
                     //이미지 파일 저장
                     imageService.saveImageFile(insertResult.getTsiUno(), restTemplateConfig.customRestTemplate(), sre, result, getOriginalFn, getThumbnailFn, false);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
                     searchResultRepository.save(sre);
                     sreList.add(sre);
-                }
+//                }
             } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());
                 throw new IOException(e);
