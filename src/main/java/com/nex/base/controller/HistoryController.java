@@ -1,6 +1,8 @@
 package com.nex.base.controller;
 
 import com.nex.common.Consts;
+import com.nex.search.entity.SearchResultEntity;
+import com.nex.search.entity.VideoInfoEntity;
 import com.nex.search.entity.dto.DefaultQueryDtoInterface;
 import com.nex.search.entity.dto.ResultCntQueryDtoInterface;
 import com.nex.search.repo.SearchInfoRepository;
@@ -14,10 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -60,12 +59,13 @@ public class HistoryController {
         modelAndView.addObject("searchTotalPages", searchHistMap.get("totalPages"));
 //        modelAndView.addObject("tsiTypeMap", searchService.getTsiTypeMap());
 
-        List<ResultCntQueryDtoInterface> list = (List<ResultCntQueryDtoInterface>)searchHistMap.get("searchInfoList");
-
-        list.forEach(item -> {
-            item.setVideoList(videoInfoRepository.findAllByTsiUno(item.getTsiUno()));
-        });
-//        modelAndView.addObject("videoList", videoInfoRepository.findAllByTsiUno())
+        List<ResultCntQueryDtoInterface> list = ((Page<ResultCntQueryDtoInterface>)searchHistMap.get("searchInfoList")).getContent();
+        List<Integer> tsiUnoList = list.stream().map(ResultCntQueryDtoInterface::getTsiUno).toList();
+        Map<Integer, List<VideoInfoEntity>> videoList = new HashMap<>();
+        for(ResultCntQueryDtoInterface info : list){
+            videoList.put(info.getTsiUno(), videoInfoRepository.findAllByTsiUno(info.getTsiUno()));
+        }
+        modelAndView.addObject("videoList", videoList);
         return modelAndView;
     }
 
