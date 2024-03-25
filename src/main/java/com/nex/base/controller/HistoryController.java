@@ -1,10 +1,10 @@
 package com.nex.base.controller;
 
 import com.nex.common.Consts;
-import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.VideoInfoEntity;
 import com.nex.search.entity.dto.DefaultQueryDtoInterface;
 import com.nex.search.entity.dto.ResultCntQueryDtoInterface;
+import com.nex.search.repo.SearchInfoParamsRepository;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.VideoInfoRepository;
 import com.nex.search.service.SearchService;
@@ -26,6 +26,7 @@ public class HistoryController {
     private final SearchService searchService;
     private final SearchInfoRepository searchInfoRepository;
     private final VideoInfoRepository videoInfoRepository;
+    private final SearchInfoParamsRepository searchInfoParamsRepository;
 
     @GetMapping("/history")
     public ModelAndView history(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
@@ -319,6 +320,7 @@ public class HistoryController {
         modelAndView.addObject("userId", searchService.getUserIdByTsiUnoMap().get(tsiUno.get()));
         modelAndView.addObject("searchInfo", searchInfoRepository.findByTsiUno(tsiUno.get()));
 
+        modelAndView.addObject("searchInfoParams", searchInfoParamsRepository.findByTsiUno(tsiUno.get()));
         return modelAndView;
     }
 

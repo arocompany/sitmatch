@@ -97,6 +97,8 @@ public class SearchImageYandexService {
                                 , Images_resultsByImageForYandex::isFacebook
                                 , Images_resultsByImageForYandex::isInstagram
                                 , Images_resultsByImageForYandex::isTwitter
+                                , finalTextGl1
+                                , "yandex_images"
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -289,7 +291,7 @@ public class SearchImageYandexService {
 
     public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, Map<String, Object>> getOriginalFn, Function<RESULT, Map<String, Object>> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) throws Exception {
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn, String nationCode, String engine) throws Exception {
 
         if (results == null) {
             log.info("result null");
@@ -316,6 +318,8 @@ public class SearchImageYandexService {
                     //이미지 파일 저장
                     imageService.saveYandexReverseImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    sre.setTsrNationCode(nationCode);
+                    sre.setTsrEngine(engine);
                     searchResultRepository.save(sre);
 
                     sreList.add(sre);

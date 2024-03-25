@@ -94,6 +94,8 @@ public class SearchImageGoogleLensService {
                                 , Images_resultsByGoogleLens::isFacebook
                                 , Images_resultsByGoogleLens::isInstagram
                                 , Images_resultsByGoogleLens::isTwitter
+                                , finalTextGl1
+                                , "google_lens"
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -173,7 +175,8 @@ public class SearchImageGoogleLensService {
     }
 
     public <RESULT> List<SearchResultEntity> saveGoogleLens(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
-            , Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) throws Exception {
+            , Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn
+    , String nationCode, String engine) throws Exception {
         if (results == null) {
             log.info("result null");
             return null;
@@ -199,6 +202,8 @@ public class SearchImageGoogleLensService {
                     //이미지 파일 저장
                     imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getThumbnailFn, getThumbnailFn, true);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    sre.setTsrNationCode(nationCode);
+                    sre.setTsrEngine(engine);
                     searchResultRepository.save(sre);
                     sreList.add(sre);
 //                }

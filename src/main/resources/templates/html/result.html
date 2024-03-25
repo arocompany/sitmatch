@@ -77,6 +77,18 @@
             <!--          <label><input type="radio" name="priority" value="0">일치율 낮은순</label>-->
             <!--        </div>-->
             <!--      </section>-->
+            <section>
+                <h2>검색 시 진행한 국적</h2>
+                <div class="chk-box chk-box-image">
+                    <label><input type = "checkbox" value = "kr" name = "nationCode" th:checked="${searchInfoParams.getTsiIsNationKr() == 1}" th:disabled="${searchInfoParams.getTsiIsNationKr() != 1}">KR</input></label>
+                    <label><input type = "checkbox" value = "us" name = "nationCode" th:checked="${searchInfoParams.getTsiIsNationUs() == 1}" th:disabled="${searchInfoParams.getTsiIsNationUs() != 1}">US</input></label>
+                    <label><input type = "checkbox" value = "cn" name = "nationCode" th:checked="${searchInfoParams.getTsiIsNationCn() == 1}" th:disabled="${searchInfoParams.getTsiIsNationCn() != 1}">CN</input></label>
+                    <label><input type = "checkbox" value = "ru" name = "nationCode" th:checked="${searchInfoParams.getTsiIsNationRu() == 1}" th:disabled="${searchInfoParams.getTsiIsNationRu() != 1}">RU</input></label>
+                    <label><input type = "checkbox" value = "nl" name = "nationCode" th:checked="${searchInfoParams.getTsiIsNationNl() == 1}" th:disabled="${searchInfoParams.getTsiIsNationNl() != 1}">NL</input></label>
+                    <label><input type = "checkbox" value = "th" name = "nationCode" th:checked="${searchInfoParams.getTsiIsNationTh() == 1}" th:disabled="${searchInfoParams.getTsiIsNationTh() != 1}">TH</input></label>
+                    <label><input type = "checkbox" value = "vn" name = "nationCode" th:checked="${searchInfoParams.getTsiIsNationVn() == 1}" th:disabled="${searchInfoParams.getTsiIsNationVn() != 1}">VN</input></label>
+                </div>
+            </section>
             <div class="search-bar bor10 bor10 btn-off">
                 <input type="text" name="keyword" placeholder="검색어를 입력하세요" th:value="${keyword}">
             </div>
@@ -145,6 +157,11 @@
                         <img th:case="15" src="/img/common/sns/insta-round.png" alt="" class="sns">
                         <img th:case="17" src="/img/common/sns/facebook-round.png" alt="" class="sns">
                     </th:block>
+                </div>
+                <div>
+                    <span th:text="${list.getTsrUno()}"></span>
+                    <span th:text="${list.getTsrNationCode()}"></span>
+<!--                    <span th:text="${list.getTsrEngine()}"></span>-->
                 </div>
                 <div>
                     <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}"> <!-- 검색타입이 키워드가 아닌경우 -->

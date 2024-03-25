@@ -135,7 +135,9 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 //                    "(case when isnull(tmr.TMR_V_SCORE) || tmr.TMR_V_SCORE = 0 then 0 else 1 end + "+
             "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
 //                    "case when isnull(tmr.TMR_A_SCORE) || tmr.TMR_A_SCORE = 0 then 0 else 1 end + "+
-            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity";
+            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity" +
+            ", tsr.TSR_NATION_CODE as tsrNationCode "+
+            ", tsr.TSR_ENGINE as tsrEngine ";
 
     /*String defaultQeury_4 = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
@@ -200,9 +202,12 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " FROM TB_MATCH_RESULT " +
             " WHERE tsr.tsi_uno = tsi_uno " +
             ") AS maxSimilarity" +
+            ", tsr.TSR_NATION_CODE as tsrNationCode "+
+            ", tsr.TSR_ENGINE as tsrEngine "+
             ",ROUND(tmr.TMR_AGE_SCORE, 2)* 100 AS tmrAgeScore" +
             ",ROUND(tmr.TMR_OBJECT_SCORE, 2)* 100 AS tmrObjectScore" +
             ",ROUND(tmr.TMR_OCW_SCORE, 2)* 100 AS tmrOcwScore ";
+
 
     // String defaultQeury_6 = "SELECT tsr.TSR_SITE_URL as tsrSiteUrl";
 
