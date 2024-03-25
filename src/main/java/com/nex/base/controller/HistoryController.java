@@ -1,6 +1,7 @@
 package com.nex.base.controller;
 
 import com.nex.common.Consts;
+import com.nex.search.entity.SearchInfoParamsEntity;
 import com.nex.search.entity.VideoInfoEntity;
 import com.nex.search.entity.dto.DefaultQueryDtoInterface;
 import com.nex.search.entity.dto.ResultCntQueryDtoInterface;
@@ -180,7 +181,8 @@ public class HistoryController {
                                @RequestParam(required = false, defaultValue = "") String snsStatus03,
                                @RequestParam(required = false, defaultValue = "") String snsStatus04,
                                @RequestParam(required = false, defaultValue = "1") String priority,
-                               @RequestParam(required = false, defaultValue = "0") String isImage) {
+                               @RequestParam(required = false, defaultValue = "0") String isImage,
+                               @RequestParam(required = false, defaultValue = "") List<String> nationCode) {
         ModelAndView modelAndView = new ModelAndView("html/result");
         Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = null;
 
@@ -215,6 +217,21 @@ public class HistoryController {
                 && !StringUtils.hasText(snsStatus04)) {
             snsStatusAll = "1";
         }
+
+        SearchInfoParamsEntity searchInfoParamsEntity = searchInfoParamsRepository.findByTsiUno(tsiUno.get());
+
+        if(nationCode == null || nationCode.size() == 0){
+            if(searchInfoParamsEntity.getTsiIsNationKr() > 0) nationCode.add("kr");
+            if(searchInfoParamsEntity.getTsiIsNationUs() > 0) nationCode.add("us");
+            if(searchInfoParamsEntity.getTsiIsNationCn() > 0) nationCode.add("cn");
+            if(searchInfoParamsEntity.getTsiIsNationNl() > 0) nationCode.add("nl");
+            if(searchInfoParamsEntity.getTsiIsNationTh() > 0) nationCode.add("th");
+            if(searchInfoParamsEntity.getTsiIsNationVn() > 0) nationCode.add("vn");
+            if(searchInfoParamsEntity.getTsiIsNationRu() > 0) nationCode.add("ru");
+        }
+
+        modelAndView.addObject("searchInfoParams", searchInfoParamsEntity);
+        modelAndView.addObject("nationCode", nationCode);
 
         modelAndView.addObject("tsjStatusAll", tsjStatusAll); // 분류
         modelAndView.addObject("odStatusAll", odStatusAll);   // 일치율 높은순
@@ -304,9 +321,9 @@ public class HistoryController {
             }
 
             defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, order_type);
-
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, order_type, nationCode);
         }
+
         tsiKeyword.ifPresent(s -> modelAndView.addObject("tsiKeyword", s));
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("searchResultList", defaultQueryDtoInterface);
@@ -320,7 +337,6 @@ public class HistoryController {
         modelAndView.addObject("userId", searchService.getUserIdByTsiUnoMap().get(tsiUno.get()));
         modelAndView.addObject("searchInfo", searchInfoRepository.findByTsiUno(tsiUno.get()));
 
-        modelAndView.addObject("searchInfoParams", searchInfoParamsRepository.findByTsiUno(tsiUno.get()));
         return modelAndView;
     }
 

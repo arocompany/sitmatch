@@ -954,12 +954,14 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String whereTsiUnoTsrTitleLikeTsrStatusIn = " WHERE TSI.TSI_UNO = :tsiUno AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') or (:keyword = '' and TSR.TSR_TITLE is null)) " +
             "AND (tsj.TSJ_STATUS = :tsjStatus1 OR tsj.TSJ_STATUS = :tsjStatus2 OR tsj.TSJ_STATUS = :tsjStatus3 OR tsj.TSJ_STATUS = :tsjStatus4)" +
             " AND ((tsr.TSR_IMG_NAME IS NOT NULL AND :isImage = '1') OR :isImage != '1') "+
-            "AND (tsr.TSR_SNS = :snsStatus01 OR tsr.TSR_SNS = :snsStatus02 OR tsr.TSR_SNS = :snsStatus03 OR tsr.TSR_SNS = :snsStatus04)";
+            "AND (tsr.TSR_SNS = :snsStatus01 OR tsr.TSR_SNS = :snsStatus02 OR tsr.TSR_SNS = :snsStatus03 OR tsr.TSR_SNS = :snsStatus04)" +
+            " AND (tsr.TSR_NATION_CODE IN (:nationCode)) ";
 
     String whereTsiUnoTsrTitleLikeTsrStatusIn2 =" WHERE TSI.TSI_UNO = :tsiUno AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') or (:keyword = '' and TSR.TSR_TITLE is null)) " +
-            "AND (tsj.TSJ_STATUS = :tsjStatus1 OR tsj.TSJ_STATUS = :tsjStatus2 OR tsj.TSJ_STATUS = :tsjStatus3 OR tsj.TSJ_STATUS = :tsjStatus4)" +
+            " AND (tsj.TSJ_STATUS = :tsjStatus1 OR tsj.TSJ_STATUS = :tsjStatus2 OR tsj.TSJ_STATUS = :tsjStatus3 OR tsj.TSJ_STATUS = :tsjStatus4)" +
             " AND ((tsr.TSR_IMG_NAME IS NOT NULL AND :isImage = 'on') OR :isImage != 'on') "+
-            "AND (tsr.TSR_SNS = :snsStatus01 OR tsr.TSR_SNS = :snsStatus02 OR tsr.TSR_SNS = :snsStatus03 OR tsr.TSR_SNS = :snsStatus04)" ;
+            " AND (tsr.TSR_SNS = :snsStatus01 OR tsr.TSR_SNS = :snsStatus02 OR tsr.TSR_SNS = :snsStatus03 OR tsr.TSR_SNS = :snsStatus04)" +
+            " AND (tsr.TSR_NATION_CODE IN (:nationCode)) ";
 
 
     // String whereTsiUnoTsrTitleLikeTsrStatusIn3 =" WHERE TSI.TSI_UNO = :tsiUno AND TSR.TSR_IMG_PATH IS NULL ";
@@ -1113,20 +1115,20 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     // 검색 결과 검색 이력
     @Query(value = defaultQeury_5+from2+whereTsiUnoTsrTitleLikeTsrStatusIn2+orderByTmrSimilarityDesc, nativeQuery = true, countQuery = countQuery3+from2+whereTsiUnoTsrTitleLikeTsrStatusIn2)
-    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, List<String> nationCode, Pageable pageable);
     @Query(value = defaultQeury+from2+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_1, nativeQuery = true, countQuery = countQuery+from2+whereTsiUnoTsrTitleLikeTsrStatusIn)
-    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_1(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_1(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, List<String> nationCode, Pageable pageable);
     @Query(value = defaultQeury+from2+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_2, nativeQuery = true, countQuery = countQuery+from2+whereTsiUnoTsrTitleLikeTsrStatusIn)
-    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_2(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_2(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, List<String> nationCode, Pageable pageable);
     @Query(value = defaultQeury+from2+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_3, nativeQuery = true, countQuery = countQuery+from2+whereTsiUnoTsrTitleLikeTsrStatusIn)
-    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_3(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_3(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, List<String> nationCode, Pageable pageable);
     @Query(value = defaultQeury+from2+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_4, nativeQuery = true, countQuery = countQuery+from2+whereTsiUnoTsrTitleLikeTsrStatusIn)
-    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_4(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_4(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, List<String> nationCode, Pageable pageable);
     @Query(value = defaultQeury+from2+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_5, nativeQuery = true, countQuery = countQuery+from2+whereTsiUnoTsrTitleLikeTsrStatusIn)
-    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_5(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_5(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4, String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, List<String> nationCode, Pageable pageable);
     @Query(value = defaultQeury+from2+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityDesc_6, nativeQuery = true, countQuery = countQuery+from2+whereTsiUnoTsrTitleLikeTsrStatusIn)
     Page<DefaultQueryDtoInterface> getResultInfoListOrderByTmrSimilarityDesc_6(Integer tsiUno, String keyword, String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
-                                                                               String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, Pageable pageable);
+                                                                               String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, List<String> nationCode, Pageable pageable);
 
 /*
     @Query(value = defaultQeury+from+whereTsiUnoTsrTitleLikeTsrStatusIn+orderByTmrSimilarityAsc, nativeQuery = true, countQuery = countQuery+from+whereTsiUnoTsrTitleLikeTsrStatusIn)
