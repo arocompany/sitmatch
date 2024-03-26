@@ -33,7 +33,8 @@ public class HistoryController {
     public ModelAndView history(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                 @RequestParam(required = false, defaultValue = "1") Integer searchPage,
                                 @RequestParam(required = false, defaultValue = "") String searchKeyword,
-                                @RequestParam(required = false, defaultValue = "") String traceKeyword) {
+                                @RequestParam(required = false, defaultValue = "") String traceKeyword,
+                                @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType) {
         ModelAndView modelAndView = new ModelAndView("html/history");
         Map<String, Object> searchHistMap;
 
@@ -45,9 +46,9 @@ public class HistoryController {
         modelAndView.addObject("headerMenu", "history");
 
         if(sessionInfoDto.isAdmin()) {
-            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword);
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, tsiSearchType);
         } else {
-            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, userUno);
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, userUno, tsiSearchType);
         }
 
         modelAndView.addObject("userCount", searchService.getUserIdMap());
@@ -79,7 +80,8 @@ public class HistoryController {
                                 @RequestParam(required=false, defaultValue = "0") String traceHistoryValue,
                                 @RequestParam(required = false, defaultValue = "검색어") String manageType,
                                 @RequestParam(required = false, defaultValue = "0") String monitoringStatus,
-                                @RequestParam(required = false, defaultValue = "0") Integer tsiUno) {
+                                @RequestParam(required = false, defaultValue = "0") Integer tsiUno,
+                                @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType) {
         ModelAndView modelAndView = new ModelAndView("html/traceHistory");
         modelAndView.addObject("manageType", manageType);
 
@@ -100,40 +102,40 @@ public class HistoryController {
         if(monitoringStatus.equals("0")){
             // 검색어(타이틀) 검색
             if(manageType.equals("1")){
-                traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword);
+                traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword, tsiSearchType);
             } else {
                 // 대상자 검색
-                traceHistoryMap = searchService.getTraceHistoryUserFileList(tracePage, traceKeyword);
+                traceHistoryMap = searchService.getTraceHistoryUserFileList(tracePage, traceKeyword, tsiSearchType);
             }
         }else {
             // monitoringStatus -> 10:모니터링  20:삭제요청  30:삭제완료  40:24시간모니터링
             if(manageType.equals("1")) {
                 if(monitoringStatus.equals("10")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryMonitoringList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.getTraceHistoryMonitoringTsiUnoList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryMonitoringList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.getTraceHistoryMonitoringTsiUnoList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else if(monitoringStatus.equals("20")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteReqList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.getTraceHistoryDeleteReqTsiUnoList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteReqList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.getTraceHistoryDeleteReqTsiUnoList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else if(monitoringStatus.equals("30")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteComptList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.getTraceHistoryDeleteComptTsiUnoList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteComptList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.getTraceHistoryDeleteComptTsiUnoList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else {
-                    if(tsiUno == null) traceHistoryMap = searchService.allTimeMonitoringList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.allTimeMonitoringTsiUnoList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null) traceHistoryMap = searchService.allTimeMonitoringList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.allTimeMonitoringTsiUnoList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 }
             } else {
                 if(monitoringStatus.equals("10")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryMonitoringUserFileList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.getTraceHistoryMonitoringTsiUnoUserFileList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryMonitoringUserFileList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.getTraceHistoryMonitoringTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else if(monitoringStatus.equals("20")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteReqUserFileList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.getTraceHistoryDeleteReqTsiUnoUserFileList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteReqUserFileList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.getTraceHistoryDeleteReqTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else if(monitoringStatus.equals("30")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteComptUserFileList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.getTraceHistoryDeleteComptTsiUnoUserFileList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteComptUserFileList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.getTraceHistoryDeleteComptTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else {
-                    if(tsiUno == null) traceHistoryMap = searchService.allTimeMonitoringUserFileList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.allTimeMonitoringTsiUnoUserFileList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null) traceHistoryMap = searchService.allTimeMonitoringUserFileList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.allTimeMonitoringTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 }
             }
         }

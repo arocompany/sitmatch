@@ -15,6 +15,9 @@ public class SearchInfoEntity {
     @Column(name = "TSI_UNO")
     private int tsiUno;
     @Basic
+    @Column(name="TSI_SEARCH_TYPE")
+    private int tsiSearchType;
+    @Basic
     @Column(name = "TSI_TYPE")
     private String tsiType;
     @Basic

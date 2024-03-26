@@ -532,10 +532,10 @@ public class SearchService {
         return searchResultRepository.countByTrkStatCdNotNull();
     }
 
-    public Map<String, Object> getTraceHistoryList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, 10);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryList(keyword, tsiSearchType, pageRequest);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
@@ -547,10 +547,10 @@ public class SearchService {
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryUserFileList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryUserFileList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, 10);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceUserFileList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceUserFileList(keyword, tsiSearchType, pageRequest);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
@@ -561,25 +561,10 @@ public class SearchService {
 
         return outMap;
     }
-    public Map<String, Object> getTraceHistoryMonitoringList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryMonitoringList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringList(keyword, pageRequest);
-
-        CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
-
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
-
-        return outMap;
-    }
-
-    public Map<String, Object> getTraceHistoryMonitoringTsiUnoList(Integer page, String keyword, Integer tsiUno) {
-        Map<String, Object> outMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringTsiUnoList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringList(keyword, tsiSearchType, pageRequest);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
@@ -591,10 +576,25 @@ public class SearchService {
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryMonitoringTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno) {
+    public Map<String, Object> getTraceHistoryMonitoringTsiUnoList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringTsiUnoUserFileList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringTsiUnoList(keyword, tsiSearchType, pageRequest, tsiUno);
+
+        CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
+
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+
+        return outMap;
+    }
+
+    public Map<String, Object> getTraceHistoryMonitoringTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringTsiUnoUserFileList(keyword, tsiSearchType, pageRequest, tsiUno);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
@@ -607,10 +607,10 @@ public class SearchService {
     }
     
     // 대상자는 없고 대상자키워드 있을때
-    public Map<String, Object> getTraceHistoryMonitoringUserFileList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryMonitoringUserFileList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringUserFileList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringUserFileList(keyword, tsiSearchType, pageRequest);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
@@ -622,10 +622,10 @@ public class SearchService {
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteReqList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryDeleteReqList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqList(keyword, tsiSearchType, pageRequest);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
@@ -637,10 +637,10 @@ public class SearchService {
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteReqUserFileList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryDeleteReqUserFileList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqUserFileList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqUserFileList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
@@ -651,11 +651,11 @@ public class SearchService {
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteReqTsiUnoList(Integer page, String keyword, Integer tsiUno) {
+    public Map<String, Object> getTraceHistoryDeleteReqTsiUnoList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqTsiUnoList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqTsiUnoList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
@@ -666,11 +666,11 @@ public class SearchService {
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteReqTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno) {
+    public Map<String, Object> getTraceHistoryDeleteReqTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqTsiUnoUserFileList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqTsiUnoUserFileList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
@@ -681,11 +681,11 @@ public class SearchService {
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteComptList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryDeleteComptList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
@@ -696,11 +696,11 @@ public class SearchService {
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteComptUserFileList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryDeleteComptUserFileList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptUserFileList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptUserFileList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
@@ -711,11 +711,11 @@ public class SearchService {
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteComptTsiUnoList(Integer page, String keyword, Integer tsiUno) {
+    public Map<String, Object> getTraceHistoryDeleteComptTsiUnoList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptTsiUnoList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptTsiUnoList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
@@ -726,11 +726,11 @@ public class SearchService {
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteComptTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno) {
+    public Map<String, Object> getTraceHistoryDeleteComptTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptTsiUnoUserFileList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptTsiUnoUserFileList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
@@ -741,11 +741,11 @@ public class SearchService {
         return outMap;
     }
 
-    public Map<String, Object> allTimeMonitoringTsiUnoList(Integer page, String keyword, Integer tsiUno) {
+    public Map<String, Object> allTimeMonitoringTsiUnoList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringTsiUnoList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringTsiUnoList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
@@ -756,11 +756,11 @@ public class SearchService {
         return outMap;
     }
 
-    public Map<String, Object> allTimeMonitoringTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno) {
+    public Map<String, Object> allTimeMonitoringTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringTsiUnoUserFileList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringTsiUnoUserFileList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
@@ -772,11 +772,11 @@ public class SearchService {
     }
 
 
-    public Map<String, Object> allTimeMonitoringList(Integer page, String keyword) {
+    public Map<String, Object> allTimeMonitoringList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
@@ -788,11 +788,11 @@ public class SearchService {
         return outMap;
     }
 
-    public Map<String, Object> allTimeMonitoringUserFileList(Integer page, String keyword) {
+    public Map<String, Object> allTimeMonitoringUserFileList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringUserFileList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringUserFileList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
         outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
@@ -964,11 +964,11 @@ public class SearchService {
         return true;
     }
 
-    public Map<String, Object> getSearchInfoList(Integer page, String keyword) {
+    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer tsiSearchType) {
         log.info("getSearchInfoList page: " + page);
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getSearchInfoResultCnt("10","0", keyword, pageRequest);
+        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getSearchInfoResultCnt("10","0", keyword, tsiSearchType, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
@@ -980,10 +980,10 @@ public class SearchService {
     }
 
     // admin 아닐 때
-    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno) {
+    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getUserSearchInfoList("10","0", keyword, userUno, pageRequest);
+        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getUserSearchInfoList("10","0", keyword, userUno, tsiSearchType, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());

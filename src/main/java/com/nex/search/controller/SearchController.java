@@ -29,7 +29,8 @@ public class SearchController {
     @PostMapping()
     public ModelAndView search(@RequestParam("file") Optional<MultipartFile> file, SearchInfoEntity searchInfoEntity
                                 ,@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
-                                ,SearchInfoDto searchInfoDto, Model model) throws Exception {
+                                ,SearchInfoDto searchInfoDto, Model model
+                                ) throws Exception {
         ModelAndView mv = new ModelAndView("redirect:/history");
 
         if(searchInfoEntity.getTsiKeyword() == null){
