@@ -221,13 +221,33 @@ public class HistoryController {
         SearchInfoParamsEntity searchInfoParamsEntity = searchInfoParamsRepository.findByTsiUno(tsiUno.get());
 
         if(nationCode == null || nationCode.size() == 0){
-            if(searchInfoParamsEntity.getTsiIsNationKr() > 0) nationCode.add("kr");
-            if(searchInfoParamsEntity.getTsiIsNationUs() > 0) nationCode.add("us");
-            if(searchInfoParamsEntity.getTsiIsNationCn() > 0) nationCode.add("cn");
-            if(searchInfoParamsEntity.getTsiIsNationNl() > 0) nationCode.add("nl");
-            if(searchInfoParamsEntity.getTsiIsNationTh() > 0) nationCode.add("th");
-            if(searchInfoParamsEntity.getTsiIsNationVn() > 0) nationCode.add("vn");
-            if(searchInfoParamsEntity.getTsiIsNationRu() > 0) nationCode.add("ru");
+            if(searchInfoParamsEntity != null) {
+                if (searchInfoParamsEntity.getTsiIsNationKr() > 0) nationCode.add("kr");
+                if (searchInfoParamsEntity.getTsiIsNationUs() > 0) nationCode.add("us");
+                if (searchInfoParamsEntity.getTsiIsNationCn() > 0) nationCode.add("cn");
+                if (searchInfoParamsEntity.getTsiIsNationNl() > 0) nationCode.add("nl");
+                if (searchInfoParamsEntity.getTsiIsNationTh() > 0) nationCode.add("th");
+                if (searchInfoParamsEntity.getTsiIsNationVn() > 0) nationCode.add("vn");
+                if (searchInfoParamsEntity.getTsiIsNationRu() > 0) nationCode.add("ru");
+            }else{
+                nationCode.add("kr");
+                nationCode.add("us");
+                nationCode.add("cn");
+                nationCode.add("nl");
+                nationCode.add("th");
+                nationCode.add("vn");
+                nationCode.add("ru");
+
+                searchInfoParamsEntity = new SearchInfoParamsEntity();
+                searchInfoParamsEntity.setTsiIsNationKr(1);
+                searchInfoParamsEntity.setTsiIsNationUs(1);
+                searchInfoParamsEntity.setTsiIsNationCn(1);
+                searchInfoParamsEntity.setTsiIsNationNl(1);
+                searchInfoParamsEntity.setTsiIsNationTh(1);
+                searchInfoParamsEntity.setTsiIsNationVn(1);
+                searchInfoParamsEntity.setTsiIsNationRu(1);
+
+            }
         }
 
         modelAndView.addObject("searchInfoParams", searchInfoParamsEntity);
