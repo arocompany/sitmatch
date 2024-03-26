@@ -9,7 +9,8 @@ public interface Consts {
     String SESSION_USER_PL = "percent_limit";
     String SESSION_IS_ADMIN = "isAdmin";
 
-    Integer PAGE_SIZE = 12;     // 1page에 보여줄 row 개수
+    // Integer PAGE_SIZE = 12;     // 1page에 보여줄 row 개수
+    Integer PAGE_SIZE = 10;     // 1page에 보여줄 row 개수
     Integer MAX_PAGE = 10;      // 하단 페이징 부분
 
     String DATA_STAT_CD_NORMAL = "10";      // 정상
