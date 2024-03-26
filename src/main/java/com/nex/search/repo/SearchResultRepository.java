@@ -451,6 +451,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, " +
             " TSI3.TSI_USER_FILE AS tsiUserFile "+
             " , TSR.tsr_is_batch tsrIsBatch, TSR.tsr_cycle_batch tsrCycleBatch "+
+            " , TSR.tsr_nation_code tsrNationCode " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
             "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
@@ -513,6 +514,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "            else 1 " +
             "        end)) * 100)) > 0" +
             "         ) as re_monitor_cnt " +
+            " , TSR.tsr_is_batch tsrIsBatch, TSR.tsr_cycle_batch tsrCycleBatch " +
+            " , TSR.tsr_nation_code tsrNationCode " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
             "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
@@ -583,6 +586,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, " +
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " , TSR.tsr_is_batch tsrIsBatch, TSR.tsr_cycle_batch tsrCycleBatch " +
+            " , TSR.tsr_nation_code tsrNationCode " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
             "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
@@ -652,6 +656,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, " +
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " , TSR.tsr_is_batch tsrIsBatch, TSR.tsr_cycle_batch tsrCycleBatch " +
+            " , TSR.tsr_nation_code tsrNationCode " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
             "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
@@ -722,6 +727,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, " +
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " , TSR.tsr_is_batch tsrIsBatch, TSR.tsr_cycle_batch tsrCycleBatch " +
+            " , TSR.tsr_nation_code tsrNationCode " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
             "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
@@ -862,6 +868,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, " +
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " , TSR.tsr_is_batch tsrIsBatch, TSR.tsr_cycle_batch tsrCycleBatch " +
+            " , TSR.tsr_nation_code tsrNationCode " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
             "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
@@ -932,6 +939,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " ORDER BY clkDmlDt DESC) AS clkDmlDtResult) AS lastAlltimeHist, " +
             " TSI3.TSI_USER_FILE AS tsiUserFile " +
             " , TSR.tsr_is_batch tsrIsBatch, TSR.tsr_cycle_batch tsrCycleBatch " +
+            " , TSR.tsr_nation_code tsrNationCode " +
             " FROM TB_SEARCH_RESULT TSR " +
             "LEFT OUTER JOIN TB_SEARCH_INFO TSI3 ON TSI3.TSR_UNO = TSR.TSR_UNO " +
             "LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +

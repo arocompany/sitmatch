@@ -63,6 +63,11 @@
           <h2 class="unity" th:case="20"><strong class="state">삭제 요청 중</strong> <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span></th:block></h2>
           <h2 class="unity" th:case="30"><strong class="state">삭제 완료</strong> <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span></th:block></h2>
         </th:block>
+
+        <span class="detail-info">
+          국가: <span th:text="${list.getTsrNationCode()}" ></span>
+        </span>
+
         <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url"><p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p></a>
         <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
         <p class="detail" >
