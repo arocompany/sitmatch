@@ -66,7 +66,7 @@ public class SearchYoutubeService {
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(insertResult.getTsiUno(), url, nationCode, "youtube", tsiKeywordHiddenValue, null, configData.getSerpApiKey(), null);
             requestSerpApiLogService.save(rsalEntity);
             int rsalUno = rsalEntity.getRslUno();
-            CompletableFutureYoutubeByResult(url, tsrSns, insertResult, rsalUno);
+            CompletableFutureYoutubeByResult(url, tsrSns, insertResult, rsalUno, nationCode, "youtube");
         } catch (Exception e) {
             log.debug("Exception: " + e);
         }
@@ -86,7 +86,7 @@ public class SearchYoutubeService {
         return url;
     }
 
-    public void CompletableFutureYoutubeByResult(String url, String tsrSns, SearchInfoEntity insertResult, int rsalUno) {
+    public void CompletableFutureYoutubeByResult(String url, String tsrSns, SearchInfoEntity insertResult, int rsalUno, String nationCode, String engine) {
         // 이미지
         CompletableFuture
                 .supplyAsync(() -> {
@@ -109,6 +109,8 @@ public class SearchYoutubeService {
                                 , Youtube_resultsByText::getLink
                                 , Youtube_resultsByText::getTitle
                                 , Youtube_resultsByText::getThumbnail
+                                , nationCode
+                                , engine
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -171,7 +173,8 @@ public class SearchYoutubeService {
     }
 
     public <RESULT> List<SearchResultEntity> saveYoutube(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
-            , Function<RESULT, String> getPositionFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn, Function<RESULT, Map<String, String>> getThumnailFn) throws Exception {
+            , Function<RESULT, String> getPositionFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn, Function<RESULT, Map<String, String>> getThumnailFn
+    , String nationCode, String engine) throws Exception {
         if (results == null) {
             log.info("result null");
             return null;
@@ -194,6 +197,8 @@ public class SearchYoutubeService {
 //                } else {
                     //이미지 파일 저장
                     imageService.saveYoutubeImageFile(insertResult.getTsiUno(), restTemplateConfig.customRestTemplate(), sre, result, getThumnailFn);
+                    sre.setTsrNationCode(nationCode);
+                    sre.setTsrEngine(engine);
                     saveSearchResult(sre);
                     sreList.add(sre);
 //                }

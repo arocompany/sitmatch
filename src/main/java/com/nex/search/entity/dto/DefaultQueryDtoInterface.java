@@ -65,4 +65,6 @@ public interface DefaultQueryDtoInterface {
     String getTmrAgeScore();
     String getTmrObjectScore();
     String getTmrOcwScore();
+    String getTsrNationCode();
+    String getTsrEngine();
 }

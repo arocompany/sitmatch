@@ -84,6 +84,14 @@ public class SearchResultEntity {
     @Column(name = "TSR_CYCLE_BATCH")
     private int tsrCycleBatch;
 
+    @Basic
+    @Column(name = "TSR_NATION_CODE")
+    private String tsrNationCode;
+
+    @Basic
+    @Column(name = "TSR_ENGINE")
+    private String tsrEngine;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

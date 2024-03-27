@@ -26,6 +26,19 @@
       <input type="hidden" name="tsiUno" th:value="${tsiUno}">
       <input type="hidden" name="tsiKeyword" th:value="${tsiKeyword}">
       <input type="hidden" name="tsiType" th:value="${tsiType}">
+
+      <div>
+        <div class="searchType">
+          <input type="radio" id="all" name="tsiSearchType" th:value="0" th:checked="${tsiSearchType == 0}">
+          <label class="btn-off bor10" for="all" tooltip="피해촬영물" flow="up">All</label>
+
+          <input type="radio" id="searchType1" name="tsiSearchType" th:value="1" th:checked="${tsiSearchType == 1}">
+          <label class="btn-off bor10" for="searchType1" tooltip="피해촬영물" flow="up">피해촬영물</label>
+
+          <input type="radio" id="searchType2" name="tsiSearchType" th:value="2" th:checked="${tsiSearchType == 2}">
+          <label class="btn-off bor10" for="searchType2" tooltip="아청물" flow="up">아청물</label>
+        </div>
+      </div>
     </form>
     <h1 class="title">재확산 자동추적</h1>
     <div class="search-contents">
@@ -82,7 +95,7 @@
             <span th:case="00">대기중</span>
             <span th:case="01">처리중</span>
             <span th:case="10">SKIP</span>
-            <span th:case="11">
+            <span th:case="*">
               <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
 <!--              <span th:if="${(tsiType == '15' || tsiType == '19')}">-->
 <!--                <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">(V : <span th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>-->
@@ -102,6 +115,10 @@
               </span>
             </span>
           </th:block>
+
+          <span class="detail-info">
+            국가: <span th:text="${list.getTsrNationCode()}" ></span>
+          </span>
         </div>
         <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url"><p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p></a>
         <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
@@ -135,6 +152,13 @@
     searchPage.value = pageNum;
     searchForm.submit();
   }
+
+  $(function(){
+    $("input[name='tsiSearchType']").on("change", function(){
+      $("#searchForm").submit();
+    });
+  });
+
   const pageBtn = document.querySelectorAll(".btn-off");
   pageBtn.forEach((btn) => {
     btn.style.cursor = "pointer";

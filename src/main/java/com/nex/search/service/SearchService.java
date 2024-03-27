@@ -48,7 +48,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -196,7 +195,7 @@ public class SearchService {
                                     if (param.getTsiTwitter() == 1)  searchYoutubeService.searchYoutube(CommonCode.snsTypeTwitter, param, siDto, ncInfo.getNcCode().toLowerCase());
                                 }
                                 case CommonCode.SerpAPIEngineBaidu -> {
-                                    if(cntNation == 0) {
+                                    if(ncInfo.getNcCode().equals("cn")) {
                                         if (param.getTsiGoogle() == 1){ searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
                                         if (param.getTsiInstagram() == 1){searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
                                         if (param.getTsiFacebook() == 1){searchTextBaiduService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
@@ -232,7 +231,7 @@ public class SearchService {
                                     }
                                 }
                                 case CommonCode.SerpAPIEngineNaver -> {
-                                    if(cntNation == 0) {
+                                    if(ncInfo.getNcCode().equals("kr")) {
                                         if (param.getTsiGoogle() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeGoogle); }
                                         if (param.getTsiInstagram() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeInstagram); }
                                         if (param.getTsiFacebook() == 1) { searchTextNaverService.search(param, siDto, ncInfo.getNcCode().toLowerCase(), CommonCode.snsTypeFacebook); }
@@ -444,7 +443,7 @@ public class SearchService {
 //     */
     public Page<DefaultQueryDtoInterface> getSearchResultList(Integer tsiUno, String keyword, Integer page, String priority,
                                                               String tsjStatus1, String tsjStatus2, String tsjStatus3, String tsjStatus4,
-                                                              String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, String order_type) {
+                                                              String snsStatus01, String snsStatus02, String snsStatus03, String snsStatus04, String isImage, String order_type, List<String> nationCode) {
         PageRequest pageRequest = PageRequest.of(page - 1, 10);
 
         log.debug("priority => {}", priority);
@@ -454,50 +453,50 @@ public class SearchService {
         if ("1".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_1");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_1(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, pageRequest);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, nationCode, pageRequest);
         } else if ("2".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_2");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_2(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, pageRequest);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, nationCode, pageRequest);
         } else if ("3".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_3");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_3(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, pageRequest);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, nationCode, pageRequest);
         } else if ("4".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_4");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_4(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, pageRequest);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, nationCode, pageRequest);
         } else if ("5".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_5");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_5(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, pageRequest);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, nationCode, pageRequest);
         } else if ("6".equals(order_type)) {
             log.info("getResultInfoListOrderByTmrSimilarityDesc_6");
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc_6(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, pageRequest);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, nationCode, pageRequest);
         } else {
             log.info("getResultInfoListOrderByTmrSimilarityDesc");
             log.info("pageRequest" + pageRequest);
 
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, pageRequest);
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, nationCode, pageRequest);
         }
     }
 
-    public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsiUno, String tsiKeyword) {
+    public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsiUno, String tsiKeyword, Integer tsiSearchType) {
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         log.info("pageRequest: " + pageRequest);
         log.info("tsiuno: " + tsiUno);
 
         if (tsiUno == 0) {
-            return searchResultRepository.getNoticeList(pageRequest);
+            return searchResultRepository.getNoticeList(tsiSearchType, pageRequest);
         } else {
-            return StringUtils.hasText(tsiKeyword) ? searchResultRepository.getNoticeSelList(pageRequest, tsiUno, tsiKeyword) : searchResultRepository.getNoticeSelListEmptyKeyword(pageRequest, tsiUno);
+            return StringUtils.hasText(tsiKeyword) ? searchResultRepository.getNoticeSelList(pageRequest, tsiUno, tsiKeyword, tsiSearchType) : searchResultRepository.getNoticeSelListEmptyKeyword(pageRequest, tsiUno, tsiSearchType);
         }
     }
 
     public List<DefaultQueryDtoInterface> getNoticeListMain(Integer percent) {
-        return searchResultRepository.getNoticeListMain(percent);
+        return searchResultRepository.getNoticeListMain(percent, 0);
     }
 
     public DefaultQueryDtoInterface getResultInfo(Integer tsrUno) {
@@ -509,7 +508,7 @@ public class SearchService {
     }
 
 
-    public Page<DefaultQueryDtoInterface> getTraceList(Integer page, String trkStatCd, String keyword) {
+    public Page<DefaultQueryDtoInterface> getTraceList(Integer page, String trkStatCd, String keyword, Integer tsiSearchType) {
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         if (trkStatCd.equals("삭제 요청 중")) {
             trkStatCd = "20";
@@ -518,7 +517,7 @@ public class SearchService {
         } else {
             trkStatCd = "";
         }
-        return searchResultRepository.getTraceList(Consts.DATA_STAT_CD_NORMAL, Consts.TRK_STAT_CD_DEL_CMPL, trkStatCd, keyword, pageRequest);
+        return searchResultRepository.getTraceList(Consts.DATA_STAT_CD_NORMAL, Consts.TRK_STAT_CD_DEL_CMPL, trkStatCd, keyword, tsiSearchType, pageRequest);
     }
 
     public DefaultQueryDtoInterface getTraceInfo(Integer tsrUno) {
@@ -529,278 +528,348 @@ public class SearchService {
         return videoInfoRepository.findAllByTsiUno(tsiUno);
     }
 
-    public int getResultByTrace(){
-        return searchResultRepository.countByTrkStatCdNotNull();
+    public int getResultByTrace(Integer tsiSearchType){
+        return searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(null, tsiSearchType);
     }
 
-    public Map<String, Object> getTraceHistoryList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, 10);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryList(keyword, tsiSearchType, pageRequest);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryUserFileList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryUserFileList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, 10);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceUserFileList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceUserFileList(keyword, tsiSearchType, pageRequest);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
-    public Map<String, Object> getTraceHistoryMonitoringList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryMonitoringList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringList(keyword, tsiSearchType, pageRequest);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
-
-        return outMap;
-    }
-
-    public Map<String, Object> getTraceHistoryMonitoringTsiUnoList(Integer page, String keyword, Integer tsiUno) {
-        Map<String, Object> outMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringTsiUnoList(keyword, pageRequest, tsiUno);
-
-        CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
-
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryMonitoringTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno) {
+    public Map<String, Object> getTraceHistoryMonitoringTsiUnoList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringTsiUnoUserFileList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringTsiUnoList(keyword, tsiSearchType, pageRequest, tsiUno);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
+
+        return outMap;
+    }
+
+    public Map<String, Object> getTraceHistoryMonitoringTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
+        Map<String, Object> outMap = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringTsiUnoUserFileList(keyword, tsiSearchType, pageRequest, tsiUno);
+
+        CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
+
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
     
     // 대상자는 없고 대상자키워드 있을때
-    public Map<String, Object> getTraceHistoryMonitoringUserFileList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryMonitoringUserFileList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringUserFileList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryMonitoringUserFileList(keyword, tsiSearchType, pageRequest);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteReqList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryDeleteReqList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqList(keyword, tsiSearchType, pageRequest);
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteReqUserFileList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryDeleteReqUserFileList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqUserFileList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqUserFileList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteReqTsiUnoList(Integer page, String keyword, Integer tsiUno) {
+    public Map<String, Object> getTraceHistoryDeleteReqTsiUnoList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqTsiUnoList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqTsiUnoList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteReqTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno) {
+    public Map<String, Object> getTraceHistoryDeleteReqTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqTsiUnoUserFileList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqTsiUnoUserFileList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteComptList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryDeleteComptList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteComptUserFileList(Integer page, String keyword) {
+    public Map<String, Object> getTraceHistoryDeleteComptUserFileList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptUserFileList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptUserFileList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteComptTsiUnoList(Integer page, String keyword, Integer tsiUno) {
+    public Map<String, Object> getTraceHistoryDeleteComptTsiUnoList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptTsiUnoList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptTsiUnoList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
 
-    public Map<String, Object> getTraceHistoryDeleteComptTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno) {
+    public Map<String, Object> getTraceHistoryDeleteComptTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptTsiUnoUserFileList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptTsiUnoUserFileList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
 
-    public Map<String, Object> allTimeMonitoringTsiUnoList(Integer page, String keyword, Integer tsiUno) {
+    public Map<String, Object> allTimeMonitoringTsiUnoList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringTsiUnoList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringTsiUnoList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
 
-    public Map<String, Object> allTimeMonitoringTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno) {
+    public Map<String, Object> allTimeMonitoringTsiUnoUserFileList(Integer page, String keyword, Integer tsiUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringTsiUnoUserFileList(keyword, pageRequest, tsiUno);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringTsiUnoUserFileList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
 
 
-    public Map<String, Object> allTimeMonitoringList(Integer page, String keyword) {
+    public Map<String, Object> allTimeMonitoringList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
 
-
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
         return outMap;
     }
 
-    public Map<String, Object> allTimeMonitoringUserFileList(Integer page, String keyword) {
+    public Map<String, Object> allTimeMonitoringUserFileList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
 
-        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringUserFileList(keyword, pageRequest);
+        Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringUserFileList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
 
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -965,11 +1034,11 @@ public class SearchService {
         return true;
     }
 
-    public Map<String, Object> getSearchInfoList(Integer page, String keyword) {
+    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer tsiSearchType) {
         log.info("getSearchInfoList page: " + page);
         Map<String, Object> outMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(page - 1, 10);
-        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getSearchInfoResultCnt("10","0", keyword, pageRequest);
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getSearchInfoResultCnt("10","0", keyword, tsiSearchType, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
@@ -981,10 +1050,10 @@ public class SearchService {
     }
 
     // admin 아닐 때
-    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno) {
+    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(page - 1, 10);
-        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getUserSearchInfoList("10","0", keyword, userUno, pageRequest);
+        PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
+        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getUserSearchInfoList("10","0", keyword, userUno, tsiSearchType, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());

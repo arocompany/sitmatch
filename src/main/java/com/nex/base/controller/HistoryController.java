@@ -1,10 +1,11 @@
 package com.nex.base.controller;
 
 import com.nex.common.Consts;
-import com.nex.search.entity.SearchResultEntity;
+import com.nex.search.entity.SearchInfoParamsEntity;
 import com.nex.search.entity.VideoInfoEntity;
 import com.nex.search.entity.dto.DefaultQueryDtoInterface;
 import com.nex.search.entity.dto.ResultCntQueryDtoInterface;
+import com.nex.search.repo.SearchInfoParamsRepository;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.VideoInfoRepository;
 import com.nex.search.service.SearchService;
@@ -26,12 +27,14 @@ public class HistoryController {
     private final SearchService searchService;
     private final SearchInfoRepository searchInfoRepository;
     private final VideoInfoRepository videoInfoRepository;
+    private final SearchInfoParamsRepository searchInfoParamsRepository;
 
     @GetMapping("/history")
     public ModelAndView history(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                 @RequestParam(required = false, defaultValue = "1") Integer searchPage,
                                 @RequestParam(required = false, defaultValue = "") String searchKeyword,
-                                @RequestParam(required = false, defaultValue = "") String traceKeyword) {
+                                @RequestParam(required = false, defaultValue = "") String traceKeyword,
+                                @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType) {
         ModelAndView modelAndView = new ModelAndView("html/history");
         Map<String, Object> searchHistMap;
 
@@ -39,13 +42,15 @@ public class HistoryController {
         String userId = sessionInfoDto.getUserId();
         searchService.searchInfoHistInsert(userUno, userId, searchKeyword, traceKeyword);
 
+        modelAndView.addObject("tsiSearchType", tsiSearchType);
+
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("headerMenu", "history");
 
         if(sessionInfoDto.isAdmin()) {
-            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword);
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, tsiSearchType);
         } else {
-            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, userUno);
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, userUno, tsiSearchType);
         }
 
         modelAndView.addObject("userCount", searchService.getUserIdMap());
@@ -77,7 +82,8 @@ public class HistoryController {
                                 @RequestParam(required=false, defaultValue = "0") String traceHistoryValue,
                                 @RequestParam(required = false, defaultValue = "검색어") String manageType,
                                 @RequestParam(required = false, defaultValue = "0") String monitoringStatus,
-                                @RequestParam(required = false, defaultValue = "0") Integer tsiUno) {
+                                @RequestParam(required = false, defaultValue = "0") Integer tsiUno,
+                                @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType) {
         ModelAndView modelAndView = new ModelAndView("html/traceHistory");
         modelAndView.addObject("manageType", manageType);
 
@@ -91,6 +97,8 @@ public class HistoryController {
         String userId = sessionInfoDto.getUserId();
         searchService.searchInfoHistInsert(userUno, userId, searchKeyword, traceKeyword);
 
+        modelAndView.addObject("tsiSearchType", tsiSearchType);
+
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("headerMenu", "history");
 
@@ -98,40 +106,40 @@ public class HistoryController {
         if(monitoringStatus.equals("0")){
             // 검색어(타이틀) 검색
             if(manageType.equals("1")){
-                traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword);
+                traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword, tsiSearchType);
             } else {
                 // 대상자 검색
-                traceHistoryMap = searchService.getTraceHistoryUserFileList(tracePage, traceKeyword);
+                traceHistoryMap = searchService.getTraceHistoryUserFileList(tracePage, traceKeyword, tsiSearchType);
             }
         }else {
             // monitoringStatus -> 10:모니터링  20:삭제요청  30:삭제완료  40:24시간모니터링
             if(manageType.equals("1")) {
                 if(monitoringStatus.equals("10")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryMonitoringList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.getTraceHistoryMonitoringTsiUnoList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryMonitoringList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.getTraceHistoryMonitoringTsiUnoList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else if(monitoringStatus.equals("20")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteReqList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.getTraceHistoryDeleteReqTsiUnoList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryDeleteReqList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.getTraceHistoryDeleteReqTsiUnoList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else if(monitoringStatus.equals("30")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteComptList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.getTraceHistoryDeleteComptTsiUnoList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryDeleteComptList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.getTraceHistoryDeleteComptTsiUnoList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else {
-                    if(tsiUno == null) traceHistoryMap = searchService.allTimeMonitoringList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.allTimeMonitoringTsiUnoList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.allTimeMonitoringList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.allTimeMonitoringTsiUnoList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 }
             } else {
                 if(monitoringStatus.equals("10")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryMonitoringUserFileList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.getTraceHistoryMonitoringTsiUnoUserFileList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryMonitoringUserFileList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.getTraceHistoryMonitoringTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else if(monitoringStatus.equals("20")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteReqUserFileList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.getTraceHistoryDeleteReqTsiUnoUserFileList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryDeleteReqUserFileList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.getTraceHistoryDeleteReqTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else if(monitoringStatus.equals("30")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteComptUserFileList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.getTraceHistoryDeleteComptTsiUnoUserFileList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryDeleteComptUserFileList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.getTraceHistoryDeleteComptTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else {
-                    if(tsiUno == null) traceHistoryMap = searchService.allTimeMonitoringUserFileList(tracePage, traceKeyword);
-                    else traceHistoryMap = searchService.allTimeMonitoringTsiUnoUserFileList(tracePage, traceKeyword, tsiUno);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.allTimeMonitoringUserFileList(tracePage, traceKeyword, tsiSearchType);
+                    else traceHistoryMap = searchService.allTimeMonitoringTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 }
             }
         }
@@ -143,7 +151,7 @@ public class HistoryController {
         modelAndView.addObject("traceKeyword", traceKeyword);
         modelAndView.addObject("monitoringStatus", monitoringStatus);
 
-        modelAndView.addObject("traceHistoryListCount", searchService.getResultByTrace());
+        modelAndView.addObject("traceHistoryListCount", searchService.getResultByTrace(tsiSearchType));
         modelAndView.addObject("countMonitoring", traceHistoryMap.get("countMonitoring")); // 모니터링
         modelAndView.addObject("countDelReq", traceHistoryMap.get("countDelReq"));         // 삭제요청
         modelAndView.addObject("countDelCmpl", traceHistoryMap.get("countDelCmpl"));       // 삭제완료
@@ -179,7 +187,8 @@ public class HistoryController {
                                @RequestParam(required = false, defaultValue = "") String snsStatus03,
                                @RequestParam(required = false, defaultValue = "") String snsStatus04,
                                @RequestParam(required = false, defaultValue = "1") String priority,
-                               @RequestParam(required = false, defaultValue = "0") String isImage) {
+                               @RequestParam(required = false, defaultValue = "0") String isImage,
+                               @RequestParam(required = false, defaultValue = "") List<String> nationCode) {
         ModelAndView modelAndView = new ModelAndView("html/result");
         Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = null;
 
@@ -214,6 +223,41 @@ public class HistoryController {
                 && !StringUtils.hasText(snsStatus04)) {
             snsStatusAll = "1";
         }
+
+        SearchInfoParamsEntity searchInfoParamsEntity = searchInfoParamsRepository.findByTsiUno(tsiUno.get());
+
+        if(nationCode == null || nationCode.size() == 0){
+            if(searchInfoParamsEntity != null) {
+                if (searchInfoParamsEntity.getTsiIsNationKr() > 0) nationCode.add("kr");
+                if (searchInfoParamsEntity.getTsiIsNationUs() > 0) nationCode.add("us");
+                if (searchInfoParamsEntity.getTsiIsNationCn() > 0) nationCode.add("cn");
+                if (searchInfoParamsEntity.getTsiIsNationNl() > 0) nationCode.add("nl");
+                if (searchInfoParamsEntity.getTsiIsNationTh() > 0) nationCode.add("th");
+                if (searchInfoParamsEntity.getTsiIsNationVn() > 0) nationCode.add("vn");
+                if (searchInfoParamsEntity.getTsiIsNationRu() > 0) nationCode.add("ru");
+            }else{
+                nationCode.add("kr");
+                nationCode.add("us");
+                nationCode.add("cn");
+                nationCode.add("nl");
+                nationCode.add("th");
+                nationCode.add("vn");
+                nationCode.add("ru");
+
+                searchInfoParamsEntity = new SearchInfoParamsEntity();
+                searchInfoParamsEntity.setTsiIsNationKr(1);
+                searchInfoParamsEntity.setTsiIsNationUs(1);
+                searchInfoParamsEntity.setTsiIsNationCn(1);
+                searchInfoParamsEntity.setTsiIsNationNl(1);
+                searchInfoParamsEntity.setTsiIsNationTh(1);
+                searchInfoParamsEntity.setTsiIsNationVn(1);
+                searchInfoParamsEntity.setTsiIsNationRu(1);
+
+            }
+        }
+
+        modelAndView.addObject("searchInfoParams", searchInfoParamsEntity);
+        modelAndView.addObject("nationCode", nationCode);
 
         modelAndView.addObject("tsjStatusAll", tsjStatusAll); // 분류
         modelAndView.addObject("odStatusAll", odStatusAll);   // 일치율 높은순
@@ -303,9 +347,9 @@ public class HistoryController {
             }
 
             defaultQueryDtoInterface = searchService.getSearchResultList(tsiUno.get(), keyword, page, priority, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
-                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, order_type);
-
+                    snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, order_type, nationCode);
         }
+
         tsiKeyword.ifPresent(s -> modelAndView.addObject("tsiKeyword", s));
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("searchResultList", defaultQueryDtoInterface);

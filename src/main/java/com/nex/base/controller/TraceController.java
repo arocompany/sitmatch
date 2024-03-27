@@ -20,7 +20,8 @@ public class TraceController {
     public ModelAndView trace(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                               @RequestParam(required = false, defaultValue = "1") Integer page,
                               @RequestParam(required = false, defaultValue = "") String trkStatCd,
-                              @RequestParam(required = false, defaultValue = "") String keyword) {
+                              @RequestParam(required = false, defaultValue = "") String keyword,
+                              @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType) {
         // @RequestParam(required = false, defaultValue = "list") String listType
         ModelAndView modelAndView = new ModelAndView("html/trace");
 
@@ -28,7 +29,9 @@ public class TraceController {
         String userId = sessionInfoDto.getUserId();
         searchService.traceHistInsert(userUno, userId, keyword);
 
-        Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getTraceList(page, trkStatCd, keyword);
+        Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getTraceList(page, trkStatCd, keyword, tsiSearchType);
+
+        modelAndView.addObject("tsiSearchType", tsiSearchType);
 
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("headerMenu", "trace");

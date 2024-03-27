@@ -86,6 +86,8 @@ public class SearchTextBingService {
                                 , Images_resultsByText::isFacebook
                                 , Images_resultsByText::isInstagram
                                 , Images_resultsByText::isTwitter
+                                , textGl
+                                , "bing"
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -200,7 +202,7 @@ public class SearchTextBingService {
 
     public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
-            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) throws Exception {
+            , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn, String nationCode, String engine) throws Exception {
 
         // 검색결과가 없으면 false처리 후 return
         if (results == null) {
@@ -223,6 +225,8 @@ public class SearchTextBingService {
                         //이미지 파일 저장
                         imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
                         CommonStaticSearchUtil.setSearchResultDefault(sre);
+                        sre.setTsrNationCode(nationCode);
+                        sre.setTsrEngine(engine);
                         searchResultRepository.save(sre);
                         sreList.add(sre);
 //                    }

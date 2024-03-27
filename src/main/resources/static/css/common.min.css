@@ -345,6 +345,8 @@ header, footer {
     padding: 0 60px
 }
 
+footer{margin-top: auto;}
+
 .wrapper {
     min-height: 100vh;
     padding-top: 90px;
@@ -361,7 +363,7 @@ header, footer {
     -webkit-box-pack: justify;
     -moz-box-pack: justify;
     -ms-flex-pack: justify;
-    justify-content: space-between
+    justify-content: start
 }
 
 .list-search, .list-select {
@@ -605,7 +607,7 @@ footer .copy {
     text-align: right;
     color: #8a8a95;
     height: 60px;
-    line-height: 60px
+    line-height: 60px;
 }
 
 .total-num, .detail, .content {

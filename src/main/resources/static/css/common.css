@@ -297,6 +297,8 @@ footer {
   padding: 0 60px;
 }
 
+footer{margin-top: auto;}
+
 .wrapper {
   min-height: 100vh;
   padding-top: 90px;
@@ -309,7 +311,7 @@ footer {
           flex-direction: column;
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
-          justify-content: space-between;
+          justify-content: start;
 }
 
 .list-search, .list-select {

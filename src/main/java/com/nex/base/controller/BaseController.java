@@ -68,10 +68,12 @@ public class BaseController {
 
 
     @GetMapping("/notice")
-    public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto , @ModelAttribute ReqNotice param, Model model) {
+    public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto , @ModelAttribute ReqNotice param, Model model, @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType) {
         ModelAndView mv = new ModelAndView("html/notice");
         searchService.noticeHistInsert(sessionInfoDto.getUserUno(), sessionInfoDto.getUserId());
-        Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getNoticeList(param.getPage(), param.getTsiUno(), param.getTsiKeyword());
+        Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getNoticeList(param.getPage(), param.getTsiUno(), param.getTsiKeyword(), tsiSearchType);
+
+        mv.addObject("tsiSearchType", tsiSearchType);
 
         mv.addObject("sessionInfo", sessionInfoDto);
         mv.addObject("searchResultList", defaultQueryDtoInterface);
