@@ -180,13 +180,13 @@
 
         <div>
           <div class="searchType">
-            <input type="radio" id="all" name="tsiSearchType" checked th:value="0">
+            <input type="radio" id="all" name="tsiSearchType" th:value="0" th:checked="${tsiSearchType == 0}">
             <label class="btn-off bor10" for="all" tooltip="피해촬영물" flow="up">All</label>
 
-            <input type="radio" id="searchType1" name="tsiSearchType" th:value="1">
+            <input type="radio" id="searchType1" name="tsiSearchType" th:value="1" th:checked="${tsiSearchType == 1}">
             <label class="btn-off bor10" for="searchType1" tooltip="피해촬영물" flow="up">피해촬영물</label>
 
-            <input type="radio" id="searchType2" name="tsiSearchType" th:value="2">
+            <input type="radio" id="searchType2" name="tsiSearchType" th:value="2" th:checked="${tsiSearchType == 2}">
             <label class="btn-off bor10" for="searchType2" tooltip="아청물" flow="up">아청물</label>
           </div>
         </div>
@@ -559,6 +559,12 @@
     searchPage.value = pageNum;
     searchForm.submit();
   }
+
+  $(function(){
+    $("input[name='tsiSearchType']").on("change", function(){
+      $("#searchForm").submit();
+    });
+  });
 
   // const traceForm = document.querySelector("#traceForm");
   // const tracePage = document.querySelector("#tracePage");

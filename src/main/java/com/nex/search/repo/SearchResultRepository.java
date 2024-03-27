@@ -16,12 +16,18 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     List<SearchResultEntity> findByTsrIsBatch(int activeBatch); // 활성화된 배치 쿼리
     // Page<SearchResultEntity> findAllByTrkStatCdNotNullAndTsrTitleContainingOrderByTsrUnoDesc(String keyword,Pageable pageable);
     Integer countByTrkStatCdNotNullAndTrkStatCd(String trkStatCd);
+
+//    Integer countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(String trkStatCd, Integer tsiSearchType);
+
+    @Query(value = "select count(*) from SearchResultEntity t LEFT OUTER JOIN SearchInfoEntity i ON t.tsiUno = i.tsiUno where t.trkStatCd is not null AND (t.trkStatCd = :trkStatCd or :trkStatCd is null) AND (i.tsiSearchType = :tsiSearchType  OR :tsiSearchType = 0 )")
+    Integer countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(String trkStatCd, Integer tsiSearchType);
     // Integer countByMonitoringCd(String monitoringCd);
 
     Integer countByTrkStatCdNotNull();
 
     @Query(value = allTimeMonitoringCnt, nativeQuery = true, countQuery=allTimeMonitoringCnt)
-    String allTimeMonitoringCnt();
+    String allTimeMonitoringCnt(Integer tsiSearchType);
+
 
     @Query(value = "select distinct t.tsrSiteUrl from SearchResultEntity t where t.tsiUno = :tsiUno")
     List<String> findTsrSiteUrlDistinctByTsiUno(Integer tsiUno);
@@ -60,6 +66,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " AND TRK_STAT_CD IS NOT NULL " +
             " AND (TSR.TSR_TITLE LIKE CONCAT('%','','%') OR TSR.TSR_TITLE IS NULL)" +
             " AND TSR.MONITORING_CD = '20' " +
+            " AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " +
             " ORDER BY tsr.MST_DML_DT DESC ";
 
 /*
@@ -77,14 +84,16 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
             " LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
             " LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO " +
-            " WHERE TSI.TSI_UNO = :tsiUno AND TSI.TSI_KEYWORD LIKE CONCAT('%',:tsiKeyword,'%')  ";
+            " WHERE TSI.TSI_UNO = :tsiUno AND TSI.TSI_KEYWORD LIKE CONCAT('%',:tsiKeyword,'%')  " +
+            " AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
 
     String from_6 = " from  tb_search_info TSI " +
             " INNER JOIN tb_search_result TSR ON TSR.TSI_UNO = TSI.TSI_UNO " +
             " LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
             " LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
             " LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO " +
-            " WHERE TSI.TSI_UNO = :tsiUno ";
+            " WHERE TSI.TSI_UNO = :tsiUno "+
+            " AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
     String from_2 = " from  tb_search_info TSI " +
             " INNER JOIN tb_search_result TSR ON TSR.TSI_UNO = TSI.TSI_UNO " +
             " LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
@@ -310,7 +319,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     // 검색어(타이틀) 검색
     String whereTraceHistoryList = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') OR TSR.TSR_TITLE IS NULL) AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
-    String whereTraceMonitoringList = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '10' AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') OR TSR.TSR_TITLE IS NULL)  AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
+    String whereTraceMonitoringList = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '10' AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') OR TSR.TSR_TITLE IS NULL) AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
     String whereTraceMonitoringDeleteRequestList = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '20' AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
     String whereTraceMonitoringDeleteComptList = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '30' AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
     String whereTraceAllTimeMonitoringChkList = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD IS NOT NULL AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND TSR.MONITORING_CD = '20' AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
@@ -992,7 +1001,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String setTrkStatCd30 =  " AND TSR.TRK_STAT_CD = '30' ";
     String setMonitoringCd20 = " AND TSR.MONITORING_CD = '20' ";
     String whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
-    String whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike = " WHERE TSR.DATA_STAT_CD = :tsrDataStatCd AND TSR.TRK_STAT_CD != :trkStatCd AND TSR.TRK_STAT_CD LIKE CONCAT('%',:trkStatCd2,'%') AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%')";
+    String whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike = " WHERE TSR.DATA_STAT_CD = :tsrDataStatCd AND TSR.TRK_STAT_CD != :trkStatCd AND TSR.TRK_STAT_CD LIKE CONCAT('%',:trkStatCd2,'%') AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
     // String whereSimilarity =" AND if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / (case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) >= :percent";
     String whereSimilarity_2 = " AND " +
             "  if(TMR.TMR_V_SCORE + TMR.TMR_A_SCORE + TMR.TMR_T_SCORE = 0, '0', ceiling(((case " +
@@ -1084,7 +1093,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " from tb_search_info s1_0 " +
             " where s1_0.tsi_uno = :tsiUno ";
 
-    String tsrUnoisNotNUll = " WHERE TSI.TSR_UNO IS NOT NULL ";
+    String tsrUnoisNotNUll = " WHERE TSI.TSR_UNO IS NOT NULL AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
     String setTmrStat11 = " ";
 //    String setTmrStat11 = " AND TMR.TMR_STAT = '11' ";
 
@@ -1172,7 +1181,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     // 모니터링
     @Query(value = defaultQeury+fromForMonitoring+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc2_trace, nativeQuery = true, countQuery = countQuery+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike)
-    Page<DefaultQueryDtoInterface> getTraceList(String tsrDataStatCd, String trkStatCd, String trkStatCd2, String keyword, Pageable pageable);
+    Page<DefaultQueryDtoInterface> getTraceList(String tsrDataStatCd, String trkStatCd, String trkStatCd2, String keyword, Integer tsiSearchType, Pageable pageable);
 /*   @Query(value = defaultQeury+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc_trace, nativeQuery = true, countQuery = countQuery+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike)
     Page<DefaultQueryDtoInterface> getTraceList(String tsrDataStatCd, String trkStatCd, String trkStatCd2, String keyword, Pageable pageable); */
 
@@ -1185,17 +1194,17 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     // AND TSJ.TSJ_STATUS = '11'
     @Query(value = defaultQeury_2+from_2+tsrUnoisNotNUll+setTmrStat11+whereSimilarity_3 , nativeQuery = true, countQuery = countQuery+from_2+whereNotice+setTmrStat11+whereSimilarity_3)
-    Page<DefaultQueryDtoInterface> getNoticeList(Pageable pageable);
+    Page<DefaultQueryDtoInterface> getNoticeList(Integer tsiSearchType, Pageable pageable);
 
     @Query(value = defaultQeury_2+from_2+tsrUnoisNotNUll+setTmrStat11+whereSimilarity_2+limit4, nativeQuery = true)
-    List<DefaultQueryDtoInterface> getNoticeListMain(Integer percent);
+    List<DefaultQueryDtoInterface> getNoticeListMain(Integer percent, Integer tsiSearchType);
 
     /*@Query(value = defaultQeury_3+from_5+" WHERE TSI.TSI_UNO = :tsiuno AND TSI.TSI_KEYWORD like :keyword AND TMR.TMR_STAT = '11' "+whereSimilarity_2 , nativeQuery = true, countQuery = countQuery+from_2+" WHERE TSI.TSI_UNO = :tsiuno AND TSI.TSI_KEYWORD=:keyword AND TMR.TMR_STAT = '11'"+whereSimilarity_2)*/
     @Query(value = defaultQeury_3+from_5+setTmrStat11+whereSimilarity_3 , nativeQuery = true, countQuery = countQuery+from_5+setTmrStat11+whereSimilarity_3)
-    Page<DefaultQueryDtoInterface> getNoticeSelList(Pageable pageable, Integer tsiUno, String tsiKeyword);
+    Page<DefaultQueryDtoInterface> getNoticeSelList(Pageable pageable, Integer tsiUno, String tsiKeyword, Integer tsiSearchType);
 
     @Query(value = defaultQeury_3+from_6+setTmrStat11+whereSimilarity_3 , nativeQuery = true, countQuery = countQuery+from_6+setTmrStat11+whereSimilarity_3)
-    Page<DefaultQueryDtoInterface> getNoticeSelListEmptyKeyword(Pageable pageable, Integer tsiUno);
+    Page<DefaultQueryDtoInterface> getNoticeSelListEmptyKeyword(Pageable pageable, Integer tsiUno, Integer tsiSearchType);
     //추적이력 삭제
     @Transactional
     @Modifying

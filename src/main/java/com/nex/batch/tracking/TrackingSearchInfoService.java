@@ -127,6 +127,7 @@ public class TrackingSearchInfoService {
             searchInfoEntity.setTsiImgSize(searchResultEntity.getTsrImgSize());
         }
         searchInfoEntity.setTsrUno(searchResultEntity.getTsrUno());
+        searchInfoEntity.setTsiSearchType(searchInfoEntityByTsiUno.getTsiSearchType());
 
         //검색 정보 엔티티 기본값 세팅
         CommonStaticSearchUtil.setSearchInfoDefault(searchInfoEntity);

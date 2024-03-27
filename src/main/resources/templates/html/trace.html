@@ -24,17 +24,31 @@
     <h1 class="title">추적 대상 모니터링</h1>
     <div class="trace-contents">
       <form name="trace-list" class="search-box" action="/trace" id="searchForm">
-        <input type="hidden" name="page" id="searchPage">
-        <input type="hidden" name="listType" id="listType">
-        <div class="selection">
-          <button type="button">전체</button>
-          <input type="hidden" class="bor10 M-box-in" name="trkStatCd">
-          <ul class="option">
-            <li>전체</li>
-            <li>삭제 요청 중</li>
-            <li>관리 중</li>
-          </ul>
+        <div>
+          <div class="searchType">
+            <input type="radio" id="all" name="tsiSearchType" th:value="0" th:checked="${tsiSearchType == 0}">
+            <label class="btn-off bor10" for="all" tooltip="피해촬영물" flow="up">All</label>
+
+            <input type="radio" id="searchType1" name="tsiSearchType" th:value="1" th:checked="${tsiSearchType == 1}">
+            <label class="btn-off bor10" for="searchType1" tooltip="피해촬영물" flow="up">피해촬영물</label>
+
+            <input type="radio" id="searchType2" name="tsiSearchType" th:value="2" th:checked="${tsiSearchType == 2}">
+            <label class="btn-off bor10" for="searchType2" tooltip="아청물" flow="up">아청물</label>
+          </div>
         </div>
+<!--        <div class = "search-box">-->
+          <input type="hidden" name="page" id="searchPage">
+          <input type="hidden" name="listType" id="listType">
+<!--          <div class="selection">-->
+<!--            <button type="button">전체</button>-->
+<!--            <input type="hidden" class="bor10 M-box-in" name="trkStatCd">-->
+<!--            <ul class="option">-->
+<!--              <li>전체</li>-->
+<!--              <li>삭제 요청 중</li>-->
+<!--              <li>관리 중</li>-->
+<!--            </ul>-->
+<!--          </div>-->
+<!--        </div>-->
         <input type="text" name="keyword" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${keyword}">
       </form>
       <p class="total-num">총 <span th:text="${traceListCount}">123</span>건</p>
@@ -112,6 +126,12 @@ const searchEvent = (pageNum) => {
   searchPage.value = pageNum;
   searchForm.submit();
 }
+
+$(function(){
+  $("input[name='tsiSearchType']").on("change", function(){
+    $("#searchForm").submit();
+  });
+});
 
 // 모니터링 이력 삭제
 const delBtn = document.querySelectorAll(".del");

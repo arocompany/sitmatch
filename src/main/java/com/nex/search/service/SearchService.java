@@ -483,20 +483,20 @@ public class SearchService {
         }
     }
 
-    public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsiUno, String tsiKeyword) {
+    public Page<DefaultQueryDtoInterface> getNoticeList(Integer page, Integer tsiUno, String tsiKeyword, Integer tsiSearchType) {
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         log.info("pageRequest: " + pageRequest);
         log.info("tsiuno: " + tsiUno);
 
         if (tsiUno == 0) {
-            return searchResultRepository.getNoticeList(pageRequest);
+            return searchResultRepository.getNoticeList(tsiSearchType, pageRequest);
         } else {
-            return StringUtils.hasText(tsiKeyword) ? searchResultRepository.getNoticeSelList(pageRequest, tsiUno, tsiKeyword) : searchResultRepository.getNoticeSelListEmptyKeyword(pageRequest, tsiUno);
+            return StringUtils.hasText(tsiKeyword) ? searchResultRepository.getNoticeSelList(pageRequest, tsiUno, tsiKeyword, tsiSearchType) : searchResultRepository.getNoticeSelListEmptyKeyword(pageRequest, tsiUno, tsiSearchType);
         }
     }
 
     public List<DefaultQueryDtoInterface> getNoticeListMain(Integer percent) {
-        return searchResultRepository.getNoticeListMain(percent);
+        return searchResultRepository.getNoticeListMain(percent, 0);
     }
 
     public DefaultQueryDtoInterface getResultInfo(Integer tsrUno) {
@@ -508,7 +508,7 @@ public class SearchService {
     }
 
 
-    public Page<DefaultQueryDtoInterface> getTraceList(Integer page, String trkStatCd, String keyword) {
+    public Page<DefaultQueryDtoInterface> getTraceList(Integer page, String trkStatCd, String keyword, Integer tsiSearchType) {
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
         if (trkStatCd.equals("삭제 요청 중")) {
             trkStatCd = "20";
@@ -517,7 +517,7 @@ public class SearchService {
         } else {
             trkStatCd = "";
         }
-        return searchResultRepository.getTraceList(Consts.DATA_STAT_CD_NORMAL, Consts.TRK_STAT_CD_DEL_CMPL, trkStatCd, keyword, pageRequest);
+        return searchResultRepository.getTraceList(Consts.DATA_STAT_CD_NORMAL, Consts.TRK_STAT_CD_DEL_CMPL, trkStatCd, keyword, tsiSearchType, pageRequest);
     }
 
     public DefaultQueryDtoInterface getTraceInfo(Integer tsrUno) {
@@ -528,8 +528,8 @@ public class SearchService {
         return videoInfoRepository.findAllByTsiUno(tsiUno);
     }
 
-    public int getResultByTrace(){
-        return searchResultRepository.countByTrkStatCdNotNull();
+    public int getResultByTrace(Integer tsiSearchType){
+        return searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(null, tsiSearchType);
     }
 
     public Map<String, Object> getTraceHistoryList(Integer page, String keyword, Integer tsiSearchType) {
@@ -539,10 +539,14 @@ public class SearchService {
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -554,10 +558,14 @@ public class SearchService {
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -568,10 +576,14 @@ public class SearchService {
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -583,10 +595,14 @@ public class SearchService {
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -598,10 +614,14 @@ public class SearchService {
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -614,10 +634,14 @@ public class SearchService {
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -629,10 +653,14 @@ public class SearchService {
 
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -643,10 +671,14 @@ public class SearchService {
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqUserFileList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -658,10 +690,14 @@ public class SearchService {
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqTsiUnoList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -673,10 +709,14 @@ public class SearchService {
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteReqTsiUnoUserFileList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -688,10 +728,14 @@ public class SearchService {
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -703,10 +747,14 @@ public class SearchService {
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptUserFileList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -718,10 +766,14 @@ public class SearchService {
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptTsiUnoList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -733,10 +785,14 @@ public class SearchService {
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.getTraceHistoryDeleteComptTsiUnoUserFileList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -748,10 +804,14 @@ public class SearchService {
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringTsiUnoList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -763,10 +823,14 @@ public class SearchService {
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringTsiUnoUserFileList(keyword, tsiSearchType, pageRequest, tsiUno);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }
@@ -779,12 +843,14 @@ public class SearchService {
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
 
-
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
         return outMap;
     }
 
@@ -795,11 +861,15 @@ public class SearchService {
         Page<DefaultQueryDtoInterface> traceHistoryListPage = searchResultRepository.allTimeMonitoringUserFileList(keyword, tsiSearchType, pageRequest);
         CommonStaticSearchUtil.setOutMap(outMap, traceHistoryListPage);
 
-        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
-        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
-        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
-        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
+//        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_MONITORING));  // 모니터링
+//        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_REQ));         // 삭제 요청
+//        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCd(Consts.TRK_STAT_CD_DEL_CMPL));       // 삭제 완료
+//        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt());                                         // 24시간 모니터링
 
+        outMap.put("countMonitoring", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_MONITORING, tsiSearchType));  // 모니터링
+        outMap.put("countDelReq", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_REQ, tsiSearchType));         // 삭제 요청
+        outMap.put("countDelCmpl", searchResultRepository.countByTrkStatCdNotNullAndTrkStatCdAndTsiSearchType(Consts.TRK_STAT_CD_DEL_CMPL, tsiSearchType));       // 삭제 완료
+        outMap.put("allTimeMonitoringCnt", searchResultRepository.allTimeMonitoringCnt(tsiSearchType));                                         // 24시간 모니터링
 
         return outMap;
     }

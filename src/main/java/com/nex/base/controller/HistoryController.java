@@ -42,6 +42,8 @@ public class HistoryController {
         String userId = sessionInfoDto.getUserId();
         searchService.searchInfoHistInsert(userUno, userId, searchKeyword, traceKeyword);
 
+        modelAndView.addObject("tsiSearchType", tsiSearchType);
+
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("headerMenu", "history");
 
@@ -95,6 +97,8 @@ public class HistoryController {
         String userId = sessionInfoDto.getUserId();
         searchService.searchInfoHistInsert(userUno, userId, searchKeyword, traceKeyword);
 
+        modelAndView.addObject("tsiSearchType", tsiSearchType);
+
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("headerMenu", "history");
 
@@ -111,30 +115,30 @@ public class HistoryController {
             // monitoringStatus -> 10:모니터링  20:삭제요청  30:삭제완료  40:24시간모니터링
             if(manageType.equals("1")) {
                 if(monitoringStatus.equals("10")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryMonitoringList(tracePage, traceKeyword, tsiSearchType);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryMonitoringList(tracePage, traceKeyword, tsiSearchType);
                     else traceHistoryMap = searchService.getTraceHistoryMonitoringTsiUnoList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else if(monitoringStatus.equals("20")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteReqList(tracePage, traceKeyword, tsiSearchType);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryDeleteReqList(tracePage, traceKeyword, tsiSearchType);
                     else traceHistoryMap = searchService.getTraceHistoryDeleteReqTsiUnoList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else if(monitoringStatus.equals("30")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteComptList(tracePage, traceKeyword, tsiSearchType);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryDeleteComptList(tracePage, traceKeyword, tsiSearchType);
                     else traceHistoryMap = searchService.getTraceHistoryDeleteComptTsiUnoList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else {
-                    if(tsiUno == null) traceHistoryMap = searchService.allTimeMonitoringList(tracePage, traceKeyword, tsiSearchType);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.allTimeMonitoringList(tracePage, traceKeyword, tsiSearchType);
                     else traceHistoryMap = searchService.allTimeMonitoringTsiUnoList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 }
             } else {
                 if(monitoringStatus.equals("10")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryMonitoringUserFileList(tracePage, traceKeyword, tsiSearchType);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryMonitoringUserFileList(tracePage, traceKeyword, tsiSearchType);
                     else traceHistoryMap = searchService.getTraceHistoryMonitoringTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else if(monitoringStatus.equals("20")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteReqUserFileList(tracePage, traceKeyword, tsiSearchType);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryDeleteReqUserFileList(tracePage, traceKeyword, tsiSearchType);
                     else traceHistoryMap = searchService.getTraceHistoryDeleteReqTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else if(monitoringStatus.equals("30")){
-                    if(tsiUno == null) traceHistoryMap = searchService.getTraceHistoryDeleteComptUserFileList(tracePage, traceKeyword, tsiSearchType);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryDeleteComptUserFileList(tracePage, traceKeyword, tsiSearchType);
                     else traceHistoryMap = searchService.getTraceHistoryDeleteComptTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 } else {
-                    if(tsiUno == null) traceHistoryMap = searchService.allTimeMonitoringUserFileList(tracePage, traceKeyword, tsiSearchType);
+                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.allTimeMonitoringUserFileList(tracePage, traceKeyword, tsiSearchType);
                     else traceHistoryMap = searchService.allTimeMonitoringTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
                 }
             }
@@ -147,7 +151,7 @@ public class HistoryController {
         modelAndView.addObject("traceKeyword", traceKeyword);
         modelAndView.addObject("monitoringStatus", monitoringStatus);
 
-        modelAndView.addObject("traceHistoryListCount", searchService.getResultByTrace());
+        modelAndView.addObject("traceHistoryListCount", searchService.getResultByTrace(tsiSearchType));
         modelAndView.addObject("countMonitoring", traceHistoryMap.get("countMonitoring")); // 모니터링
         modelAndView.addObject("countDelReq", traceHistoryMap.get("countDelReq"));         // 삭제요청
         modelAndView.addObject("countDelCmpl", traceHistoryMap.get("countDelCmpl"));       // 삭제완료
