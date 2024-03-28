@@ -123,7 +123,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 */
 
 
-    String defaultQeury_2 = "SELECT TSR.TSR_UNO as tsrUno, TSI.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
+    String defaultQeury_2 = "SELECT TSR.TSR_UNO as tsrUno, TSI.TSI_SEARCH_TYPE AS tsiSearchType, TSI.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
             "tsr.TSR_IMG_EXT as tsrImgExt, tsr.TSR_DOWNLOAD_URL as tsrDownloadUrl, tsr.TSR_IMG_HEIGHT as tsrImgHeight, "+
             "tsr.TSR_IMG_WIDTH as tsrImgWidth, tsr.TSR_IMG_SIZE as tsrImgSize, tsr.TRK_STAT_CD as trkStatCd, " +
@@ -146,7 +146,10 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 //                    "case when isnull(tmr.TMR_A_SCORE) || tmr.TMR_A_SCORE = 0 then 0 else 1 end + "+
             "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity" +
             ", tsr.TSR_NATION_CODE as tsrNationCode "+
-            ", tsr.TSR_ENGINE as tsrEngine ";
+            ", tsr.TSR_ENGINE as tsrEngine, " +
+            " ROUND(tmr.TMR_AGE_SCORE, 2)* 100 AS tmrAgeScore, " +
+            " ROUND(tmr.TMR_OBJECT_SCORE, 2)* 100 AS tmrObjectScore, " +
+            " ROUND(tmr.TMR_OCW_SCORE, 2)* 100 AS tmrOcwScore " ;
 
     /*String defaultQeury_4 = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
@@ -176,7 +179,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     // String defaultQeury2 = defaultQeury_4 + ", pp.progressPercent as progressPercent ";
 
 
-    String defaultQeury_5 = "SELECT TSR.TSR_UNO as tsrUno, TSI.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
+    String defaultQeury_5 = "SELECT TSR.TSR_UNO as tsrUno, TSI.TSI_SEARCH_TYPE AS tsiSearchType, TSI.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, tsr.TRK_STAT_CD as trkStatCd,"+
             "tsi.TSI_KEYWORD as tsiKeyword, tsj.TSJ_STATUS as tsjStatus, tu.USER_ID as tuUserId, tsi.TSI_TYPE as tsiType, tsr.TSR_IMG_EXT as tsrImgExt," +
             "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +

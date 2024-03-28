@@ -72,6 +72,7 @@
       <section class="list M-box-up bor10" th:each="list:${searchResultList}">
         <div class="img-box">
           <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
+          <!-- 0328 아청물작업 필요 부분 -->
           <div class="img">
             <!--            <img src="./img/replace/man.png" alt="" loading="lazy" >-->
             <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="" loading="lazy" >
@@ -96,6 +97,12 @@
             <span th:case="01">처리중</span>
             <span th:case="10">SKIP</span>
             <span th:case="*">
+              <div>
+                <span class="detail-info">
+                  No.<span th:text="${list.getTsrUno()}"></span>
+                  국가: <span th:text="${list.getTsrNationCode()}" ></span>
+                </span>
+              </div>
               <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
 <!--              <span th:if="${(tsiType == '15' || tsiType == '19')}">-->
 <!--                <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">(V : <span th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>-->
@@ -115,10 +122,6 @@
               </span>
             </span>
           </th:block>
-
-          <span class="detail-info">
-            국가: <span th:text="${list.getTsrNationCode()}" ></span>
-          </span>
         </div>
         <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url"><p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p></a>
         <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>

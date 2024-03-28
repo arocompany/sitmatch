@@ -292,9 +292,12 @@
             <button type="button" class="esc-btn">닫기</button>
         </div>
         <div class="cont">
+          <!-- 0328 아청물작업 필요 부분 -->
           <div class="img-box"> <!-- onclick="InfoList();" -->
             <div class="img" th:if="${searchInfoList.getTsiType() != '11'}">
-              <button class="tsiUnoClass" id="tsiUno" name="tsiUno"  th:value="${searchInfoList.getTsiUno()}" onclick="InfoList(this);"><img th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt=""></button>
+              <button class="tsiUnoClass" id="tsiUno" name="tsiUno"  th:value="${searchInfoList.getTsiUno()}" onclick="InfoList(this);">
+                <img th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="">
+              </button>
               <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="" />
             </div>
           </div>

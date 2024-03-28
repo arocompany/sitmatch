@@ -286,6 +286,7 @@
                 <input type="checkbox" id="tsrUnos" name="tsrUnos" th:value="${traceHistoryList.getTsrUno()}">
                 <p class="num" th:text="${traceHistoryList.getTsrUno()}">${i}</p>
                 <div class="cont">
+                    <!-- 0328 아청물작업 필요 부분 -->
                     <div class="img-box">
                         <input type="hidden" th:value="${traceHistoryList.getTsrUno()}" id="tsrUno">
                         <div class="img" >
@@ -300,6 +301,19 @@
                         </th:block>
                     </div>
                     <div class="text" style="width: 100px;">
+
+                        <span class="detail-info">
+                            국가:
+                            <span th:text="(${traceHistoryList.getTsrNationCode()} == 'us' ? '미국'
+                                    : (${traceHistoryList.getTsrNationCode()} == 'kr' ? '한국'
+                                    : (${traceHistoryList.getTsrNationCode()} == 'cn' ? '중국'
+                                    : (${traceHistoryList.getTsrNationCode()} == 'nl' ? '네덜란드'
+                                    : (${traceHistoryList.getTsrNationCode()} == 'nl' ? '태국'
+                                    : (${traceHistoryList.getTsrNationCode()} == 'nl' ? '러시아'
+                                    : (${traceHistoryList.getTsrNationCode()} == 'nl' ? '베트남'
+                                    : '')))))))"></span>
+<!--                            국가: <span id="nationValue" th:text="${traceHistoryList.getTsrNationCode()}" ></span>-->
+                        </span>
                         <a class="url" style="width:100%" th:href="${traceHistoryList.getTsrSiteUrl()}" target="_blank" th:text="${traceHistoryList.getTsrSiteUrl()}">url이 들어갑니다</a>
                         <p class="content" th:text="${traceHistoryList.getTsrTitle()}">내용이 들어갑니다</p>
                         <p class="detail">
@@ -328,9 +342,7 @@
                           </span>
                         </p>
                         -->
-                        <span class="detail-info">
-                            국가: <span th:text="${traceHistoryList.getTsrNationCode()}" ></span>
-                        </span>
+
                         <p th:if="${traceHistoryList.getTsiUserFile() != null}" class="detail">
                             <span class="detail-info">
                                 대상자 파일명: <span th:text="${traceHistoryList.getTsiUserFile()}" ></span>
@@ -397,6 +409,13 @@
     </script>
 </article>
 <script th:inline="javascript">
+    window.onload = function() {
+        let ncValue = document.querySelectorAll('#nationValue');
+        ncValue.forEach(function(element) {
+            let nationCode = element.innerText.trim();
+            element.innerText = convertNationCode(nationCode);
+        });
+    };
 
     function InfoList(tsiUno){
         var xhr = new XMLHttpRequest();

@@ -67,4 +67,6 @@ public interface DefaultQueryDtoInterface {
     String getTmrOcwScore();
     String getTsrNationCode();
     String getTsrEngine();
+
+    String getTsiSearchType();
 }

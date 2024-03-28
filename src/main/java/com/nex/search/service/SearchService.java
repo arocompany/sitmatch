@@ -477,7 +477,6 @@ public class SearchService {
         } else {
             log.info("getResultInfoListOrderByTmrSimilarityDesc");
             log.info("pageRequest" + pageRequest);
-
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, nationCode, pageRequest);
         }
