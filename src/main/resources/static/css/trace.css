@@ -1,5 +1,10 @@
 #trace .list {
   display: grid;
+
+}
+#trace .list.active {
+    display: flex;
+    flex-direction: column;
 }
 
 #trace .list .detail, #trace .trace-list.active, #trace .trace-contents {

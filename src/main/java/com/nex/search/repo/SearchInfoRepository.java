@@ -58,6 +58,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " WHERE tsi.fst_dml_dt LIKE CONCAT(:toDate,'%') " +
                                 " GROUP BY tu.user_uno ";
     String searchInfoResultCnt =    " SELECT tsi.tsi_uno AS tsiUno, " +
+                                    " tsi.tsi_search_type AS tsiSearchType, " +
                                     " tsi.data_stat_cd AS tsiDataStatCd, " +
                                     " tsi.fst_dml_dt AS tsiFstDmlDt, " +
                                     " tsi.lst_dml_dt AS tsiLstDmlDt, " +

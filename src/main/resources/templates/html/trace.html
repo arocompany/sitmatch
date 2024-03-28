@@ -24,7 +24,7 @@
     <h1 class="title">추적 대상 모니터링</h1>
     <div class="trace-contents">
       <form name="trace-list" class="search-box" action="/trace" id="searchForm">
-        <div>
+        <div class="searchTypeWrap">
           <div class="searchType">
             <input type="radio" id="all" name="tsiSearchType" th:value="0" th:checked="${tsiSearchType == 0}">
             <label class="btn-off bor10" for="all" tooltip="피해촬영물" flow="up">All</label>
@@ -60,9 +60,29 @@
     <div class="trace-list list-content ">
       <section class="list M-box-up bor10" th:each="list:${traceList}">
         <!-- 0328 아청물작업 필요 부분 -->
+        <div>
+          No.
+          <span th:text="${list.getTsrUno()}"></span>
+          국가:
+          <span th:text="(${list.getTsrNationCode()} == 'us' ? '미국'
+                         : (${list.getTsrNationCode()} == 'kr' ? '한국'
+                         : (${list.getTsrNationCode()} == 'cn' ? '중국'
+                         : (${list.getTsrNationCode()} == 'nl' ? '네덜란드'
+                         : (${list.getTsrNationCode()} == 'nl' ? '태국'
+                         : (${list.getTsrNationCode()} == 'nl' ? '러시아'
+                         : (${list.getTsrNationCode()} == 'nl' ? '베트남'
+                         : '')))))))">
+            </span>
+        </div>
+        <th:block th:switch="${list.getTrkStatCd()}">
+          <h2 class="unity" th:case="10"><strong class="state" style="color: #194894">관리 중</strong> <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span></th:block></h2>
+          <h2 class="unity" th:case="20"><strong class="state">삭제 요청 중</strong> <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span></th:block></h2>
+          <h2 class="unity" th:case="30"><strong class="state">삭제 완료</strong> <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span></th:block></h2>
+        </th:block>
         <div class="img-box">
           <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
           <div class="img">
+            <span class="childIcon"><img src="/img/common/childIcon.png"></span>
             <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="" loading="lazy" >
             <img th:unless="${not #strings.isEmpty(list.getTsrImgPath())}" src="/img/common/noImage.jpg">
           </div>
@@ -74,30 +94,13 @@
             <img th:case="17" src="/img/common/sns/face.png" alt="" class="sns">
           </th:block>
         </div>
-        <div>
-            No.
-          <span th:text="${list.getTsrUno()}"></span>
-            국가:
-            <span th:text="(${list.getTsrNationCode()} == 'us' ? '미국'
-                         : (${list.getTsrNationCode()} == 'kr' ? '한국'
-                         : (${list.getTsrNationCode()} == 'cn' ? '중국'
-                         : (${list.getTsrNationCode()} == 'nl' ? '네덜란드'
-                         : (${list.getTsrNationCode()} == 'nl' ? '태국'
-                         : (${list.getTsrNationCode()} == 'nl' ? '러시아'
-                         : (${list.getTsrNationCode()} == 'nl' ? '베트남'
-                         : '')))))))">
-            </span>
-        </div>
+
 <!--        <span class="detail-info">-->
 <!--          <span th:text="${list.getTsrUno()}" ></span>-->
 <!--          국가: <span id="nationValue" th:text="${list.getTsrNationCode()}" ></span>-->
 <!--        </span>-->
 
-        <th:block th:switch="${list.getTrkStatCd()}">
-          <h2 class="unity" th:case="10"><strong class="state" style="color: #194894">관리 중</strong> <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span></th:block></h2>
-          <h2 class="unity" th:case="20"><strong class="state">삭제 요청 중</strong> <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span></th:block></h2>
-          <h2 class="unity" th:case="30"><strong class="state">삭제 완료</strong> <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span></th:block></h2>
-        </th:block>
+
         <span th:if="${list.getTsiSearchType() == '2' &&
                                         ( list.getTmrAgeScore() != null || list.getTmrObjectScore() != null || list.getTmrOcwScore() != null)}">
                          아청물(

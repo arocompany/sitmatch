@@ -219,7 +219,7 @@
             <div>
                 <div>
                     <form method="get" name="history-search" action="/trace/history" id="traceForm">
-                        <div>
+                        <div class="searchTypeWrap">
                             <div class="searchType">
                                 <input type="radio" id="all" name="tsiSearchType" th:value="0" th:checked="${tsiSearchType == 0}">
                                 <label class="btn-off bor10" for="all" tooltip="피해촬영물" flow="up">All</label>
@@ -290,6 +290,7 @@
                     <div class="img-box">
                         <input type="hidden" th:value="${traceHistoryList.getTsrUno()}" id="tsrUno">
                         <div class="img" >
+                            <span class="childIcon"><img src="/img/common/childIcon.png"></span>
                             <img th:if="${traceHistoryList.getTsrImgPath()} != null "
                                  th:src="${'/imagePath'+#strings.substring(traceHistoryList.getTsrImgPath(),7)+traceHistoryList.getTsrImgName()}" alt="">
                         </div>

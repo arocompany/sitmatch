@@ -178,7 +178,7 @@
     <div class="searchbox">
       <form name="history-search" class="search-box" action="/history" id="searchForm">
 
-        <div>
+        <div class="searchTypeWrap">
           <div class="searchType">
             <input type="radio" id="all" name="tsiSearchType" th:value="0" th:checked="${tsiSearchType == 0}">
             <label class="btn-off bor10" for="all" tooltip="피해촬영물" flow="up">All</label>
@@ -291,11 +291,14 @@
             </div>
             <button type="button" class="esc-btn">닫기</button>
         </div>
-        <div class="cont">
+        <div class="cont contImgBox">
           <!-- 0328 아청물작업 필요 부분 -->
-          <div class="img-box"> <!-- onclick="InfoList();" -->
+          <!-- <img src="/img/common/childIcon.png"> -->
+          <div  class="img-box"> <!-- onclick="InfoList();" -->
+
             <div class="img" th:if="${searchInfoList.getTsiType() != '11'}">
               <button class="tsiUnoClass" id="tsiUno" name="tsiUno"  th:value="${searchInfoList.getTsiUno()}" onclick="InfoList(this);">
+                <span th:if="${searchInfoList.getTsiType() eq '17'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
                 <img th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="">
               </button>
               <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="" />

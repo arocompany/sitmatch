@@ -58,13 +58,16 @@
         <input style="text-align: center; margin-left: 100px;" id="tsiUserFile" name="tsiUserFile" type="text" placeholder="대상자의 파일명을 입력하세요" >
       </div>
 
-      <div class="searchType">
-        <input type="radio" id="searchType1" name="tsiSearchType" checked th:value="1">
-        <label class="btn-off bor10" for="searchType1" tooltip="피해촬영물" flow="up">피해촬영물</label>
+      <div class="searchTypeWrap">
+        <div class="searchType">
+          <input type="radio" id="searchType1" name="tsiSearchType" checked th:value="1">
+          <label class="btn-off bor10" for="searchType1" tooltip="피해촬영물" flow="up">피해촬영물</label>
 
-        <input type="radio" id="searchType2" name="tsiSearchType" th:value="2">
-        <label class="btn-off bor10" for="searchType2" tooltip="아청물" flow="up">아청물</label>
+          <input type="radio" id="searchType2" name="tsiSearchType" th:value="2">
+          <label class="btn-off bor10" for="searchType2" tooltip="아청물" flow="up">아청물</label>
+        </div>
       </div>
+
 
       <div class="search-bar bor10">
         <input type="text" style="text-align: center;" placeholder="검색어를 입력하세요" id="search-text" name="tsiKeyword">
