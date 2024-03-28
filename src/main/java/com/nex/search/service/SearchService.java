@@ -1085,6 +1085,17 @@ public class SearchService {
         return userIdMap;
     }
 
+    public Map<Integer, String> getUserIdByTsiUnoSearchTypeMap() {
+        List<UserIdDtoInterface> userIdList = searchInfoRepository.getUserIdByTsiUno();
+        Map<Integer, String> userIdMap = new HashMap<>();
+
+        for (UserIdDtoInterface item : userIdList) {
+            userIdMap.put(item.getTsiUno(), item.getUserId());
+        }
+
+        return userIdMap;
+    }
+
     public Map<Integer, String> getProgressPercentMap() {
         List<SearchJobRepository.ProgressPercentDtoInterface> progressPercentList = searchJobRepository.progressPercentByAll();
         Map<Integer, String> progressPercentMap = new HashMap<>();

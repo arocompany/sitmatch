@@ -360,6 +360,8 @@ public class HistoryController {
         modelAndView.addObject("totalPages", defaultQueryDtoInterface.getTotalPages());
         modelAndView.addObject("listType", listType);
         modelAndView.addObject("keyword", keyword);
+        modelAndView.addObject("tsiType", searchInfoRepository.getSearchInfoTsiType(tsiUno.get()));
+        modelAndView.addObject("searchType", searchInfoRepository.getTsiSearchType(tsiUno.get()));
         modelAndView.addObject("userId", searchService.getUserIdByTsiUnoMap().get(tsiUno.get()));
         modelAndView.addObject("searchInfo", searchInfoRepository.findByTsiUno(tsiUno.get()));
 

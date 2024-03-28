@@ -290,7 +290,7 @@
                     <div class="img-box">
                         <input type="hidden" th:value="${traceHistoryList.getTsrUno()}" id="tsrUno">
                         <div class="img" >
-                            <span class="childIcon"><img src="/img/common/childIcon.png"></span>
+                            <span th:if="${traceHistoryList.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
                             <img th:if="${traceHistoryList.getTsrImgPath()} != null "
                                  th:src="${'/imagePath'+#strings.substring(traceHistoryList.getTsrImgPath(),7)+traceHistoryList.getTsrImgName()}" alt="">
                         </div>

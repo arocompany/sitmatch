@@ -142,6 +142,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
 
     String userSearchInfoList = " SELECT tsi.tsi_uno AS tsiUno, " +
                                 " tsi.data_stat_cd AS tsiDataStatCd, " +
+                                " tsi.tsi_search_type AS tsiSearchType, " +
                                 " tsi.fst_dml_dt AS tsiFstDmlDt, " +
                                 " tsi.lst_dml_dt AS tsiLstDmlDt, " +
                                 " tsi.tsi_dna_path AS tsiDnaPath, " +
@@ -351,6 +352,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
 
     @Query(value = "SELECT TSI.TSI_UNO as tsiUno, TU.USER_ID as userId FROM TB_SEARCH_INFO TSI LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO", nativeQuery = true)
     List<UserIdDtoInterface> getUserIdByTsiUno();
+
     @Query("select concat(TSI.tsiImgPath, TSI.tsiImgName) from SearchInfoEntity TSI where TSI.tsiUno = :tsiUno")
     String getSearchInfoImgUrl(Integer tsiUno);
 
@@ -358,6 +360,9 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
     String getSearchInfoTsiType(Integer tsiUno);
 
     SearchInfoEntity findByTsiUno(Integer tsiUno);
+
+    @Query(value = "SELECT tsi_search_type FROM TB_SEARCH_INFO WHERE TSI_UNO = :tsiUno", nativeQuery = true)
+    String getTsiSearchType(Integer tsiUno);
 
     List<SearchInfoEntity> findByTsiUnoIn(List<Integer> tsiUnos);
 

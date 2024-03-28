@@ -269,7 +269,7 @@ margin-bottom: 15px;
 .search-img .childIcon{
     position: absolute;
     top: -15px;
-    left: -18px;
+    left: -8px;
     display: inline-block;
 }
 #result .search-tab .tab .search-img .childIcon img {
@@ -290,7 +290,7 @@ margin-bottom: 15px;
     margin-bottom: 10px;
 }
 #result .search-contents {
-    margin-top: 0px !important;
+    margin-top: 25px !important;
 }
 form.noticeForm {
     display: flex;
@@ -300,4 +300,21 @@ form.noticeForm {
 #result .list .img-box {
     overflow: unset;
 }
+#result .list.active .detail{
+    width: calc(100% - 35px) !important;
+}
+#result .list.active .trace-add {
+    top: -25px !important;
+}
 /*2024 0328 유나수정*/
+
+.CommonSearchDetail{
+    font-size: 15px;
+}
+.searchDetail {
+    font-weight: bold;
+}
+.searchNation {
+    margin-left: 10px;
+}
+

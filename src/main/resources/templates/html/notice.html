@@ -67,17 +67,13 @@
         </div>
       </div>
     </form>
-
-
-
-
     <div class="result-list  list-content">
       <section class="list M-box-up bor10" th:each="list:${searchResultList}">
         <div class="img-box">
           <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
           <!-- 0328 아청물작업 필요 부분 -->
           <div class="img">
-            <span class="childIcon"><img src="/img/common/childIcon.png"></span>
+            <span th:if="${list.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
             <!--            <img src="./img/replace/man.png" alt="" loading="lazy" >-->
             <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="" loading="lazy" >
             <img th:unless="${not #strings.isEmpty(list.getTsrImgPath())}" src="/img/common/noImage.jpg">
@@ -102,12 +98,22 @@
             <span th:case="10">SKIP</span>
             <span th:case="*">
               <div>
-                <span class="detail-info">
-                  No.<span th:text="${list.getTsrUno()}"></span>
-                  국가: <span th:text="${list.getTsrNationCode()}" ></span>
+                <span class="CommonSearchDetail searchDetail">No.</span>
+                <span class="CommonSearchDetail" th:text="${list.getTsrUno()}"></span>
+                <span class="CommonSearchDetail searchDetail searchNation"
+                      th:if="${list.getTsrNationCode() != null}">국가:</span>
+                <span class="CommonSearchDetail"
+                      th:text="(${list.getTsrNationCode()} == 'us' ? '미국'
+                               : (${list.getTsrNationCode()} == 'kr' ? '한국'
+                               : (${list.getTsrNationCode()} == 'cn' ? '중국'
+                               : (${list.getTsrNationCode()} == 'nl' ? '네덜란드'
+                               : (${list.getTsrNationCode()} == 'nl' ? '태국'
+                               : (${list.getTsrNationCode()} == 'nl' ? '러시아'
+                               : (${list.getTsrNationCode()} == 'nl' ? '베트남'
+                               : '')))))))">
                 </span>
               </div>
-              <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
+              <h2 style="display:inline-block" class="unity" th:if="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
 <!--              <span th:if="${(tsiType == '15' || tsiType == '19')}">-->
 <!--                <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">(V : <span th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>-->
 <!--                <b th:if="${list.getTmrVScore() == null || list.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>-->
@@ -244,25 +250,27 @@
 
 
   // 검색내용 이미지 클릭시 팝업(0317추가) 여기
-  window.onload = function(){
-    const searchImg = document.querySelector('.search-img');
-    searchImg.addEventListener('click', function () {
-      document.body.style.overflow = 'hidden';
-      modal.style.display = 'block';
-      modal.innerHTML = `<div class='modal bor10 searchmodal'>
+  const searchImg = document.querySelector('.search-img');
+  searchImg.addEventListener('click', function () {
+    document.body.style.overflow = 'hidden';
+    modal.style.display = 'block';
+    modal.innerHTML = `<div class='modal bor10 searchmodal'>
         ${this.children[0].outerHTML}
       <button class="esc-btn">닫기</button>
         </div>`;
-      if(modal.querySelector('video')){
-        modal.querySelector('video').controls=true;
-      }
-      const esc = modal.querySelector(".esc-btn");
-      esc.onclick = () => {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'unset';
-      }
-    })
-  }
+    if(modal.querySelector('video')){
+      modal.querySelector('video').controls=true;
+    }
+    const esc = modal.querySelector(".esc-btn");
+    esc.onclick = () => {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'unset';
+    }
+  })
+
+  // window.onload = function(){
+  //
+  // }
 
 
   // ----------체크박스------------ 추가----------------------------------------
