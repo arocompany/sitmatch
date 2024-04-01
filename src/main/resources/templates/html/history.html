@@ -177,7 +177,6 @@
   <section class="search-history layout history active" style="width: 1445px;">
     <div class="searchbox">
       <form name="history-search" class="search-box" action="/history" id="searchForm">
-
         <div class="searchTypeWrap">
           <div class="searchType">
             <input type="radio" id="all" name="tsiSearchType" th:value="0" th:checked="${tsiSearchType == 0}">
@@ -195,6 +194,7 @@
         <input type="hidden" name="searchPage" id="searchPage">
       </form>
       <form action="/searchHistory" method="get"> <!-- style="margin-right: 865px; font-weight: bold;" -->
+<!--        <input type="text" id="damageSearchType" th:value="${tsiSearchType}" name="tsiSearchType">-->
         <button type="submit" style="margin-right: 1000px;" >
           <img src="/img/common/excelLogo.png">
         </button>

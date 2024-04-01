@@ -43,8 +43,7 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                                 " GROUP BY DATE_FORMAT(SIH.CLK_DML_DT,'%Y%m%d'), SIH.USER_ID, user.user_nm  " +
                                 " ORDER BY DATE ";
 
-    String searchHistoryExcelList = "SELECT " +
-                                    " TSI.tsi_uno AS tsiUno, " +
+    String searchHistoryExcelList = " SELECT TSI.tsi_uno AS tsiUno, " +
                                     " USER.USER_ID AS userId, " +
                                     " CASE " +
                                     " WHEN TSI.TSI_TYPE = '11' " +
@@ -87,7 +86,6 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                                     " WHERE " +
                                     " TSI.data_stat_cd='10' " +
                                     " ORDER BY TSI.tsi_uno DESC ";
-
     String resultExcelList =" SELECT " +
                             " TSI.TSI_UNO as tsiUno, " +
                             "        TSR.TSR_UNO as tsrUno, " +
@@ -164,6 +162,49 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                                     " WHERE clk_dml_dt LIKE CONCAT(:toDate,'%') " +
                                     " GROUP BY userId ";
 
+    String searchHistoryDamagedExcelList =  " SELECT TSI.tsi_uno AS tsiUno, " +
+                                            " USER.USER_ID AS userId, " +
+                                            " CASE " +
+                                            " WHEN TSI.TSI_TYPE = '11' " +
+                                            " THEN '키워드' " +
+                                            " WHEN TSI.TSI_TYPE = '13' " +
+                                            " THEN '키워드+이미지' " +
+                                            " WHEN TSI.TSI_TYPE = '15' " +
+                                            " THEN '키워드+영상' " +
+                                            " WHEN TSI.TSI_TYPE = '17' " +
+                                            " THEN '이미지' " +
+                                            " ELSE '영상' " +
+                                            " END AS tsiType, " +
+                                            " TSI.tsi_keyword AS keyword, " +
+                                            " CASE " +
+                                            " WHEN TSI.tsi_google='1' " +
+                                            " THEN 'O' " +
+                                            " ELSE 'X' " +
+                                            " END AS 'google', " +
+                                            " CASE " +
+                                            " WHEN TSI.tsi_facebook = '1' " +
+                                            " THEN 'O' " +
+                                            " ELSE 'X' " +
+                                            " END AS 'faceBook', " +
+                                            " CASE " +
+                                            " WHEN TSI.tsi_twitter= '1' " +
+                                            " THEN 'O' " +
+                                            " ELSE 'X' " +
+                                            " END AS 'twitter', " +
+                                            " CASE " +
+                                            " WHEN TSI.tsi_instagram= '1' " +
+                                            " THEN 'O' " +
+                                            " ELSE 'X' " +
+                                            " END AS 'instagram', " +
+                                            " TSI.fst_dml_dt AS fstDmlDt " +
+                                            " FROM " +
+                                            " TB_SEARCH_INFO TSI " +
+                                            " LEFT OUTER JOIN " +
+                                            " TB_USER USER " +
+                                            " ON TSI.USER_UNO = USER.USER_UNO " +
+                                            " WHERE " +
+                                            " TSI.data_stat_cd='10' " +
+                                            " ORDER BY TSI.tsi_uno DESC ";
     @Query(value = countByClkSearchInfo, nativeQuery = true)
     List<SearchInfoHistDto> countByClkSearchInfo(String fromDate, String toDate2);
 
@@ -172,6 +213,9 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
 
     @Query(value = searchHistoryExcelList, nativeQuery = true)
     List<SearchHistoryExcelDto> searchHistoryExcelList();
+
+    @Query(value = searchHistoryDamagedExcelList, nativeQuery = true)
+    List<SearchHistoryExcelDto> searchHistoryDamagedExcelList();
 
 
     @Query(value = resultExcelList, nativeQuery = true)

@@ -141,8 +141,6 @@
                 <button class="img-btn btn-off">이미지형</button>
             </div>
         </div>
-
-        <!--            <img src="./img/replace/man.png" alt="" loading="lazy" >-->
         <div class="result-list  list-content" >
             <section class="list M-box-up bor10" th:each="list:${searchResultList}">
                 <div class="img-box">
@@ -181,22 +179,6 @@
                          : '')))))))">
                     </span>
                 </div>
-
-<!--                <div>-->
-<!--                    No. <span th:text="${list.getTsrUno()}"></span>-->
-<!--                    국가:-->
-<!--                    <span th:text="(${list.getTsrNationCode()} == 'us' ? '미국'-->
-<!--                                    : (${list.getTsrNationCode()} == 'kr' ? '한국'-->
-<!--                                    : (${list.getTsrNationCode()} == 'cn' ? '중국'-->
-<!--                                    : (${list.getTsrNationCode()} == 'nl' ? '네덜란드'-->
-<!--                                    : (${list.getTsrNationCode()} == 'nl' ? '태국'-->
-<!--                                    : (${list.getTsrNationCode()} == 'nl' ? '러시아'-->
-<!--                                    : (${list.getTsrNationCode()} == 'nl' ? '베트남'-->
-<!--                                    : '')))))))">-->
-<!--                    </span>-->
-<!--                    &lt;!&ndash;                    <span id="nationValue" th:text="${list.getTsrNationCode()}"></span>&ndash;&gt;-->
-<!--                    &lt;!&ndash;                    <span th:text="${list.getTsrEngine()}"></span>&ndash;&gt;-->
-<!--                </div>-->
                 <div>
                     <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}"> <!-- 검색타입이 키워드가 아닌경우 -->
                         <span th:case="00">대기중</span> <!-- 00 : 대기중, 01 : 처리중, 10 : SKIP, 11 : 처리완료 -->
@@ -233,10 +215,10 @@
 <!--                            </th:block>-->
                         </span>
                     </th:block>
-                    <span style="font-size: 16px; font-weight: 500; color: #e87728;"
+                    <span style="font-size: 16px; font-weight: 500; color: #AE2523; margin-left: 7px;"
                             th:if="${list.getTsiSearchType() == '2' &&
                                         ( list.getTmrAgeScore() != null || list.getTmrObjectScore() != null || list.getTmrOcwScore() != null)}">
-                         &nbsp; 아청물(
+                         아청물(
                             <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() >= '0.2'}">
                                  나이,&nbsp;</b>
                             <b th:if="${ list.getTmrObjectScore() != null && list.getTmrObjectScore() > '0'}">
