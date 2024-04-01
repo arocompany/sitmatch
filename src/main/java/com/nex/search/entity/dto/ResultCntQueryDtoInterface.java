@@ -52,6 +52,8 @@ public interface ResultCntQueryDtoInterface {
     Integer getTsiIsEngineYandexImage();
     Integer getTsiIsEngineNaver();
 
+    String getTsiSearchType();
+
     List<VideoInfoEntity> getVideoList();
     void setVideoList(List<VideoInfoEntity> list);
 }

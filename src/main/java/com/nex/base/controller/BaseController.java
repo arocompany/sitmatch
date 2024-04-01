@@ -40,6 +40,7 @@ public class BaseController {
         List<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getNoticeListMain(0);
         List<SerpServicesEntity> serpServicesIsSsActiveList = serpServicesService.serpServicesIsSsActiveList(1);
 
+
         mv.addObject("traceInfoList", defaultQueryDtoInterface);
         mv.addObject("serpServicesIsSsActiveList", serpServicesIsSsActiveList);
         mv.addObject("sessionInfo", sessionInfoDto);
@@ -65,10 +66,11 @@ public class BaseController {
         return searchJobRepository.countByTsiUno(tsi_uno);
     }
 
-
-
     @GetMapping("/notice")
-    public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto , @ModelAttribute ReqNotice param, Model model, @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType) {
+    public ModelAndView notice(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto
+                                , @ModelAttribute ReqNotice param, Model model
+                                , @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType
+                                , @RequestParam(required = false, defaultValue = "list") String listType) {
         ModelAndView mv = new ModelAndView("html/notice");
         searchService.noticeHistInsert(sessionInfoDto.getUserUno(), sessionInfoDto.getUserId());
         Page<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getNoticeList(param.getPage(), param.getTsiUno(), param.getTsiKeyword(), tsiSearchType);
@@ -86,6 +88,7 @@ public class BaseController {
 
         mv.addObject("tsrUno", param.getTsrUno());
         mv.addObject("tsiUno", param.getTsiUno());
+        mv.addObject("listType", listType);
         mv.addObject("imgSrc", searchService.getSearchInfoImgUrl(param.getTsiUno())); //tsi
         mv.addObject("tsiType", searchService.getSearchInfoTsiType(param.getTsiUno())); //tsi
         mv.addObject("userId", searchService.getUserIdByTsiUnoMap().get(param.getTsiUno())); //tsi

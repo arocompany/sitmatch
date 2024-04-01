@@ -20,14 +20,16 @@
 <article class="result-wrap wrapper">
   <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
   <seciton class="layout" id="result">
-    <form action="/notice" id="searchForm">
+    <h1 class="title">재확산 자동추적</h1>
+
+    <form class="noticeForm" action="/notice" id="searchForm">
       <input type="hidden" name="page" id="searchPage">
       <input type="hidden" name="listType" id="listType">
       <input type="hidden" name="tsiUno" th:value="${tsiUno}">
       <input type="hidden" name="tsiKeyword" th:value="${tsiKeyword}">
       <input type="hidden" name="tsiType" th:value="${tsiType}">
 
-      <div>
+      <div class="searchTypeWrap">
         <div class="searchType">
           <input type="radio" id="all" name="tsiSearchType" th:value="0" th:checked="${tsiSearchType == 0}">
           <label class="btn-off bor10" for="all" tooltip="피해촬영물" flow="up">All</label>
@@ -39,40 +41,39 @@
           <label class="btn-off bor10" for="searchType2" tooltip="아청물" flow="up">아청물</label>
         </div>
       </div>
-    </form>
-    <h1 class="title">재확산 자동추적</h1>
-    <div class="search-contents">
-      <div class="search-list">
-        <div class="search-tab" th:if="${tsiUno != 0}">
-          <div class="tab on">
-            <div class="search-img">
-              <img th:if="${(imgSrc != null && tsiType != '15' && tsiType != '19')}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
-              <video th:if="${(imgSrc != null && (tsiType == '15' || tsiType == '19'))}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt=""></video>
+      <div class="search-contents">
+        <div class="search-list">
+          <div class="search-tab" th:if="${tsiUno != 0}">
+            <div class="tab on">
+              <div class="search-img">
+                <img th:if="${(imgSrc != null && tsiType != '15' && tsiType != '19')}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
+                <video th:if="${(imgSrc != null && (tsiType == '15' || tsiType == '19'))}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt=""></video>
+              </div>
+            </div>
+            <!--<div class="tab research" th:if="${!#strings.isEmpty(tsiKeyword)}">-->
+            <div class="tab research" th:if="${tsiType == '11' || tsiType == '13' || tsiType == '15'}">
+              <p>"<span th:text="${tsiKeyword}">sitting</span>"에 대한 검색 결과 입니다.</p>
+            </div>
+            <div  style="margin-left:5px;" >
+              <p><span> | 상담사 : </span><span th:text="${userId}">상담사 아이디</span></p>
             </div>
           </div>
-          <!--<div class="tab research" th:if="${!#strings.isEmpty(tsiKeyword)}">-->
-          <div class="tab research" th:if="${tsiType == '11' || tsiType == '13' || tsiType == '15'}">
-            <p>"<span th:text="${tsiKeyword}">sitting</span>"에 대한 검색 결과 입니다.</p>
-          </div>
-          <div  style="margin-left:5px;" >
-            <p><span> | 상담사 : </span><span th:text="${userId}">상담사 아이디</span></p>
-          </div>
+        </div>
+
+        <p class="total-num">총 <span th:text="${searchResultListCount}"></span> 건</p>
+        <div class="view-type">
+          <button type="button" class="list-btn btn-off active">목록형</button>
+          <button class="img-btn btn-off">이미지형</button>
         </div>
       </div>
-
-      <p class="total-num">총 <span th:text="${searchResultListCount}"></span> 건</p>
-      <div class="view-type">
-        <button type="button" class="list-btn btn-off active">목록형</button>
-        <button class="img-btn btn-off">이미지형</button>
-      </div>
-    </div>
-
-
+    </form>
     <div class="result-list  list-content">
       <section class="list M-box-up bor10" th:each="list:${searchResultList}">
         <div class="img-box">
           <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
+          <!-- 0328 아청물작업 필요 부분 -->
           <div class="img">
+            <span th:if="${list.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
             <!--            <img src="./img/replace/man.png" alt="" loading="lazy" >-->
             <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="" loading="lazy" >
             <img th:unless="${not #strings.isEmpty(list.getTsrImgPath())}" src="/img/common/noImage.jpg">
@@ -96,7 +97,23 @@
             <span th:case="01">처리중</span>
             <span th:case="10">SKIP</span>
             <span th:case="*">
-              <h2 style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
+              <div>
+                <span class="CommonSearchDetail searchDetail">No.</span>
+                <span class="CommonSearchDetail" th:text="${list.getTsrUno()}"></span>
+                <span class="CommonSearchDetail searchDetail searchNation"
+                      th:if="${list.getTsrNationCode() != null}">국가:</span>
+                <span class="CommonSearchDetail"
+                      th:text="(${list.getTsrNationCode()} == 'us' ? '미국'
+                               : (${list.getTsrNationCode()} == 'kr' ? '한국'
+                               : (${list.getTsrNationCode()} == 'cn' ? '중국'
+                               : (${list.getTsrNationCode()} == 'nl' ? '네덜란드'
+                               : (${list.getTsrNationCode()} == 'nl' ? '태국'
+                               : (${list.getTsrNationCode()} == 'nl' ? '러시아'
+                               : (${list.getTsrNationCode()} == 'nl' ? '베트남'
+                               : '')))))))">
+                </span>
+              </div>
+              <h2 style="display:inline-block" class="unity" th:if="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
 <!--              <span th:if="${(tsiType == '15' || tsiType == '19')}">-->
 <!--                <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">(V : <span th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>-->
 <!--                <b th:if="${list.getTmrVScore() == null || list.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>-->
@@ -115,10 +132,6 @@
               </span>
             </span>
           </th:block>
-
-          <span class="detail-info">
-            국가: <span th:text="${list.getTsrNationCode()}" ></span>
-          </span>
         </div>
         <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url"><p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p></a>
         <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
@@ -237,25 +250,27 @@
 
 
   // 검색내용 이미지 클릭시 팝업(0317추가) 여기
-  window.onload = function(){
-    const searchImg = document.querySelector('.search-img');
-    searchImg.addEventListener('click', function () {
-      document.body.style.overflow = 'hidden';
-      modal.style.display = 'block';
-      modal.innerHTML = `<div class='modal bor10 searchmodal'>
+  const searchImg = document.querySelector('.search-img');
+  searchImg.addEventListener('click', function () {
+    document.body.style.overflow = 'hidden';
+    modal.style.display = 'block';
+    modal.innerHTML = `<div class='modal bor10 searchmodal'>
         ${this.children[0].outerHTML}
       <button class="esc-btn">닫기</button>
         </div>`;
-      if(modal.querySelector('video')){
-        modal.querySelector('video').controls=true;
-      }
-      const esc = modal.querySelector(".esc-btn");
-      esc.onclick = () => {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'unset';
-      }
-    })
-  }
+    if(modal.querySelector('video')){
+      modal.querySelector('video').controls=true;
+    }
+    const esc = modal.querySelector(".esc-btn");
+    esc.onclick = () => {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'unset';
+    }
+  })
+
+  // window.onload = function(){
+  //
+  // }
 
 
   // ----------체크박스------------ 추가----------------------------------------

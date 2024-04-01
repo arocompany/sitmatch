@@ -108,7 +108,9 @@
             <div class="search-list">
                 <div class="search-tab">
                     <div class="tab on">
+                        <!-- 0328 아청물작업 필요 부분 -->
                         <div class="search-img">
+                            <span th:if="${searchType eq '2' && tsiType ne '11'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
                             <img th:if="${(imgSrc != null && tsiType != '15' && tsiType != '19')}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
                             <video th:if="${(imgSrc != null && (tsiType == '15' || tsiType == '19'))}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt=""></video>
                         </div>
@@ -166,10 +168,35 @@
                     </th:block>
                 </div>
                 <div>
-                    <span th:text="${list.getTsrUno()}"></span>
-                    <span th:text="${list.getTsrNationCode()}"></span>
-<!--                    <span th:text="${list.getTsrEngine()}"></span>-->
+                    <span class="CommonSearchDetail searchDetail">No.</span>
+                    <span class="CommonSearchDetail" th:text="${list.getTsrUno()}"></span>
+                    <span class="CommonSearchDetail searchDetail searchNation">국가:</span>
+                    <span class="CommonSearchDetail" th:text="(${list.getTsrNationCode()} == 'us' ? '미국'
+                         : (${list.getTsrNationCode()} == 'kr' ? '한국'
+                         : (${list.getTsrNationCode()} == 'cn' ? '중국'
+                         : (${list.getTsrNationCode()} == 'nl' ? '네덜란드'
+                         : (${list.getTsrNationCode()} == 'nl' ? '태국'
+                         : (${list.getTsrNationCode()} == 'nl' ? '러시아'
+                         : (${list.getTsrNationCode()} == 'nl' ? '베트남'
+                         : '')))))))">
+                    </span>
                 </div>
+
+<!--                <div>-->
+<!--                    No. <span th:text="${list.getTsrUno()}"></span>-->
+<!--                    국가:-->
+<!--                    <span th:text="(${list.getTsrNationCode()} == 'us' ? '미국'-->
+<!--                                    : (${list.getTsrNationCode()} == 'kr' ? '한국'-->
+<!--                                    : (${list.getTsrNationCode()} == 'cn' ? '중국'-->
+<!--                                    : (${list.getTsrNationCode()} == 'nl' ? '네덜란드'-->
+<!--                                    : (${list.getTsrNationCode()} == 'nl' ? '태국'-->
+<!--                                    : (${list.getTsrNationCode()} == 'nl' ? '러시아'-->
+<!--                                    : (${list.getTsrNationCode()} == 'nl' ? '베트남'-->
+<!--                                    : '')))))))">-->
+<!--                    </span>-->
+<!--                    &lt;!&ndash;                    <span id="nationValue" th:text="${list.getTsrNationCode()}"></span>&ndash;&gt;-->
+<!--                    &lt;!&ndash;                    <span th:text="${list.getTsrEngine()}"></span>&ndash;&gt;-->
+<!--                </div>-->
                 <div>
                     <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}"> <!-- 검색타입이 키워드가 아닌경우 -->
                         <span th:case="00">대기중</span> <!-- 00 : 대기중, 01 : 처리중, 10 : SKIP, 11 : 처리완료 -->
@@ -206,15 +233,29 @@
 <!--                            </th:block>-->
                         </span>
                     </th:block>
-                    <span th:if="${(list.getTmrAgeScore() != null && list.getTmrObjectScore() != null && list.getTmrOcwScore() != null) }">
-                        아청물
-                        <b th:if="${list.getTmrAgeScore() > '0'}">
-                            ( 나이 : <span th:text="${list.getTmrAgeScore()}">100</span>,&nbsp;</b>
-                        <b th:if="${list.getTmrObjectScore() > '0'}">
-                            사물 : <span th:text="${list.getTmrObjectScore()}">100</span>,&nbsp;</b>
-                        <b th:if="${list.getTmrOcwScore() > '0'}">
-                            텍스트 : <span th:text="${list.getTmrOcwScore()}">100</span> )</b>
+                    <span style="font-size: 16px; font-weight: 500; color: #e87728;"
+                            th:if="${list.getTsiSearchType() == '2' &&
+                                        ( list.getTmrAgeScore() != null || list.getTmrObjectScore() != null || list.getTmrOcwScore() != null)}">
+                         &nbsp; 아청물(
+                            <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() >= '0.2'}">
+                                 나이,&nbsp;</b>
+                            <b th:if="${ list.getTmrObjectScore() != null && list.getTmrObjectScore() > '0'}">
+                                사물,&nbsp;</b>
+                            <b th:if="${list.getTmrOcwScore() != null && list.getTmrOcwScore() > '0'}">
+                                텍스트</b>
+                            )
                     </span>
+<!--                        <span th:if="${list.getTsiSearchType() == '2' &&-->
+<!--                                        ( list.getTmrAgeScore() != null || list.getTmrObjectScore() != null || list.getTmrOcwScore() != null)}">-->
+<!--                         아청물(-->
+<!--                            <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() > '0'}">-->
+<!--                                 나이 : <span th:text="${list.getTmrAgeScore()}">100</span>,&nbsp;</b>-->
+<!--                            <b th:if="${ list.getTmrObjectScore() != null && list.getTmrObjectScore() > '0'}">-->
+<!--                                사물 : <span th:text="${list.getTmrObjectScore()}">100</span>,&nbsp;</b>-->
+<!--                            <b th:if="${list.getTmrOcwScore() != null && list.getTmrOcwScore() > '0'}">-->
+<!--                                텍스트 : <span th:text="${list.getTmrOcwScore()}">100</span> </b>-->
+<!--                            )-->
+<!--                        </span>-->
                 </div>
                 <!--        <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">대기중</span><span th:case="01">처리중</span><span th:case="10">SKIP</span><span th:case="11"><h2 class="unity" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h2></span></th:block>-->
                 <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url">
@@ -234,7 +275,7 @@
 
                 <!--
                         <p th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} != null"
-                           class="detail" th:text="${#strings.concat('파일명z : ',list.getTsrImgName())}">파일 정보가 들어갑니다</p>
+                           class="detail" th:text="${#strings.concat('파일명 : ',list.getTsrImgName())}">파일 정보가 들어갑니다</p>
 
                         <p th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgName()} == null"
                            class="detail" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt())}">파일 정보가 들어갑니다</p>
@@ -242,15 +283,11 @@
                         <p th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == null"
                            class="detail" ></p>
                 -->
-
                 <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}"
                         th:value="${list.getTsrUno()}">추가</button>
                 <!-- <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}" th:disabled="${list.getTrkStatCd() != null}">추가</button> -->
                 <!-- <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}">추가</button> -->
-
             </section>
-
-
             <!--      </span>-->
             <section th:if="${searchResultListCount == 0}" style="width: 100%; text-align: center;">조회 결과가 없습니다.</section>
         </div>
@@ -270,6 +307,14 @@
     <script>footer();</script>
 </article>
 <script th:inline="javascript">
+    window.onload = function() {
+        let ncValue = document.querySelectorAll('#nationValue');
+        ncValue.forEach(function(element) {
+            let nationCode = element.innerText.trim();
+            element.innerText = convertNationCode(nationCode);
+        });
+    };
+
     /*<![CDATA[*/
     // const list = document.querySelector(".result-list");
 

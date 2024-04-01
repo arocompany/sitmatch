@@ -477,7 +477,6 @@ public class SearchService {
         } else {
             log.info("getResultInfoListOrderByTmrSimilarityDesc");
             log.info("pageRequest" + pageRequest);
-
             return searchResultRepository.getResultInfoListOrderByTmrSimilarityDesc(tsiUno, keyword, tsjStatus1, tsjStatus2, tsjStatus3, tsjStatus4,
                     snsStatus01, snsStatus02, snsStatus03, snsStatus04, isImage, nationCode, pageRequest);
         }
@@ -1076,6 +1075,17 @@ public class SearchService {
     }
 
     public Map<Integer, String> getUserIdByTsiUnoMap() {
+        List<UserIdDtoInterface> userIdList = searchInfoRepository.getUserIdByTsiUno();
+        Map<Integer, String> userIdMap = new HashMap<>();
+
+        for (UserIdDtoInterface item : userIdList) {
+            userIdMap.put(item.getTsiUno(), item.getUserId());
+        }
+
+        return userIdMap;
+    }
+
+    public Map<Integer, String> getUserIdByTsiUnoSearchTypeMap() {
         List<UserIdDtoInterface> userIdList = searchInfoRepository.getUserIdByTsiUno();
         Map<Integer, String> userIdMap = new HashMap<>();
 

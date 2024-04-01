@@ -380,7 +380,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   });
-
 });
 
 function changeFun(uno, isActive){
@@ -432,4 +431,17 @@ function serviceChangeFun(uno, isActive){
       console.log("error", e)
     }
   });
+}
+
+function convertNationCode(code) {
+  let convertNcName = {
+    "us": "미국",
+    "kr": "대한민국",
+    "cn": "중국",
+    "nl": "네덜란드",
+    "th": "태국",
+    "ru": "러시아",
+    "vn": "베트남"
+  };
+  return convertNcName[code];
 }
