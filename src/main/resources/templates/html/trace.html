@@ -101,7 +101,8 @@
 <!--        </span>-->
 
 
-        <span th:if="${list.getTsiSearchType() == '2' &&
+        <span style="font-size: 16px; font-weight: 500; color: #e87728;"
+                th:if="${list.getTsiSearchType() == '2' &&
                                         ( list.getTmrAgeScore() != null || list.getTmrObjectScore() != null || list.getTmrOcwScore() != null)}">
                          아청물(
                             <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() >= '0.2'}">
