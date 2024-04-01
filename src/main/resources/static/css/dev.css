@@ -303,9 +303,11 @@ form.noticeForm {
 #result .list.active .detail{
     width: calc(100% - 35px) !important;
 }
-#result .list.active .trace-add {
-    top: -25px !important;
-}
+
+/*#result .list.active .trace-add {*/
+/*    top: -25px !important;*/
+/*}*/
+
 /*2024 0328 유나수정*/
 
 .CommonSearchDetail{
