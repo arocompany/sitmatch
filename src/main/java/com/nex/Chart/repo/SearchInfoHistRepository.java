@@ -42,7 +42,6 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                                 " WHERE CLK_DML_DT BETWEEN :fromDate AND :toDate2 " +
                                 " GROUP BY DATE_FORMAT(SIH.CLK_DML_DT,'%Y%m%d'), SIH.USER_ID, user.user_nm  " +
                                 " ORDER BY DATE ";
-
     String searchHistoryExcelList = " SELECT TSI.tsi_uno AS tsiUno, " +
                                     " USER.USER_ID AS userId, " +
                                     " CASE " +
@@ -83,30 +82,32 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                                     " LEFT OUTER JOIN " +
                                     " TB_USER USER " +
                                     " ON TSI.USER_UNO = USER.USER_UNO " +
-                                    " WHERE " +
-                                    " TSI.data_stat_cd='10' " +
+                                    " WHERE tsi.DATA_STAT_CD = '10' " +
+                                    " AND tsi.SEARCH_VALUE = '0' " +
+                                    " and (tsi.TSI_KEYWORD like '%' :keyword '%'  OR tsi.TSI_KEYWORD IS NULL )" +
+                                    " AND tsi.TSR_UNO IS NULL " +
+                                    " AND (tsi.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0) "+
                                     " ORDER BY TSI.tsi_uno DESC ";
-    String resultExcelList =" SELECT " +
-                            " TSI.TSI_UNO as tsiUno, " +
-                            "        TSR.TSR_UNO as tsrUno, " +
-                            "        tsr.TSR_TITLE as tsrTitle, " +
-                            "        CASE WHEN TSR_SNS='11' " +
-                            "        THEN '구글' " +
-                            "        WHEN TSR_SNS='13' " +
-                            "       THEN '트위터' " +
-                            "        WHEN TSR_SNS='15' " +
-                            "        THEN '인스타그램' " +
-                            "        ELSE '페이스북' " +
-                            "        END AS tsrSns, " +
-                            "        tsr.TSR_SITE_URL as tsrSiteUrl, " +
-                            "        tsi.TSI_KEYWORD as tsiKeyword, " +
-                            "        if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', ceiling(((case " +
-                            "            when isnull(tmr.TMR_V_SCORE) then 0  " +
-                            "            else tmr.TMR_V_SCORE  " +
-                            "        end + case  " +
-                            "            when isnull(tmr.TMR_A_SCORE) then 0  " +
-                            "            else tmr.TMR_A_SCORE  " +
-                            "        end + case " +
+    String resultExcelList =" SELECT TSI.TSI_UNO as tsiUno, " +
+                            " TSR.TSR_UNO as tsrUno, " +
+                            " tsr.TSR_TITLE as tsrTitle, " +
+                            " CASE WHEN TSR_SNS='11' " +
+                            " THEN '구글' " +
+                            " WHEN TSR_SNS='13' " +
+                            " THEN '트위터' " +
+                            " WHEN TSR_SNS='15' " +
+                            " THEN '인스타그램' " +
+                            " ELSE '페이스북' " +
+                            "  END AS tsrSns, " +
+                            "  tsr.TSR_SITE_URL as tsrSiteUrl, " +
+                            "  tsi.TSI_KEYWORD as tsiKeyword, " +
+                            "   if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', ceiling(((case " +
+                            " when isnull(tmr.TMR_V_SCORE) then 0  " +
+                            " else tmr.TMR_V_SCORE  " +
+                            "  end + case  " +
+                            " when isnull(tmr.TMR_A_SCORE) then 0  " +
+                            " else tmr.TMR_A_SCORE  " +
+                            "  end + case " +
                             "            when isnull(tmr.TMR_T_SCORE) then 0 " +
                             "            else tmr.TMR_T_SCORE " +
                             "        end) / (case " +
@@ -120,8 +121,7 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                             "            else 1 " +
                             "        end)) * 100)) as tmrSimilarity, " +
                             "                tu.USER_ID as userId " +
-                            "    FROM " +
-                            "        TB_SEARCH_RESULT TSR " +
+                            "    FROM TB_SEARCH_RESULT TSR " +
                             "    INNER JOIN (SELECT MIN(tsr_uno) tsr_uno from tb_search_result WHERE (:tsiUno is null or tsi_uno = :tsiUno) GROUP BY tsr_site_url) tsr2 ON tsr.tsr_uno = tsr2.tsr_uno " +
                             "    INNER JOIN " +
                             "        TB_SEARCH_INFO TSI " +
@@ -162,49 +162,6 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                                     " WHERE clk_dml_dt LIKE CONCAT(:toDate,'%') " +
                                     " GROUP BY userId ";
 
-    String searchHistoryDamagedExcelList =  " SELECT TSI.tsi_uno AS tsiUno, " +
-                                            " USER.USER_ID AS userId, " +
-                                            " CASE " +
-                                            " WHEN TSI.TSI_TYPE = '11' " +
-                                            " THEN '키워드' " +
-                                            " WHEN TSI.TSI_TYPE = '13' " +
-                                            " THEN '키워드+이미지' " +
-                                            " WHEN TSI.TSI_TYPE = '15' " +
-                                            " THEN '키워드+영상' " +
-                                            " WHEN TSI.TSI_TYPE = '17' " +
-                                            " THEN '이미지' " +
-                                            " ELSE '영상' " +
-                                            " END AS tsiType, " +
-                                            " TSI.tsi_keyword AS keyword, " +
-                                            " CASE " +
-                                            " WHEN TSI.tsi_google='1' " +
-                                            " THEN 'O' " +
-                                            " ELSE 'X' " +
-                                            " END AS 'google', " +
-                                            " CASE " +
-                                            " WHEN TSI.tsi_facebook = '1' " +
-                                            " THEN 'O' " +
-                                            " ELSE 'X' " +
-                                            " END AS 'faceBook', " +
-                                            " CASE " +
-                                            " WHEN TSI.tsi_twitter= '1' " +
-                                            " THEN 'O' " +
-                                            " ELSE 'X' " +
-                                            " END AS 'twitter', " +
-                                            " CASE " +
-                                            " WHEN TSI.tsi_instagram= '1' " +
-                                            " THEN 'O' " +
-                                            " ELSE 'X' " +
-                                            " END AS 'instagram', " +
-                                            " TSI.fst_dml_dt AS fstDmlDt " +
-                                            " FROM " +
-                                            " TB_SEARCH_INFO TSI " +
-                                            " LEFT OUTER JOIN " +
-                                            " TB_USER USER " +
-                                            " ON TSI.USER_UNO = USER.USER_UNO " +
-                                            " WHERE " +
-                                            " TSI.data_stat_cd='10' " +
-                                            " ORDER BY TSI.tsi_uno DESC ";
     @Query(value = countByClkSearchInfo, nativeQuery = true)
     List<SearchInfoHistDto> countByClkSearchInfo(String fromDate, String toDate2);
 
@@ -212,11 +169,7 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
     List<SearchInfoExcelDto> searchInfoExcelList (String fromDate, String toDate2);
 
     @Query(value = searchHistoryExcelList, nativeQuery = true)
-    List<SearchHistoryExcelDto> searchHistoryExcelList();
-
-    @Query(value = searchHistoryDamagedExcelList, nativeQuery = true)
-    List<SearchHistoryExcelDto> searchHistoryDamagedExcelList();
-
+    List<SearchHistoryExcelDto> searchHistoryExcelList(Integer tsiSearchType, String keyword);
 
     @Query(value = resultExcelList, nativeQuery = true)
     List<ResultListExcelDto> resultExcelList(String tsiUno, String tsiKeyword);

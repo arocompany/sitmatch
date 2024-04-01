@@ -127,8 +127,9 @@
                         <p><span> | 상담사 : </span><span th:text="${userId}">상담사 아이디</span></p>
                     </div>
                     <form action="/resultExcelList" method="get">
-                        <input type="hidden" name="tsiKeyword" th:value="${tsiKeyword}">
                         <input type="hidden" name="tsiUno" th:value="${tsiUno}">
+                        <input type="text" name="keyword" th:value="${keyword}">
+
                         <button type="submit" style="margin-left: 20px;" >
                             <img src="/img/common/excelLogo.png">
                         </button>
