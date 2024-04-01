@@ -283,7 +283,7 @@
                         <p th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgName()} == null"
                            class="detail" ></p>
                 -->
-                <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}"
+                <button class="trace-add btn-off" style="top: -25px; !important;" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}"
                         th:value="${list.getTsrUno()}">추가</button>
                 <!-- <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}" th:disabled="${list.getTrkStatCd() != null}">추가</button> -->
                 <!-- <button class="trace-add btn-off" th:classappend="${list.getTrkStatCd() != null ? 'active' : ''}" th:value="${list.getTsrUno()}">추가</button> -->

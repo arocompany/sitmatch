@@ -41,6 +41,7 @@
           <label class="btn-off bor10" for="searchType2" tooltip="아청물" flow="up">아청물</label>
         </div>
       </div>
+    </form>
       <div class="search-contents">
         <div class="search-list">
           <div class="search-tab" th:if="${tsiUno != 0}">
@@ -66,7 +67,6 @@
           <button class="img-btn btn-off">이미지형</button>
         </div>
       </div>
-    </form>
     <div class="result-list  list-content">
       <section class="list M-box-up bor10" th:each="list:${searchResultList}">
         <div class="img-box">
