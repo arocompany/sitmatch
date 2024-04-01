@@ -6,7 +6,6 @@ import com.nex.common.Consts;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.service.SearchService;
 import com.nex.user.entity.ResultListExcelDto;
-import com.nex.user.entity.SearchHistoryExcelDto;
 import com.nex.user.entity.SessionInfoDto;
 import com.nex.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -253,12 +252,6 @@ public class ChartController {
 
         userService.connectExcel(response, searchInfoExcelDtoList, traceHistExcelDtoList, searchResultExcelDtoList, noticeListExcelDtoList
                 , loginExcelDtoList, userKeywordCntExcelList, userMonitoringExcelList, userDeleteReqExcelList, userDeleteComptExcelList,userAllTimeCntExcelList);
-    }
-
-    @GetMapping("/searchHistory")
-    public void searchHistoryExcel(HttpServletResponse response) throws IOException {
-        List<SearchHistoryExcelDto> searchHistoryExcelDtoList = searchInfoHistRepository.searchHistoryExcelList();
-        searchService.searchHistoryExcel(response, searchHistoryExcelDtoList);
     }
 
     @GetMapping("/resultExcelList")

@@ -1,5 +1,6 @@
 package com.nex.base.controller;
 
+import com.nex.Chart.repo.SearchInfoHistRepository;
 import com.nex.common.Consts;
 import com.nex.search.entity.SearchInfoParamsEntity;
 import com.nex.search.entity.VideoInfoEntity;
@@ -9,7 +10,9 @@ import com.nex.search.repo.SearchInfoParamsRepository;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.VideoInfoRepository;
 import com.nex.search.service.SearchService;
+import com.nex.user.entity.SearchHistoryExcelDto;
 import com.nex.user.entity.SessionInfoDto;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,6 +20,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.IOException;
 import java.util.*;
 
 @Slf4j
@@ -28,7 +32,7 @@ public class HistoryController {
     private final SearchInfoRepository searchInfoRepository;
     private final VideoInfoRepository videoInfoRepository;
     private final SearchInfoParamsRepository searchInfoParamsRepository;
-
+    private final SearchInfoHistRepository searchInfoHistRepository;
     @GetMapping("/history")
     public ModelAndView history(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
                                 @RequestParam(required = false, defaultValue = "1") Integer searchPage,
@@ -390,5 +394,22 @@ public class HistoryController {
         modelAndView.addObject("searchResultInfo", searchService.getSearchInfo(tsiUno));
 
         return modelAndView;
+    }
+
+    @GetMapping("/searchHistory")
+    public void searchHistoryExcel(HttpServletResponse response,
+                                   @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType) throws IOException {
+        log.info(String.valueOf(tsiSearchType));
+        List<SearchHistoryExcelDto> searchHistoryExcelDtoList = searchInfoHistRepository.searchHistoryExcelList();
+
+//        if(tsiSearchType.equals(0)){
+//            searchHistoryExcelDtoList = searchInfoHistRepository.searchHistoryExcelList();
+//        } else if(tsiSearchType.equals(1)) {
+//
+//        } else {
+//
+//        }
+
+        searchService.searchHistoryExcel(response, searchHistoryExcelDtoList);
     }
 }

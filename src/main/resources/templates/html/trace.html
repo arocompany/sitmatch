@@ -36,19 +36,8 @@
             <label class="btn-off bor10" for="searchType2" tooltip="아청물" flow="up">아청물</label>
           </div>
         </div>
-<!--        <div class = "search-box">-->
           <input type="hidden" name="page" id="searchPage">
           <input type="hidden" name="listType" id="listType">
-<!--          <div class="selection">-->
-<!--            <button type="button">전체</button>-->
-<!--            <input type="hidden" class="bor10 M-box-in" name="trkStatCd">-->
-<!--            <ul class="option">-->
-<!--              <li>전체</li>-->
-<!--              <li>삭제 요청 중</li>-->
-<!--              <li>관리 중</li>-->
-<!--            </ul>-->
-<!--          </div>-->
-<!--        </div>-->
         <input type="text" name="keyword" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${keyword}">
       </form>
       <p class="total-num">총 <span th:text="${traceListCount}">123</span>건</p>
@@ -59,7 +48,6 @@
     </div>
     <div class="trace-list list-content ">
       <section class="list M-box-up bor10" th:each="list:${traceList}">
-        <!-- 0328 아청물작업 필요 부분 -->
         <div>
           <span class="CommonSearchDetail searchDetail">No.</span>
           <span class="CommonSearchDetail" th:text="${list.getTsrUno()}"></span>
@@ -74,11 +62,6 @@
                          : '')))))))">
             </span>
         </div>
-        <th:block th:switch="${list.getTrkStatCd()}">
-          <h2 class="unity" th:case="10"><strong class="state" style="color: #194894">관리 중</strong> <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span></th:block></h2>
-          <h2 class="unity" th:case="20"><strong class="state">삭제 요청 중</strong> <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span></th:block></h2>
-          <h2 class="unity" th:case="30"><strong class="state">삭제 완료</strong> <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span></th:block></h2>
-        </th:block>
         <div class="img-box">
           <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
           <div class="img">
@@ -95,14 +78,13 @@
           </th:block>
         </div>
 
-<!--        <span class="detail-info">-->
-<!--          <span th:text="${list.getTsrUno()}" ></span>-->
-<!--          국가: <span id="nationValue" th:text="${list.getTsrNationCode()}" ></span>-->
-<!--        </span>-->
-
-
-        <span style="font-size: 16px; font-weight: 500; color: #e87728;"
-                th:if="${list.getTsiSearchType() == '2' &&
+        <div>
+        <th:block th:switch="${list.getTrkStatCd()}">
+          <h2 class="unity" style="font-size: 14px;" th:case="10"><strong class="state" style="color: #194894">관리 중</strong>
+            <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span>
+              <span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span>
+              <span style="font-weight: bold; margin-left: 5px; color: #AE2523;"
+                    th:if="${list.getTsiSearchType() == '2' &&
                                         ( list.getTmrAgeScore() != null || list.getTmrObjectScore() != null || list.getTmrOcwScore() != null)}">
                          아청물(
                             <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() >= '0.2'}">
@@ -112,7 +94,53 @@
                             <b th:if="${list.getTmrOcwScore() != null && list.getTmrOcwScore() > '0'}">
                                 텍스트</b>
                             )
-        </span>
+              </span>
+            </th:block>
+          </h2>
+          <h2 class="unity" style="font-size: 14px;" th:case="20"><strong class="state">삭제 요청 중</strong>
+            <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span>
+              <span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span>
+              <span style="font-weight: bold; margin-left: 5px; color: #AE2523;"
+                    th:if="${list.getTsiSearchType() == '2' &&
+                                        ( list.getTmrAgeScore() != null || list.getTmrObjectScore() != null || list.getTmrOcwScore() != null)}">
+                         아청물(
+                            <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() >= '0.2'}">
+                                 나이,&nbsp;</b>
+                            <b th:if="${ list.getTmrObjectScore() != null && list.getTmrObjectScore() > '0'}">
+                                사물,&nbsp;</b>
+                            <b th:if="${list.getTmrOcwScore() != null && list.getTmrOcwScore() > '0'}">
+                                텍스트</b>
+                            )
+              </span>
+            </th:block>
+          </h2>
+          <h2 class="unity" style="font-size: 14px;" th:case="30"><strong class="state">삭제 완료</strong>
+            <th:block th:switch="${list.getTsjStatus()}">
+              <span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span>
+              <span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span>
+            </th:block>
+            <span style="font-weight: bold; margin-left: 5px; color: #AE2523;"
+                  th:if="${list.getTsiSearchType() == '2' &&
+                                        ( list.getTmrAgeScore() != null || list.getTmrObjectScore() != null || list.getTmrOcwScore() != null)}">
+                         아청물(
+                            <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() >= '0.2'}">
+                                 나이,&nbsp;</b>
+                            <b th:if="${ list.getTmrObjectScore() != null && list.getTmrObjectScore() > '0'}">
+                                사물,&nbsp;</b>
+                            <b th:if="${list.getTmrOcwScore() != null && list.getTmrOcwScore() > '0'}">
+                                텍스트</b>
+                            )
+            </span>
+          </h2>
+        </th:block>
+        </div>
+
+
+<!--        <span class="detail-info">-->
+<!--          <span th:text="${list.getTsrUno()}" ></span>-->
+<!--          국가: <span id="nationValue" th:text="${list.getTsrNationCode()}" ></span>-->
+<!--        </span>-->
+
         <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url"><p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p></a>
         <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
         <p class="detail" >
