@@ -951,6 +951,7 @@
         $(".btnShowMovieImg").on("click", function(){
           console.info("123");
           $.each($(this).next().find(".movieImg"), function(item, idx){
+            console.info(idx + "번째");
             this.click();
           });
         });

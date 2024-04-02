@@ -102,16 +102,26 @@
                 <span class="CommonSearchDetail" th:text="${list.getTsrUno()}"></span>
                 <span class="CommonSearchDetail searchDetail searchNation"
                       th:if="${list.getTsrNationCode() != null}">국가:</span>
-                <span class="CommonSearchDetail"
-                      th:text="(${list.getTsrNationCode()} == 'us' ? '미국'
-                               : (${list.getTsrNationCode()} == 'kr' ? '한국'
-                               : (${list.getTsrNationCode()} == 'cn' ? '중국'
-                               : (${list.getTsrNationCode()} == 'nl' ? '네덜란드'
-                               : (${list.getTsrNationCode()} == 'nl' ? '태국'
-                               : (${list.getTsrNationCode()} == 'nl' ? '러시아'
-                               : (${list.getTsrNationCode()} == 'nl' ? '베트남'
-                               : '')))))))">
-                </span>
+
+                <th:block th:switch="${list.getTsrNationCode()}">
+                  <span class="CommonSearchDetail" th:case="us" th:text="미국"></span>
+                  <span class="CommonSearchDetail" th:case="kr" th:text="한국"></span>
+                  <span class="CommonSearchDetail" th:case="cn" th:text="중국"></span>
+                  <span class="CommonSearchDetail" th:case="nl" th:text="네덜란드"></span>
+                  <span class="CommonSearchDetail" th:case="nl" th:text="태국"></span>
+                  <span class="CommonSearchDetail" th:case="nl" th:text="러시아"></span>
+                  <span class="CommonSearchDetail" th:case="nl" th:text="베트남"></span>
+                </th:block>
+<!--                <span class="CommonSearchDetail"-->
+<!--                      th:text="(${list.getTsrNationCode()} == 'us' ? '미국'-->
+<!--                               : (${list.getTsrNationCode()} == 'kr' ? '한국'-->
+<!--                               : (${list.getTsrNationCode()} == 'cn' ? '중국'-->
+<!--                               : (${list.getTsrNationCode()} == 'nl' ? '네덜란드'-->
+<!--                               : (${list.getTsrNationCode()} == 'nl' ? '태국'-->
+<!--                               : (${list.getTsrNationCode()} == 'nl' ? '러시아'-->
+<!--                               : (${list.getTsrNationCode()} == 'nl' ? '베트남'-->
+<!--                               : '')))))))">-->
+<!--                </span>-->
               </div>
               <h2 style="display:inline-block" class="unity" th:if="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
 <!--              <span th:if="${(tsiType == '15' || tsiType == '19')}">-->
