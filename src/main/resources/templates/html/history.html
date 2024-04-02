@@ -243,7 +243,7 @@
 
             <th:block th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}">
                 <input type="hidden" th:value="${searchInfoList.getTsiUno()}" id="imgTsiUno" name="tsiUno">
-                <button class="btnShowMovieImg btn-off btn-look" type="button">이미지 다운</button>
+                <button class="btnShowMovieImg btn-off btn-look" type="button" th:onclick="|location.href='/download/zip/${searchInfoList.getTsiUno()}'|">이미지 다운</button>
                 <div style = "display:none;">
                   <th:block th:each="item:${videoList.get(searchInfoList.getTsiUno())}">
                     <a class="movieImg" download th:href = "'/imagePath'+${item.getTviImgRealPath().substring(7) + item.getTviImgName()}">down</a>
@@ -950,23 +950,34 @@
         });
 
         $(".btnShowMovieImg").on("click", function(){
-          let tsiUno = document.getElementById('imgTsiUno').value;
+          // let tsiUno = document.getElementById('imgTsiUno').value;
 
-          $.ajax({
-            url: '/download/zip/'+tsiUno,
-            type: "get",
-            contentType: "application/x-www-form-urlencoded;charset=UTF-8",
-            // data: {
-            //   tsiUno: $('#imgTsiUno').val()
-            // },
-            success:function(data) {
-              alert("이미지 다운로드가 완료되었습니다.");
-              // window.location.href="/history";
-            }, error:function(){
-              // alert("실패")
-              console.log("통신 실패");
-            }
-          })
+          // $.ajax({
+          //   url: '/download/zip/'+tsiUno,
+          //   type: "get",
+          //   // data: {
+          //   //   tsiUno: $('#imgTsiUno').val()
+          //   // },
+          //   xhrFields:{
+          //     responseType: 'blob'
+          //   },
+          //   success: function(data){
+          //     var anchor = document.getElementById('a');
+          //     var url = window.URL || window.webkitURL;
+          //     anchor.href = url.createObjectURL(data);
+          //     anchor.download = 'archive.zip';
+          //     document.body.append(anchor);
+          //     anchor.click();
+          //     setTimeout(function(){
+          //       document.body.removeChild(anchor);
+          //       url.revokeObjectURL(anchor.href);
+          //     }, 1);
+          //   },
+          //   error:function(){
+          //     // alert("실패")
+          //     console.log("통신 실패");
+          //   }
+          // })
 
           // let xhr = new XMLHttpRequest();
           // //요청을 보낼 방식, 주소, 비동기여부 설정

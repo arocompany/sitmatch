@@ -33,14 +33,8 @@ public class DownloadController {
             for (VideoInfoEntity videoInfoEntity : imageList) {
                 downloadFileList.add(videoInfoEntity.getTviImgRealPath() + videoInfoEntity.getTviImgName());
             }
-
             downloadDto.setSourceFiles(downloadFileList);
-
-            try {
-                downloadUtil.downloadZip(downloadDto, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
+        downloadUtil.downloadZip(downloadDto, response);
     }
 }
