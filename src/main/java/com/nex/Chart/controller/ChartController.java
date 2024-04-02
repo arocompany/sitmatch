@@ -254,12 +254,7 @@ public class ChartController {
                 , loginExcelDtoList, userKeywordCntExcelList, userMonitoringExcelList, userDeleteReqExcelList, userDeleteComptExcelList,userAllTimeCntExcelList);
     }
 
-    @GetMapping("/resultExcelList")
-    public void resultExcelList(HttpServletResponse response, String tsiUno, String tsiKeyword) throws IOException {
-        List<ResultListExcelDto> resultListExcelDtoList = searchInfoHistRepository.resultExcelList(tsiUno, tsiKeyword);
 
-        searchService.resultExcelList(response, resultListExcelDtoList);
-    }
 
 /*
     @GetMapping("/keywordCntList")

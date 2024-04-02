@@ -110,9 +110,9 @@
                     <div class="tab on">
                         <!-- 0328 아청물작업 필요 부분 -->
                         <div class="search-img">
-                            <span th:if="${searchType eq '2' && tsiType ne '11'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
                             <img th:if="${(imgSrc != null && tsiType != '15' && tsiType != '19')}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
                             <video th:if="${(imgSrc != null && (tsiType == '15' || tsiType == '19'))}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt=""></video>
+                            <span th:if="${searchType eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
                         </div>
                     </div>
                     <img th:if="${!#strings.isEmpty(keyword)}" src="/img/result/double-right.png" alt=""
@@ -127,8 +127,9 @@
                         <p><span> | 상담사 : </span><span th:text="${userId}">상담사 아이디</span></p>
                     </div>
                     <form action="/resultExcelList" method="get">
-                        <input type="hidden" name="tsiKeyword" th:value="${tsiKeyword}">
                         <input type="hidden" name="tsiUno" th:value="${tsiUno}">
+                        <input type="hidden" name="keyword" th:value="${keyword}">
+
                         <button type="submit" style="margin-left: 20px;" >
                             <img src="/img/common/excelLogo.png">
                         </button>
@@ -169,15 +170,24 @@
                     <span class="CommonSearchDetail searchDetail">No.</span>
                     <span class="CommonSearchDetail" th:text="${list.getTsrUno()}"></span>
                     <span class="CommonSearchDetail searchDetail searchNation">국가:</span>
-                    <span class="CommonSearchDetail" th:text="(${list.getTsrNationCode()} == 'us' ? '미국'
-                         : (${list.getTsrNationCode()} == 'kr' ? '한국'
-                         : (${list.getTsrNationCode()} == 'cn' ? '중국'
-                         : (${list.getTsrNationCode()} == 'nl' ? '네덜란드'
-                         : (${list.getTsrNationCode()} == 'nl' ? '태국'
-                         : (${list.getTsrNationCode()} == 'nl' ? '러시아'
-                         : (${list.getTsrNationCode()} == 'nl' ? '베트남'
-                         : '')))))))">
-                    </span>
+                    <th:block th:switch="${list.getTsrNationCode()}">
+                        <span class="CommonSearchDetail" th:case="us" th:text="미국"></span>
+                        <span class="CommonSearchDetail" th:case="kr" th:text="한국"></span>
+                        <span class="CommonSearchDetail" th:case="cn" th:text="중국"></span>
+                        <span class="CommonSearchDetail" th:case="nl" th:text="네덜란드"></span>
+                        <span class="CommonSearchDetail" th:case="nl" th:text="태국"></span>
+                        <span class="CommonSearchDetail" th:case="nl" th:text="러시아"></span>
+                        <span class="CommonSearchDetail" th:case="nl" th:text="베트남"></span>
+                    </th:block>
+<!--                    <span class="CommonSearchDetail" th:text="(${list.getTsrNationCode()} == 'us' ? '미국'-->
+<!--                         : (${list.getTsrNationCode()} == 'kr' ? '한국'-->
+<!--                         : (${list.getTsrNationCode()} == 'cn' ? '중국'-->
+<!--                         : (${list.getTsrNationCode()} == 'nl' ? '네덜란드'-->
+<!--                         : (${list.getTsrNationCode()} == 'nl' ? '태국'-->
+<!--                         : (${list.getTsrNationCode()} == 'nl' ? '러시아'-->
+<!--                         : (${list.getTsrNationCode()} == 'nl' ? '베트남'-->
+<!--                         : '')))))))">-->
+<!--                    </span>-->
                 </div>
                 <div>
                     <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}"> <!-- 검색타입이 키워드가 아닌경우 -->

@@ -10,6 +10,7 @@ import com.nex.search.repo.SearchInfoParamsRepository;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.VideoInfoRepository;
 import com.nex.search.service.SearchService;
+import com.nex.user.entity.ResultListExcelDto;
 import com.nex.user.entity.SearchHistoryExcelDto;
 import com.nex.user.entity.SessionInfoDto;
 import jakarta.servlet.http.HttpServletResponse;
@@ -386,7 +387,7 @@ public class HistoryController {
 
     @GetMapping("/result-detail2")
     public ModelAndView result_detail_for_tsi_uno(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto,
-                                      @RequestParam Integer tsiUno) {
+                                                  @RequestParam Integer tsiUno) {
 
         ModelAndView modelAndView = new ModelAndView("html/result-detail2");
 
@@ -398,18 +399,19 @@ public class HistoryController {
 
     @GetMapping("/searchHistory")
     public void searchHistoryExcel(HttpServletResponse response,
-                                   @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType) throws IOException {
-        log.info(String.valueOf(tsiSearchType));
-        List<SearchHistoryExcelDto> searchHistoryExcelDtoList = searchInfoHistRepository.searchHistoryExcelList();
-
-//        if(tsiSearchType.equals(0)){
-//            searchHistoryExcelDtoList = searchInfoHistRepository.searchHistoryExcelList();
-//        } else if(tsiSearchType.equals(1)) {
-//
-//        } else {
-//
-//        }
-
+                                   @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType,
+                                   @RequestParam(required = false, defaultValue = "") String searchKeyword) throws IOException {
+        List<SearchHistoryExcelDto> searchHistoryExcelDtoList = searchInfoHistRepository.searchHistoryExcelList(tsiSearchType, searchKeyword);
         searchService.searchHistoryExcel(response, searchHistoryExcelDtoList);
     }
+    
+    @GetMapping("/resultExcelList")
+    public void resultExcelList(HttpServletResponse response, String tsiUno, String tsiKeyword) throws IOException {
+        log.info(tsiKeyword);
+        log.info(tsiUno);
+
+        List<ResultListExcelDto> resultListExcelDtoList = searchInfoHistRepository.resultExcelList(tsiUno, tsiKeyword);
+        searchService.resultExcelList(response, resultListExcelDtoList);
+    }
+
 }
