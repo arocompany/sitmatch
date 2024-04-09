@@ -51,7 +51,6 @@
                 <video th:if="${(imgSrc != null && (tsiType == '15' || tsiType == '19'))}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt=""></video>
               </div>
             </div>
-            <!--<div class="tab research" th:if="${!#strings.isEmpty(tsiKeyword)}">-->
             <div class="tab research" th:if="${tsiType == '11' || tsiType == '13' || tsiType == '15'}">
               <p>"<span th:text="${tsiKeyword}">sitting</span>"에 대한 검색 결과 입니다.</p>
             </div>
@@ -71,19 +70,11 @@
       <section class="list M-box-up bor10" th:each="list:${searchResultList}">
         <div class="img-box">
           <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
-          <!-- 0328 아청물작업 필요 부분 -->
           <div class="img">
             <span th:if="${list.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
-            <!--            <img src="./img/replace/man.png" alt="" loading="lazy" >-->
             <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="" loading="lazy" >
             <img th:unless="${not #strings.isEmpty(list.getTsrImgPath())}" src="/img/common/noImage.jpg">
           </div>
-          <!--          <div class="video">-->
-          <!--            <video src="./img/replace/replacevideo.mp4" loading="lazy"></video>-->
-          <!--            <div class="play-wrap">-->
-          <!--              <div class="play-btn"></div>-->
-          <!--            </div>-->
-          <!--          </div>-->
           <th:block th:switch="${list.getTsrSns()}">
             <img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">
             <img th:case="13" src="/img/common/sns/twitter-round.png" alt="" class="sns">
@@ -112,26 +103,8 @@
                   <span class="CommonSearchDetail" th:case="ru" th:text="러시아"></span>
                   <span class="CommonSearchDetail" th:case="vn" th:text="베트남"></span>
                 </th:block>
-<!--                <span class="CommonSearchDetail"-->
-<!--                      th:text="(${list.getTsrNationCode()} == 'us' ? '미국'-->
-<!--                               : (${list.getTsrNationCode()} == 'kr' ? '한국'-->
-<!--                               : (${list.getTsrNationCode()} == 'cn' ? '중국'-->
-<!--                               : (${list.getTsrNationCode()} == 'nl' ? '네덜란드'-->
-<!--                               : (${list.getTsrNationCode()} == 'nl' ? '태국'-->
-<!--                               : (${list.getTsrNationCode()} == 'nl' ? '러시아'-->
-<!--                               : (${list.getTsrNationCode()} == 'nl' ? '베트남'-->
-<!--                               : '')))))))">-->
-<!--                </span>-->
               </div>
               <h2 style="display:inline-block" class="unity" th:if="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
-<!--              <span th:if="${(tsiType == '15' || tsiType == '19')}">-->
-<!--                <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">(V : <span th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>-->
-<!--                <b th:if="${list.getTmrVScore() == null || list.getTmrVScore() == '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>-->
-<!--                <b th:if="${list.getTmrAScore() != null && list.getTmrAScore() != '0.0'}">A : <span th:text="${list.getTmrAScore()}">100</span>%,&nbsp;</b>-->
-<!--                <b th:if="${list.getTmrAScore() == null || list.getTmrAScore() == '0.0'}">A : <span>비교없음,&nbsp;</span></b>-->
-<!--                <b th:if="${list.getTmrTScore() != null && list.getTmrTScore() != '0.0'}">T : <span th:text="${list.getTmrTScore()}">100</span>%)</b>-->
-<!--                <b th:if="${list.getTmrTScore() == null || list.getTmrTScore() == '0.0'}">T : <span>비교없음</span>)</b>-->
-<!--              </span>-->
               <span th:if="${(tsiType == '15' || tsiType == '19')}">
                 <b th:if="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">(V : <span th:text="${list.getTmrVScore()}">100</span>%,&nbsp;</b>
                 <b th:unless="${list.getTmrVScore() != null && list.getTmrVScore() != '0.0'}">(V : <span>비교없음,</span>&nbsp;</b>
@@ -278,15 +251,6 @@
     }
   })
 
-  // window.onload = function(){
-  //
-  // }
-
-
-  // ----------체크박스------------ 추가----------------------------------------
-  /* 검색파일이 video일경우*/
-  //const video = true;//임시값
-  //2023-03-22 수정
   const video = [[${tsiType}]] == '15' || [[${tsiType}]] == '19';
   if (video) {
     document.querySelector('.video-chk').style.display = 'block';

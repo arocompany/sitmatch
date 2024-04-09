@@ -238,7 +238,7 @@
                                 <button id="traceSelect" type="button" style="width: 110px;" th:text="${manageType}">검색어</button>
                                 <input type="hidden" id="monitoringStatus" name="monitoringStatus" th:value="${monitoringStatus}">
                                 <input type="hidden" class="bor10 M-box-in" name="manageType" th:value="${manageType}" >
-                                <input type="hidden" name="page" > <!-- id="searchPage"  -->
+                                <input type="hidden" name="page" >
                                 <ul class="option select" id="option">
                                     <li>검색어</li>
                                     <li>대상자</li>
@@ -252,20 +252,12 @@
 
             </div>
             <input id="traceHistoryValue" type="text" value="">
-
-            <!-- <button type="button" style="margin-right: 495px; font-weight: bold; ">엑셀</button> -->
             <ul class="currently-state monitoring_sort_link">
                 <li onclick="traceList();"><span class="monitoring_sort_tit" >전체 :</span> <span th:text="${traceHistoryListCount}">32</span></li>
-                <li><span th:onclick="|location.href='@{/trace/history(monitoringStatus=10)}'|"  class="monitoring_sort_tit" id="monitoringList"> 모니터링 :</span> <span th:text="${countMonitoring}">8</span></li> <!-- th:onclick="|location.href='@{/monitoringList}'|" -->
+                <li><span th:onclick="|location.href='@{/trace/history(monitoringStatus=10)}'|"  class="monitoring_sort_tit" id="monitoringList"> 모니터링 :</span> <span th:text="${countMonitoring}">8</span></li>
                 <li><span th:onclick="|location.href='@{/trace/history(monitoringStatus=20)}'|" class="monitoring_sort_tit" >삭제 요청 :</span> <span th:text="${countDelReq}">10</span></li>
                 <li><span th:onclick="|location.href='@{/trace/history(monitoringStatus=30)}'|" class="monitoring_sort_tit" >삭제 완료 :</span> <span th:text="${countDelCmpl}">14</span></li>
                 <li><span th:onclick="|location.href='@{/trace/history(monitoringStatus=40)}'|" class="monitoring_sort_tit" >24시간 모니터링 :</span> <span th:text="${allTimeMonitoringCnt}">14</span></li>
-
-                <!--
-                <li><span th:onclick="|location.href='@{/monitoringDeleteReqList}'|" class="monitoring_sort_tit" >삭제 요청 :</span> <span th:text="${countDelReq}">10</span></li>
-                <li><span  th:onclick="|location.href='@{/monitoringDeleteComptList}'|" class="monitoring_sort_tit" >삭제 완료 :</span> <span th:text="${countDelCmpl}">14</span></li>
-                <li><span  th:onclick="|location.href='@{/allTimeMonitoringChkList}'|" class="monitoring_sort_tit" >24시간 모니터링 :</span> <span th:text="${allTimeMonitoringCnt}">14</span></li>
-                -->
             </ul>
 
         </div>
@@ -276,7 +268,6 @@
             <span class="memo">메모</span>
             <span class="state">상태</span>
             <span class="all-time">24시간 모니터링<span class="describe">?</span><span class="tooltip">한 번 모니터링 하는 주기 시간 설정 <br> 최소 6시간 최대 720시간 (24시간 x 30일)</span></span>
-            <!--      <span class="all-time">24시간 모니터링<span class="describe" flow="up" data-html="true" tooltip="한 번 모니터링 하는 주기 시간 설정 최소 6시간 최대 720시간 (24시간 x 30일)">?</span></span>-->
             <span class="double-chk" >재유포</span>
             <button class="del-btn btn-off dels2" style="border-radius: 50%; height: 22px; margin-left: 18px; " onclick="deleteTsrunos();"></button>
             <input type="hidden" id="tsrUnoValues" name="tsrUnoValues" value="">
@@ -314,15 +305,6 @@
                                 <span class="" th:case="ru" th:text="러시아"></span>
                                 <span class="" th:case="vn" th:text="베트남"></span>
                               </th:block>
-<!--                            <span th:text="(${traceHistoryList.getTsrNationCode()} == 'us' ? '미국'-->
-<!--                                    : (${traceHistoryList.getTsrNationCode()} == 'kr' ? '한국'-->
-<!--                                    : (${traceHistoryList.getTsrNationCode()} == 'cn' ? '중국'-->
-<!--                                    : (${traceHistoryList.getTsrNationCode()} == 'nl' ? '네덜란드'-->
-<!--                                    : (${traceHistoryList.getTsrNationCode()} == 'nl' ? '태국'-->
-<!--                                    : (${traceHistoryList.getTsrNationCode()} == 'nl' ? '러시아'-->
-<!--                                    : (${traceHistoryList.getTsrNationCode()} == 'nl' ? '베트남'-->
-<!--                                    : '')))))))"></span>-->
-<!--                            국가: <span id="nationValue" th:text="${traceHistoryList.getTsrNationCode()}" ></span>-->
                         </span>
                         <a class="url" style="width:100%" th:href="${traceHistoryList.getTsrSiteUrl()}" target="_blank" th:text="${traceHistoryList.getTsrSiteUrl()}">url이 들어갑니다</a>
                         <p class="content" th:text="${traceHistoryList.getTsrTitle()}">내용이 들어갑니다</p>
@@ -341,18 +323,8 @@
                             </span>
                             <span class="detail-time">검색일 :
                                 <span th:text="${#dates.format(traceHistoryList.getTsrFstDmlDt(), 'yyyy.MM.dd')}">2022.01.12</span>
-                                <!--<p th:text="${#dates.format(traceInfo.getTsrFstDmlDt(), 'yyyy-MM-dd')}">2023-01-02</p>-->
                             </span>
                         </p>
-                        <!--       <p class="counselor" th:text="${userIdMap.get(searchInfoList.getUserUno())}">상담사 아이디</p>-->
-                        <!--
-                        <p  class="detail">
-                          <span class="detail-info">대상자 파일명:
-                            <span th:text="${traceHistoryList.getTsiUno()}"></span>
-                          </span>
-                        </p>
-                        -->
-
                         <p th:if="${traceHistoryList.getTsiUserFile() != null}" class="detail">
                             <span class="detail-info">
                                 대상자 파일명: <span th:text="${traceHistoryList.getTsiUserFile()}" ></span>
@@ -366,7 +338,6 @@
                                 마지막 모니터링 체크시간: <span  th:text="${#strings.replace(traceHistoryList.getLastAlltimeHist(),'.0','')}"></span>
                             </span>
                         </p>
-                        <!--<p class="">상담사 : <span th:text="${traceHistoryList.getTuUserId()}"></span></p> 원본 -->
                     </div>
                 </div>
                 <textarea placeholder="내용 입력" class="btn-on memo" th:data-uno="${traceHistoryList.getTsrUno()}" th:text="${traceHistoryList.getTrkHistMemo()}"></textarea>
@@ -387,19 +358,14 @@
                 </div>
                 <div class="area_box" style="display: block">
                     <input type = "number" class="btn-off area_input" th:value="${traceHistoryList.getTsrCycleBatch()}">
-<!--                    <button class="btn-off all-time all-time-btn" type = "button"  th:classappend="${traceHistoryList.getMonitoringCd() eq '20' ? 'active' : ''}" th:value="${traceHistoryList.getTsrUno()}" th:text="${traceHistoryList.getTsrIsBatch() ? 'OFF' : 'ON'}">OFF</button>-->
-
                     <label class="flex">
                         <span class="select_box nationUno switch">
-                                <!--<input class="checkboxNationUno" type="hidden" th:value="${item.getNcUno()}">-->
                                 <input class="checkboxNation chkItem all-time" type="checkbox" th:value="${traceHistoryList.getTsrUno()}" th:checked="${traceHistoryList.getTsrIsBatch() == '1'}">
                             </span>
                     </label>
                 </div>
                 <button class="btn-off double-chk" style="margin-left: 5px;" th:tsiUno="${traceHistoryList.getTsi3tsiuno()}" th:tsiKeyword="${traceHistoryList.getTsi3Keyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
                 <button style="border-radius: 50%; height: 22px; margin-left: 15px; " class="del-btn btn-off del2" id="traceTsrUno" onclick="traceDelete();" th:value="${traceHistoryList.getTsrUno()}">삭제</button>
-                <!--<button class="btn-off double-chk" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'" th:onclick="|location.href='@{/notice(tsiUno=${traceHistoryList.getTsi3tsiuno()}, tsiKeyword=${traceHistoryList.getTsi3Keyword()} )}'|">0건</button>-->
-                <!--window.location.href = '/notice?'+'&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno"); -->
             </li>
             <li th:if="${traceHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
         </ul>
@@ -570,13 +536,6 @@
             });
         });
     })
-
-    // const searchForm = document.querySelector("#searchForm");
-    // const searchPage = document.querySelector("#searchPage");
-    // const searchEvent = (pageNum) => {
-    //     searchPage.value = pageNum;
-    //     searchForm.submit();
-    // }
 
     const traceForm = document.querySelector("#traceForm");
     const tracePage = document.querySelector("#tracePage");
