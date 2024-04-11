@@ -130,6 +130,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     ", coalesce(params.tsi_is_engine_yandex, 0) tsiIsEngineYandex " +
                                     ", coalesce(params.tsi_is_engine_yandex_image, 0) tsiIsEngineYandexImage " +
                                     ", coalesce(params.tsi_is_engine_naver, 0) tsiIsEngineNaver " +
+
+                                    ", tsi.TSI_USER_FILE as tsiUserFile " +
                                     " from tb_search_info tsi " +
 
                                     " LEFT OUTER JOIN TB_SEARCH_INFO_PARAMS params ON tsi.TSI_UNO = params.TSI_UNO "+
@@ -233,52 +235,23 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
 
     String userSearchHistoryCount = " SELECT COUNT(*) FROM tb_search_info tsi WHERE tsi.tsi_user_file LIKE CONCAT('%',:searchKeyword,'%') AND SEARCH_VALUE='0' AND DATA_STAT_CD= '10' ";
 
-    String allUserSearchHistoryList =  " SELECT " +
-                                    " tsi.tsi_uno AS tsiUno, " +
-                                    " tsi.tsi_user_file AS tsiUserFile, " +
-                                    " (SELECT group_concat(TSIMH_CREATE_DATE ORDER BY TSIMH_CREATE_DATE DESC SEPARATOR '   ') FROM tb_search_info_monitoring_history WHERE tsi_uno = tsi.tsi_uno) tsimhCreateDate, " +
-                                    " (SELECT COUNT(tsr3.tsr_uno) " +
-                                    " FROM tb_search_result tsr3 " +
-                                    " inner JOIN tb_search_info tsi3 " +
-                                    " ON tsr3.TSI_UNO = tsi3.tsi_uno " +
-                                    " WHERE tsr3.TSI_UNO = tsi.tsi_uno " +
-                                    " AND tsr3.TRK_STAT_CD = '10') AS monitoringCnt, " +
-                                    " (SELECT COUNT(tsr4.tsr_uno) " +
-                                    " FROM tb_search_result tsr4 " +
-                                    " inner JOIN tb_search_info tsi4 " +
-                                    " ON tsr4.TSI_UNO = tsi4.tsi_uno " +
-                                    " WHERE tsr4.TSI_UNO = tsi.tsi_uno " +
-                                    " AND tsr4.trk_stat_cd = '20') AS deleteReqCnt, " +
-                                    " (SELECT COUNT(tsr5.tsr_uno) " +
-                                    " FROM tb_search_result tsr5 " +
-                                    " inner JOIN tb_search_info tsi5 " +
-                                    " ON tsr5.TSI_UNO = tsi5.tsi_uno " +
-                                    " WHERE tsr5.TSI_UNO = tsi.tsi_uno " +
-                                    " AND tsr5.trk_stat_cd = '30') AS deleteConfirmCnt, " +
-                                    " (CASE " +
-                                    " WHEN ((SELECT COUNT(tsr6.tsr_uno) " +
-                                    " FROM tb_search_result tsr6 " +
-                                    " inner JOIN tb_search_info tsi6 " +
-                                    " ON tsr6.TSI_UNO = tsi6.tsi_uno " +
-                                    " WHERE tsr6.TSI_UNO = tsi.tsi_uno " +
-                                    " AND tsr6.monitoring_cd='20') > 0 ) THEN 'Y' " +
-                                    " ELSE 'N' " +
-                                    " END ) AS allDayMonitoringYn, " +
-                                    " tsi.tsi_monitoring_cnt AS allTimeCnt,  " +
-                                    " (SELECT COUNT(tsr8.tsr_uno) " +
-                                    " FROM  tb_search_result tsr8 " +
-                                    " WHERE tsr8.tsi_uno = tsi.tsi_uno " +
-                                    " AND tsr8.monitoring_cd='20') AS reDsmnCnt, " +
-                                    " (SELECT COUNT(DISTINCT tsr.tsr_site_url) " +
-                                    " FROM tb_search_result tsr " +
-                                    " inner JOIN tb_search_info tsi_2 " +
-                                    " ON tsr.TSI_UNO = tsi_2.tsi_uno " +
-                                    " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt " +
-                                    " FROM  tb_search_info tsi " +
-                                    " WHERE tsi.tsi_user_file LIKE CONCAT('%',:searchKeyword,'%')  " +
-                                    " AND SEARCH_VALUE = '0' "+
-                                    " AND DATA_STAT_CD= '10' "+
-                                    " ORDER BY tsi.tsi_uno DESC   ";
+    String allUserSearchHistoryList =  "SELECT" +
+            " tsi_user_file as tsiUserFile, " +
+            " (SELECT GROUP_CONCAT(TSIMH_CREATE_DATE ORDER BY TSIMH_CREATE_DATE DESC SEPARATOR '   ') FROM tb_search_info_monitoring_history WHERE tsi_uno IN (SELECT TSI_UNO FROM tb_search_info WHERE tsi_user_file = tsi.tsi_user_file AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10')) tsimhCreateDate," +
+            " (SELECT COUNT(*) FROM tb_search_result tsr WHERE tsr.TSI_UNO IN (SELECT TSI_UNO FROM tb_search_info WHERE tsi_user_file = tsi.tsi_user_file AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10') AND tsr.TRK_STAT_CD = '10'	) AS monitoringCnt," +
+            " (SELECT COUNT(*) FROM tb_search_result tsr WHERE tsr.TSI_UNO IN (SELECT TSI_UNO FROM tb_search_info WHERE tsi_user_file = tsi.tsi_user_file AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10') AND tsr.TRK_STAT_CD = '20' ) AS deleteReqCnt," +
+            " (SELECT COUNT(*) FROM tb_search_result tsr WHERE tsr.TSI_UNO IN (SELECT TSI_UNO FROM tb_search_info WHERE tsi_user_file = tsi.tsi_user_file AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10') AND tsr.TRK_STAT_CD = '30' ) AS deleteConfirmCnt," +
+            " if((SELECT COUNT(*) FROM tb_search_result tsr WHERE tsr.TSI_UNO IN (SELECT TSI_UNO FROM tb_search_info WHERE tsi_user_file = tsi.tsi_user_file AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10') AND tsr.MONITORING_CD = '20' )>0, 'Y', 'N') AS allDayMonitoringYn," +
+            " (SELECT COUNT(*) FROM tb_search_result tsr WHERE tsr.TSI_UNO IN (SELECT TSI_UNO FROM tb_search_info WHERE tsi_user_file = tsi.tsi_user_file AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10') AND tsr.MONITORING_CD = '20' ) AS reDsmnCnt," +
+            " (SELECT COUNT(DISTINCT tsr.tsr_site_url) FROM tb_search_result tsr WHERE tsr.TSI_UNO IN (SELECT TSI_UNO FROM tb_search_info WHERE tsi_user_file = tsi.tsi_user_file 	AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10')  ) AS resultCnt," +
+            " sum(tsi_monitoring_cnt) AS allTimeCnt" +
+            " FROM tb_search_info tsi" +
+            " WHERE tsi_user_file IS NOT NULL" +
+            " and tsi_user_file LIKE CONCAT('%',:searchKeyword,'%')  " +
+            " AND SEARCH_VALUE = '0'" +
+            " AND DATA_STAT_CD = '10'" +
+            " GROUP BY tsi_user_file" +
+            " ORDER BY MAX(FST_DML_DT) DESC";
     String userSearchHistoryList =  " SELECT " +
                                     " tsi.tsi_uno AS tsiUno, " +
                                     " tsi.tsi_user_file AS tsiUserFile, " +

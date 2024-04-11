@@ -188,11 +188,11 @@
 }
 
 #history .list-tit .dist {
-    width: 11.52%
+    width: 12.72%
 }
 
 #history .dist {
-    width: 11.52%
+    width: 12.72%
 }
 
 #history .search-history {
@@ -276,10 +276,10 @@
 }
 
 #history .search-history .cont {
-    -webkit-box-flex: 1;
-    -moz-box-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
+    /*-webkit-box-flex: 1;*/
+    /*-moz-box-flex: 1;*/
+    /*-ms-flex: 1;*/
+    /*flex: 1;*/
     overflow: hidden
 }
 
@@ -316,7 +316,7 @@
     color: #8a8a95;
     margin-right: 30px;
     padding: 4px 0;
-    width: 90px
+    width: 8%
 }
 
 #history .search-history .review:active {

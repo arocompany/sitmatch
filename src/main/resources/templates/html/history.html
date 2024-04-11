@@ -109,17 +109,7 @@
     .search-wrap > div:not(.tit) > div + div{
       margin-left: 20px;
     }
-  #history .list-tit .gubun {
-    width: 6.5%;
-  }
-  #history .list-tit .dist {
-    width: 12.72%;
-  }
-  #history .dist {
-    width: 11.52%;
-    margin-right: 7px
 
-  }
   #history .search-history .review {
     margin-right: 5px;
   }
@@ -174,7 +164,7 @@
   <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
   <h1 class="title bor10 btn-off"><span class="s-tit active">검색 이력</span><span class="t-tit">추적 이력</span> </h1>
   <!-- 검색 이력 -->
-  <section class="search-history layout history active" style="width: 1445px;">
+  <section class="search-history layout history active" style="width: 1600px;">
     <div class="searchbox">
       <form name="history-search" class="search-box" action="/history" id="searchForm">
         <div class="searchTypeWrap">
@@ -190,6 +180,8 @@
           </div>
         </div>
 
+        <select>123</select>
+
         <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${searchKeyword}" name="searchKeyword" id="searchKeyword">
         <input type="hidden" name="searchPage" id="searchPage">
       </form>
@@ -202,14 +194,15 @@
       </form>
       <p class="total-num">총 <span th:text="${searchInfoListCount}"></span>건</p>
     </div>
-    <h2 class="list-tit" style="padding: 10px 20px 20px; width: 1460px;">
+    <h2 class="list-tit" style="padding: 10px 20px 20px; width: 1600px; justify-content: start">
       <input type="checkbox" id="allCheckbox" onclick="allCheckboxBtn();">
       <span class="num" >순번</span>
+      <span class="num" style = "width:10%" >사례번호</span>
       <span class="counselor">상담사</span>
       <span class="type">검색 유형</span>
       <span style = "width:5%">검색 조건</span>
-      <span class="cont">내용</span>
-      <span class="social">SNS</span>
+      <span class="cont" style ="width:15%">내용</span>
+<!--      <span class="social">SNS</span>-->
       <span class="time">검색 일시</span>
       <span class="progress">검색 진행률</span>
       <span class="gubun">구분</span>
@@ -220,12 +213,13 @@
     </h2>
 
     <ul class="history-list history-search-list">
-      <li style="width: 1460px;" class="btn-off bor10" th:each="searchInfoList:${searchInfoList}">
+      <li style="width: 1600px; justify-content: start" class="btn-off bor10" th:each="searchInfoList:${searchInfoList}">
         <input type="checkbox" id="tsiUnos" name="tsiUnos" th:value="${searchInfoList.getTsiUno()}">
         <!--        <div class="tsiUnoclass">
                 <input type="hidden" id="tsiUno" name="tsiUno" th:value="${searchInfoList.getTsiUno()}">
                 </div>-->
         <p class="num" th:text="${searchInfoList.getTsiUno()}"></p> <!-- 순번 -->
+        <td><p class="num" style = "width:10%" th:text="${searchInfoList.getTsiUserFile()}"></p>   </td>
         <p class="counselor" th:text="${userIdMap.get(searchInfoList.getTsiUserUno())}">상담사 아이디</p>
         <p class="type" style="text-align: center">
           <th:block th:switch="${searchInfoList.getTsiType()}">
@@ -294,7 +288,7 @@
             <button type="button" class="esc-btn">닫기</button>
           </section>
         </div>
-        <div class="cont contImgBox">
+        <div class="cont contImgBox" style ="width:15% !important;">
           <!-- 0328 아청물작업 필요 부분 -->
           <div  class="img-box"> <!-- onclick="InfoList();" -->
             <div class="img" th:if="${searchInfoList.getTsiType() != '11'}">
@@ -312,12 +306,12 @@
             <span class="con1 text_escape" th:text="${searchInfoList.getTsiKeyword()}"></span>
           </p>
         </div>
-        <p class="social">
-          <img th:if="${searchInfoList.getTsiGoogle()}" src="/img/common/sns/google.png" alt="">
-          <img th:if="${searchInfoList.getTsiFacebook()}" src="/img/common/sns/face.png" alt="">
-          <img th:if="${searchInfoList.getTsiTwitter()}" src="/img/common/sns/twitter.png" alt="">
-          <img th:if="${searchInfoList.getTsiInstagram()}" src="/img/common/sns/insta.png" alt="">
-        </p>
+<!--        <p class="social">-->
+<!--          <img th:if="${searchInfoList.getTsiGoogle()}" src="/img/common/sns/google.png" alt="">-->
+<!--          <img th:if="${searchInfoList.getTsiFacebook()}" src="/img/common/sns/face.png" alt="">-->
+<!--          <img th:if="${searchInfoList.getTsiTwitter()}" src="/img/common/sns/twitter.png" alt="">-->
+<!--          <img th:if="${searchInfoList.getTsiInstagram()}" src="/img/common/sns/insta.png" alt="">-->
+<!--        </p>-->
         <p class="time" th:text="${#dates.format(searchInfoList.getTsiFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></p>
         <p class="dot-wrap progress">
           <input type="hidden" class="dot-tsi-uon" th:value="${searchInfoList.getTsiUno()}"></input>

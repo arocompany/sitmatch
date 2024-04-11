@@ -53,6 +53,7 @@ public interface ResultCntQueryDtoInterface {
     Integer getTsiIsEngineNaver();
 
     String getTsiSearchType();
+    String getTsiUserFile();
 
     List<VideoInfoEntity> getVideoList();
     void setVideoList(List<VideoInfoEntity> list);

@@ -218,7 +218,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             ", tsr.TSR_ENGINE as tsrEngine "+
             ",ROUND(tmr.TMR_AGE_SCORE, 2)* 100 AS tmrAgeScore" +
             ",ROUND(tmr.TMR_OBJECT_SCORE, 2)* 100 AS tmrObjectScore" +
-            ",ROUND(tmr.TMR_OCW_SCORE, 2)* 100 AS tmrOcwScore ";
+            ",ROUND(tmr.TMR_OCW_SCORE, 2)* 100 AS tmrOcwScore";
 
 
     // String defaultQeury_6 = "SELECT tsr.TSR_SITE_URL as tsrSiteUrl";
