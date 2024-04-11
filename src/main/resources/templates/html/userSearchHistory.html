@@ -85,19 +85,17 @@
 
     <ul class="history-list history-search-list">
       <li class="btn-off bor10" th:each="userSearchHistoryList:${userSearchHistoryList}" >
-        <!--<input type="checkbox" id="tsiUnos" name="tsiUnos" >-->
-        <div class="tsiUnoclass">
-          <input type="hidden" id="tsiUno2" name="tsiUno" >
-        </div> <!-- th:tsiUno="${userSearchHistoryList.getTsiuno()}" -->
-        <!-- <p class="num" th:text="${userSearchHistoryList.getTsiUno()}"> -->
+<!--        <div class="tsiUnoclass">-->
+<!--          <input type="hidden" id="tsiUno2" name="tsiUno" >-->
+<!--        </div>-->
         <p class="num" th:text="${userSearchHistoryList.getTsiUserFile()}"></p> <!-- 대상자 -->
-        <button class="counselor monitoring"  th:tsiUno="${userSearchHistoryList.getTsiUno()}" th:text="${userSearchHistoryList.getMonitoringCnt()}"></button> <!-- 모니터링 -->
-        <button class="deleteReq" th:tsiUno="${userSearchHistoryList.getTsiUno()}" th:text="${userSearchHistoryList.getDeleteReqCnt()}"></button> <!-- 삭제요청 -->
-        <button class="deleteCompt" th:tsiUno="${userSearchHistoryList.getTsiUno()}"  th:text="${userSearchHistoryList.getDeleteConfirmCnt()}"></button> <!-- 삭제완료 -->
+        <button class="counselor monitoring"  th:traceKeyword="${userSearchHistoryList.getTsiUserFile()}" th:text="${userSearchHistoryList.getMonitoringCnt()}"></button> <!-- 모니터링 -->
+        <button class="deleteReq" th:traceKeyword="${userSearchHistoryList.getTsiUserFile()}" th:text="${userSearchHistoryList.getDeleteReqCnt()}"></button> <!-- 삭제요청 -->
+        <button class="deleteCompt" th:traceKeyword="${userSearchHistoryList.getTsiUserFile()}"  th:text="${userSearchHistoryList.getDeleteConfirmCnt()}"></button> <!-- 삭제완료 -->
         <p class="con1" th:text="${userSearchHistoryList.getAllDayMonitoringYn()}"></p> <!-- 모니터링 유무 -->
         <p class="time" th:text="${userSearchHistoryList.getAllTimeCnt() != null ? userSearchHistoryList.getAllTimeCnt() : 0}"></p> <!-- 24시 모니터링 횟수 -->
         <textarea id="monitoringTime" class="dot-wrap progress" th:text="${userSearchHistoryList.getTsimhCreateDate()}"></textarea>
-        <button class="social allTimeResultCnt" th:tsiUno="${userSearchHistoryList.getTsiUno()}" th:text="${userSearchHistoryList.getReDsmnCnt()}"></button> <!-- 24시 모니터링 재유포 건수 -->
+        <button class="social allTimeResultCnt" th:traceKeyword="${userSearchHistoryList.getTsiUserFile()}" th:text="${userSearchHistoryList.getReDsmnCnt()}"></button> <!-- 24시 모니터링 재유포 건수 -->
         <p th:text="${userSearchHistoryList.getResultCnt()}"></p> <!-- 총 검색결과 수-->
       </li>
       <li th:if="${userSearchHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
@@ -124,10 +122,9 @@
   const monitoringBtn = document.querySelectorAll(".monitoring")
   monitoringBtn.forEach((btn) => {
     btn.addEventListener('click', (e) =>{
-      // alert("모니터링버튼 클릭" + btn.getAttribute("tsiUno"))
       let userFile = $(e.target).parent().find("p.num").text();
       userFile = "대상자";
-      window.location.href = '/trace/history?monitoringStatus=10&manageType='+userFile+'&tsiUno='+btn.getAttribute("tsiUno");
+      window.location.href = '/trace/history?monitoringStatus=10&manageType='+userFile+'&traceKeyword='+btn.getAttribute("traceKeyword");
     })
   })
 
@@ -136,7 +133,7 @@
     btn.addEventListener('click', (e) => {
       let userFile = $(e.target).parent().find("p.num").text();
       userFile = "대상자";
-      window.location.href = '/trace/history?monitoringStatus=20&manageType='+userFile+'&tsiUno='+btn.getAttribute("tsiUno");
+      window.location.href = '/trace/history?monitoringStatus=20&manageType='+userFile+'&traceKeyword='+btn.getAttribute("traceKeyword");
     })
   })
 
@@ -145,7 +142,7 @@
     btn.addEventListener('click', (e) => {
       let userFile = $(e.target).parent().find("p.num").text();
       userFile = "대상자";
-      window.location.href = '/trace/history?monitoringStatus=30&manageType='+userFile+'&tsiUno='+btn.getAttribute("tsiUno");
+      window.location.href = '/trace/history?monitoringStatus=30&manageType='+userFile+'&traceKeyword='+btn.getAttribute("traceKeyword");
     })
   })
 
@@ -154,7 +151,7 @@
     btn.addEventListener('click', (e) => {
       let userFile = $(e.target).parent().find("p.num").text();
       userFile = "대상자";
-      window.location.href='/trace/history?monitoringStatus=40&manageType='+userFile+'&tsiUno='+btn.getAttribute("tsiUno");
+      window.location.href='/trace/history?monitoringStatus=40&manageType='+userFile+'&traceKeyword='+btn.getAttribute("traceKeyword");
     })
   })
 
