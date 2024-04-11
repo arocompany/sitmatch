@@ -134,17 +134,13 @@ public class HistoryController {
                 }
             } else {
                 if(monitoringStatus.equals("10")){
-                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryMonitoringUserFileList(tracePage, traceKeyword, tsiSearchType);
-                    else traceHistoryMap = searchService.getTraceHistoryMonitoringTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
+                    traceHistoryMap = searchService.getTraceHistoryMonitoringUserFileList(tracePage, traceKeyword, tsiSearchType);
                 } else if(monitoringStatus.equals("20")){
-                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryDeleteReqUserFileList(tracePage, traceKeyword, tsiSearchType);
-                    else traceHistoryMap = searchService.getTraceHistoryDeleteReqTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
+                    traceHistoryMap = searchService.getTraceHistoryDeleteReqUserFileList(tracePage, traceKeyword, tsiSearchType);
                 } else if(monitoringStatus.equals("30")){
-                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.getTraceHistoryDeleteComptUserFileList(tracePage, traceKeyword, tsiSearchType);
-                    else traceHistoryMap = searchService.getTraceHistoryDeleteComptTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
+                    traceHistoryMap = searchService.getTraceHistoryDeleteComptUserFileList(tracePage, traceKeyword, tsiSearchType);
                 } else {
-                    if(tsiUno == null || tsiUno == 0) traceHistoryMap = searchService.allTimeMonitoringUserFileList(tracePage, traceKeyword, tsiSearchType);
-                    else traceHistoryMap = searchService.allTimeMonitoringTsiUnoUserFileList(tracePage, traceKeyword, tsiUno, tsiSearchType);
+                    traceHistoryMap = searchService.allTimeMonitoringUserFileList(tracePage, traceKeyword, tsiSearchType);
                 }
             }
         }
