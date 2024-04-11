@@ -44,10 +44,7 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -128,6 +125,9 @@ public class SearchService {
                 }
 
                 String origName = uploadFile.getOriginalFilename();
+                int idx = origName.lastIndexOf(".");
+                String userFile =origName.substring(0, idx);
+
                 String uuid = UUID.randomUUID().toString();
                 String extension = origName.substring(origName.lastIndexOf("."));
 
@@ -139,6 +139,7 @@ public class SearchService {
 
                 uploadFile.transferTo(new File(destDir+File.separator+uuid+extension));
 
+                param.setTsiUserFile(userFile);
                 param.setTsiImgName(uuid+extension);
                 param.setTsiImgPath((destDir+File.separator).replaceAll("\\\\", "/"));
                 param.setTsiImgExt(extension.substring(1));
