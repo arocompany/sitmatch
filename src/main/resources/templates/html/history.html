@@ -180,10 +180,21 @@
           </div>
         </div>
 
-        <select>123</select>
+        <div class = "search-box">
+          <div class="selection selectBox">
+            <button id="traceSelect" type="button" style="width: 110px;" th:text="${manageType}">검색어</button>
+            <input type="hidden" id="monitoringStatus" name="monitoringStatus" th:value="${monitoringStatus}">
+            <input type="hidden" class="bor10 M-box-in" name="manageType" th:value="${manageType}" >
+            <input type="hidden" name="page" >
+            <ul class="option select" id="option">
+              <li>검색어</li>
+              <li>대상자</li>
+            </ul>
+          </div>
 
-        <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${searchKeyword}" name="searchKeyword" id="searchKeyword">
-        <input type="hidden" name="searchPage" id="searchPage">
+          <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${searchKeyword}" name="searchKeyword" id="searchKeyword">
+          <input type="hidden" name="searchPage" id="searchPage">
+        </div>
       </form>
       <form action="/searchHistory" method="get"> <!-- style="margin-right: 865px; font-weight: bold;" -->
         <input type="hidden" th:value="${tsiSearchType}" name="tsiSearchType">
@@ -344,7 +355,6 @@
   </script>
 </article>
 <script th:inline="javascript">
-
   function InfoList(tsiUno){
     console.info(tsiUno);
     var xhr = new XMLHttpRequest();
@@ -510,20 +520,20 @@
   //   }
   // })
 
-  // const searchType = document.querySelector(".selection.selectBox");
+  const searchType = document.querySelector(".selection.selectBox");
   const option2 = document.querySelectorAll(".option.select li");
   const tType2 = document.querySelector('input[name=manageType]');
   const search = document.querySelector(".list-search");
 
-  // searchType.addEventListener("click", (e)=>{
-  //   searchType.classList.toggle('active');
-  //   option2.forEach(btn => {
-  //     btn.addEventListener('click', (e)=>{
-  //       searchType.children[0].innerHTML = e.target.innerText;
-  //       tType2.value = e.target.innerText;
-  //     })
-  //   })
-  // })
+  searchType.addEventListener("click", (e)=>{
+    searchType.classList.toggle('active');
+    option2.forEach(btn => {
+      btn.addEventListener('click', (e)=>{
+        searchType.children[0].innerHTML = e.target.innerText;
+        tType2.value = e.target.innerText;
+      })
+    })
+  })
 
   // 셀렉트 구현
   // const select = document.querySelectorAll(".selection.setTraceHistory");

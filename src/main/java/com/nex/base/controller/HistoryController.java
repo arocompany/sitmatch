@@ -39,8 +39,10 @@ public class HistoryController {
                                 @RequestParam(required = false, defaultValue = "1") Integer searchPage,
                                 @RequestParam(required = false, defaultValue = "") String searchKeyword,
                                 @RequestParam(required = false, defaultValue = "") String traceKeyword,
+                                @RequestParam(required = false, defaultValue = "검색어") String manageType,
                                 @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType) {
         ModelAndView modelAndView = new ModelAndView("html/history");
+        modelAndView.addObject("manageType", manageType);
         Map<String, Object> searchHistMap;
 
         int userUno = sessionInfoDto.getUserUno();
@@ -53,9 +55,9 @@ public class HistoryController {
         modelAndView.addObject("headerMenu", "history");
 
         if(sessionInfoDto.isAdmin()) {
-            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, tsiSearchType);
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, tsiSearchType, manageType);
         } else {
-            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, userUno, tsiSearchType);
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, userUno, tsiSearchType, manageType);
         }
 
         modelAndView.addObject("userCount", searchService.getUserIdMap());

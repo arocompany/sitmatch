@@ -137,7 +137,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " LEFT OUTER JOIN TB_SEARCH_INFO_PARAMS params ON tsi.TSI_UNO = params.TSI_UNO "+
                                     " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
                                     " and tsi.SEARCH_VALUE= :searchValue" +
-                                    " and (tsi.TSI_KEYWORD like '%' :keyword '%'  OR tsi.TSI_KEYWORD IS NULL )" +
+                                    " and ((:manageType = '대상자' and tsi.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND tsi.tsi_user_file IS NULL )) OR :manageType != '대상자' )  " +
+                                    " and ((:manageType = '검색어' and tsi.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
                                     " and tsi.TSR_UNO is null " +
                                     "  AND (tsi.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) "+
                                     " order by  tsi.tsi_uno desc ";
@@ -199,8 +200,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " from tb_search_info tsi " +
                                 " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
                                 " and tsi.SEARCH_VALUE= :searchValue" +
-                                //" and tsi.tsi_user_file LIKE CONCAT('%',:userKeyword,'%')  " +
-                                " and tsi.TSI_KEYWORD like '%' :keyword '%' " +
+                                " and ((:manageType = '대상자' and tsi.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND tsi.tsi_user_file IS NULL )) OR :manageType != '대상자' )  " +
+                                " and ((:manageType = '검색어' and tsi.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
                                 " and tsi.TSR_UNO is null " +
                                 " and tsi.user_uno = :userUno " +
                                 "  AND (tsi.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) "+
@@ -209,7 +210,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                             " from tb_search_info s1_0 " +
                             " where s1_0.DATA_STAT_CD= :dataStatCd " +
                             " and s1_0.SEARCH_VALUE=:searchValue " +
-                            " and s1_0.TSI_KEYWORD like CONCAT('%',:keyword,'%') " +
+                            " and ((:manageType = '대상자' and s1_0.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND s1_0.tsi_user_file IS NULL )) OR :manageType != '대상자'  )  " +
+                            " and ((:manageType = '검색어' and s1_0.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
                             " and s1_0.TSR_UNO is NULL"+
                             "  AND (s1_0.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
 
@@ -217,7 +219,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " from tb_search_info s1_0 " +
                                 " where s1_0.DATA_STAT_CD= :dataStatCd " +
                                 " and s1_0.SEARCH_VALUE=:searchValue " +
-                                " and s1_0.TSI_KEYWORD like CONCAT('%',:keyword,'%') " +
+                                " and ((:manageType = '대상자' and s1_0.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND s1_0.tsi_user_file IS NULL )) OR :manageType != '대상자'  )  " +
+                                " and ((:manageType = '검색어' and s1_0.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
                                 " AND s1_0.USER_UNO = :userUno " +
                                 " and s1_0.TSR_UNO is NULL";
 
@@ -309,10 +312,10 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
     Page<SearchInfoEntity> findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd, String searchValue, String keyword, Integer userUno, Pageable pageable);
 
     @Query(value = searchInfoResultCnt, nativeQuery = true, countQuery=searchInfoCount)
-    Page<ResultCntQueryDtoInterface> getSearchInfoResultCnt(String dataStatCd, String searchValue, String keyword, Integer tsiSearchType, Pageable pageable);
+    Page<ResultCntQueryDtoInterface> getSearchInfoResultCnt(String dataStatCd, String searchValue, String keyword, Integer tsiSearchType, String manageType, Pageable pageable);
 
-    @Query(value = userSearchInfoList, nativeQuery = true, countQuery=searchInfoCount)
-    Page<ResultCntQueryDtoInterface> getUserSearchInfoList(String dataStatCd, String searchValue, String keyword, Integer userUno, Integer tsiSearchType, Pageable pageable);
+    @Query(value = userSearchInfoList, nativeQuery = true, countQuery=userSearchInfoCount)
+    Page<ResultCntQueryDtoInterface> getUserSearchInfoList(String dataStatCd, String searchValue, String keyword, Integer userUno, Integer tsiSearchType, String manageType, Pageable pageable);
 
     @Query(value = allUserSearchHistoryList, nativeQuery = true, countQuery=userSearchHistoryCount)
     Page<UserSearchHistoryDtoInterface> getAllUserSearchHistoryList(Pageable pageable, String searchKeyword);
