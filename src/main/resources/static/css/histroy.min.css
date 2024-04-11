@@ -324,7 +324,7 @@
     font-weight: 500
 }
 
-#history .trace-history .search-box {
+#history .history div.search-box, #history .trace-history .search-box {
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
