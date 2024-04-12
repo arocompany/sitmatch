@@ -328,11 +328,11 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String whereTraceAllTimeMonitoringChkList = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD IS NOT NULL AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND TSR.MONITORING_CD = '20' AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
     
     // 대상자 검색
-    String whereTraceHistoryUserFileList = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TSI.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%')  AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 )" ;
-    String whereTraceMonitoringUserFileList = " WHERE TSR.TRK_STAT_CD = 10 AND TSI.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
-    String whereTraceMonitoringDeleteRequestUserFileList = " WHERE TSR.TRK_STAT_CD = 20 AND TSI.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
-    String whereTraceMonitoringDeleteComptUserFileList = " WHERE TSR.TRK_STAT_CD = 30 AND TSI.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
-    String whereTraceAllTimeMonitoringUserFileChkList = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND MONITORING_CD = 20 AND TSI.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
+    String whereTraceHistoryUserFileList = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND ( TSI.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%')  OR (:keyword = '' AND TSI.TSI_USER_FILE IS NULL))  AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 )" ;
+    String whereTraceMonitoringUserFileList = " WHERE TSR.TRK_STAT_CD = 10 AND (TSI.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND TSI.TSI_USER_FILE IS NULL) ) AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
+    String whereTraceMonitoringDeleteRequestUserFileList = " WHERE TSR.TRK_STAT_CD = 20 AND (TSI.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND TSI.TSI_USER_FILE IS NULL)) AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
+    String whereTraceMonitoringDeleteComptUserFileList = " WHERE TSR.TRK_STAT_CD = 30 AND (TSI.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND TSI.TSI_USER_FILE IS NULL)) AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
+    String whereTraceAllTimeMonitoringUserFileChkList = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND MONITORING_CD = 20 AND (TSI.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND TSI.TSI_USER_FILE IS NULL)) AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " ;
 
     String orderByTraceHistory = " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
 
@@ -753,7 +753,9 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
 
             "FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO  " +
-            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '30' AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno " +
+            " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TRK_STAT_CD = '30' " +
+            " AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') " +
+            " AND TSR.TSI_UNO = :tsiUno " +
             " AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) "+
             " ORDER BY tsr.MST_DML_DT desc, TSR.TSR_UNO desc";
 
@@ -1101,27 +1103,27 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 //    String setTmrStat11 = " AND TMR.TMR_STAT = '11' ";
 
     // 추적이력 (검색어(타이틀) 검색)
-    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceHistoryList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTrkStatCdNotNullAndTsrTitleContaining)
+    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceHistoryList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTraceHistoryList)
     Page<DefaultQueryDtoInterface> getTraceHistoryList(String keyword, Integer tsiSearchType, Pageable pageable);
-    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceMonitoringList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTrkStatCdNotNullAndTsrTitleContaining)
+    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceMonitoringList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTraceMonitoringList)
     Page<DefaultQueryDtoInterface> getTraceHistoryMonitoringList(String keyword, Integer tsiSearchType, Pageable pageable);
-    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceMonitoringDeleteRequestList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTrkStatCdNotNullAndTsrTitleContaining + setTrkStatCd20 )
+    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceMonitoringDeleteRequestList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTraceMonitoringDeleteRequestList + setTrkStatCd20 )
     Page<DefaultQueryDtoInterface> getTraceHistoryDeleteReqList(String keyword, Integer tsiSearchType, Pageable pageable);
-    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceMonitoringDeleteComptList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTrkStatCdNotNullAndTsrTitleContaining + setTrkStatCd30)
+    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceMonitoringDeleteComptList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTraceMonitoringDeleteComptList + setTrkStatCd30)
     Page<DefaultQueryDtoInterface> getTraceHistoryDeleteComptList(String keyword, Integer tsiSearchType, Pageable pageable);
-    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceAllTimeMonitoringChkList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTrkStatCdNotNullAndTsrTitleContaining + setMonitoringCd20)
+    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceAllTimeMonitoringChkList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTraceAllTimeMonitoringChkList + setMonitoringCd20)
     Page<DefaultQueryDtoInterface> allTimeMonitoringList(String keyword, Integer tsiSearchType, Pageable pageable);
 
     // 추적이력 (대상자 검색)
-    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceHistoryUserFileList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTrkStatCdNotNullAndTsrTitleContaining)
+    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceHistoryUserFileList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTraceHistoryUserFileList)
     Page<DefaultQueryDtoInterface> getTraceUserFileList(String keyword, Integer tsiSearchType, Pageable pageable);
-    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceAllTimeMonitoringUserFileChkList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTrkStatCdNotNullAndTsrTitleContaining + setMonitoringCd20)
+    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceAllTimeMonitoringUserFileChkList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTraceAllTimeMonitoringUserFileChkList + setMonitoringCd20)
     Page<DefaultQueryDtoInterface> allTimeMonitoringUserFileList(String keyword, Integer tsiSearchType, Pageable pageable);
-    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceMonitoringDeleteRequestUserFileList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTrkStatCdNotNullAndTsrTitleContaining + setTrkStatCd20 )
+    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceMonitoringDeleteRequestUserFileList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTraceMonitoringDeleteRequestUserFileList + setTrkStatCd20 )
     Page<DefaultQueryDtoInterface> getTraceHistoryDeleteReqUserFileList(String keyword, Integer tsiSearchType, Pageable pageable);
-    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceMonitoringDeleteComptUserFileList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTrkStatCdNotNullAndTsrTitleContaining + setTrkStatCd30)
+    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceMonitoringDeleteComptUserFileList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTraceMonitoringDeleteComptUserFileList + setTrkStatCd30)
     Page<DefaultQueryDtoInterface> getTraceHistoryDeleteComptUserFileList(String keyword, Integer tsiSearchType, Pageable pageable);
-    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceMonitoringUserFileList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno)
+    @Query(value = defaultTraceHistoryQuery+fromTraceHistoryQuery+whereTraceMonitoringUserFileList+orderByTraceHistory, nativeQuery = true, countQuery = countQuery2+fromTraceHistoryQuery+whereTraceMonitoringUserFileList)
     Page<DefaultQueryDtoInterface> getTraceHistoryMonitoringUserFileList(String keyword, Integer tsiSearchType, Pageable pageable);
 
 

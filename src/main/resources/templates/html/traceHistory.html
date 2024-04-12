@@ -253,11 +253,11 @@
             </div>
             <input id="traceHistoryValue" type="text" value="">
             <ul class="currently-state monitoring_sort_link">
-                <li onclick="traceList();"><span class="monitoring_sort_tit" >전체 :</span> <span th:text="${traceHistoryListCount}">32</span></li>
-                <li><span th:onclick="|location.href='@{/trace/history(monitoringStatus=10)}'|"  class="monitoring_sort_tit" id="monitoringList"> 모니터링 :</span> <span th:text="${countMonitoring}">8</span></li>
-                <li><span th:onclick="|location.href='@{/trace/history(monitoringStatus=20)}'|" class="monitoring_sort_tit" >삭제 요청 :</span> <span th:text="${countDelReq}">10</span></li>
-                <li><span th:onclick="|location.href='@{/trace/history(monitoringStatus=30)}'|" class="monitoring_sort_tit" >삭제 완료 :</span> <span th:text="${countDelCmpl}">14</span></li>
-                <li><span th:onclick="|location.href='@{/trace/history(monitoringStatus=40)}'|" class="monitoring_sort_tit" >24시간 모니터링 :</span> <span th:text="${allTimeMonitoringCnt}">14</span></li>
+                <li onclick="traceList(0);"><span class="monitoring_sort_tit" >전체 :</span> <span th:text="${traceHistoryListCount}">32</span></li>
+                <li><span onclick="traceList(10)"  class="monitoring_sort_tit" id="monitoringList"> 모니터링 :</span> <span th:text="${countMonitoring}">8</span></li>
+                <li><span onclick="traceList(20)" class="monitoring_sort_tit" >삭제 요청 :</span> <span th:text="${countDelReq}">10</span></li>
+                <li><span onclick="traceList(30)" class="monitoring_sort_tit" >삭제 완료 :</span> <span th:text="${countDelCmpl}">14</span></li>
+                <li><span onclick="traceList(40)" class="monitoring_sort_tit" >24시간 모니터링 :</span> <span th:text="${allTimeMonitoringCnt}">14</span></li>
             </ul>
 
         </div>
@@ -886,8 +886,14 @@
         }
     }
 
-    function traceList(){
-        window.location.href = "/trace/history";
+    function traceList(monitoringStatus){
+        // window.location.href = "/trace/history";
+        tracePage.value = 1;
+        if(monitoringStatus != undefined && monitoringStatus != null){
+            $("#monitoringStatus").val(monitoringStatus);
+        }
+        $("#traceKeyword").val("");
+        traceForm.submit();
     }
     function monitoringList(){
         document.getElementById('traceHistoryValue').value = '10';
