@@ -2,7 +2,7 @@ package com.nex.search.entity.dto;
 
 public interface UserSearchHistoryDtoInterface {
     Integer getTsiUno();
-    String getTsiUserFile();    // 대상자
+    String getTsiUserFile();    // 사례번호
     String getMonitoringCnt();  // 모니터링 개수
     String getDeleteReqCnt();   // 삭제요청 개수
     String getDeleteConfirmCnt();   // 삭제완료 개수

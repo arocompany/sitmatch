@@ -123,7 +123,7 @@ public class HistoryController {
             if(manageType.equals("1")){
                 traceHistoryMap = searchService.getTraceHistoryList(tracePage, traceKeyword, tsiSearchType);
             } else {
-                // 대상자 검색
+                // 사례번호 검색
                 traceHistoryMap = searchService.getTraceHistoryUserFileList(tracePage, traceKeyword, tsiSearchType);
             }
         }else {

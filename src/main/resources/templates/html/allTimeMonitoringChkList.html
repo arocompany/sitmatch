@@ -141,7 +141,7 @@
           <input type="hidden" name="page" > <!-- id="searchPage"  -->
           <ul class="option select" id="option">
             <li>검색어</li>
-            <li>대상자</li>
+            <li>사례번호</li>
           </ul>
         </div>
 
@@ -210,7 +210,7 @@
             </p>
             <p th:if="${traceHistoryList.getTsiUserFile() != null}" class="detail">
               <span class="detail-info">
-                대상자: <span th:text="${traceHistoryList.getTsiUserFile()}" ></span>
+                사례번호: <span th:text="${traceHistoryList.getTsiUserFile()}" ></span>
               </span>
             </p>
             <p  class="detail">
