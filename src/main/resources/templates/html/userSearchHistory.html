@@ -61,18 +61,18 @@
 <body>
 <article class="history-wrap wrapper" id="userSearchHistory">
   <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
-  <h1 class="title2">대상자 검색 이력</h1>
+  <h1 class="title2">사례번호 검색 이력</h1>
 
   <section class="search-history layout history active" >
     <div class="searchbox">
       <form method="get"  name="userSearchHistory" class="search-box" action="/userSearchHistory" id="searchForm">
-        <input type="text" class="list-search bor10 btn-off" placeholder="대상자를 입력해 주세요" th:value="${searchKeyword}" name="searchKeyword" id="searchKeyword">
+        <input type="text" class="list-search bor10 btn-off" placeholder="사례번호를 입력해 주세요" th:value="${searchKeyword}" name="searchKeyword" id="searchKeyword">
         <input type="hidden" name="searchPage" id="searchPage">
       </form>
       <p class="total-num">총 <span th:text="${userSearchHistoryListCount}"></span>건</p>
     </div>
     <h2 class="list-tit" >
-      <span class="num" >대상자</span>
+      <span class="num" >사례번호</span>
       <span class="counselor" >현재 모니터링 <br> 개수</span>
       <span class="type">현재 삭제 요청 <br> 개수</span>
       <span class="cont">현재 삭제 완료 <br> 개수</span>
@@ -88,7 +88,7 @@
 <!--        <div class="tsiUnoclass">-->
 <!--          <input type="hidden" id="tsiUno2" name="tsiUno" >-->
 <!--        </div>-->
-        <p class="num" th:text="${userSearchHistoryList.getTsiUserFile()}"></p> <!-- 대상자 -->
+        <p class="num" th:text="${userSearchHistoryList.getTsiUserFile()}"></p> <!-- 사례번호 -->
         <button class="counselor monitoring"  th:traceKeyword="${userSearchHistoryList.getTsiUserFile()}" th:text="${userSearchHistoryList.getMonitoringCnt()}"></button> <!-- 모니터링 -->
         <button class="deleteReq" th:traceKeyword="${userSearchHistoryList.getTsiUserFile()}" th:text="${userSearchHistoryList.getDeleteReqCnt()}"></button> <!-- 삭제요청 -->
         <button class="deleteCompt" th:traceKeyword="${userSearchHistoryList.getTsiUserFile()}"  th:text="${userSearchHistoryList.getDeleteConfirmCnt()}"></button> <!-- 삭제완료 -->
@@ -123,7 +123,7 @@
   monitoringBtn.forEach((btn) => {
     btn.addEventListener('click', (e) =>{
       let userFile = $(e.target).parent().find("p.num").text();
-      userFile = "대상자";
+      userFile = "사례번호";
       window.location.href = '/trace/history?monitoringStatus=10&manageType='+userFile+'&traceKeyword='+btn.getAttribute("traceKeyword");
     })
   })
@@ -132,7 +132,7 @@
   deleteReqBtn.forEach((btn) => {
     btn.addEventListener('click', (e) => {
       let userFile = $(e.target).parent().find("p.num").text();
-      userFile = "대상자";
+      userFile = "사례번호";
       window.location.href = '/trace/history?monitoringStatus=20&manageType='+userFile+'&traceKeyword='+btn.getAttribute("traceKeyword");
     })
   })
@@ -141,7 +141,7 @@
   deleteComptBtn.forEach((btn) => {
     btn.addEventListener('click', (e) => {
       let userFile = $(e.target).parent().find("p.num").text();
-      userFile = "대상자";
+      userFile = "사례번호";
       window.location.href = '/trace/history?monitoringStatus=30&manageType='+userFile+'&traceKeyword='+btn.getAttribute("traceKeyword");
     })
   })
@@ -150,7 +150,7 @@
   allTimeResultCntBtn.forEach((btn) => {
     btn.addEventListener('click', (e) => {
       let userFile = $(e.target).parent().find("p.num").text();
-      userFile = "대상자";
+      userFile = "사례번호";
       window.location.href='/trace/history?monitoringStatus=40&manageType='+userFile+'&traceKeyword='+btn.getAttribute("traceKeyword");
     })
   })
@@ -158,7 +158,7 @@
   const resultCntBtn = document.querySelectorAll(".resultCnt")
   resultCntBtn.forEach((btn) => {
       btn.addEventListener('click', (e) => {
-          let userFile = "대상자";
+          let userFile = "사례번호";
           window.location.href = '/history?manageType='+userFile+'&searchUserFile='+btn.getAttribute("searchUserFile");
       })
   })

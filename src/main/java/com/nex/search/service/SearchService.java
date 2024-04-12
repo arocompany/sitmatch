@@ -626,7 +626,7 @@ public class SearchService {
         return outMap;
     }
     
-    // 대상자는 없고 대상자키워드 있을때
+    // 사례번호 없고 사례번호키워드 있을때
     public Map<String, Object> getTraceHistoryMonitoringUserFileList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
@@ -1053,7 +1053,7 @@ public class SearchService {
     public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno, Integer tsiSearchType, String manageType, String searchUserFile) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getUserSearchInfoList("10","0", keyword, userUno, tsiSearchType, manageType, pageRequest);
+        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getUserSearchInfoList("10","0", keyword, userUno, tsiSearchType, manageType,searchUserFile, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());

@@ -241,7 +241,7 @@
                                 <input type="hidden" name="page" >
                                 <ul class="option select" id="option">
                                     <li>검색어</li>
-                                    <li>대상자</li>
+                                    <li>사례번호li>
                                 </ul>
                             </div>
                             <input type="text" class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${traceKeyword}" name="traceKeyword" id="traceKeyword" >
@@ -327,7 +327,7 @@
                         </p>
                         <p th:if="${traceHistoryList.getTsiUserFile() != null}" class="detail">
                             <span class="detail-info">
-                                대상자 파일명: <span th:text="${traceHistoryList.getTsiUserFile()}" ></span>
+                                사례번호 파일명: <span th:text="${traceHistoryList.getTsiUserFile()}" ></span>
                             </span>
                         </p>
                         <p class="detail">
