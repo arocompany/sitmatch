@@ -404,9 +404,10 @@ public class HistoryController {
 
     @GetMapping("/searchHistory")
     public void searchHistoryExcel(HttpServletResponse response,
-                                   @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType,
-                                   @RequestParam(required = false, defaultValue = "") String searchKeyword) throws IOException {
-        List<SearchHistoryExcelDto> searchHistoryExcelDtoList = searchInfoHistRepository.searchHistoryExcelList(tsiSearchType, searchKeyword);
+                                   @RequestParam(required = false, defaultValue = "0") String searchType,
+                                   @RequestParam(required = false, defaultValue = "검색어") String manageType,
+                                   @RequestParam(required = false, defaultValue = "") String keyword ) throws IOException {
+        List<SearchHistoryExcelDto> searchHistoryExcelDtoList = searchInfoHistRepository.searchHistoryExcelList(searchType, manageType, keyword);
         searchService.searchHistoryExcel(response, searchHistoryExcelDtoList);
     }
     

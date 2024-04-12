@@ -5,9 +5,6 @@ public interface SearchHistoryExcelDto {
     String getUserId();
     String getTsiType(); // 검색타입
     String getKeyword(); // 키워드
-    String getGoogle();
-    String getFacebook();
-    String getTwitter();
-    String getInstagram();
+    String getUserFile();
     String getFstDmlDt(); // 검색 날짜
 }
