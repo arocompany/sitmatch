@@ -195,7 +195,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " end + case " +
                                 " when isnull(tmr.TMR_T_SCORE) then 0 " +
                                 " else 1 " +
-                                " end)) * 100)) > 1) AS tmrSimilarityCnt " +
+                                " end)) * 100)) > 1) AS tmrSimilarityCnt, " +
+                                " tsi.tsi_user_file as tsiUserFile " +
                                 " from tb_search_info tsi " +
                                 " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
                                 " and tsi.SEARCH_VALUE= :searchValue" +
