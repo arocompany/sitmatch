@@ -543,5 +543,45 @@
     right: 10px;
     top: 10px
 }
+#history .search-history .column_01 {
+    width: calc(((100% - 22px) / 100)* 4);
+}
+#history .search-history .column_02 {
+    width: calc(((100% - 22px) / 100)* 11);
+}
+#history .search-history .column_03 {
+    width: calc(((100% - 22px) / 100)* 7);
+    padding: 0;
+}
+#history .search-history .column_04 {
+    width: calc(((100% - 22px) / 100)* 12);
+}
+#history .search-history .column_05 {
+    width: calc(((100% - 22px) / 100)* 4);
+}
+#history .search-history .column_06 {
+    width: calc(((100% - 22px) / 100)* 15);
+    padding-left: 5px;
+    margin-left:0;
+}
+#history .search-history .column_06 p {
+    width: 100%;
+    margin-left: 0;
+    padding-left: 5px;
+}
+#history .search-history .column_07 {
+    width: calc(((100% - 22px) / 100)* 16);
+}
+#history .search-history .column_08 {
+    width: calc(((100% - 22px) / 100)* 9);
+}
+#history .search-history .column_09 {
+    width: calc(((100% - 22px) / 100)* 9);
+    margin-right: 0 !important;
+}
+#history .search-history .column_10 {
+    width: calc(((100% - 22px) / 100)* 13);
+    margin-right: 0 !important;
+}
 
 /*# sourceMappingURL=histroy.min.css.map */

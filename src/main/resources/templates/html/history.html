@@ -207,17 +207,17 @@
     </div>
     <h2 class="list-tit" style="padding: 10px 20px 20px; width: 1600px; justify-content: start">
       <input type="checkbox" id="allCheckbox" onclick="allCheckboxBtn();">
-      <span class="num" >순번</span>
-      <span class="num" style = "width:10%" >사례번호</span>
-      <span class="counselor">상담사</span>
-      <span class="type">검색 유형</span>
-      <span style = "width:5%">검색 조건</span>
-      <span class="cont" style ="width:15%">내용</span>
+      <span class="num column_01" >순번</span>
+      <span class="num column_02" >사례번호</span>
+      <span class="counselor column_03">상담사</span>
+      <span class="type column_04">검색 유형</span>
+      <span class="column_05">검색 조건</span>
+      <span class="cont column_06" style ="width:15%">내용</span>
 <!--      <span class="social">SNS</span>-->
-      <span class="time">검색 일시</span>
-      <span class="progress">검색 진행률</span>
-      <span class="gubun">구분</span>
-      <span class="dist"> 검색 결과 / 유사도</span>
+      <span class="time column_07">검색 일시</span>
+      <span class="progress column_08">검색 진행률</span>
+      <span class="gubun column_09">구분</span>
+      <span class="dist column_10"> 검색 결과 / 유사도</span>
       <button class="del-btn btn-off dels" onclick="checkTsiunos();"></button>
       <input type="hidden" id="tsiUnosValue" name="tsiUnosValue" value="">
       <!--<input type="button" class="del-btn btn-off dels" onclick="checkTsiunos();"></input>-->
@@ -229,10 +229,10 @@
         <!--        <div class="tsiUnoclass">
                 <input type="hidden" id="tsiUno" name="tsiUno" th:value="${searchInfoList.getTsiUno()}">
                 </div>-->
-        <p class="num" th:text="${searchInfoList.getTsiUno()}"></p> <!-- 순번 -->
-        <td><p class="num" style = "width:10%" th:text="${searchInfoList.getTsiUserFile()}"></p>   </td>
-        <p class="counselor" th:text="${userIdMap.get(searchInfoList.getTsiUserUno())}">상담사 아이디</p>
-        <p class="type" style="text-align: center">
+        <p class="num column_01" th:text="${searchInfoList.getTsiUno()}"></p> <!-- 순번 -->
+        <td><p class="num column_02" th:text="${searchInfoList.getTsiUserFile()}"></p>   </td>
+        <p class="counselor column_03" th:text="${userIdMap.get(searchInfoList.getTsiUserUno())}">상담사 아이디</p>
+        <p class="type column_04" style="text-align: center">
           <th:block th:switch="${searchInfoList.getTsiType()}">
             <span th:case="${'11'}">키워드</span>
             <span th:case="${'13'}">키워드 + 사진</span>
@@ -241,7 +241,7 @@
             <span th:case="${'19'}">영상</span>
           </th:block>
         </p>
-        <div style = "width:5%"><button type = "button" name = "btnShow" class = "btn-off btn-look">보기</button></div>
+        <div class=" column_05"><button type = "button" name = "btnShow" class = "btn-off btn-look">보기</button></div>
         <div class = "area_search_condition">
           <section class="keyword section-keyword serpServices counselor-add bor10">
             <h3 class="title">검색 조건</h3>
@@ -299,7 +299,7 @@
             <button type="button" class="esc-btn">닫기</button>
           </section>
         </div>
-        <div class="cont contImgBox" style ="width:15% !important;">
+        <div class="cont contImgBox column_06">
           <!-- 0328 아청물작업 필요 부분 -->
           <div  class="img-box"> <!-- onclick="InfoList();" -->
             <div class="img" th:if="${searchInfoList.getTsiType() != '11'}">
@@ -323,15 +323,15 @@
 <!--          <img th:if="${searchInfoList.getTsiTwitter()}" src="/img/common/sns/twitter.png" alt="">-->
 <!--          <img th:if="${searchInfoList.getTsiInstagram()}" src="/img/common/sns/insta.png" alt="">-->
 <!--        </p>-->
-        <p class="time" th:text="${#dates.format(searchInfoList.getTsiFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></p>
-        <p class="dot-wrap progress">
+        <p class="time column_07" th:text="${#dates.format(searchInfoList.getTsiFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></p>
+        <p class="dot-wrap progress column_08">
           <input type="hidden" class="dot-tsi-uon" th:value="${searchInfoList.getTsiUno()}"></input>
           <input type="hidden" class="dot-tsi-date" th:value="${#dates.format(searchInfoList.getTsiFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></input>
           <span class="dot"></span>
           <span class="dot-per" th:text="${getProgressPercentMap.get(searchInfoList.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(searchInfoList.getTsiUno())}"></span>
         </p>
-        <button class="btn-off review gubun" th:onclick="|location.href='@{/result(tsiUno=${searchInfoList.getTsiUno()}, tsiKeyword=${searchInfoList.getTsiKeyword()}, keyword=)}'|">검색중</button>
-        <p style="margin-right: 17px;" class = "dist"> 총 <span th:text="${searchInfoList.getResultCnt()}" />건,
+        <button class="btn-off review gubun column_09" th:onclick="|location.href='@{/result(tsiUno=${searchInfoList.getTsiUno()}, tsiKeyword=${searchInfoList.getTsiKeyword()}, keyword=)}'|">검색중</button>
+        <p style="margin-right: 17px;" class = "dist column_10"> 총 <span th:text="${searchInfoList.getResultCnt()}" />건,
           &nbsp; 유사도: <span th:text="${searchInfoList.getTmrSimilarityCnt()}" />건
         </p>
         <button class="del-btn btn-off del" th:value="${searchInfoList.getTsiUno()}">삭제</button>
