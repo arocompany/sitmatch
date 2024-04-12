@@ -207,23 +207,25 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " and tsi.user_uno = :userUno " +
                                 "  AND (tsi.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) "+
                                 " order by  tsi.tsi_uno desc ";
-    String searchInfoCount= " select count(s1_0.TSI_UNO) " +
-                            " from tb_search_info s1_0 " +
-                            " where s1_0.DATA_STAT_CD= :dataStatCd " +
-                            " and s1_0.SEARCH_VALUE=:searchValue " +
-                            " and ((:manageType = '사례번호' and s1_0.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND s1_0.tsi_user_file IS NULL )) OR :manageType != '사례번호'  )  " +
-                            " and ((:manageType = '검색어' and s1_0.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
-                            " and s1_0.TSR_UNO is NULL"+
-                            "  AND (s1_0.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
+    String searchInfoCount= " select count(tsi.TSI_UNO) " +
+                            " from tb_search_info tsi " +
+                            " where tsi.DATA_STAT_CD= :dataStatCd " +
+                            " and tsi.SEARCH_VALUE=:searchValue " +
+                            " and ((:searchUserFile IS NOT NULL AND tsi.TSI_USER_FILE = :searchUserFile ) OR :searchUserFile = '' )" +
+                            " and ((:manageType = '사례번호' and tsi.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND tsi.tsi_user_file IS NULL )) OR :manageType != '사례번호' )  " +
+                            " and ((:manageType = '검색어' and tsi.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
+                            " and tsi.TSR_UNO is NULL"+
+                            "  AND (tsi.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
 
-    String userSearchInfoCount= " select count(s1_0.TSI_UNO) " +
-                                " from tb_search_info s1_0 " +
-                                " where s1_0.DATA_STAT_CD= :dataStatCd " +
-                                " and s1_0.SEARCH_VALUE=:searchValue " +
-                                " and ((:manageType = '사례번호' and s1_0.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND s1_0.tsi_user_file IS NULL )) OR :manageType != '사례번호'  )  " +
-                                " and ((:manageType = '검색어' and s1_0.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
-                                " AND s1_0.USER_UNO = :userUno " +
-                                " and s1_0.TSR_UNO is NULL";
+    String userSearchInfoCount= " select count(tsi.TSI_UNO) " +
+                                " from tb_search_info tsi " +
+                                " where tsi.DATA_STAT_CD= :dataStatCd " +
+                                " and tsi.SEARCH_VALUE=:searchValue " +
+                                " and ((:searchUserFile IS NOT NULL AND tsi.TSI_USER_FILE = :searchUserFile ) OR :searchUserFile = '' )" +
+                                " and ((:manageType = '사례번호' and tsi.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND tsi.tsi_user_file IS NULL )) OR :manageType != '사례번호' )  " +
+                                " and ((:manageType = '검색어' and tsi.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
+                                " AND tsi.USER_UNO = :userUno " +
+                                " and tsi.TSR_UNO is NULL";
 
     String searchKeywordDateCnt = "SELECT DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') AS searchDate " +
                                 " FROM tb_search_info tsi " +
