@@ -44,10 +44,7 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -128,6 +125,9 @@ public class SearchService {
                 }
 
                 String origName = uploadFile.getOriginalFilename();
+                int idx = origName.lastIndexOf(".");
+                String userFile =origName.substring(0, idx);
+
                 String uuid = UUID.randomUUID().toString();
                 String extension = origName.substring(origName.lastIndexOf("."));
 
@@ -139,6 +139,7 @@ public class SearchService {
 
                 uploadFile.transferTo(new File(destDir+File.separator+uuid+extension));
 
+                param.setTsiUserFile(userFile);
                 param.setTsiImgName(uuid+extension);
                 param.setTsiImgPath((destDir+File.separator).replaceAll("\\\\", "/"));
                 param.setTsiImgExt(extension.substring(1));
@@ -1033,11 +1034,11 @@ public class SearchService {
         return true;
     }
 
-    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer tsiSearchType) {
+    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer tsiSearchType, String manageType, String searchUserFile) {
         log.info("getSearchInfoList page: " + page);
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getSearchInfoResultCnt("10","0", keyword, tsiSearchType, pageRequest);
+        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getSearchInfoResultCnt("10","0", keyword, tsiSearchType, manageType, searchUserFile, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
@@ -1049,10 +1050,10 @@ public class SearchService {
     }
 
     // admin 아닐 때
-    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno, Integer tsiSearchType) {
+    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno, Integer tsiSearchType, String manageType, String searchUserFile) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getUserSearchInfoList("10","0", keyword, userUno, tsiSearchType, pageRequest);
+        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getUserSearchInfoList("10","0", keyword, userUno, tsiSearchType, manageType, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
