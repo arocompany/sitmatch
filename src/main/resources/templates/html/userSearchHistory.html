@@ -96,7 +96,7 @@
         <p class="time" th:text="${userSearchHistoryList.getAllTimeCnt() != null ? userSearchHistoryList.getAllTimeCnt() : 0}"></p> <!-- 24시 모니터링 횟수 -->
         <textarea id="monitoringTime" class="dot-wrap progress" th:text="${userSearchHistoryList.getTsimhCreateDate()}"></textarea>
         <button class="social allTimeResultCnt" th:traceKeyword="${userSearchHistoryList.getTsiUserFile()}" th:text="${userSearchHistoryList.getReDsmnCnt()}"></button> <!-- 24시 모니터링 재유포 건수 -->
-        <p th:text="${userSearchHistoryList.getResultCnt()}"></p> <!-- 총 검색결과 수-->
+        <button class="resultCnt" th:searchKeyword="${userSearchHistoryList.getTsiUserFile()}" th:text="${userSearchHistoryList.getResultCnt()}"></button> <!-- 총 검색결과 수-->
       </li>
       <li th:if="${userSearchHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
     </ul>
@@ -155,6 +155,14 @@
     })
   })
 
+  const resultCntBtn = document.querySelectorAll(".resultCnt")
+  resultCntBtn.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+          let userFile = "대상자";
+          window.location.href = '/history?manageType='+userFile+'&searchKeyword='+btn.getAttribute("searchKeyword");
+      })
+  })
+
   const searchForm = document.querySelector("#searchForm");
   const searchPage = document.querySelector("#searchPage");
   // Search 기능 추가
@@ -162,7 +170,7 @@
     searchPage.value = pageNum;
     searchForm.submit();
   }
-  // var monitoringTime = document.getElementById("monitoringTime").value.replace(/(\n)/g, '<br>');
+
 
 </script>
 
