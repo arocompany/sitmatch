@@ -306,8 +306,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " AND TSI.DATA_STAT_CD = '10' "+
                                     " AND TSI.USER_UNO = :userUno"+
                                     " ORDER BY tsi.tsi_uno DESC   ";
-
-    String userSearchHistoryCount2 = " SELECT COUNT(*) FROM tb_search_info tsi WHERE tsi.tsi_user_file LIKE CONCAT('%',:searchKeyword,'%') AND SEARCH_VALUE='0' AND DATA_STAT_CD= '10' AND USER_UNO = :userUno ";
+    String userSearchHistoryCount2 = " SELECT COUNT(*) FROM tb_search_info tsi WHERE tsi_user_file IS NOT NULL and tsi_user_file LIKE CONCAT('%',:searchKeyword,'%') AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10' GROUP BY tsi_user_file AND USER_UNO = :userUno ";
 
     List<SearchInfoEntity> findAllByOrderByTsiUnoDesc();
     Page<SearchInfoEntity> findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd, String keyword, Pageable pageable);
