@@ -41,6 +41,8 @@ public class HistoryController {
                                 @RequestParam(required = false, defaultValue = "") String traceKeyword,
                                 @RequestParam(required = false, defaultValue = "검색어") String manageType,
                                 @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType) {
+
+        log.info("manageType "+manageType);
         ModelAndView modelAndView = new ModelAndView("html/history");
         modelAndView.addObject("manageType", manageType);
         Map<String, Object> searchHistMap;
