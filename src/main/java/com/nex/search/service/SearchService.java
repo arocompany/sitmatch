@@ -626,7 +626,7 @@ public class SearchService {
         return outMap;
     }
     
-    // 대상자는 없고 대상자키워드 있을때
+    // 사례번호 없고 사례번호키워드 있을때
     public Map<String, Object> getTraceHistoryMonitoringUserFileList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
