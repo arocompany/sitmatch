@@ -119,11 +119,7 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                             "            ON TSI.USER_UNO = TU.USER_UNO " +
                             "    WHERE " +
                             "        TSI.TSI_UNO = :tsiUno " +
-                            "        AND ( " +
-                            "            TSR.TSR_TITLE LIKE CONCAT('%',:tsiKeyword,'%') " +
-                            "            or TSR.TSR_TITLE is null " +
-                            "            or 1=1 " +
-                            "        ) " +
+                            " AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') or (:keyword = '' and TSR.TSR_TITLE is null) OR TSR.TSR_SITE_URL LIKE CONCAT('%',:keyword, '%')) " +
                             "        AND ( " +
                             "            tsj.TSJ_STATUS = '00' " +
                             "            OR tsj.TSJ_STATUS = '01' " +
@@ -154,7 +150,7 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
     List<SearchHistoryExcelDto> searchHistoryExcelList(String searchType, String manageType, String keyword);
 
     @Query(value = resultExcelList, nativeQuery = true)
-    List<ResultListExcelDto> resultExcelList(String tsiUno, String tsiKeyword);
+    List<ResultListExcelDto> resultExcelList(String tsiUno, String keyword);
 
     @Query(value = userSearchInfoHistList, nativeQuery = true)
     List<SearchInfoHistDto> userSearchInfoHistList(String toDate);

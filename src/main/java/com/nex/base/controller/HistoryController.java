@@ -412,11 +412,8 @@ public class HistoryController {
     }
     
     @GetMapping("/resultExcelList")
-    public void resultExcelList(HttpServletResponse response, String tsiUno, String tsiKeyword) throws IOException {
-        log.info(tsiKeyword);
-        log.info(tsiUno);
-
-        List<ResultListExcelDto> resultListExcelDtoList = searchInfoHistRepository.resultExcelList(tsiUno, tsiKeyword);
+    public void resultExcelList(HttpServletResponse response, String tsiUno, String keyword) throws IOException {
+        List<ResultListExcelDto> resultListExcelDtoList = searchInfoHistRepository.resultExcelList(tsiUno, keyword);
         searchService.resultExcelList(response, resultListExcelDtoList);
     }
 
