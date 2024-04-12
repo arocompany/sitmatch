@@ -306,6 +306,14 @@
             alert("비밀번호 확인을 입력해주세요.");
             return false;
           } else {
+            console.info(phoneNum);
+            if(phoneNum.value !== '' && phoneNum.value.length > 0) {
+              const phoneNumArr = phoneNum.value.split("-");
+              phoneNum1.value = phoneNumArr[0];
+              phoneNum2.value = phoneNumArr[1];
+              phoneNum3.value = phoneNumArr[2];
+            }
+
             const formData = new FormData(counselorAddForm);
             const payload = new URLSearchParams(formData);
             fetch('/user/signup', {
@@ -498,6 +506,7 @@
              alert("비밀번호 확인을 입력해주세요.");
              return false;
            } else {
+              checkValidation()
              counselorForm.submit();
            }
 
