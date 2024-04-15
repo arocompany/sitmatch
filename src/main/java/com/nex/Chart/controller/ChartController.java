@@ -5,7 +5,6 @@ import com.nex.Chart.repo.*;
 import com.nex.common.Consts;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.service.SearchService;
-import com.nex.user.entity.ResultListExcelDto;
 import com.nex.user.entity.SessionInfoDto;
 import com.nex.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;

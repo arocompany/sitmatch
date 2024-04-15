@@ -44,7 +44,10 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -1097,8 +1100,8 @@ public class SearchService {
         return userIdMap;
     }
 
-    public Map<Integer, String> getProgressPercentMap() {
-        List<SearchJobRepository.ProgressPercentDtoInterface> progressPercentList = searchJobRepository.progressPercentByAll();
+    public Map<Integer, String> getProgressPercentMap(List<Integer> tsiUnos) {
+        List<SearchJobRepository.ProgressPercentDtoInterface> progressPercentList = searchJobRepository.progressPercentByAll(tsiUnos);
         Map<Integer, String> progressPercentMap = new HashMap<>();
 
         for (SearchJobRepository.ProgressPercentDtoInterface item : progressPercentList) {

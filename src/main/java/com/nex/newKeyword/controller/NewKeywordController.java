@@ -12,6 +12,7 @@ import com.nex.user.entity.SearchKeywordDto;
 import com.nex.user.entity.SessionInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -58,9 +59,12 @@ public class NewKeywordController {
             newKeywordInfoList = newKeywordService.getNewKeywordInfoList(searchPage, searchKeyword, sessionInfoDto.getUserUno());
         }
 
+        List<SearchInfoEntity> list = ((Page<SearchInfoEntity>)newKeywordInfoList.get("newKeywordInfoList")).getContent();
+        List<Integer> tsiUnoList = list.stream().map(SearchInfoEntity::getTsiUno).toList();
+
         modelAndView.addObject("userCount", searchService.getUserIdMap());
         modelAndView.addObject("userIdMap", searchService.getUserIdMap());
-        modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap());
+        modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap(tsiUnoList));
         modelAndView.addObject("newKeywordInfoList", newKeywordInfoList.get("newKeywordInfoList"));
         modelAndView.addObject("newKeywordInfoListCount", newKeywordInfoList.get("totalElements"));
         modelAndView.addObject("searchNumber", newKeywordInfoList.get("number"));

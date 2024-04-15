@@ -70,7 +70,7 @@ public class HistoryController {
 
         modelAndView.addObject("userCount", searchService.getUserIdMap());
         modelAndView.addObject("userIdMap", searchService.getUserIdMap());
-        modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap());
+
         modelAndView.addObject("searchInfoList",searchHistMap.get("searchInfoList"));
         modelAndView.addObject("searchInfoListCount", searchHistMap.get("totalElements"));
         modelAndView.addObject("searchNumber", searchHistMap.get("number"));
@@ -80,6 +80,8 @@ public class HistoryController {
 
         List<ResultCntQueryDtoInterface> list = ((Page<ResultCntQueryDtoInterface>)searchHistMap.get("searchInfoList")).getContent();
         List<Integer> tsiUnoList = list.stream().map(ResultCntQueryDtoInterface::getTsiUno).toList();
+
+        modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap(tsiUnoList));
         Map<Integer, List<VideoInfoEntity>> videoList = new HashMap<>();
         for(ResultCntQueryDtoInterface info : list){
             videoList.put(info.getTsiUno(), videoInfoRepository.findAllByTsiUno(info.getTsiUno()));

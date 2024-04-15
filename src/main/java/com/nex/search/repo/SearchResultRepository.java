@@ -51,15 +51,6 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " ON TSR.TSR_UNO = TMR.TSR_UNO " +
             " LEFT OUTER JOIN TB_SEARCH_INFO TSI " +
             " ON TSI.TSI_UNO = TSR.TSI_UNO " +
-            " LEFT OUTER JOIN " +
-            " (SELECT TSJ.TSI_UNO AS TSI_UNO, CEILING(SUM(CASE TSJ.TSJ_STATUS " +
-            " WHEN '11' THEN 1 " +
-            " WHEN '10' THEN 1 " +
-            " ELSE 0 " +
-            " END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT " +
-            " FROM TB_SEARCH_JOB TSJ " +
-            " GROUP BY TSJ.TSI_UNO) PP " +
-            " ON TSR.TSI_UNO = PP.TSI_UNO " +
             " LEFT OUTER JOIN TB_USER TU " +
             " ON TSI.USER_UNO = TU.USER_UNO " +
             " WHERE TSR.TRK_STAT_CD IS NOT NULL " +
@@ -979,7 +970,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String from3 = " FROM TB_SEARCH_RESULT TSR INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO";
 
     String fromForMonitoring = " FROM TB_SEARCH_RESULT TSR INNER JOIN (SELECT MIN(tsr_uno) tsr_uno from tb_search_result WHERE DATA_STAT_CD = '10' AND TRK_STAT_CD != '30' GROUP BY tsr_site_url) tsr2 ON tsr.tsr_uno = tsr2.tsr_uno INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO LEFT OUTER JOIN (SELECT TSJ.TSI_UNO AS TSI_UNO, CEILING(SUM(CASE TSJ.TSJ_STATUS WHEN '11' THEN 1 WHEN '10' THEN 1 ELSE 0 END) / COUNT(TSJ.TSJ_STATUS) * 100) AS PROGRESSPERCENT FROM TB_SEARCH_JOB TSJ GROUP BY TSJ.TSI_UNO) PP ON TSR.TSI_UNO = PP.TSI_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO";
-    String from2ForMonitoring = " FROM TB_SEARCH_RESULT TSR INNER JOIN (SELECT MIN(tsr_uno) tsr_uno from tb_Asearch_result WHERE DATA_STAT_CD = '10' AND TRK_STAT_CD != '30' GROUP BY tsr_site_url) tsr2 ON tsr.tsr_uno = tsr2.tsr_uno INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO";
+    String from2ForMonitoring = " FROM TB_SEARCH_RESULT TSR INNER JOIN (SELECT MIN(tsr_uno) tsr_uno from tb_search_result WHERE DATA_STAT_CD = '10' AND TRK_STAT_CD != '30' GROUP BY tsr_site_url) tsr2 ON tsr.tsr_uno = tsr2.tsr_uno INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO";
 
     // WHERE
     String whereTsiUnoTsrTitleLikeTsrStatusIn = " WHERE TSI.TSI_UNO = :tsiUno AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') or (:keyword = '' and TSR.TSR_TITLE is null) OR TSR.TSR_SITE_URL LIKE CONCAT('%',:keyword, '%')) " +
@@ -1185,7 +1176,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 */
 
     // 모니터링
-    @Query(value = defaultQeury+fromForMonitoring+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc2_trace, nativeQuery = true, countQuery = countQuery+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike)
+    @Query(value = defaultQeury_2+from2ForMonitoring+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc2_trace, nativeQuery = true, countQuery = countQuery+from2ForMonitoring+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike)
     Page<DefaultQueryDtoInterface> getTraceList(String tsrDataStatCd, String trkStatCd, String trkStatCd2, String keyword, Integer tsiSearchType, Pageable pageable);
 /*   @Query(value = defaultQeury+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike+orderByTsrUnoDesc_trace, nativeQuery = true, countQuery = countQuery+from+whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike)
     Page<DefaultQueryDtoInterface> getTraceList(String tsrDataStatCd, String trkStatCd, String trkStatCd2, String keyword, Pageable pageable); */
