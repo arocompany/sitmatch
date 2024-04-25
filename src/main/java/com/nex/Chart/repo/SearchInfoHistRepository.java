@@ -121,8 +121,8 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                             "        TSI.TSI_UNO = :tsiUno " +
                             " AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') or (:keyword = '' and TSR.TSR_TITLE is null) OR TSR.TSR_SITE_URL LIKE CONCAT('%',:keyword, '%')) " +
                             "        AND ( " +
-                            "            tsj.TSJ_STATUS = '00' " +
-                            "            OR tsj.TSJ_STATUS = '01' " +
+                            "            tsj.TSJ_STATUS = '0' " +
+                            "            OR tsj.TSJ_STATUS = '1' " +
                             "            OR tsj.TSJ_STATUS = '10' " +
                             "            OR tsj.TSJ_STATUS = '11' " +
                             "        ) " +
