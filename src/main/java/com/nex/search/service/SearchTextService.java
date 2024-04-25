@@ -23,6 +23,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -257,30 +258,29 @@ public class SearchTextService {
         List<SearchResultEntity> sreList = new ArrayList<>();
 
         for (RESULT result : results) {
-            try {
-                SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
-                if (!tsrSns.equals(sre.getTsrSns())) {
-                    continue;
-                }
+            String imageUrl = getOriginalFn.apply(result) != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
+            if(StringUtils.hasText(imageUrl)){
+                try {
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                    if (!tsrSns.equals(sre.getTsrSns())) {
+                        continue;
+                    }
 
-//                int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
-//                if(cnt > 0) {
-//                    log.info("file cnt === {}", cnt);
-//                }else {
-                //이미지 파일 저장
-                imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
-                CommonStaticSearchUtil.setSearchResultDefault(sre);
-                sre.setTsrNationCode(nationCode);
-                sre.setTsrEngine(engine);
-                searchResultRepository.save(sre);
-                sreList.add(sre);
-//                }
-            } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
-                log.error(e.getMessage());
-                throw new IOException(e);
-            } catch (Exception e) {
-                log.error(e.getMessage());
+                    //이미지 파일 저장
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
+                    CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    sre.setTsrNationCode(nationCode);
+                    sre.setTsrEngine(engine);
+                    searchResultRepository.save(sre);
+                    sreList.add(sre);
+                } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
+                    log.error(e.getMessage());
+                    throw new IOException(e);
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                }
             }
+
         }
 
         return sreList;
