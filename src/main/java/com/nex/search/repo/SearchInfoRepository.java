@@ -308,8 +308,16 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " ORDER BY tsi.tsi_uno DESC   ";
     String userSearchHistoryCount2 = " SELECT COUNT(*) FROM tb_search_info tsi WHERE tsi_user_file IS NOT NULL and tsi_user_file LIKE CONCAT('%',:searchKeyword,'%') AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10' GROUP BY tsi_user_file AND USER_UNO = :userUno ";
 
-
     String statisticsSearchInfoByTsiType = "SELECT tsi_type tsiType, COUNT(*) cnt " +
+            "FROM tb_search_info " +
+            "WHERE tsr_uno IS null " +
+            "AND data_stat_cd = 10 " +
+            "AND search_value = 0 " +
+            "AND FST_DML_DT >= :searchStartDate AND :searchEndDate >= FST_DML_DT " +
+            "AND TSI_SEARCH_TYPE = :tsiSearchType " +
+            "GROUP BY tsi_type ";
+
+    String statisticsSearchResultByTsiType = "SELECT tsi_type tsiType, COUNT(*) cnt " +
             "FROM tb_search_info tsi " +
             "LEFT OUTER JOIN tb_search_result tsr " +
             "ON tsi.tsi_uno = tsr.tsi_uno " +
@@ -322,14 +330,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             "AND tsi.FST_DML_DT >= :searchStartDate AND :searchEndDate >= tsi.FST_DML_DT " +
             "AND tsi.TSI_SEARCH_TYPE = :tsiSearchType " +
             "GROUP BY tsi_type ";
-    String statisticsSearchResultByTsiType = "SELECT tsi_type tsiType, COUNT(*) cnt " +
-            "FROM tb_search_info " +
-            "WHERE tsr_uno IS null " +
-            "AND data_stat_cd = 10 " +
-            "AND search_value = 0 " +
-            "AND FST_DML_DT >= :searchStartDate AND :searchEndDate >= FST_DML_DT " +
-            "AND TSI_SEARCH_TYPE = :tsiSearchType " +
-            "GROUP BY tsi_type ";
+
     String statisticsSearchInfoMonitoringByTsiType = "SELECT tsi_type tsiType, COUNT(*) cnt " +
             "FROM tb_search_info tsi " +
             "WHERE tsr_uno IS NOT NULL " +
