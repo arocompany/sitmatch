@@ -2,6 +2,7 @@ package com.nex.search.repo;
 
 import com.nex.Chart.dto.DateKeywordExcelDto;
 import com.nex.Chart.dto.KeywordCntDto;
+import com.nex.Chart.dto.StatisticsDto;
 import com.nex.Chart.dto.userKeywordCntDto;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.dto.ResultCntQueryDtoInterface;
@@ -207,23 +208,25 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " and tsi.user_uno = :userUno " +
                                 "  AND (tsi.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) "+
                                 " order by  tsi.tsi_uno desc ";
-    String searchInfoCount= " select count(s1_0.TSI_UNO) " +
-                            " from tb_search_info s1_0 " +
-                            " where s1_0.DATA_STAT_CD= :dataStatCd " +
-                            " and s1_0.SEARCH_VALUE=:searchValue " +
-                            " and ((:manageType = '사례번호' and s1_0.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND s1_0.tsi_user_file IS NULL )) OR :manageType != '사례번호'  )  " +
-                            " and ((:manageType = '검색어' and s1_0.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
-                            " and s1_0.TSR_UNO is NULL"+
-                            "  AND (s1_0.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
+    String searchInfoCount= " select count(tsi.TSI_UNO) " +
+                            " from tb_search_info tsi " +
+                            " where tsi.DATA_STAT_CD= :dataStatCd " +
+                            " and tsi.SEARCH_VALUE=:searchValue " +
+                            " and ((:searchUserFile IS NOT NULL AND tsi.TSI_USER_FILE = :searchUserFile ) OR :searchUserFile = '' )" +
+                            " and ((:manageType = '사례번호' and tsi.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND tsi.tsi_user_file IS NULL )) OR :manageType != '사례번호' )  " +
+                            " and ((:manageType = '검색어' and tsi.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
+                            " and tsi.TSR_UNO is NULL"+
+                            "  AND (tsi.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
 
-    String userSearchInfoCount= " select count(s1_0.TSI_UNO) " +
-                                " from tb_search_info s1_0 " +
-                                " where s1_0.DATA_STAT_CD= :dataStatCd " +
-                                " and s1_0.SEARCH_VALUE=:searchValue " +
-                                " and ((:manageType = '사례번호' and s1_0.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND s1_0.tsi_user_file IS NULL )) OR :manageType != '사례번호'  )  " +
-                                " and ((:manageType = '검색어' and s1_0.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
-                                " AND s1_0.USER_UNO = :userUno " +
-                                " and s1_0.TSR_UNO is NULL";
+    String userSearchInfoCount= " select count(tsi.TSI_UNO) " +
+                                " from tb_search_info tsi " +
+                                " where tsi.DATA_STAT_CD= :dataStatCd " +
+                                " and tsi.SEARCH_VALUE=:searchValue " +
+                                " and ((:searchUserFile IS NOT NULL AND tsi.TSI_USER_FILE = :searchUserFile ) OR :searchUserFile = '' )" +
+                                " and ((:manageType = '사례번호' and tsi.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND tsi.tsi_user_file IS NULL )) OR :manageType != '사례번호' )  " +
+                                " and ((:manageType = '검색어' and tsi.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
+                                " AND tsi.USER_UNO = :userUno " +
+                                " and tsi.TSR_UNO is NULL";
 
     String searchKeywordDateCnt = "SELECT DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') AS searchDate " +
                                 " FROM tb_search_info tsi " +
@@ -305,6 +308,70 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " ORDER BY tsi.tsi_uno DESC   ";
     String userSearchHistoryCount2 = " SELECT COUNT(*) FROM tb_search_info tsi WHERE tsi_user_file IS NOT NULL and tsi_user_file LIKE CONCAT('%',:searchKeyword,'%') AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10' GROUP BY tsi_user_file AND USER_UNO = :userUno ";
 
+
+    String statisticsSearchInfoByTsiType = "SELECT tsi_type tsiType, COUNT(*) cnt " +
+            "FROM tb_search_info tsi " +
+            "LEFT OUTER JOIN tb_search_result tsr " +
+            "ON tsi.tsi_uno = tsr.tsi_uno " +
+            "LEFT OUTER JOIN tb_match_result tmr ON tsr.TSR_UNO = tmr.tsr_uno " +
+            "where IF( tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', CEILING( ( ( CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE TMR_V_SCORE END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE TMR_A_SCORE END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE TMR_T_SCORE END ) / " +
+            "( CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE 1 END ) ) * 100 ) ) > 1 " +
+            "AND tsi.tsr_uno IS null " +
+            "AND tsi.data_stat_cd = 10 " +
+            "AND tsi.search_value = 0 " +
+            "AND tsi.FST_DML_DT >= :searchStartDate AND :searchEndDate >= tsi.FST_DML_DT " +
+            "AND tsi.TSI_SEARCH_TYPE = :tsiSearchType " +
+            "GROUP BY tsi_type ";
+    String statisticsSearchResultByTsiType = "SELECT tsi_type tsiType, COUNT(*) cnt " +
+            "FROM tb_search_info " +
+            "WHERE tsr_uno IS null " +
+            "AND data_stat_cd = 10 " +
+            "AND search_value = 0 " +
+            "AND FST_DML_DT >= :searchStartDate AND :searchEndDate >= FST_DML_DT " +
+            "AND TSI_SEARCH_TYPE = :tsiSearchType " +
+            "GROUP BY tsi_type ";
+    String statisticsSearchInfoMonitoringByTsiType = "SELECT tsi_type tsiType, COUNT(*) cnt " +
+            "FROM tb_search_info tsi " +
+            "WHERE tsr_uno IS NOT NULL " +
+            "AND data_stat_cd = 10 " +
+            "AND search_value = 0 " +
+            "AND FST_DML_DT >= :searchStartDate AND :searchEndDate >= FST_DML_DT " +
+            "AND TSI_SEARCH_TYPE = :tsiSearchType " +
+            "GROUP BY tsi_type";
+    String statisticsSearchResultMonitoringByTsiType = "SELECT tsi_type tsiType, COUNT(*) cnt " +
+            "FROM tb_search_info tsi " +
+            "LEFT OUTER JOIN tb_search_result tsr " +
+            "ON tsi.tsi_uno = tsr.tsi_uno " +
+            "LEFT OUTER JOIN tb_match_result tmr ON tsr.TSR_UNO = tmr.tsr_uno " +
+            "where IF(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0,'0',CEILING((( " +
+            "CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE TMR_V_SCORE END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE TMR_A_SCORE END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE TMR_T_SCORE END) " +
+            "/ (CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE 1 END)) * 100)) > 1 " +
+            "AND tsi.tsr_uno IS not null " +
+            "AND search_value = 0 " +
+            "AND tsi.FST_DML_DT >= :searchStartDate AND :searchEndDate >= tsi.FST_DML_DT " +
+            "AND TSI_SEARCH_TYPE = :tsiSearchType " +
+            "GROUP BY tsi_type " +
+            "order BY tsi_type";
+    String statisticsSearchInfoMonitoringByTsiTypeAndUser = "SELECT tsi.user_uno userUno, SUM(cnt) cnt, " +
+            "SUM(if(tsi.tsi_type = 11, cnt, 0)) cntKeyword, " +
+            "SUM(if(tsi.tsi_type = 13, cnt, 0)) cntKeywordImg, " +
+            "SUM(if(tsi.tsi_type = 15, cnt, 0)) cntKeywordMov, " +
+            "SUM(if(tsi.tsi_type = 17, cnt, 0)) cntImg, " +
+            "SUM(if(tsi.tsi_type = 19, cnt, 0)) cntMov, " +
+            " tu.USER_ID userId, tu.USER_NM userNm " +
+            "FROM ( SELECT  user_uno ,tsi_type ,COUNT(*) cnt " +
+            "FROM tb_search_info " +
+            "WHERE data_stat_cd = 10 " +
+            "AND search_value = 0 " +
+            "AND tsr_uno IS NULL " +
+            "AND FST_DML_DT >= :searchStartDate AND :searchEndDate >= FST_DML_DT " +
+            "AND TSI_SEARCH_TYPE = :tsiSearchType " +
+            "GROUP BY user_uno, tsi_type " +
+            ") tsi " +
+            "LEFT OUTER JOIN tb_user tu " +
+            "ON tsi.user_uno = tu.user_uno " +
+            "GROUP BY tsi.user_uno";
+
     List<SearchInfoEntity> findAllByOrderByTsiUnoDesc();
     Page<SearchInfoEntity> findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd, String keyword, Pageable pageable);
     Page<SearchInfoEntity> findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd,String searchValue, String keyword, Pageable pageable);
@@ -362,4 +429,19 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
 
     @Query(value = dateKeywordResultCntList, nativeQuery = true)
     List<KeywordCntDto> dateKeywordResultCntList(String fromDate, String toDate);
+
+    @Query(value = statisticsSearchInfoByTsiType, nativeQuery = true)
+    List<StatisticsDto> statisticsSearchInfoByTsiType(String searchStartDate, String searchEndDate, Integer tsiSearchType);
+
+    @Query(value = statisticsSearchResultByTsiType, nativeQuery = true)
+    List<StatisticsDto> statisticsSearchResultByTsiType(String searchStartDate, String searchEndDate, Integer tsiSearchType);
+
+    @Query(value = statisticsSearchInfoMonitoringByTsiType, nativeQuery = true)
+    List<StatisticsDto> statisticsSearchInfoMonitoringByTsiType(String searchStartDate, String searchEndDate, Integer tsiSearchType);
+
+    @Query(value = statisticsSearchResultMonitoringByTsiType, nativeQuery = true)
+    List<StatisticsDto> statisticsSearchResultMonitoringByTsiType(String searchStartDate, String searchEndDate, Integer tsiSearchType);
+
+    @Query(value = statisticsSearchInfoMonitoringByTsiTypeAndUser, nativeQuery = true)
+    List<StatisticsDto> statisticsSearchInfoMonitoringByTsiTypeAndUser(String searchStartDate, String searchEndDate, Integer tsiSearchType);
 }

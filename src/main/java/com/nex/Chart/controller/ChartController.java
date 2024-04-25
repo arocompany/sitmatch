@@ -5,7 +5,6 @@ import com.nex.Chart.repo.*;
 import com.nex.common.Consts;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.service.SearchService;
-import com.nex.user.entity.ResultListExcelDto;
 import com.nex.user.entity.SessionInfoDto;
 import com.nex.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -73,6 +72,18 @@ public class ChartController {
         modelAndView.addObject("deleteReqHistDtoList", deleteReqHistDtoList);
         modelAndView.addObject("deleteComptHistDtoList", deleteComptHistDtoList);
 
+        modelAndView.addObject("statisticsSearchInfoByTsiType1", searchInfoRepository.statisticsSearchInfoByTsiType(fromDate, toDate2, 1));
+        modelAndView.addObject("statisticsSearchResultByTsiType1", searchInfoRepository.statisticsSearchResultByTsiType(fromDate, toDate2, 1));
+        modelAndView.addObject("statisticsSearchInfoMonitoringByTsiType1", searchInfoRepository.statisticsSearchInfoMonitoringByTsiType(fromDate, toDate2, 1));
+        modelAndView.addObject("statisticsSearchResultMonitoringByTsiType1", searchInfoRepository.statisticsSearchResultMonitoringByTsiType(fromDate, toDate2, 1));
+        modelAndView.addObject("statisticsSearchInfoMonitoringByTsiTypeAndUser1", searchInfoRepository.statisticsSearchInfoMonitoringByTsiTypeAndUser(fromDate, toDate2, 1));
+
+        modelAndView.addObject("statisticsSearchInfoByTsiType2", searchInfoRepository.statisticsSearchInfoByTsiType(fromDate, toDate2, 2));
+        modelAndView.addObject("statisticsSearchResultByTsiType2", searchInfoRepository.statisticsSearchResultByTsiType(fromDate, toDate2, 2));
+        modelAndView.addObject("statisticsSearchInfoMonitoringByTsiType2", searchInfoRepository.statisticsSearchInfoMonitoringByTsiType(fromDate, toDate2, 2));
+        modelAndView.addObject("statisticsSearchResultMonitoringByTsiType2", searchInfoRepository.statisticsSearchResultMonitoringByTsiType(fromDate, toDate2, 2));
+        modelAndView.addObject("statisticsSearchInfoMonitoringByTsiTypeAndUser2", searchInfoRepository.statisticsSearchInfoMonitoringByTsiTypeAndUser(fromDate, toDate2, 2));
+
 
         modelAndView.addObject("fromDate", fromDate);
         modelAndView.addObject("toDate", toDate);
@@ -107,6 +118,18 @@ public class ChartController {
         modelAndView.addObject("monitoringHistDtoList",monitoringHistDtoList);
         modelAndView.addObject("deleteReqHistDtoList", deleteReqHistDtoList);
         modelAndView.addObject("deleteComptHistDtoList", deleteComptHistDtoList);
+
+        modelAndView.addObject("statisticsSearchInfoByTsiType1", searchInfoRepository.statisticsSearchInfoByTsiType(fromDate, toDate2, 1));
+        modelAndView.addObject("statisticsSearchResultByTsiType1", searchInfoRepository.statisticsSearchResultByTsiType(fromDate, toDate2, 1));
+        modelAndView.addObject("statisticsSearchInfoMonitoringByTsiType1", searchInfoRepository.statisticsSearchInfoMonitoringByTsiType(fromDate, toDate2, 1));
+        modelAndView.addObject("statisticsSearchResultMonitoringByTsiType1", searchInfoRepository.statisticsSearchResultMonitoringByTsiType(fromDate, toDate2, 1));
+        modelAndView.addObject("statisticsSearchInfoMonitoringByTsiTypeAndUser1", searchInfoRepository.statisticsSearchInfoMonitoringByTsiTypeAndUser(fromDate, toDate2, 1));
+
+        modelAndView.addObject("statisticsSearchInfoByTsiType2", searchInfoRepository.statisticsSearchInfoByTsiType(fromDate, toDate2, 2));
+        modelAndView.addObject("statisticsSearchResultByTsiType2", searchInfoRepository.statisticsSearchResultByTsiType(fromDate, toDate2, 2));
+        modelAndView.addObject("statisticsSearchInfoMonitoringByTsiType2", searchInfoRepository.statisticsSearchInfoMonitoringByTsiType(fromDate, toDate2, 2));
+        modelAndView.addObject("statisticsSearchResultMonitoringByTsiType2", searchInfoRepository.statisticsSearchResultMonitoringByTsiType(fromDate, toDate2, 2));
+        modelAndView.addObject("statisticsSearchInfoMonitoringByTsiTypeAndUser2", searchInfoRepository.statisticsSearchInfoMonitoringByTsiTypeAndUser(fromDate, toDate2, 2));
 
         modelAndView.addObject("fromDate", fromDate);
         modelAndView.addObject("toDate", toDate);
@@ -224,8 +247,30 @@ public class ChartController {
 
         List<AllTimeCntExcelDto> dateAlltimeMonitoringExcelList =alltimeMonitoringHistRepository.dateAllTimeCntExcelList(fromDate,toDate2);
 
+        List<StatisticsDto> statisticsSearchInfoByTsiType1 = searchInfoRepository.statisticsSearchInfoByTsiType(fromDate, toDate2, 1);
+        List<StatisticsDto> statisticsSearchResultByTsiType1 = searchInfoRepository.statisticsSearchResultByTsiType(fromDate, toDate2, 1);
+        List<StatisticsDto> statisticsSearchInfoMonitoringByTsiType1 = searchInfoRepository.statisticsSearchInfoMonitoringByTsiType(fromDate, toDate2, 1);
+        List<StatisticsDto> statisticsSearchResultMonitoringByTsiType1 = searchInfoRepository.statisticsSearchResultMonitoringByTsiType(fromDate, toDate2, 1);
+        List<StatisticsDto> statisticsSearchInfoMonitoringByTsiTypeAndUser1 = searchInfoRepository.statisticsSearchInfoMonitoringByTsiTypeAndUser(fromDate, toDate2, 1);
+        List<StatisticsDto> statisticsSearchInfoByTsiType2 = searchInfoRepository.statisticsSearchInfoByTsiType(fromDate, toDate2, 2);
+        List<StatisticsDto> statisticsSearchResultByTsiType2 = searchInfoRepository.statisticsSearchResultByTsiType(fromDate, toDate2, 2);
+        List<StatisticsDto> statisticsSearchInfoMonitoringByTsiType2 = searchInfoRepository.statisticsSearchInfoMonitoringByTsiType(fromDate, toDate2, 2);
+        List<StatisticsDto> statisticsSearchResultMonitoringByTsiType2 = searchInfoRepository.statisticsSearchResultMonitoringByTsiType(fromDate, toDate2, 2);
+        List<StatisticsDto> statisticsSearchInfoMonitoringByTsiTypeAndUser2 = searchInfoRepository.statisticsSearchInfoMonitoringByTsiTypeAndUser(fromDate, toDate2, 2);
+
         userService.prcuseExcel(response, searchInfoExcelDtoList, traceHistExcelDtoList, searchResultExcelDtoList, noticeListExcelDtoList
-                , loginExcelDtoList,dateSearchInfoResultExcelList,dateMonitoringExcelList,dateMonitoringReqExcelList,dateMonitoringComptExcelList, dateAlltimeMonitoringExcelList);
+                , loginExcelDtoList,dateSearchInfoResultExcelList,dateMonitoringExcelList,dateMonitoringReqExcelList,dateMonitoringComptExcelList, dateAlltimeMonitoringExcelList
+                , statisticsSearchInfoByTsiType1
+                , statisticsSearchResultByTsiType1
+                , statisticsSearchInfoMonitoringByTsiType1
+                , statisticsSearchResultMonitoringByTsiType1
+                , statisticsSearchInfoMonitoringByTsiTypeAndUser1
+                , statisticsSearchInfoByTsiType2
+                , statisticsSearchResultByTsiType2
+                , statisticsSearchInfoMonitoringByTsiType2
+                , statisticsSearchResultMonitoringByTsiType2
+                , statisticsSearchInfoMonitoringByTsiTypeAndUser2
+        );
 
         log.info("prcuseExcel");
     }

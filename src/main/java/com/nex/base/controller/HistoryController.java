@@ -70,7 +70,7 @@ public class HistoryController {
 
         modelAndView.addObject("userCount", searchService.getUserIdMap());
         modelAndView.addObject("userIdMap", searchService.getUserIdMap());
-        modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap());
+
         modelAndView.addObject("searchInfoList",searchHistMap.get("searchInfoList"));
         modelAndView.addObject("searchInfoListCount", searchHistMap.get("totalElements"));
         modelAndView.addObject("searchNumber", searchHistMap.get("number"));
@@ -80,6 +80,8 @@ public class HistoryController {
 
         List<ResultCntQueryDtoInterface> list = ((Page<ResultCntQueryDtoInterface>)searchHistMap.get("searchInfoList")).getContent();
         List<Integer> tsiUnoList = list.stream().map(ResultCntQueryDtoInterface::getTsiUno).toList();
+
+        modelAndView.addObject("getProgressPercentMap", searchService.getProgressPercentMap(tsiUnoList));
         Map<Integer, List<VideoInfoEntity>> videoList = new HashMap<>();
         for(ResultCntQueryDtoInterface info : list){
             videoList.put(info.getTsiUno(), videoInfoRepository.findAllByTsiUno(info.getTsiUno()));
@@ -404,18 +406,16 @@ public class HistoryController {
 
     @GetMapping("/searchHistory")
     public void searchHistoryExcel(HttpServletResponse response,
-                                   @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType,
-                                   @RequestParam(required = false, defaultValue = "") String searchKeyword) throws IOException {
-        List<SearchHistoryExcelDto> searchHistoryExcelDtoList = searchInfoHistRepository.searchHistoryExcelList(tsiSearchType, searchKeyword);
+                                   @RequestParam(required = false, defaultValue = "0") String searchType,
+                                   @RequestParam(required = false, defaultValue = "검색어") String manageType,
+                                   @RequestParam(required = false, defaultValue = "") String keyword ) throws IOException {
+        List<SearchHistoryExcelDto> searchHistoryExcelDtoList = searchInfoHistRepository.searchHistoryExcelList(searchType, manageType, keyword);
         searchService.searchHistoryExcel(response, searchHistoryExcelDtoList);
     }
     
     @GetMapping("/resultExcelList")
-    public void resultExcelList(HttpServletResponse response, String tsiUno, String tsiKeyword) throws IOException {
-        log.info(tsiKeyword);
-        log.info(tsiUno);
-
-        List<ResultListExcelDto> resultListExcelDtoList = searchInfoHistRepository.resultExcelList(tsiUno, tsiKeyword);
+    public void resultExcelList(HttpServletResponse response, String tsiUno, String keyword) throws IOException {
+        List<ResultListExcelDto> resultListExcelDtoList = searchInfoHistRepository.resultExcelList(tsiUno, keyword);
         searchService.resultExcelList(response, resultListExcelDtoList);
     }
 

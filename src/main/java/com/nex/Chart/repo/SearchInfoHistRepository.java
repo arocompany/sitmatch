@@ -56,26 +56,7 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                                     " ELSE '영상' " +
                                     " END AS tsiType, " +
                                     " TSI.tsi_keyword AS keyword, " +
-                                    " CASE " +
-                                    " WHEN TSI.tsi_google='1' " +
-                                    " THEN 'O' " +
-                                    " ELSE 'X' " +
-                                    " END AS 'google', " +
-                                    " CASE " +
-                                    " WHEN TSI.tsi_facebook = '1' " +
-                                    " THEN 'O' " +
-                                    " ELSE 'X' " +
-                                    " END AS 'faceBook', " +
-                                    " CASE " +
-                                    " WHEN TSI.tsi_twitter= '1' " +
-                                    " THEN 'O' " +
-                                    " ELSE 'X' " +
-                                    " END AS 'twitter', " +
-                                    " CASE " +
-                                    " WHEN TSI.tsi_instagram= '1' " +
-                                    " THEN 'O' " +
-                                    " ELSE 'X' " +
-                                    " END AS 'instagram', " +
+                                    " TSI.tsi_user_file AS userFile, " +
                                     " TSI.fst_dml_dt AS fstDmlDt " +
                                     " FROM " +
                                     " TB_SEARCH_INFO TSI " +
@@ -84,9 +65,10 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                                     " ON TSI.USER_UNO = USER.USER_UNO " +
                                     " WHERE tsi.DATA_STAT_CD = '10' " +
                                     " AND tsi.SEARCH_VALUE = '0' " +
-                                    " and (tsi.TSI_KEYWORD like '%' :keyword '%'  OR tsi.TSI_KEYWORD IS NULL )" +
                                     " AND tsi.TSR_UNO IS NULL " +
-                                    " AND (tsi.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0) "+
+                                    " and (:searchType = '0' AND tsi.tsi_search_type IN (1,2) OR (:searchType = '1' and tsi.tsi_search_type = 1) OR (:searchType ='2' and tsi.tsi_search_type=2)) " +
+                                    " and ((:manageType = '사례번호' and tsi.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND tsi.tsi_user_file IS NULL )) OR :manageType != '사례번호' )  " +
+                                    " and ((:manageType = '검색어' and tsi.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
                                     " ORDER BY TSI.tsi_uno DESC ";
     String resultExcelList =" SELECT TSI.TSI_UNO as tsiUno, " +
                             " TSR.TSR_UNO as tsrUno, " +
@@ -137,14 +119,10 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                             "            ON TSI.USER_UNO = TU.USER_UNO " +
                             "    WHERE " +
                             "        TSI.TSI_UNO = :tsiUno " +
+                            " AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') or (:keyword = '' and TSR.TSR_TITLE is null) OR TSR.TSR_SITE_URL LIKE CONCAT('%',:keyword, '%')) " +
                             "        AND ( " +
-                            "            TSR.TSR_TITLE LIKE CONCAT('%',:tsiKeyword,'%') " +
-                            "            or TSR.TSR_TITLE is null " +
-                            "            or 1=1 " +
-                            "        ) " +
-                            "        AND ( " +
-                            "            tsj.TSJ_STATUS = '00' " +
-                            "            OR tsj.TSJ_STATUS = '01' " +
+                            "            tsj.TSJ_STATUS = '0' " +
+                            "            OR tsj.TSJ_STATUS = '1' " +
                             "            OR tsj.TSJ_STATUS = '10' " +
                             "            OR tsj.TSJ_STATUS = '11' " +
                             "        ) " +
@@ -169,10 +147,10 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
     List<SearchInfoExcelDto> searchInfoExcelList (String fromDate, String toDate2);
 
     @Query(value = searchHistoryExcelList, nativeQuery = true)
-    List<SearchHistoryExcelDto> searchHistoryExcelList(Integer tsiSearchType, String keyword);
+    List<SearchHistoryExcelDto> searchHistoryExcelList(String searchType, String manageType, String keyword);
 
     @Query(value = resultExcelList, nativeQuery = true)
-    List<ResultListExcelDto> resultExcelList(String tsiUno, String tsiKeyword);
+    List<ResultListExcelDto> resultExcelList(String tsiUno, String keyword);
 
     @Query(value = userSearchInfoHistList, nativeQuery = true)
     List<SearchInfoHistDto> userSearchInfoHistList(String toDate);

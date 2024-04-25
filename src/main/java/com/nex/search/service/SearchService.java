@@ -44,7 +44,10 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -626,7 +629,7 @@ public class SearchService {
         return outMap;
     }
     
-    // 사례번호 없고 사례번호키워드 있을때
+    // 대상자는 없고 대상자키워드 있을때
     public Map<String, Object> getTraceHistoryMonitoringUserFileList(Integer page, String keyword, Integer tsiSearchType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
@@ -1097,8 +1100,8 @@ public class SearchService {
         return userIdMap;
     }
 
-    public Map<Integer, String> getProgressPercentMap() {
-        List<SearchJobRepository.ProgressPercentDtoInterface> progressPercentList = searchJobRepository.progressPercentByAll();
+    public Map<Integer, String> getProgressPercentMap(List<Integer> tsiUnos) {
+        List<SearchJobRepository.ProgressPercentDtoInterface> progressPercentList = searchJobRepository.progressPercentByAll(tsiUnos);
         Map<Integer, String> progressPercentMap = new HashMap<>();
 
         for (SearchJobRepository.ProgressPercentDtoInterface item : progressPercentList) {
@@ -1168,7 +1171,7 @@ public class SearchService {
 
         row=sheet.createRow(rowNum++);
 
-        String[] columnHeader = {"순번", "사용자 아이디", "검색타입", "키워드", "구글", "페이스북", "트위터", "인스타그램", "검색날짜"};
+        String[] columnHeader = {"순번", "사례번호", "상담사", "검색유형", "내용", "검색일시"};
         for(int i=0; i<columnHeader.length; i++){
             cell=row.createCell(i);
             cell.setCellValue(columnHeader[i]);
@@ -1180,27 +1183,18 @@ public class SearchService {
             cell.setCellValue(searchHistoryExcelDtoList.get(i).getTsiUno());
 
             cell = row.createCell(1);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getUserId());
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getUserFile());
 
             cell = row.createCell(2);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTsiType());
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getUserId());
 
             cell = row.createCell(3);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getKeyword());
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTsiType());
 
             cell = row.createCell(4);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getGoogle());
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getKeyword());
 
             cell = row.createCell(5);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getFacebook());
-
-            cell = row.createCell(6);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTwitter());
-
-            cell = row.createCell(7);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getInstagram());
-
-            cell = row.createCell(8);
             cell.setCellValue(searchHistoryExcelDtoList.get(i).getFstDmlDt());
 
         }

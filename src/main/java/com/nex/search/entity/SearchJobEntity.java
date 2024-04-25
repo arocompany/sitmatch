@@ -37,7 +37,7 @@ public class SearchJobEntity {
     private Timestamp lstDmlDt;
     @Basic
     @Column(name = "TSJ_STATUS", nullable = false, length = 10)
-    private String tsjStatus;
+    private int tsjStatus;
 
     @Override
     public boolean equals(Object o) {

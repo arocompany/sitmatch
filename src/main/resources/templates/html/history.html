@@ -184,7 +184,7 @@
           <div class="selection selectBox">
             <button id="traceSelect" type="button" style="width: 110px;" th:text="${manageType}">검색어</button>
             <input type="hidden" id="monitoringStatus" name="monitoringStatus" th:value="${monitoringStatus}">
-            <input type="hidden" class="bor10 M-box-in" name="manageType" th:value="${manageType}" >
+            <input type="hidden" class="bor10 M-box-in chkManageType" name="manageType" th:value="${manageType}" >
             <input type="hidden" name="page" >
             <ul class="option select" id="option">
               <li>검색어</li>
@@ -196,13 +196,13 @@
           <input type="hidden" name="searchPage" id="searchPage">
         </div>
       </form>
-      <form action="/searchHistory" method="get"> <!-- style="margin-right: 865px; font-weight: bold;" -->
+<!--      <form action="/searchHistory" method="get">-->
         <input type="hidden" th:value="${tsiSearchType}" name="tsiSearchType">
         <input type="hidden" th:value="${searchKeyword}" name="searchKeyword">
-        <button type="submit" style="margin-right: 1000px;" >
+        <button class="excelBtn" type="button" style="margin-right: 1000px;" >
           <img src="/img/common/excelLogo.png">
         </button>
-      </form>
+<!--      </form>-->
       <p class="total-num">총 <span th:text="${searchInfoListCount}"></span>건</p>
     </div>
     <h2 class="list-tit" style="padding: 10px 20px 20px; width: 1600px; justify-content: start">
@@ -355,6 +355,18 @@
   </script>
 </article>
 <script th:inline="javascript">
+
+  const excelBtn = document.querySelectorAll(".excelBtn")
+  excelBtn.forEach((btn) => {
+    btn.addEventListener('click', (e) =>{
+      const searchType = $('input[name="tsiSearchType"]:checked').val();
+      const manageType = $('.chkManageType').val();
+      const searchKeyword = $('#searchKeyword').val();
+      // console.log("searchType "+searchType + "셀렉박스 "+manageType);
+      window.location.href = '/searchHistory?searchType='+ searchType +'&manageType='+manageType+'&keyword='+searchKeyword;
+    })
+  })
+
   function InfoList(tsiUno){
     console.info(tsiUno);
     var xhr = new XMLHttpRequest();

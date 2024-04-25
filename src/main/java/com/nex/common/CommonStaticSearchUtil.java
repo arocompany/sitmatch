@@ -86,7 +86,7 @@ public class CommonStaticSearchUtil {
         }
         sje.setTsrImgName(sre.getTsrImgName());
         sje.setTsrImgExt(sre.getTsrImgExt());
-        sje.setTsjStatus("00");
+        sje.setTsjStatus(0);
         sje.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sje.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         return sje;
@@ -129,7 +129,7 @@ public class CommonStaticSearchUtil {
     public static void setSearchJobDefault(SearchJobEntity sje) {
         sje.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sje.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
-        sje.setTsjStatus("00");
+        sje.setTsjStatus(0);
     }
 
     public static String generateRandomFileName(int length) {
