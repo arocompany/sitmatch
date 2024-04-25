@@ -184,6 +184,91 @@
             </tbody>
         </table>
 
+        <table style="display: block" id='statisticsSearchInfoByTsiType1' >
+            <thead>
+            <tr>
+                <th>타입</th>
+                <th>카운트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="info : ${statisticsSearchInfoByTsiType1}">
+                <td th:text="${info.tsiType}"></td>
+                <td th:text="${info.cnt}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table style="display: block" id='statisticsSearchResultByTsiType1' >
+            <thead>
+            <tr>
+                <th>타입</th>
+                <th>카운트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="info : ${statisticsSearchResultByTsiType1}">
+                <td th:text="${info.tsiType}"></td>
+                <td th:text="${info.cnt}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table style="display: block" id='statisticsSearchInfoMonitoringByTsiType1' >
+            <thead>
+            <tr>
+                <th>타입</th>
+                <th>카운트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="info : ${statisticsSearchInfoMonitoringByTsiType1}">
+                <td th:text="${info.tsiType}"></td>
+                <td th:text="${info.cnt}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table style="display: block" id='statisticsSearchResultMonitoringByTsiType1' >
+            <thead>
+            <tr>
+                <th>타입</th>
+                <th>카운트</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="info : ${statisticsSearchResultMonitoringByTsiType1}">
+                <td th:text="${info.tsiType}"></td>
+                <td th:text="${info.cnt}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table style="display: block" id='statisticsSearchInfoMonitoringByTsiTypeAndUser1' >
+            <thead>
+            <tr>
+                <th>유저</th>
+                <th>유저명</th>
+                <th>keyword</th>
+                <th>keyword+img</th>
+                <th>keyword+mov</th>
+                <th>img</th>
+                <th>mov</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="info : ${statisticsSearchInfoMonitoringByTsiTypeAndUser1}">
+                <td th:text="${info.userUno}"></td>
+                <td th:text="${info.userNm}"></td>
+                <td th:text="${info.cntKeyword}"></td>
+                <td th:text="${info.cntKeywordImg}"></td>
+                <td th:text="${info.cntKeywordMov}"></td>
+                <td th:text="${info.cntImg}"></td>
+                <td th:text="${info.cntMov}"></td>
+            </tr>
+            </tbody>
+        </table>
+
         <form action="/prcuse" method="post">
             <div style="width: 500px; height: 53px; padding-left: 25px; padding-top: 10px; float: right; margin-bottom: 45px;" >
                 <input style="margin-right: 20px; font-weight: bold;" type="date" id="fromDate" name="fromDate" th:value="${fromDate}" /> ~
@@ -833,6 +918,7 @@
                                 data: keywordCntList,
                                 backgroundColor: 'rgba(255, 99, 132, 0.6)',
                                 borderColor: 'rgb(255, 99, 132)',
+                                yAxisID: 'y',
                             },
                             {
                                 label: '키워드 결과 갯수',
@@ -840,6 +926,7 @@
                                 backgroundColor: 'rgba(35, 192, 192, 0.6)',
                                 borderColor: 'rgb(35, 192, 192)',
                                 type: 'line',
+                                yAxisID: 'y1',
                             }
                         ]
                     }, options: {
@@ -852,6 +939,23 @@
                                 display: true,
                                 text: '기간별 검색 키워드 현황'
                             }
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+
+                                // grid line settings
+                                grid: {
+                                    drawOnChartArea: false, // only want the grid lines for one axis to show up
+                                },
+                            },
                         }
                     }
                 });
@@ -957,6 +1061,7 @@
                                 data: monitoringCntList,
                                 backgroundColor: 'rgba(255, 99, 132, 0.6)',
                                 borderColor: 'rgb(255, 99, 132)',
+                                yAxisID: 'y',
                             },
                             {
                                 label: '모니터링 결과 갯수',
@@ -964,6 +1069,7 @@
                                 backgroundColor: 'rgba(35, 192, 192, 0.6)',
                                 borderColor: 'rgb(35, 192, 192)',
                                 type: 'line',
+                                yAxisID: 'y1',
                             }
                         ]
                     }, options: {
@@ -976,6 +1082,23 @@
                                 display: true,
                                 text: '24시 모니터링 현황'
                             }
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+
+                                // grid line settings
+                                grid: {
+                                    drawOnChartArea: false, // only want the grid lines for one axis to show up
+                                },
+                            },
                         }
                     }
                 });
