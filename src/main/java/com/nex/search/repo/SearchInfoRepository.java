@@ -308,16 +308,18 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " ORDER BY tsi.tsi_uno DESC   ";
     String userSearchHistoryCount2 = " SELECT COUNT(*) FROM tb_search_info tsi WHERE tsi_user_file IS NOT NULL and tsi_user_file LIKE CONCAT('%',:searchKeyword,'%') AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10' GROUP BY tsi_user_file AND USER_UNO = :userUno ";
 
-    String statisticsSearchInfoByTsiType = "SELECT tsi_type tsiType, COUNT(*) cnt " +
+    String statisticsSearchInfoByTsiType = "SELECT NUMBER tsiType, coalesce(tsi.cnt, 0) cnt FROM (  SELECT 11 AS NUMBER UNION ALL SELECT 13 UNION ALL SELECT 15 UNION ALL SELECT 17 UNION ALL SELECT 19 ) base LEFT OUTER JOIN " +
+            " ( SELECT tsi_type, COUNT(*) cnt " +
             "FROM tb_search_info " +
             "WHERE tsr_uno IS null " +
             "AND data_stat_cd = 10 " +
             "AND search_value = 0 " +
             "AND FST_DML_DT >= :searchStartDate AND :searchEndDate >= FST_DML_DT " +
             "AND TSI_SEARCH_TYPE = :tsiSearchType " +
-            "GROUP BY tsi_type ";
+            "GROUP BY tsi_type ) tsi ON base.number = tsi.tsi_type";
 
-    String statisticsSearchResultByTsiType = "SELECT tsi_type tsiType, COUNT(*) cnt " +
+    String statisticsSearchResultByTsiType = "SELECT NUMBER tsiType, coalesce(tsi.cnt, 0) cnt FROM (  SELECT 11 AS NUMBER UNION ALL SELECT 13 UNION ALL SELECT 15 UNION ALL SELECT 17 UNION ALL SELECT 19 ) base LEFT OUTER JOIN " +
+            " ( SELECT tsi_type, COUNT(*) cnt " +
             "FROM tb_search_info tsi " +
             "LEFT OUTER JOIN tb_search_result tsr " +
             "ON tsi.tsi_uno = tsr.tsi_uno " +
@@ -329,17 +331,19 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             "AND tsi.search_value = 0 " +
             "AND tsi.FST_DML_DT >= :searchStartDate AND :searchEndDate >= tsi.FST_DML_DT " +
             "AND tsi.TSI_SEARCH_TYPE = :tsiSearchType " +
-            "GROUP BY tsi_type ";
+            "GROUP BY tsi_type ) tsi ON base.number = tsi.tsi_type";
 
-    String statisticsSearchInfoMonitoringByTsiType = "SELECT tsi_type tsiType, COUNT(*) cnt " +
+    String statisticsSearchInfoMonitoringByTsiType = "SELECT NUMBER tsiType, coalesce(tsi.cnt, 0) cnt FROM (  SELECT 11 AS NUMBER UNION ALL SELECT 13 UNION ALL SELECT 15 UNION ALL SELECT 17 UNION ALL SELECT 19 ) base LEFT OUTER JOIN " +
+            " ( SELECT tsi_type, COUNT(*) cnt " +
             "FROM tb_search_info tsi " +
             "WHERE tsr_uno IS NOT NULL " +
             "AND data_stat_cd = 10 " +
             "AND search_value = 0 " +
             "AND FST_DML_DT >= :searchStartDate AND :searchEndDate >= FST_DML_DT " +
             "AND TSI_SEARCH_TYPE = :tsiSearchType " +
-            "GROUP BY tsi_type";
-    String statisticsSearchResultMonitoringByTsiType = "SELECT tsi_type tsiType, COUNT(*) cnt " +
+            "GROUP BY tsi_type ) tsi ON base.number = tsi.tsi_type";
+    String statisticsSearchResultMonitoringByTsiType = "SELECT NUMBER tsiType, coalesce(tsi.cnt, 0) cnt FROM (  SELECT 11 AS NUMBER UNION ALL SELECT 13 UNION ALL SELECT 15 UNION ALL SELECT 17 UNION ALL SELECT 19 ) base LEFT OUTER JOIN " +
+            " ( SELECT tsi_type, COUNT(*) cnt " +
             "FROM tb_search_info tsi " +
             "LEFT OUTER JOIN tb_search_result tsr " +
             "ON tsi.tsi_uno = tsr.tsi_uno " +
@@ -352,7 +356,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             "AND tsi.FST_DML_DT >= :searchStartDate AND :searchEndDate >= tsi.FST_DML_DT " +
             "AND TSI_SEARCH_TYPE = :tsiSearchType " +
             "GROUP BY tsi_type " +
-            "order BY tsi_type";
+            "order BY tsi_type ) tsi ON base.number = tsi.tsi_type";
     String statisticsSearchInfoMonitoringByTsiTypeAndUser = "SELECT tsi.user_uno userUno, SUM(cnt) cnt, " +
             "SUM(if(tsi.tsi_type = 11, cnt, 0)) cntKeyword, " +
             "SUM(if(tsi.tsi_type = 13, cnt, 0)) cntKeywordImg, " +
