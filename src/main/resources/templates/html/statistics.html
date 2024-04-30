@@ -16,7 +16,7 @@
     <script src="/js/style.js"></script>
 <!--    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
-<!--    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
 
 <!--    <script src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.debug.js'></script>-->
@@ -34,8 +34,8 @@
     }
 
     .parent {
-        width: calc(50% - 2px);
-        margin: 15px auto;
+        width: calc(50% - 12px);
+        margin: 15px 5px;
         display: inline-block;
     }
 
@@ -202,7 +202,7 @@
     }
 
     div.areaChart .five {
-        width: 100%;
+        width: 95%;
     }
 
     div.areaChart h2 {
@@ -497,38 +497,48 @@
         <div class="areaChart">
             <div style="margin: 10px auto;" class="areaChart1"><!-- style="width: 600px; float: left;" -->
                 <h2>피해촬영물</h2>
-                <div class="first parent" id="div_myAreaChart1"><p>모니터링 대상(이력관리 촬영물 수)</p>
+                <div class="first parent" id="div_myAreaChart1">
+<!--                    <p>모니터링 대상(이력관리 촬영물 수)</p>-->
                     <canvas id="myChart1"></canvas>
                 </div>
-                <div class="second parent" id="div_myAreaChart2"><p>모니터링 결과(이력관리-검색결과)</p>
+                <div class="second parent" id="div_myAreaChart2">
+<!--                    <p>모니터링 결과(이력관리-검색결과)</p>-->
                     <canvas id="myChart2"></canvas>
                 </div>
-                <div class="three parent" id="div_myAreaChart3"><p>24시 모니터링 대상</p>
+                <div class="three parent" id="div_myAreaChart3">
+<!--                    <p>24시 모니터링 대상</p>-->
                     <canvas id="myChart3"></canvas>
                 </div>
-                <div class="four parent" id="div_myAreaChart4"><p>24시 모니터링 결과(재유포 수)</p>
+                <div class="four parent" id="div_myAreaChart4">
+<!--                    <p>24시 모니터링 결과(재유포 수)</p>-->
                     <canvas id="myChart4"></canvas>
                 </div>
-                <div class="five parent" id="div_myAreaChart5"><p>담당자별 모니터링 대상(이력관리 촬영물 수)</p>
+                <div class="five parent" id="div_myAreaChart5">
+<!--                    <p>담당자별 모니터링 대상(이력관리 촬영물 수)</p>-->
                     <canvas id="myChart5"></canvas>
                 </div>
             </div>
 
             <div style="margin: 10px auto;" class="areaChart2"><!-- style="width: 600px; float: left;" -->
                 <h2>아동촬영물</h2>
-                <div class="first parent" id="div_myAreaChart6"><p>모니터링 대상(이력관리 촬영물 수)</p>
+                <div class="first parent" id="div_myAreaChart6">
+<!--                    <p>모니터링 대상(이력관리 촬영물 수)</p>-->
                     <canvas id="myChart6"></canvas>
                 </div>
-                <div class="second parent" id="div_myAreaChart7"><p>모니터링 결과(이력관리-검색결과)</p>
+                <div class="second parent" id="div_myAreaChart7">
+<!--                    <p>모니터링 결과(이력관리-검색결과)</p>-->
                     <canvas id="myChart7"></canvas>
                 </div>
-                <div class="three parent" id="div_myAreaChart8"><p>24시 모니터링 대상</p>
+                <div class="three parent" id="div_myAreaChart8">
+<!--                    <p>24시 모니터링 대상</p>-->
                     <canvas id="myChart8"></canvas>
                 </div>
-                <div class="four parent" id="div_myAreaChart9"><p>24시 모니터링 결과(재유포 수)</p>
+                <div class="four parent" id="div_myAreaChart9">
+<!--                    <p>24시 모니터링 결과(재유포 수)</p>-->
                     <canvas id="myChart9"></canvas>
                 </div>
-                <div class="five parent" id="div_myAreaChart10"><p>담당자별 모니터링 대상(이력관리 촬영물 수)</p>
+                <div class="five parent" id="div_myAreaChart10">
+<!--                    <p>담당자별 모니터링 대상(이력관리 촬영물 수)</p>-->
                     <canvas id="myChart10"></canvas>
                 </div>
             </div>
@@ -557,6 +567,14 @@
 </article>
 
 <script th:inline="javascript">
+    const codeList = [
+        {key: 11, value: "키워드"},
+        {key: 13, value: "키워드+이미지"},
+        {key: 15, value: "키워드+영상"},
+        {key: 17, value: "이미지"},
+        {key: 19, value: "영상"}];
+    const bgList = ['#eb6424', '#fa9500', '#e0b35f', '#babd8e', '#8794cd', '#44426e'];
+
     $(document).ready(function () {
         let dataList1 = /*[[${statisticsSearchInfoByTsiType1}]]*/ [];
         let dataList2 = /*[[${statisticsSearchResultByTsiType1}]]*/ [];
@@ -595,103 +613,72 @@
         $('#' + el).remove(); //그래프 그리는 영역 지움
         parentEl.append('<canvas id="' + el + '" ></canvas>');
         const dataList = list;
-
-        const codeList = [{key: 11, value: "keyword"}, {key: 13, value: "keyword+img"}, {
-            key: 15,
-            value: "keyword+video"
-        }, {key: 17, value: "img"}, {key: 19, value: "video"}];
-        const bgList = ['#eb6424', '#fa9500', '#e0b35f', '#babd8e', '#8794cd', '#44426e'];
         let keyList = [];
         let labelList = [];
         let dataListForChart = [];
         let dataSetList = [];
-
-        let cnt = 0;
         for (var i = 0; i < codeList.length; i++) {
             keyList.push(codeList[i].key);
-            labelList.push(codeList[i].value + " (" + dataList[i].cnt + ")");
-            // console.info(dataList[i].cnt);
-
-            // if(dataList[i].cnt > 0) {
-                // let dataSet = {
-                //     label: codeList[i].value,
-                //     data: {count: dataList[i].cnt, min: 0},
-                //     backgroundColor: bgList[i]
-                // }
-                dataListForChart.push(dataList[i].cnt);
-                // cnt += dataList[i].cnt;
-            // }
+            labelList.push(codeList[i].value + " (" + dataList[i].cnt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ")");
+            dataListForChart.push(dataList[i].cnt);
         }
         dataSetList.push({labels: labelList, data: dataListForChart, backgroundColor: bgList});
-
-
-        var isAllZero = dataSetList[0].data.every(function (value) {
-            return value === 0;
-        });
-
         const ctx = document.querySelector('#' + el).getContext('2d');
-
-        if (isAllZero) {
-            ctx.font = '30px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('No data', ctx.canvas.width / 2, ctx.canvas.height / 2);
-            ctx.height = 300;
-        } else {
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labelList,
-                    datasets: dataSetList
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        emptyDoughnut: {
-                            color: 'rgba(255, 128, 0, 0.5)',
-                            width: 2,
-                            radiusDecrease: 20
+        ctx.canvas.parentNode.style.height = "300px";
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labelList,
+                datasets: dataSetList,
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio:false,
+                plugins: {
+                    emptyDoughnut: {
+                        color: 'rgba(255, 128, 0, 0.5)',
+                        width: 5,
+                        radiusDecrease: 20
+                    },
+                    datalabels: {
+                        color: 'black',
+                        anchor: 'center',
+                        clamp: true,
+                        clip: true,
+                        // align: '-135',
+                        offset: 1,
+                        formatter: function (value, context){
+                            let result = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                            return result
                         },
-                        // datalabels: {
-                        //     color: 'black',
-                        //     anchor: 'end',
-                        //     clamp: true,
-                        //     clip: true,
-                        //     align: '-135',
-                        //     offset: 1,
-                        //     formatter: function (value, context){
-                        //         let result = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                        //         return result + '원'
-                        //     },
-                        //     display: function(context) {
-                        //         if ( context.dataIndex === lastDataIndex ) { return 1 }
-                        //         else { return 0 }
-                        //     }
-                        // },
-                        legend: {
-                            position: 'right',
-                            display: true,
-                        },
-                        title: {
-                            display: false,
-                            text: title
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    var label = context.dataset.labels[context.dataIndex] || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    label += context.formattedValue;
-                                    return label;
+                        display: 'auto'
+                    },
+                    legend: {
+                        position: 'right',
+                        display: true,
+                    },
+                    title: {
+                        display: true,
+                        text: title,
+                        font: {size:"18px"},
+                        align: 'start'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                var label = context.dataset.labels[context.dataIndex] || '';
+                                if (label) {
+                                    label += ': ';
                                 }
+                                label += context.formattedValue;
+                                return label;
                             }
-                        },
+                        }
                     },
                 },
-                // plugins: [plugin]
-            });
-        }
+            },
+            plugins: [plugin, ChartDataLabels]
+        });
     }
 
     const drawChart2 = (el, list, title) => {
@@ -700,23 +687,14 @@
         $('#' + el).remove(); //그래프 그리는 영역 지움
         parentEl.append('<canvas id="' + el + '" ></canvas>');
         const dataList = list;
-
-        const codeList = [{key: 11, value: "keyword"}, {key: 13, value: "keyword+img"}, {
-            key: 15,
-            value: "keyword+video"
-        }, {key: 17, value: "img"}, {key: 19, value: "video"}];
-        const bgList = ['#eb6424', '#fa9500', '#e0b35f', '#babd8e', '#8794cd', '#44426e'];
         let labelList = [];
         let dataSetList = [];
 
+        for(var i=0;i<codeList.length;i++){
+            labelList.push(codeList[i].value);
+        }
+
         for (var i = 0; i < dataList.length; i++) {
-            // console.info(dataList[i])
-            labelList.push("keyword");
-            labelList.push("keyword+img");
-            labelList.push("keyword+video");
-            labelList.push("img");
-            labelList.push("video");
-            // console.info(dataList[i].cnt);
             let dataSet = [];
             dataSet.push(dataList[i].cntKeyword);
             dataSet.push(dataList[i].cntKeywordImg);
@@ -734,17 +712,33 @@
                 labels: labelList,
                 datasets: dataSetList
             }, options: {
+                datalabels: {
+                    color: 'black',
+                    anchor: 'center',
+                    clamp: true,
+                    clip: true,
+                    // align: '-135',
+                    offset: 1,
+                    formatter: function (value, context){
+                        let result = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                        return result
+                    },
+                    display: 'auto'
+                },
                 responsive: true,
                 plugins: {
                     legend: {
                         position: 'bottom',
                     },
                     title: {
-                        display: false,
-                        text: title
+                        display: true,
+                        text: title,
+                        font: {size:"20px"},
+                        align: 'center'
                     }
                 }
             },
+            plugins: [ChartDataLabels]
         });
     }
     const plugin = {
@@ -759,14 +753,15 @@
             for (let i = 0; i < datasets.length; i += 1) {
                 const dataset = datasets[i];
                 hasData |= dataset.data.length > 0;
-
-                sumData += dataset.data;
-                console.info(dataset.data);
+                // console.info(dataset);
+                for(let j = 0; j < dataset.data.length; j++){
+                    sumData += Number(dataset.data[j]);
+                }
             }
 
-            console.info(sumData);
+            // console.info(sumData);
 
-            if (!hasData) {
+            if (!hasData || sumData == 0) {
             // if(sumData > 0)
                 const {chartArea: {left, top, right, bottom}, ctx} = chart;
                 const centerX = (left + right) / 2;
@@ -777,6 +772,11 @@
                 ctx.lineWidth = width || 2;
                 ctx.strokeStyle = color || 'rgba(255, 128, 0, 0.5)';
                 ctx.arc(centerX, centerY, (r - radiusDecrease || 0), 0, 2 * Math.PI);
+
+                ctx.font = '25px Arial';
+                ctx.textAlign = 'left';
+
+                ctx.fillText('No data', centerX-42, centerY+8);
                 ctx.stroke();
             }
         }
