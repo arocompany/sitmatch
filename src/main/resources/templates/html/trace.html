@@ -17,6 +17,15 @@
   <script src="/js/function.js"></script>
 </head>
 
+<style>
+  .blur {
+    filter: blur(5px);
+  }
+  .blur10 {
+    filter: blur(10px);
+  }
+</style>
+
 <body>
 <article class="trace-wrap wrapper">
   <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
@@ -47,12 +56,12 @@
       </div>
     </div>
     <div class="trace-list list-content ">
-      <section class="list M-box-up bor10" th:each="list:${traceList}">
-        <div>
+      <section class="list M-box-up bor10" th:each="item, iterStat : ${traceList}">
+        <div th:classappend="${iterStat.index != 0} ? 'blur' : ''">
           <span class="CommonSearchDetail searchDetail">No.</span>
-          <span class="CommonSearchDetail" th:text="${list.getTsrUno()}"></span>
+          <span class="CommonSearchDetail" th:text="${item.getTsrUno()}"></span>
           <span class="CommonSearchDetail searchDetail searchNation">국가:</span>
-          <th:block th:switch="${list.getTsrNationCode()}">
+          <th:block th:switch="${item.getTsrNationCode()}">
             <span class="CommonSearchDetail" th:case="us" th:text="미국"></span>
             <span class="CommonSearchDetail" th:case="kr" th:text="한국"></span>
             <span class="CommonSearchDetail" th:case="cn" th:text="중국"></span>
@@ -62,15 +71,15 @@
             <span class="CommonSearchDetail" th:case="vn" th:text="베트남"></span>
           </th:block>
         </div>
-        <div class="img-box">
-          <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
+        <div th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="img-box">
+          <input type="hidden" th:value="${item.getTsrUno()}" id="tsrUno">
           <div class="img">
-            <span th:if="${list.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
-            <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="" loading="lazy" >
-            <img th:unless="${not #strings.isEmpty(list.getTsrImgPath())}" src="/img/common/noImage.jpg">
+            <span th:if="${item.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
+            <img th:if="${not #strings.isEmpty(item.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(item.getTsrImgPath(),7)+item.getTsrImgName()}" alt="" loading="lazy">
+            <img th:unless="${not #strings.isEmpty(item.getTsrImgPath())}" src="/img/common/noImage.jpg">
           </div>
 
-          <th:block th:switch="${list.getTsrSns()}">
+          <th:block th:switch="${item.getTsrSns()}">
             <img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">
             <img th:case="13" src="/img/common/sns/twitter-round.png" alt="" class="sns">
             <img th:case="15" src="/img/common/sns/insta-round.png" alt="" class="sns">
@@ -78,72 +87,77 @@
           </th:block>
         </div>
 
-        <div>
-        <th:block th:switch="${list.getTrkStatCd()}">
-          <h2 class="unity" style="font-size: 14px;" th:case="10"><strong class="state" style="color: #194894">관리 중</strong>
-            <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span>
-              <span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span>
+        <div th:classappend="${iterStat.index != 0} ? 'blur' : ''">
+          <th:block th:switch="${item.getTrkStatCd()}">
+            <h2 class="unity" style="font-size: 14px;" th:case="10">
+              <strong class="state" style="color: #194894">관리 중</strong>
+              <th:block th:switch="${item.getTsjStatus()}">
+                <span th:case="10">(대기중)</span>
+                <span th:case="01">(처리중)</span>
+                <span th:case="10">(SKIP)</span>
+                <span th:case="11" th:text="${#strings.concat('(',item.getTmrSimilarity(), '%',')')}">(99%)</span>
+                <span style="font-weight: bold; margin-left: 5px; color: #AE2523;"
+                      th:if="${item.getTsiSearchType() == '2' && (item.getTmrAgeScore() != null || item.getTmrObjectScore() != null || item.getTmrOcwScore() != null)}">
+                        아청물(
+                        <b th:if="${item.getTmrAgeScore() != null && item.getTmrAgeScore() >= '0.2'}">나이,&nbsp;</b>
+                        <b th:if="${item.getTmrObjectScore() != null && item.getTmrObjectScore() > '0'}">사물,&nbsp;</b>
+                        <b th:if="${item.getTmrOcwScore() != null && item.getTmrOcwScore() > '0'}">텍스트</b>
+                        )
+                    </span>
+              </th:block>
+            </h2>
+            <h2 class="unity" style="font-size: 14px;" th:case="20">
+              <strong class="state">삭제 요청 중</strong>
+              <th:block th:switch="${item.getTsjStatus()}">
+                <span th:case="10">(대기중)</span>
+                <span th:case="01">(처리중)</span>
+                <span th:case="10">(SKIP)</span>
+                <span th:case="11" th:text="${#strings.concat('(',item.getTmrSimilarity(), '%',')')}">(99%)</span>
+                <span style="font-weight: bold; margin-left: 5px; color: #AE2523;"
+                      th:if="${item.getTsiSearchType() == '2' && (item.getTmrAgeScore() != null || item.getTmrObjectScore() != null || item.getTmrOcwScore() != null)}">
+                        아청물(
+                        <b th:if="${item.getTmrAgeScore() != null && item.getTmrAgeScore() >= '0.2'}">나이,&nbsp;</b>
+                        <b th:if="${item.getTmrObjectScore() != null && item.getTmrObjectScore() > '0'}">사물,&nbsp;</b>
+                        <b th:if="${item.getTmrOcwScore() != null && item.getTmrOcwScore() > '0'}">텍스트</b>
+                        )
+                    </span>
+              </th:block>
+            </h2>
+            <h2 class="unity" style="font-size: 14px;" th:case="30">
+              <strong class="state">삭제 완료</strong>
+              <th:block th:switch="${item.getTsjStatus()}">
+                <span th:case="10">(대기중)</span>
+                <span th:case="01">(처리중)</span>
+                <span th:case="10">(SKIP)</span>
+                <span th:case="11" th:text="${#strings.concat('(',item.getTmrSimilarity(), '%',')')}">(99%)</span>
+              </th:block>
               <span style="font-weight: bold; margin-left: 5px; color: #AE2523;"
-                    th:if="${list.getTsiSearchType() == '2' &&
-                                        ( list.getTmrAgeScore() != null || list.getTmrObjectScore() != null || list.getTmrOcwScore() != null)}">
-                         아청물(
-                            <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() >= '0.2'}">
-                                 나이,&nbsp;</b>
-                            <b th:if="${ list.getTmrObjectScore() != null && list.getTmrObjectScore() > '0'}">
-                                사물,&nbsp;</b>
-                            <b th:if="${list.getTmrOcwScore() != null && list.getTmrOcwScore() > '0'}">
-                                텍스트</b>
-                            )
-              </span>
-            </th:block>
-          </h2>
-          <h2 class="unity" style="font-size: 14px;" th:case="20"><strong class="state">삭제 요청 중</strong>
-            <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span>
-              <span th:case="10">(SKIP)</span><span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span>
-              <span style="font-weight: bold; margin-left: 5px; color: #AE2523;"
-                    th:if="${list.getTsiSearchType() == '2' &&
-                                        ( list.getTmrAgeScore() != null || list.getTmrObjectScore() != null || list.getTmrOcwScore() != null)}">
-                         아청물(
-                            <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() >= '0.2'}">
-                                 나이,&nbsp;</b>
-                            <b th:if="${ list.getTmrObjectScore() != null && list.getTmrObjectScore() > '0'}">
-                                사물,&nbsp;</b>
-                            <b th:if="${list.getTmrOcwScore() != null && list.getTmrOcwScore() > '0'}">
-                                텍스트</b>
-                            )
-              </span>
-            </th:block>
-          </h2>
-          <h2 class="unity" style="font-size: 14px;" th:case="30"><strong class="state">삭제 완료</strong>
-            <th:block th:switch="${list.getTsjStatus()}">
-              <span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span>
-              <span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span>
-            </th:block>
-            <span style="font-weight: bold; margin-left: 5px; color: #AE2523;"
-                  th:if="${list.getTsiSearchType() == '2' &&
-                                        ( list.getTmrAgeScore() != null || list.getTmrObjectScore() != null || list.getTmrOcwScore() != null)}">
-                         아청물(
-                            <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() >= '0.2'}">
-                                 나이,&nbsp;</b>
-                            <b th:if="${ list.getTmrObjectScore() != null && list.getTmrObjectScore() > '0'}">
-                                사물,&nbsp;</b>
-                            <b th:if="${list.getTmrOcwScore() != null && list.getTmrOcwScore() > '0'}">
-                                텍스트</b>
-                            )
-            </span>
-          </h2>
-        </th:block>
+                    th:if="${item.getTsiSearchType() == '2' && (item.getTmrAgeScore() != null || item.getTmrObjectScore() != null || item.getTmrOcwScore() != null)}">
+                    아청물(
+                    <b th:if="${item.getTmrAgeScore() != null && item.getTmrAgeScore() >= '0.2'}">나이,&nbsp;</b>
+                    <b th:if="${item.getTmrObjectScore() != null && item.getTmrObjectScore() > '0'}">사물,&nbsp;</b>
+                    <b th:if="${item.getTmrOcwScore() != null && item.getTmrOcwScore() > '0'}">텍스트</b>
+                    )
+                </span>
+            </h2>
+          </th:block>
         </div>
-        <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url"><p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p></a>
-        <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
-        <p class="detail" >
-          <span style="margin-right: -450px;" class="detail-info" th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgExt()} != ''" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),',')}" ></span>
-          <span class="detail-info" th:if="${list.getTsrImgName()} != null and ${list.getTsrImgName()} != ''" th:text="${#strings.concat('파일명 : ',list.getTsrImgName())}" ></span>
-          <span class="detail-info" th:unless="${list.getTsrImgName()} != null and ${list.getTsrImgName()} != ''"  >파일 정보가 없습니다.</span>
-          <span class="detail-time" ><span th:text="'상담사 : '+${list.getTuUserId()}+' | '">상담사 : tester001</span><span th:text="${#dates.format(list.getTsrFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}">추가일이 들어갑니다</span></span>
+        <a th:classappend="${iterStat.index != 0} ? 'blur' : ''" th:href="${item.getTsrSiteUrl()}" target="_blank" class="url">
+          <p class="url" th:text="${item.getTsrSiteUrl()}">url이 들어갑니다</p>
+        </a>
+        <p th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="content" th:text="${item.getTsrTitle()}">글의 내용이 들어갑니다</p>
+        <p th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="detail">
+          <span style="margin-right: -450px;" class="detail-info" th:if="${item.getTsrImgExt() != null and item.getTsrImgExt() != ''}" th:text="${#strings.concat('파일유형 : ', item.getTsrImgExt(), ',')}"></span>
+          <span class="detail-info" th:if="${item.getTsrImgName() != null and item.getTsrImgName() != ''}" th:text="${#strings.concat('파일명 : ', item.getTsrImgName())}"></span>
+          <span class="detail-info" th:unless="${item.getTsrImgName() != null and item.getTsrImgName() != ''}">파일 정보가 없습니다.</span>
+          <span class="detail-time">
+            <span th:text="'상담사 : ' + ${item.getTuUserId()} + ' | '">상담사 : tester001</span>
+            <span th:text="${#dates.format(item.getTsrFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}">추가일이 들어갑니다</span>
+        </span>
         </p>
-        <button class="del del-btn btn-off" th:value="${list.getTsrUno()}">삭제</button>
+        <button class="del del-btn btn-off" th:value="${item.getTsrUno()}">삭제</button>
       </section>
+
       <section style="text-align: center;" class="" th:if="${traceListCount == 0}">조회 결과가 없습니다.</section>
     </div>
   </seciton>
