@@ -60,55 +60,55 @@
     color: inherit;
   }
   /* 240202 */
-    .section-keyword {
-      width: 800px;
-    }
-    .keyword .keyword-wrap {
-      padding: 15px 20px 25px;
-      }
-    .btn-look {
-      padding: 2px 9px;
-    }
-    .condition-wrap {
-      flex-direction: column;
-      flex-wrap: nowrap !important;
-    }
-    .condition-wrap > div {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-    }
-    .tit:not(.nations_span) {
-      font-weight: bold;
-      margin-right: 5px;
-      margin-bottom: 15px;
-      font-size: 18px;
-    }
-    .country-wrap div{
-      display: flex;
-      font-size: 18px;
-    }
-    .country-wrap div p+p{
-      margin-left: 15px;
-    }
-    .country-wrap p+p {
-      margin-left: 15px;
-    }
-    .condition-wrap .search-wrap {
-      justify-content: space-between;
-      margin-top: 30px;
-      align-items: normal !important;
-    }
-    .search-wrap > div:not(.tit) {
-      display: flex;
-    }
+  .section-keyword {
+    width: 800px;
+  }
+  .keyword .keyword-wrap {
+    padding: 15px 20px 25px;
+  }
+  .btn-look {
+    padding: 2px 9px;
+  }
+  .condition-wrap {
+    flex-direction: column;
+    flex-wrap: nowrap !important;
+  }
+  .condition-wrap > div {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .tit:not(.nations_span) {
+    font-weight: bold;
+    margin-right: 5px;
+    margin-bottom: 15px;
+    font-size: 18px;
+  }
+  .country-wrap div{
+    display: flex;
+    font-size: 18px;
+  }
+  .country-wrap div p+p{
+    margin-left: 15px;
+  }
+  .country-wrap p+p {
+    margin-left: 15px;
+  }
+  .condition-wrap .search-wrap {
+    justify-content: space-between;
+    margin-top: 30px;
+    align-items: normal !important;
+  }
+  .search-wrap > div:not(.tit) {
+    display: flex;
+  }
 
   .search-wrap > div:not(.tit) > div{
     text-align: center;
   }
-    .search-wrap > div:not(.tit) > div + div{
-      margin-left: 20px;
-    }
+  .search-wrap > div:not(.tit) > div + div{
+    margin-left: 20px;
+  }
 
   #history .search-history .review {
     margin-right: 5px;
@@ -157,6 +157,10 @@
   .image-wrap img{
     width:100px; height:auto;
   }
+
+  .blur {
+    filter: blur(5px);
+  }
 </style>
 
 <body>
@@ -196,13 +200,13 @@
           <input type="hidden" name="searchPage" id="searchPage">
         </div>
       </form>
-<!--      <form action="/searchHistory" method="get">-->
-        <input type="hidden" th:value="${tsiSearchType}" name="tsiSearchType">
-        <input type="hidden" th:value="${searchKeyword}" name="searchKeyword">
-        <button class="excelBtn" type="button" style="margin-right: 1000px;" >
-          <img src="/img/common/excelLogo.png">
-        </button>
-<!--      </form>-->
+      <!--      <form action="/searchHistory" method="get">-->
+      <input type="hidden" th:value="${tsiSearchType}" name="tsiSearchType">
+      <input type="hidden" th:value="${searchKeyword}" name="searchKeyword">
+      <button class="excelBtn" type="button" style="margin-right: 1000px;" >
+        <img src="/img/common/excelLogo.png">
+      </button>
+      <!--      </form>-->
       <p class="total-num">총 <span th:text="${searchInfoListCount}"></span>건</p>
     </div>
     <h2 class="list-tit" style="padding: 10px 20px 20px; width: 1600px; justify-content: start">
@@ -213,7 +217,7 @@
       <span class="type column_04">검색 유형</span>
       <span class="column_05">검색 조건</span>
       <span class="cont column_06" style ="width:15%">내용</span>
-<!--      <span class="social">SNS</span>-->
+      <!--      <span class="social">SNS</span>-->
       <span class="time column_07">검색 일시</span>
       <span class="progress column_08">검색 진행률</span>
       <span class="gubun column_09">구분</span>
@@ -224,74 +228,75 @@
     </h2>
 
     <ul class="history-list history-search-list">
-      <li style="width: 1600px; justify-content: start" class="btn-off bor10" th:each="searchInfoList:${searchInfoList}">
-        <input type="checkbox" id="tsiUnos" name="tsiUnos" th:value="${searchInfoList.getTsiUno()}">
-        <!--        <div class="tsiUnoclass">
-                <input type="hidden" id="tsiUno" name="tsiUno" th:value="${searchInfoList.getTsiUno()}">
-                </div>-->
-        <p class="num column_01" th:text="${searchInfoList.getTsiUno()}"></p> <!-- 순번 -->
-        <td><p class="num column_02" th:text="${searchInfoList.getTsiUserFile()}"></p>   </td>
-        <p class="counselor column_03" th:text="${userIdMap.get(searchInfoList.getTsiUserUno())}">상담사 아이디</p>
+      <li style="width: 1600px; justify-content: start"
+          th:each="item, iterStat : ${searchInfoList}"
+          th:classappend="${iterStat.index > 0} ? ' blur' : ''"
+          class="btn-off bor10">
+        <input type="checkbox" id="tsiUnos" name="tsiUnos" th:value="${item.tsiUno}">
+        <p class="num column_01" th:text="${item.tsiUno}"></p> <!-- 순번 -->
+        <td><p class="num column_02" th:text="${item.tsiUserFile}"></p></td>
+        <p class="counselor column_03" th:text="${userIdMap.get(item.tsiUserUno)}">상담사 아이디</p>
         <p class="type column_04" style="text-align: center">
-          <th:block th:switch="${searchInfoList.getTsiType()}">
-            <span th:case="${'11'}">키워드</span>
-            <span th:case="${'13'}">키워드 + 사진</span>
-            <span th:case="${'15'}">키워드 + 영상</span>
-            <span th:case="${'17'}">사진</span>
-            <span th:case="${'19'}">영상</span>
+          <th:block th:switch="${item.tsiType}">
+            <span th:case="'11'">키워드</span>
+            <span th:case="'13'">키워드 + 사진</span>
+            <span th:case="'15'">키워드 + 영상</span>
+            <span th:case="'17'">사진</span>
+            <span th:case="'19'">영상</span>
           </th:block>
         </p>
-        <div class=" column_05"><button type = "button" name = "btnShow" class = "btn-off btn-look">보기</button></div>
-        <div class = "area_search_condition">
+        <div class=" column_05">
+          <button type="button" name="btnShow" class="btn-off btn-look">보기</button>
+        </div>
+
+        <div class="area_search_condition">
           <section class="keyword section-keyword serpServices counselor-add bor10">
             <h3 class="title">검색 조건</h3>
-
-            <th:block th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}">
-                <input type="hidden" th:value="${searchInfoList.getTsiUno()}" id="imgTsiUno" name="tsiUno">
-                <button class="btnShowMovieImg btn-off btn-look" type="button" th:onclick="|location.href='/download/zip/${searchInfoList.getTsiUno()}'|">이미지 다운</button>
-                <div style = "display:none;">
-                  <th:block th:each="item:${videoList.get(searchInfoList.getTsiUno())}">
-                    <a class="movieImg" download th:href = "'/imagePath'+${item.getTviImgRealPath().substring(7) + item.getTviImgName()}">down</a>
-                  </th:block>
-                </div>
+            <th:block th:if="${item.tsiType == '15' || item.tsiType == '19'}">
+              <input type="hidden" th:value="${item.tsiUno}" id="imgTsiUno" name="tsiUno">
+              <button class="btnShowMovieImg btn-off btn-look" type="button" th:onclick="|location.href='/download/zip/${item.tsiUno}'|">이미지 다운</button>
+              <div style="display:none;">
+                <th:block th:each="video : ${videoList.get(item.tsiUno)}">
+                  <a class="movieImg" download th:href="'/imagePath' + ${video.tviImgRealPath.substring(7)} + ${video.tviImgName}">down</a>
+                </th:block>
+              </div>
             </th:block>
 
             <div class="keyword-box btn-on bor10 keyword-wrap" style="margin-top: 30px;">
               <div class="box_wrap condition_info condition-wrap">
                 <div class="image-wrap">
                   <div>
-                    <th:block th:each="item:${videoList.get(searchInfoList.getTsiUno())}">
-                      <img th:src = "'/imagePath'+${item.getTviImgRealPath().substring(7) + item.getTviImgName()}">
+                    <th:block th:each="video : ${videoList.get(item.tsiUno)}">
+                      <img th:src="'/imagePath' + ${video.tviImgRealPath.substring(7)} + ${video.tviImgName}">
                     </th:block>
                   </div>
                 </div>
                 <div class="country-wrap">
                   <p class="tit">나라별</p>
                   <div>
-                    <p th:if="${searchInfoList.getTsiIsNationKr() eq 1}">한국</p>
-                    <p th:if="${searchInfoList.getTsiIsNationUs() eq 1}">미국</p>
-                    <p th:if="${searchInfoList.getTsiIsNationCn() eq 1}">중국</p>
-                    <p th:if="${searchInfoList.getTsiIsNationNl() eq 1}">네덜란드</p>
-                    <p th:if="${searchInfoList.getTsiIsNationTh() eq 1}">태국</p>
-                    <p th:if="${searchInfoList.getTsiIsNationRu() eq 1}">러시아</p>
-                    <p th:if="${searchInfoList.getTsiIsNationVn() eq 1}">베트남</p>
+                    <p th:if="${item.tsiIsNationKr == 1}">한국</p>
+                    <p th:if="${item.tsiIsNationUs == 1}">미국</p>
+                    <p th:if="${item.tsiIsNationCn == 1}">중국</p>
+                    <p th:if="${item.tsiIsNationNl == 1}">네덜란드</p>
+                    <p th:if="${item.tsiIsNationTh == 1}">태국</p>
+                    <p th:if="${item.tsiIsNationRu == 1}">러시아</p>
+                    <p th:if="${item.tsiIsNationVn == 1}">베트남</p>
                   </div>
                 </div>
-
-                <div class = "area_img search-wrap">
+                <div class="area_img search-wrap">
                   <div class="tit">서비스별</div>
                   <div>
-                    <div th:if="${searchInfoList.getTsiIsEngineGoogle() eq 1}"><img src="/img/sns/google.png" alt=""> <p>google</p> </div>
-                    <div th:if="${searchInfoList.getTsiIsEngineYoutube() eq 1}"><img src="/img/sns/youtube.png" alt=""> <p>youtube</p></div>
-                    <div th:if="${searchInfoList.getTsiIsEngineGoogleReverseImage() eq 1}"><img src="/img/sns/google_reverse_image.png" alt=""> <p>googleReverseImage</p></div>
-                    <div th:if="${searchInfoList.getTsiIsEngineGoogleLens() eq 1}"><img src="/img/sns/googleLens.png" alt=""> <p>google lens</p></div>
-                    <div th:if="${searchInfoList.getTsiIsEngineBaidu() eq 1}"><img src="/img/sns/baidu.png" alt=""> <p>baidu</p></div>
-                    <div th:if="${searchInfoList.getTsiIsEngineBing() eq 1}"><img src="/img/sns/bing.png" alt=""> <p>bing</p></div>
-                    <div th:if="${searchInfoList.getTsiIsEngineDuckduckgo() eq 1}"><img src="/img/sns/duckduckgo.png" alt=""> <p>duckduckgo</p></div>
-                    <div th:if="${searchInfoList.getTsiIsEngineYahoo() eq 1}"><img src="/img/sns/yahoo.png" alt=""> <p>yahoo</p></div>
-                    <div th:if="${searchInfoList.getTsiIsEngineYandex() eq 1}"><img src="/img/sns/yandex.png" alt=""> <p>yandex</p></div>
-                    <div th:if="${searchInfoList.getTsiIsEngineYandexImage() eq 1}"><img src="/img/sns/yandex_image.png" alt=""> <p>yandexImage</p></div>
-                    <div th:if="${searchInfoList.getTsiIsEngineNaver() eq 1}"><img src="/img/sns/naver.png" alt=""> <p>naver</p></div>
+                    <div th:if="${item.tsiIsEngineGoogle == 1}"><img src="/img/sns/google.png" alt=""> <p>google</p></div>
+                    <div th:if="${item.tsiIsEngineYoutube == 1}"><img src="/img/sns/youtube.png" alt=""> <p>youtube</p></div>
+                    <div th:if="${item.tsiIsEngineGoogleReverseImage == 1}"><img src="/img/sns/google_reverse_image.png" alt=""> <p>googleReverseImage</p></div>
+                    <div th:if="${item.tsiIsEngineGoogleLens == 1}"><img src="/img/sns/googleLens.png" alt=""> <p>google lens</p></div>
+                    <div th:if="${item.tsiIsEngineBaidu == 1}"><img src="/img/sns/baidu.png" alt=""> <p>baidu</p></div>
+                    <div th:if="${item.tsiIsEngineBing == 1}"><img src="/img/sns/bing.png" alt=""> <p>bing</p></div>
+                    <div th:if="${item.tsiIsEngineDuckduckgo == 1}"><img src="/img/sns/duckduckgo.png" alt=""> <p>duckduckgo</p></div>
+                    <div th:if="${item.tsiIsEngineYahoo == 1}"><img src="/img/sns/yahoo.png" alt=""> <p>yahoo</p></div>
+                    <div th:if="${item.tsiIsEngineYandex == 1}"><img src="/img/sns/yandex.png" alt=""> <p>yandex</p></div>
+                    <div th:if="${item.tsiIsEngineYandexImage == 1}"><img src="/img/sns/yandex_image.png" alt=""> <p>yandexImage</p></div>
+                    <div th:if="${item.tsiIsEngineNaver == 1}"><img src="/img/sns/naver.png" alt=""> <p>naver</p></div>
                   </div>
                 </div>
               </div>
@@ -299,43 +304,45 @@
             <button type="button" class="esc-btn">닫기</button>
           </section>
         </div>
+
         <div class="cont contImgBox column_06">
-          <!-- 0328 아청물작업 필요 부분 -->
-          <div  class="img-box"> <!-- onclick="InfoList();" -->
-            <div class="img" th:if="${searchInfoList.getTsiType() != '11'}">
-              <button th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}"
-                      class="tsiUnoClass" id="tsiUno" name="tsiUno"  th:value="${searchInfoList.getTsiUno()}" onclick="InfoList(this);">
-                <span th:if="${searchInfoList.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
-                <img th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="">
+          <div class="img-box">
+            <div class="img" th:if="${item.tsiType != '11'}">
+              <button th:if="${item.tsiType != '15' && item.tsiType != '19'}"
+                      class="tsiUnoClass" id="tsiUno" name="tsiUno" th:value="${item.tsiUno}" onclick="InfoList(this);">
+                <span th:if="${item.tsiSearchType == '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
+                <img th:if="${item.tsiType != '15' && item.tsiType != '19'}" th:src="'/imagePath' + ${#strings.substring(item.tsiImgPath, 7)} + ${item.tsiImgName}" alt="">
               </button>
-              <span th:if="${searchInfoList.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
-              <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="" />
+              <span th:if="${item.tsiSearchType == '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
+              <video th:if="${item.tsiType == '15' || item.tsiType == '19'}" th:src="'/imagePath' + ${#strings.substring(item.tsiImgPath, 7)} + ${item.tsiImgName}" alt=""></video>
             </div>
           </div>
-
           <p class="con1">
-            <span class="con1 text_escape" th:text="${searchInfoList.getTsiKeyword()}"></span>
+            <span class="con1 text_escape" th:text="${item.tsiKeyword}"></span>
           </p>
         </div>
-<!--        <p class="social">-->
-<!--          <img th:if="${searchInfoList.getTsiGoogle()}" src="/img/common/sns/google.png" alt="">-->
-<!--          <img th:if="${searchInfoList.getTsiFacebook()}" src="/img/common/sns/face.png" alt="">-->
-<!--          <img th:if="${searchInfoList.getTsiTwitter()}" src="/img/common/sns/twitter.png" alt="">-->
-<!--          <img th:if="${searchInfoList.getTsiInstagram()}" src="/img/common/sns/insta.png" alt="">-->
-<!--        </p>-->
-        <p class="time column_07" th:text="${#dates.format(searchInfoList.getTsiFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></p>
+
+        <p class="time column_07" th:text="${#dates.format(item.tsiFstDmlDt, 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></p>
         <p class="dot-wrap progress column_08">
-          <input type="hidden" class="dot-tsi-uon" th:value="${searchInfoList.getTsiUno()}"></input>
-          <input type="hidden" class="dot-tsi-date" th:value="${#dates.format(searchInfoList.getTsiFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></input>
+          <input type="hidden" class="dot-tsi-uon" th:value="${item.tsiUno}">
+          <input type="hidden" class="dot-tsi-date" th:value="${#dates.format(item.tsiFstDmlDt, 'yyyy.MM.dd &nbsp; HH:mm:ss')}">
           <span class="dot"></span>
-          <span class="dot-per" th:text="${getProgressPercentMap.get(searchInfoList.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(searchInfoList.getTsiUno())}"></span>
+          <span class="dot-per" th:text="${getProgressPercentMap.get(item.tsiUno) == null ? '0%' : getProgressPercentMap.get(item.tsiUno)}"></span>
         </p>
-        <button class="btn-off review gubun column_09" th:onclick="|location.href='@{/result(tsiUno=${searchInfoList.getTsiUno()}, tsiKeyword=${searchInfoList.getTsiKeyword()}, keyword=)}'|">검색중</button>
-        <p style="margin-right: 17px;" class = "dist column_10"> 총 <span th:text="${searchInfoList.getResultCnt()}" />건,
-          &nbsp; 유사도: <span th:text="${searchInfoList.getTmrSimilarityCnt()}" />건
+        <button class="btn-off review gubun column_09" th:onclick="|location.href='@{/result(tsiUno=${item.tsiUno}, tsiKeyword=${item.tsiKeyword}, keyword=)}'|">검색중</button>
+        <p style="margin-right: 17px;" class = "dist column_10"> 총 <span th:text="${item.resultCnt}" />건,
+          &nbsp; 유사도: <span th:text="${item.tmrSimilarityCnt}" />건
         </p>
-        <button class="del-btn btn-off del" th:value="${searchInfoList.getTsiUno()}">삭제</button>
+        <button class="del-btn btn-off del" th:value="${item.tsiUno}">삭제</button>
+
+
       </li>
+
+
+
+
+
+
       <li th:if="${searchInfoListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
     </ul>
     <nav>
@@ -937,18 +944,18 @@
   function monitoringList(){
     document.getElementById('traceHistoryValue').value = '10';
     const traceHistoryValue = document.getElementById('traceHistoryValue').value;
-      $.ajax({
-        url: "/history",
-        type: "get",
-        data: {
-          traceHistoryValue: traceHistoryValue
-        },
-        success:function(data) {
+    $.ajax({
+      url: "/history",
+      type: "get",
+      data: {
+        traceHistoryValue: traceHistoryValue
+      },
+      success:function(data) {
 
-        }, error:function(){
-          console.log("통신 실패");
-        }
-      })
+      }, error:function(){
+        console.log("통신 실패");
+      }
+    })
   }
 
 
@@ -956,70 +963,70 @@
     $(".area_search_condition").hide();
 
     $("button[name='btnShow']").on("click", function(){
-        document.body.style.overflow = 'hidden';
-        modal.style.display = 'flex';
-        modal.innerHTML = $(this).parent().parent().find(".area_search_condition").html();
+      document.body.style.overflow = 'hidden';
+      modal.style.display = 'flex';
+      modal.innerHTML = $(this).parent().parent().find(".area_search_condition").html();
 
-        $("#modal .esc-btn").on("click", function(){
-          modal.style.display = 'none';
-          document.body.style.overflow = 'unset';
-        });
+      $("#modal .esc-btn").on("click", function(){
+        modal.style.display = 'none';
+        document.body.style.overflow = 'unset';
+      });
 
-        $(".btnShowMovieImg").on("click", function(){
-          // let tsiUno = document.getElementById('imgTsiUno').value;
+      $(".btnShowMovieImg").on("click", function(){
+        // let tsiUno = document.getElementById('imgTsiUno').value;
 
-          // $.ajax({
-          //   url: '/download/zip/'+tsiUno,
-          //   type: "get",
-          //   // data: {
-          //   //   tsiUno: $('#imgTsiUno').val()
-          //   // },
-          //   xhrFields:{
-          //     responseType: 'blob'
-          //   },
-          //   success: function(data){
-          //     var anchor = document.getElementById('a');
-          //     var url = window.URL || window.webkitURL;
-          //     anchor.href = url.createObjectURL(data);
-          //     anchor.download = 'archive.zip';
-          //     document.body.append(anchor);
-          //     anchor.click();
-          //     setTimeout(function(){
-          //       document.body.removeChild(anchor);
-          //       url.revokeObjectURL(anchor.href);
-          //     }, 1);
-          //   },
-          //   error:function(){
-          //     // alert("실패")
-          //     console.log("통신 실패");
-          //   }
-          // })
+        // $.ajax({
+        //   url: '/download/zip/'+tsiUno,
+        //   type: "get",
+        //   // data: {
+        //   //   tsiUno: $('#imgTsiUno').val()
+        //   // },
+        //   xhrFields:{
+        //     responseType: 'blob'
+        //   },
+        //   success: function(data){
+        //     var anchor = document.getElementById('a');
+        //     var url = window.URL || window.webkitURL;
+        //     anchor.href = url.createObjectURL(data);
+        //     anchor.download = 'archive.zip';
+        //     document.body.append(anchor);
+        //     anchor.click();
+        //     setTimeout(function(){
+        //       document.body.removeChild(anchor);
+        //       url.revokeObjectURL(anchor.href);
+        //     }, 1);
+        //   },
+        //   error:function(){
+        //     // alert("실패")
+        //     console.log("통신 실패");
+        //   }
+        // })
 
-          // let xhr = new XMLHttpRequest();
-          // //요청을 보낼 방식, 주소, 비동기여부 설정
-          // xhr.open('GET', '/download/zip/'+tsiUno, true);
-          // //요청 전송
-          // xhr.send(null);
-          //통신후 작업
+        // let xhr = new XMLHttpRequest();
+        // //요청을 보낼 방식, 주소, 비동기여부 설정
+        // xhr.open('GET', '/download/zip/'+tsiUno, true);
+        // //요청 전송
+        // xhr.send(null);
+        //통신후 작업
 
-          // xhr.onload = () => {
-          //   if (xhr.status === 200) {   //통신 성공
-          //     alert('이미지 다운로드 완료되었습니다.')
-          //     // this.classList.toggle('active');
-          //     // location.reload();
-          //   } else {
-          //     alert('이미지가 존재하지 않습니다.')
-          //   }
-          //   this.disabled = false;
-          // }
+        // xhr.onload = () => {
+        //   if (xhr.status === 200) {   //통신 성공
+        //     alert('이미지 다운로드 완료되었습니다.')
+        //     // this.classList.toggle('active');
+        //     // location.reload();
+        //   } else {
+        //     alert('이미지가 존재하지 않습니다.')
+        //   }
+        //   this.disabled = false;
+        // }
 
-          // $.each($(this).next().find(".movieImg"), function(item, idx){
-          //   let width = $(this).width();
-          //   let height = $(this).height();
-          //   alert(width + "/" + height);
-          // });
+        // $.each($(this).next().find(".movieImg"), function(item, idx){
+        //   let width = $(this).width();
+        //   let height = $(this).height();
+        //   alert(width + "/" + height);
+        // });
 
-        });
+      });
 
     });
 
