@@ -157,8 +157,10 @@
   .image-wrap img{
     width:100px; height:auto;
   }
-
   .blur {
+    filter: blur(5px);
+  }
+  .blur10 {
     filter: blur(10px);
   }
 </style>
@@ -229,13 +231,11 @@
 
     <ul class="history-list history-search-list">
       <li style="width: 1600px; justify-content: start"
-          th:each="item, iterStat : ${searchInfoList}"
-          th:classappend="${iterStat.index > 0} ? ' blur' : ''"
-          class="btn-off bor10">
+          th:each="item, iterStat : ${searchInfoList}" class="btn-off bor10">
         <input type="checkbox" id="tsiUnos" name="tsiUnos" th:value="${item.tsiUno}">
-        <p class="num column_01" th:text="${item.tsiUno}"></p> <!-- 순번 -->
-        <td><p class="num column_02" th:text="${item.tsiUserFile}"></p></td>
-        <p class="counselor column_03" th:text="${userIdMap.get(item.tsiUserUno)}">상담사 아이디</p>
+        <p class="num column_01" th:text="${item.tsiUno}"></p>
+        <td><p th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="num column_02" th:text="${item.tsiUserFile}"></p></td>
+        <p th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="counselor column_03" th:text="${userIdMap.get(item.tsiUserUno)}">상담사 아이디</p>
         <p class="type column_04" style="text-align: center">
           <th:block th:switch="${item.tsiType}">
             <span th:case="'11'">키워드</span>
@@ -306,7 +306,7 @@
         </div>
 
         <div class="cont contImgBox column_06">
-          <div class="img-box">
+          <div th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="img-box">
             <div class="img" th:if="${item.tsiType != '11'}">
               <button th:if="${item.tsiType != '15' && item.tsiType != '19'}"
                       class="tsiUnoClass" id="tsiUno" name="tsiUno" th:value="${item.tsiUno}" onclick="InfoList(this);">
@@ -318,7 +318,7 @@
             </div>
           </div>
           <p class="con1">
-            <span class="con1 text_escape" th:text="${item.tsiKeyword}"></span>
+            <span th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="con1 text_escape" th:text="${item.tsiKeyword}"></span>
           </p>
         </div>
 
