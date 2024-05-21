@@ -27,16 +27,10 @@
     color: #E87728;
     text-align: center;
   }
-  /*.blur {*/
-  /*  filter: blur(5px);*/
-  /*}*/
-  /*.blur10 {*/
-  /*  filter: blur(10px);*/
-  /*}*/
 </style>
 <body>
 <article class="manage-wrap wrapper"  id="newKeyword">
-<th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
+  <th:block th:replace="~{html/header.html :: headerFragment}"></th:block>
   <section class="search-history layout history active">
     <h1 class="title2">신조어 검색 이력</h1>
     <div class="searchbox">
@@ -44,9 +38,17 @@
         <input class="list-search bor10 btn-off" placeholder="검색어를 입력해 주세요" th:value="${searchKeyword}" name="searchKeyword" id="searchKeyword">
         <input type="hidden" name="searchPage" id="searchPage">
       </form>
+      <!--
+      <form action="/searchHistory" method="get"> &lt;!&ndash; style="margin-right: 865px; font-weight: bold;" &ndash;&gt;
+        <button type="submit" style="margin-right: 865px;" >
+          <img src="/img/common/excelLogo.png">
+        </button>
+      </form>
+     -->
       <p class="total-num">총 <span th:text="${newKeywordInfoListCount}" ></span>건</p>
     </div>
     <h2 class="list-tit" style="padding: 10px 20px 20px;">
+      <!--<input type="checkbox" id="allCheckbox" onclick="allCheckboxBtn();">-->
       <span class="num">순번</span>
       <span class="counselor">상담사</span>
       <span class="type">검색 유형</span>
@@ -55,37 +57,52 @@
       <span class="time">검색 일시</span>
       <span class="progress">검색 진행률</span>
       <span class="dist">구분</span>
+      <!--<button class="del-btn btn-off dels" onclick="checkTsiunos();"></button>
+      <input type="hidden" id="tsiUnosValue" name="tsiUnosValue" value="">-->
     </h2>
     <ul class="history-list history-search-list">
-      <li class="btn-off bor10" th:each="item, iterStat : ${newKeywordInfoList}">
-        <p class="num" th:text="${item.getTsiUno()}"></p> <!-- 순번 -->
-        <p th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="counselor" th:text="${userIdMap.get(item.getUserUno())}">상담사 아이디</p>
+      <li class="btn-off bor10"  th:each="newKeywordInfoList:${newKeywordInfoList}" >
+        <!--<input type="checkbox" id="tsiUnos" name="tsiUnos" >-->
+        <!--        <div class="tsiUnoclass">
+                <input type="hidden" id="tsiUno" name="tsiUno" th:value="${searchInfoList.getTsiUno()}">
+                </div>-->
+        <p class="num" th:text="${newKeywordInfoList.getTsiUno()}" ></p> <!-- 순번 -->
+        <p class="counselor" th:text="${userIdMap.get(newKeywordInfoList.getUserUno())}">상담사 아이디</p>
         <p class="type" style="text-align: center">
-          <th:block>
+          <th:block >
             <span>키워드</span>
           </th:block>
         </p>
         <div class="cont">
+
+          <!--          <div class="img-box"> -->
+          <!--            <div class="img" >-->
+          <!--              <button class="tsiUnoClass" id="tsiUno" name="tsiUno"  onclick="InfoList(this);"><img alt=""></button>-->
+          <!--              <video  alt="" />-->
+          <!--            </div>-->
+          <!--          </div>-->
+
           <p class="con1">
-            <span th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="con1 text_escape" th:text="${item.getTsiKeyword()}"></span>
+            <span class="con1 text_escape" th:text="${newKeywordInfoList.getTsiKeyword()}"></span>
           </p>
         </div>
         <p class="social">
-          <img src="/img/common/sns/google.png" alt="">
-          <img th:if="${item.getTsiFacebook() == 1}" src="/img/common/sns/face.png" alt="">
-          <img th:if="${item.getTsiTwitter() == 1}" src="/img/common/sns/twitter.png" alt="">
-          <img th:if="${item.getTsiInstagram() == 1}" src="/img/common/sns/insta.png" alt="">
+          <img  src="/img/common/sns/google.png" alt="">
+          <img th:if="${newKeywordInfoList.getTsiFacebook() == 1}" src="/img/common/sns/face.png" alt="">
+          <img th:if="${newKeywordInfoList.getTsiTwitter() == 1}" src="/img/common/sns/twitter.png" alt="">
+          <img th:if="${newKeywordInfoList.getTsiInstagram() == 1}" src="/img/common/sns/insta.png" alt="">
         </p>
-        <p class="time" th:text="${#dates.format(item.getFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></p>
+        <p class="time" th:text="${#dates.format(newKeywordInfoList.getFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></p>
         <p class="dot-wrap progress">
-          <input type="hidden" class="dot-tsi-uon"></input>
-          <input type="hidden" class="dot-tsi-date" th:value="${#dates.format(item.getFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></input>
+          <input type="hidden" class="dot-tsi-uon"  ></input>
+          <input type="hidden" class="dot-tsi-date"  th:value="${#dates.format(newKeywordInfoList.getFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></input>
           <span class="dot"></span>
-          <span class="dot-per" th:text="${getProgressPercentMap.get(item.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(item.getTsiUno())}"></span>
+          <span class="dot-per" th:text="${getProgressPercentMap.get(newKeywordInfoList.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(newKeywordInfoList.getTsiUno())}"></span>
         </p>
-        <button class="btn-off review" th:onclick="|location.href='@{/result(tsiUno=${item.getTsiUno()}, tsiKeyword=${item.getTsiKeyword()})}'|">검색중</button>
+        <button class="btn-off review" th:onclick="|location.href='@{/result(tsiUno=${newKeywordInfoList.getTsiUno()}, tsiKeyword=${newKeywordInfoList.getTsiKeyword()})}'|">검색중</button>
+        <!--총 <p>건</p>, 유사도: <p>건</p>-->
+        <!--<button class="del-btn btn-off del" >삭제</button>-->
       </li>
-
       <li th:if="${newKeywordInfoListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
     </ul>
     <nav>
@@ -99,7 +116,7 @@
     </nav>
   </section>
   <script>footer()</script>
-  </article>
+</article>
 
 
 <script>
@@ -114,14 +131,14 @@
   const isTabType = sessionStorage.getItem('tabType') != null ? sessionStorage.getItem('tabType') : 'search';
 
   console.log(isTabType);
-/*
-  if(isTabType !== 'search') {
-    searchhistory.classList.remove('active');
-    tracehistory.classList.add('active');
-    sTit.classList.remove('active');
-    tTit.classList.add('active');
-  }
-*/
+  /*
+    if(isTabType !== 'search') {
+      searchhistory.classList.remove('active');
+      tracehistory.classList.add('active');
+      sTit.classList.remove('active');
+      tTit.classList.add('active');
+    }
+  */
 
   const searchForm = document.querySelector("#searchForm");
   const searchPage = document.querySelector("#searchPage");
@@ -157,18 +174,18 @@
 
 
     console.info(dotTsiUno + " 번호");
-/*
-    //XMLHttpRequest 객체 생성
-    var req = new Req();
-    //요청을 보낼 방식, 주소, 비동기여부 설정
-    req.url = '/newKeyword_tsi_uno_count';
-    req.data = { tsi_uno: dotTsiUno }
-    const result = req.async();
-    console.info(result);
-    if(!result) {
-      tsi_uno_count = false;
-    }
-    */
+    /*
+        //XMLHttpRequest 객체 생성
+        var req = new Req();
+        //요청을 보낼 방식, 주소, 비동기여부 설정
+        req.url = '/newKeyword_tsi_uno_count';
+        req.data = { tsi_uno: dotTsiUno }
+        const result = req.async();
+        console.info(result);
+        if(!result) {
+          tsi_uno_count = false;
+        }
+        */
     console.info(diffMin+'/diffMin');
     if(diffMin>=1){
       loading.style.display = 'none';
