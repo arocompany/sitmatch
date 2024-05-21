@@ -16,12 +16,7 @@
   <script src="/js/style.js"></script>
 </head>
 <style>
-  .blur {
-    filter: blur(5px);
-  }
-  .blur10 {
-    filter: blur(10px);
-  }
+
 </style>
 <script>
 
@@ -36,12 +31,12 @@
       <img src="/img/common/logo3.jpg" alt="서울기술 연구원 로고">
     </h1>
     <form name="search" action="./search" method="POST" enctype="multipart/form-data" onsubmit="return goresult()">
-<!--      <div class="sns-check">-->
-<!--        <div class="areaItem"  th:each="item : ${serpServicesIsSsActiveList}">-->
-<!--          <input type="checkbox" th:classappend="${item.ssName}" th:id="${item.ssName}" th:name="${#strings.concat('tsi',#strings.toUpperCase(#strings.substring(item.ssName, 0, 1)),#strings.substring(item.ssName, 1))}" checked>-->
-<!--          <label class="btn-off bor10" th:for="${item.ssName}" th:tooltip="${item.ssName}" flow="up" th:text="${item.ssName}"></label>-->
-<!--        </div>-->
-<!--      </div>-->
+      <!--      <div class="sns-check">-->
+      <!--        <div class="areaItem"  th:each="item : ${serpServicesIsSsActiveList}">-->
+      <!--          <input type="checkbox" th:classappend="${item.ssName}" th:id="${item.ssName}" th:name="${#strings.concat('tsi',#strings.toUpperCase(#strings.substring(item.ssName, 0, 1)),#strings.substring(item.ssName, 1))}" checked>-->
+      <!--          <label class="btn-off bor10" th:for="${item.ssName}" th:tooltip="${item.ssName}" flow="up" th:text="${item.ssName}"></label>-->
+      <!--        </div>-->
+      <!--      </div>-->
 
       <div class="sns-check">
         <input type="checkbox" id="google" name="tsiGoogle" checked>
@@ -101,10 +96,10 @@
           <!--            <th:block th:switch="${list.getTsjStatus()}"><h3 class="unity" th:case="10">대기중</h3><h3 class="unity" th:case="01">처리중</h3><h3 class="unity" th:case="10">SKIP</h3><h3 class="unity" th:case="11" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h3></th:block>-->
           <!--            <h3 class="unity" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h3>-->
           <div class="img-box">
-            <div class='img blur10'>
+            <div class='img'>
               <span th:if="${list.getTsiSearchType() eq '2'}" class="childIcon">
                 <img style="margin-top: 15px; margin-left: 20px; width: 35px;"
-                        src="/img/common/childIcon.png"></span>
+                     src="/img/common/childIcon.png"></span>
               <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="">
             </div>
 
@@ -115,10 +110,10 @@
               <img th:case="17" src="/img/common/sns/facebook-round.png" alt="" class="sns">
             </th:block>
           </div>
-          <p class="url blur" th:text="${list.getTsrDownloadUrl()}">url이 들어갑니다</p>
-          <p class="content blur" th:text="${list.getTsrTitle()}">내용이 들어갑니다 내용이 들어갑니다</p>
+          <p class="url" th:text="${list.getTsrDownloadUrl()}">url이 들어갑니다</p>
+          <p class="content" th:text="${list.getTsrTitle()}">내용이 들어갑니다 내용이 들어갑니다</p>
 
-          <p class="detail blur">
+          <p class="detail">
             <span th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgExt()} != ''" th:text="${#strings.concat(list.getTsrImgExt(),' /')}" ></span>
             <span th:if="${list.getTsrImgSize()} != null and ${list.getTsrImgSize()} != ''" th:text="${#strings.concat(list.getTsrImgSize())} +'KB'" ></span>
             <span th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgSize()} == null" >파일 정보가 없습니다.</span>
@@ -134,7 +129,7 @@
     </section>
     <section class="notice L-box-up bor10">
       <h2 class="title">재확산 자동추적 <a href="/notice" class="btn-off" style="width: 165px;">재확산 자동추적 바로가기</a></h2>
-      <p class="blur" th:each="traceInfoListData : ${traceInfoList}" th:text="${traceInfoListData.tsrTitle}"></p>
+      <p th:each="traceInfoListData : ${traceInfoList}" th:text="${traceInfoListData.tsrTitle}"></p>
     </section>
   </div>
 
