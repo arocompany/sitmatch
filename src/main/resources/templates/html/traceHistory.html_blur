@@ -366,8 +366,8 @@
                 <span class="select_box nationUno switch">
                     <input class="checkboxNation chkItem all-time" type="checkbox" th:value="${item.tsrUno}" th:checked="${item.tsrIsBatch == '1'}">
                 </span>
-                    </label>
-                </div>
+                        </label>
+                    </div>
                 <button class="btn-off double-chk" style="margin-left: 5px;" th:tsiUno="${item.tsi3tsiuno}" th:tsiKeyword="${item.tsi3Keyword}" th:text="${item.re_monitor_cnt}+'건'">0건</button>
                 <button style="border-radius: 50%; height: 22px; margin-left: 15px;" class="del-btn btn-off del2" id="traceTsrUno" onclick="traceDelete();" th:value="${item.tsrUno}">삭제</button>
 
