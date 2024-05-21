@@ -123,7 +123,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "tsi.TSI_FACEBOOK as tsiFacebook, tsi.TSI_INSTAGRAM as tsiInstagram, tsi.TSI_KEYWORD as tsiKeyword, "+
             "tsi.TSI_IMG_PATH as tsiImgPath, tsi.TSI_IMG_NAME as tsiImgName, tsi.TSI_IMG_EXT as tsiImgExt, "+
             "tsi.TSI_IMG_HEIGHT as tsiImgHeight, tsi.TSI_IMG_WIDTH as tsiImgWidth, tsi.TSI_IMG_SIZE as tsiImgSize, "+
-            "tsi.TSI_STAT as tsiStat, tsi.TSI_DNA_PATH as tsiDnaPath, tsi.TSI_DNA_TEXT as tsiDnaText, "+
+            "tsi.TSI_STAT as tsiStat, tsi.TSI_DNA_PATH as tsiDnaPath, tsi.TSI_DNA_TEXT as tsiDnaText, tsi.SEARCH_VALUE, "+
             "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, TSR.MONITORING_CD as monitoringCd, "+
             "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
             "tmr.TMR_STAT as tmrStat, tmr.TMR_MESSAGE as tmrMessage, tu.USER_ID as tuUserId, " +
@@ -170,7 +170,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     // String defaultQeury2 = defaultQeury_4 + ", pp.progressPercent as progressPercent ";
 
 
-    String defaultQeury_5 = "SELECT TSR.TSR_UNO as tsrUno, TSI.TSI_SEARCH_TYPE AS tsiSearchType, TSI.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
+    String defaultQeury_5 = "SELECT TSR.TSR_UNO as tsrUno, TSI.TSI_SEARCH_TYPE AS tsiSearchType, TSI.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, tsi.search_value as searchValue, "+
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, tsr.TRK_STAT_CD as trkStatCd,"+
             "tsi.TSI_KEYWORD as tsiKeyword, tsj.TSJ_STATUS as tsjStatus, tu.USER_ID as tuUserId, tsi.TSI_TYPE as tsiType, tsr.TSR_IMG_EXT as tsrImgExt," +
             "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
