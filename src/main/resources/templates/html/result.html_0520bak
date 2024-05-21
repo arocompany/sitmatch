@@ -23,11 +23,9 @@
             opacity: 0.3;
             cursor: no-drop;
         }
+
         .blur {
             filter: blur(5px);
-        }
-        .blur10 {
-            filter: blur(10px);
         }
     </style>
 </head>
@@ -139,14 +137,14 @@
                 <button class="img-btn btn-off">이미지형</button>
             </div>
         </div>
-        <div class="result-list list-content">
-            <section class="list M-box-up bor10" th:each="list, iterStat : ${searchResultList}">
+        <div class="result-list  list-content" >
+            <section class="list M-box-up bor10" th:each="list:${searchResultList}">
                 <div class="img-box">
                     <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
-                    <div class="img blur10">
-                        <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}"
-                             alt="" loading="lazy">
-                        <img th:unless="${not #strings.isEmpty(list.getTsrImgPath())}" src="/img/common/noImage.jpg">
+                    <div class="img">
+                            <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}"
+                                 alt="" loading="lazy">
+                            <img th:unless="${not #strings.isEmpty(list.getTsrImgPath())}" src="/img/common/noImage.jpg">
                     </div>
 
                     <th:block th:switch="${list.getTsrSns()}">
@@ -169,44 +167,40 @@
                         <span class="CommonSearchDetail" th:case="ru" th:text="러시아"></span>
                         <span class="CommonSearchDetail" th:case="vn" th:text="베트남"></span>
                     </th:block>
+
                 </div>
                 <div>
-                    <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}">
-                        <span th:case="00">대기중</span>
+                    <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}"> <!-- 검색타입이 키워드가 아닌경우 -->
+                        <span th:case="00">대기중</span> <!-- 00 : 대기중, 01 : 처리중, 10 : SKIP, 11 : 처리완료 -->
                         <span th:case="01">처리중</span>
                         <span th:case="10">SKIP</span>
                         <span th:case="11">
-                    <span>
-                        <h2 th:if="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat('아청물 ',list.getTmrSimilarity(), '%')}">99%</h2>
-                        <h2 th:unless="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(0, '%')}">99%</h2>
-                    </span>
-                </span>
+                            <span>
+                                <h2 th:if="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(list.getTmrSimilarity(), '%')}">99%</h2>
+                                <h2 th:unless="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat(0, '%')}">99%</h2>
+                            </span>
+
+                        </span>
                     </th:block>
-                </div>
+                    <span style="font-size: 16px; font-weight: 500; color: #AE2523; margin-left: 7px;"
+                            th:if="${list.getTsiSearchType() == '2' &&
+                                        ( list.getTmrAgeScore() != null || list.getTmrObjectScore() != null || list.getTmrOcwScore() != null)}">
+                         아청물(
+                            <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() >= '0.2'}">
+                                 나이,&nbsp;</b>
+                            <b th:if="${ list.getTmrObjectScore() != null && list.getTmrObjectScore() > '0'}">
+                                사물,&nbsp;</b>
+                            <b th:if="${list.getTmrOcwScore() != null && list.getTmrOcwScore() > '0'}">
+                                텍스트</b>
+                            )
+                    </span>
 
-                <!-- 수정 부분 -->
-                <div>
-                    <p style="font-size: 16px; font-weight: 500; color: #AE2523;"
-                       th:if="${iterStat.index == 0}">안면인식: 나이 14세, 인식된 객체: 3건, 연관어: 6건</p>
-                    <p style="font-size: 16px; font-weight: 500; color: #AE2523;"
-                       th:if="${iterStat.index == 1}">안면인식: 나이 16세, 인식된 객체: 5건, 연관어: 5건</p>
-                    </p>
-                    <p style="font-size: 16px; font-weight: 500; color: #AE2523;"
-                       th:if="${iterStat.index == 2}">안면인식: 나이 15세, 인식된 객체: 7건, 연관어: 8건</p>
-                    </p>
-                    <p style="font-size: 16px; font-weight: 500; color: #AE2523;"
-                       th:if="${iterStat.index == 3}">안면인식: 나이 17세, 인식된 객체: 2건, 연관어: 7건</p>
-                    </p>
-                    <p style="font-size: 16px; font-weight: 500; color: #AE2523;"
-                       th:if="${iterStat.index >= 4}">안면인식: 나이 14세, 인식된 객체: 2건, 연관어: 5건</p>
-                    </p>
                 </div>
-
-                <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url blur">
+                <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url">
                     <p class="url" th:text="${list.getTsrSiteUrl()}">url이 들어갑니다</p>
                 </a>
-                <p class="content blur" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
-                <p class="detail blur">
+                <p class="content" th:text="${list.getTsrTitle()}">글의 내용이 들어갑니다</p>
+                <p class="detail">
                     <span th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgExt()} != ''" th:text="${#strings.concat('파일유형 : ',list.getTsrImgExt(),',')}"></span>
                     <span th:if="${list.getTsrImgName()} != null and ${list.getTsrImgName()} != ''"
                           th:text="${#strings.concat('파일명 : ',list.getTsrImgName())}"></span>
