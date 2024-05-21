@@ -16,12 +16,7 @@
   <script src="/js/style.js"></script>
 </head>
 <style>
-  .blur {
-    filter: blur(5px);
-  }
-  .blur10 {
-    filter: blur(10px);
-  }
+
 </style>
 <script>
 
@@ -101,7 +96,7 @@
           <!--            <th:block th:switch="${list.getTsjStatus()}"><h3 class="unity" th:case="10">대기중</h3><h3 class="unity" th:case="01">처리중</h3><h3 class="unity" th:case="10">SKIP</h3><h3 class="unity" th:case="11" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h3></th:block>-->
           <!--            <h3 class="unity" th:text="${#strings.concat(#strings.substringBefore(list.getTmrSimilarity(),'.'),'%')}">99%</h3>-->
           <div class="img-box">
-            <div class='img blur10'>
+            <div class='img'>
               <span th:if="${list.getTsiSearchType() eq '2'}" class="childIcon">
                 <img style="margin-top: 15px; margin-left: 20px; width: 35px;"
                      src="/img/common/childIcon.png"></span>
@@ -115,10 +110,10 @@
               <img th:case="17" src="/img/common/sns/facebook-round.png" alt="" class="sns">
             </th:block>
           </div>
-          <p class="url blur" th:text="${list.getTsrDownloadUrl()}">url이 들어갑니다</p>
-          <p class="content blur" th:text="${list.getTsrTitle()}">내용이 들어갑니다 내용이 들어갑니다</p>
+          <p class="url" th:text="${list.getTsrDownloadUrl()}">url이 들어갑니다</p>
+          <p class="content" th:text="${list.getTsrTitle()}">내용이 들어갑니다 내용이 들어갑니다</p>
 
-          <p class="detail blur">
+          <p class="detail">
             <span th:if="${list.getTsrImgExt()} != null and ${list.getTsrImgExt()} != ''" th:text="${#strings.concat(list.getTsrImgExt(),' /')}" ></span>
             <span th:if="${list.getTsrImgSize()} != null and ${list.getTsrImgSize()} != ''" th:text="${#strings.concat(list.getTsrImgSize())} +'KB'" ></span>
             <span th:if="${list.getTsrImgExt()} == null and ${list.getTsrImgSize()} == null" >파일 정보가 없습니다.</span>
@@ -134,7 +129,7 @@
     </section>
     <section class="notice L-box-up bor10">
       <h2 class="title">재확산 자동추적 <a href="/notice" class="btn-off" style="width: 165px;">재확산 자동추적 바로가기</a></h2>
-      <p class="blur" th:each="traceInfoListData : ${traceInfoList}" th:text="${traceInfoListData.tsrTitle}"></p>
+      <p th:each="traceInfoListData : ${traceInfoList}" th:text="${traceInfoListData.tsrTitle}"></p>
     </section>
   </div>
 
