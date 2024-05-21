@@ -9,7 +9,7 @@
   <div class="keyword-box btn-on bor10">
     <div>
       <p th:each="list:${newKeywordList}" class="word-list">
-        <input class="keyword-value" name="newKeyword" style="background-color: #dfe0e9; filter: blur(5px);" th:value="${list.getKeyword()}" readonly >
+        <input class="keyword-value" name="newKeyword" style="background-color: #dfe0e9;" th:value="${list.getKeyword()}" readonly >
         <button th:value="${list.getIdx()}" class="del-btn btn-off keyword_del" ></button>
       </p>
     </div>

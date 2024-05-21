@@ -279,18 +279,19 @@
             <input type="hidden" id="tsrUnoValues" name="tsrUnoValues" value="">
         </h2>
         <ul class="history-list history-trace-list">
-            <li style="justify-content: start" class="btn-off bor10" th:each="item, iterStat : ${traceHistoryList}">
-                <input type="checkbox" id="tsrUnos" name="tsrUnos" th:value="${item.tsrUno}">
-                <p class="num" th:text="${item.tsrUno}">${i}</p>
+            <li class="btn-off bor10" th:each="traceHistoryList : ${traceHistoryList}">
+                <input type="checkbox" id="tsrUnos" name="tsrUnos" th:value="${traceHistoryList.getTsrUno()}">
+                <p class="num" th:text="${traceHistoryList.getTsrUno()}">${i}</p>
                 <div class="cont">
-                    <div th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="img-box">
-                        <input type="hidden" th:value="${item.tsrUno}" id="tsrUno">
-                        <div class="img">
-                            <span th:if="${item.tsiSearchType eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
-                            <img th:if="${item.tsrImgPath != null}"
-                                 th:src="${'/imagePath' + #strings.substring(item.tsrImgPath, 7) + item.tsrImgName}" alt="">
+                    <!-- 0328 아청물작업 필요 부분 -->
+                    <div class="img-box">
+                        <input type="hidden" th:value="${traceHistoryList.getTsrUno()}" id="tsrUno">
+                        <div class="img" >
+                            <span th:if="${traceHistoryList.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
+                            <img th:if="${traceHistoryList.getTsrImgPath()} != null "
+                                 th:src="${'/imagePath'+#strings.substring(traceHistoryList.getTsrImgPath(),7)+traceHistoryList.getTsrImgName()}" alt="">
                         </div>
-                        <th:block th:switch="${item.tsrSns}">
+                        <th:block th:switch="${traceHistoryList.getTsrSns()}">
                             <img th:case="11" src="/img/common/sns/google-round.png" alt="" class="sns">
                             <img th:case="13" src="/img/common/sns/twitter-round.png" alt="" class="sns">
                             <img th:case="15" src="/img/common/sns/insta-round.png" alt="" class="sns">
@@ -298,84 +299,80 @@
                         </th:block>
                     </div>
                     <div class="text" style="width: 100px;">
-                <span th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="detail-info">
-                    국가:
-                    <th:block th:switch="${item.tsrNationCode}">
-                        <span th:case="us" th:text="미국"></span>
-                        <span th:case="kr" th:text="한국"></span>
-                        <span th:case="cn" th:text="중국"></span>
-                        <span th:case="nl" th:text="네덜란드"></span>
-                        <span th:case="th" th:text="태국"></span>
-                        <span th:case="ru" th:text="러시아"></span>
-                        <span th:case="vn" th:text="베트남"></span>
-                    </th:block>
-                </span>
-                        <a th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="url" style="width:100%" th:href="${item.tsrSiteUrl}" target="_blank" th:text="${item.tsrSiteUrl}">url이 들어갑니다</a>
-                        <p th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="content" th:text="${item.tsrTitle}">내용이 들어갑니다</p>
-                        <p th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="detail">
-                <span class="detail-info">검색정보 :
-                    <th:block th:switch="${item.tsiType}">
-                        <span th:case="11">키워드</span>
-                        <span th:case="13">키워드 + 사진</span>
-                        <span th:case="15">키워드 + 영상</span>
-                        <span th:case="17">사진</span>
-                        <span th:case="19">영상</span>
-                    </th:block>
-                    /
-                    <span th:classappend="${iterStat.index != 0} ? 'blur' : ''" th:text="${item.tsiKeyword}">키워드가 들어갑니다</span>
-                    <span th:classappend="${iterStat.index != 0} ? 'blur' : ''" th:text="${item.tsrImgName}">파일명이 들어갑니다</span>
-                </span>
+
+                        <span class="detail-info">
+                            국가:
+                            <th:block th:switch="${traceHistoryList.getTsrNationCode()}">
+                                <span class="" th:case="us" th:text="미국"></span>
+                                <span class="" th:case="kr" th:text="한국"></span>
+                                <span class="" th:case="cn" th:text="중국"></span>
+                                <span class="" th:case="nl" th:text="네덜란드"></span>
+                                <span class="" th:case="th" th:text="태국"></span>
+                                <span class="" th:case="ru" th:text="러시아"></span>
+                                <span class="" th:case="vn" th:text="베트남"></span>
+                              </th:block>
+                        </span>
+                        <a class="url" style="width:100%" th:href="${traceHistoryList.getTsrSiteUrl()}" target="_blank" th:text="${traceHistoryList.getTsrSiteUrl()}">url이 들어갑니다</a>
+                        <p class="content" th:text="${traceHistoryList.getTsrTitle()}">내용이 들어갑니다</p>
+                        <p class="detail">
+                            <span class="detail-info">검색정보 :
+                              <th:block th:switch="${traceHistoryList.getTsiType()}">
+                                <span th:case="11">키워드</span>
+                                <span th:case="13">키워드 + 사진</span>
+                                <span th:case="15">키워드 + 영상</span>
+                                <span th:case="17">사진</span>
+                                <span th:case="19">영상</span>
+                              </th:block>
+                               /
+                              <span th:text="${traceHistoryList.tsiKeyword}">키워드가 들어갑니다</span>
+                              <span th:text="${traceHistoryList.tsrImgName}">파일명이 들어갑니다</span>
+                            </span>
                             <span class="detail-time">검색일 :
-                    <span th:text="${#dates.format(item.tsrFstDmlDt, 'yyyy.MM.dd')}">2022.01.12</span>
-                </span>
+                                <span th:text="${#dates.format(traceHistoryList.getTsrFstDmlDt(), 'yyyy.MM.dd')}">2022.01.12</span>
+                            </span>
                         </p>
-                        <p th:if="${item.tsiUserFile != null}" class="detail">
-                <span th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="detail-info">
-                    사례번호 파일명: <span th:text="${item.tsiUserFile}"></span>
-                </span>
+                        <p th:if="${traceHistoryList.getTsiUserFile() != null}" class="detail">
+                            <span class="detail-info">
+                                사례번호 파일명: <span th:text="${traceHistoryList.getTsiUserFile()}" ></span>
+                            </span>
                         </p>
                         <p class="detail">
-                <span th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="detail-info">
-                    상담사 : <span th:text="${item.tuUserId}"></span>
-                </span>
-                            <span th:classappend="${iterStat.index != 0} ? 'blur' : ''" style="width: 410px; color: #e87728; cursor: pointer;" th:data-uno="${item.tsrUno}" class="detail-time mdTime" id="lastMonitoringChkTime" th:if="${item.lastAlltimeHist != null}">
-                    마지막 모니터링 체크시간: <span th:text="${#strings.replace(item.lastAlltimeHist, '.0', '')}"></span>
-                </span>
+                            <span class="detail-info">
+                                상담사 : <span th:text="${traceHistoryList.getTuUserId()}"></span>
+                            </span>
+                            <span style="width: 410px; color: #e87728; cursor: pointer;" th:data-uno="${traceHistoryList.getTsrUno()}" class="detail-time mdTime" id="lastMonitoringChkTime" th:if="${traceHistoryList.getLastAlltimeHist() != null}">
+                                마지막 모니터링 체크시간: <span  th:text="${#strings.replace(traceHistoryList.getLastAlltimeHist(),'.0','')}"></span>
+                            </span>
                         </p>
                     </div>
                 </div>
-                <textarea placeholder="내용 입력" class="btn-on memo" th:data-uno="${item.tsrUno}" th:text="${item.trkHistMemo}"></textarea>
+                <textarea placeholder="내용 입력" class="btn-on memo" th:data-uno="${traceHistoryList.getTsrUno()}" th:text="${traceHistoryList.getTrkHistMemo()}"></textarea>
                 <div class="state">
                     <input type="hidden" class="bor10 M-box-in" name="trace-state">
-                    <div style="margin-left: 5px;" class="selection setTraceHistory" th:data-uno="${item.tsrUno}">
-                        <th:block th:switch="${item.trkStatCd}">
+                    <div style="margin-left: 5px;" class="selection setTraceHistory" th:data-uno="${traceHistoryList.getTsrUno()}">
+                        <th:block th:switch="${traceHistoryList.getTrkStatCd()}">
                             <button th:case="10" style="color: #194894;">모니터링</button>
                             <button th:case="20" style="color: #e87728;">삭제 요청</button>
                             <button th:case="30">삭제 완료</button>
                         </th:block>
-                        <ul class="option">
+                        <ul class="option" >
                             <li data-cd="30">삭제 완료</li>
                             <li data-cd="20" style="color: #e87728;">삭제 요청</li>
-                            <li data-cd="10" style="color: #194894;">모니터링</li>
+                            <li data-cd="10" style="color: #194894; ">모니터링</li>
                         </ul>
                     </div>
                 </div>
                 <div class="area_box" style="display: block">
-                    <input type="number" class="btn-off area_input" th:value="${item.tsrCycleBatch}">
+                    <input type = "number" class="btn-off area_input" th:value="${traceHistoryList.getTsrCycleBatch()}">
                     <label class="flex">
-                <span class="select_box nationUno switch">
-                    <input class="checkboxNation chkItem all-time" type="checkbox" th:value="${item.tsrUno}" th:checked="${item.tsrIsBatch == '1'}">
-                </span>
+                        <span class="select_box nationUno switch">
+                                <input class="checkboxNation chkItem all-time" type="checkbox" th:value="${traceHistoryList.getTsrUno()}" th:checked="${traceHistoryList.getTsrIsBatch() == '1'}">
+                            </span>
                     </label>
                 </div>
-                <button class="btn-off double-chk" style="margin-left: 5px;" th:tsiUno="${item.tsi3tsiuno}" th:tsiKeyword="${item.tsi3Keyword}" th:text="${item.re_monitor_cnt}+'건'">0건</button>
-                <button style="border-radius: 50%; height: 22px; margin-left: 15px;" class="del-btn btn-off del2" id="traceTsrUno" onclick="traceDelete();" th:value="${item.tsrUno}">삭제</button>
-
-
+                <button class="btn-off double-chk" style="margin-left: 5px;" th:tsiUno="${traceHistoryList.getTsi3tsiuno()}" th:tsiKeyword="${traceHistoryList.getTsi3Keyword()}" th:text="${traceHistoryList.getRe_monitor_cnt()}+'건'">0건</button>
+                <button style="border-radius: 50%; height: 22px; margin-left: 15px; " class="del-btn btn-off del2" id="traceTsrUno" onclick="traceDelete();" th:value="${traceHistoryList.getTsrUno()}">삭제</button>
             </li>
-
-
-
             <li th:if="${traceHistoryListCount == 0}"><span style="width: 100%; text-align: center;">조회 결과가 없습니다.</span></li>
         </ul>
         <nav>
