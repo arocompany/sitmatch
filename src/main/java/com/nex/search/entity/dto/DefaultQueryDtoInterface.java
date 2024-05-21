@@ -69,4 +69,5 @@ public interface DefaultQueryDtoInterface {
     String getTsrEngine();
 
     String getTsiSearchType();
+    String getSearchValue();
 }
