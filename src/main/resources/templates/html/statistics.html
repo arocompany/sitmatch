@@ -677,7 +677,8 @@
                     },
                 },
             },
-            plugins: [plugin, ChartDataLabels]
+            plugins: [plugin]
+            // plugins: [plugin, ChartDataLabels]
         });
     }
 
@@ -694,52 +695,69 @@
             labelList.push(codeList[i].value);
         }
 
-        for (var i = 0; i < dataList.length; i++) {
-            let dataSet = [];
-            dataSet.push(dataList[i].cntKeyword);
-            dataSet.push(dataList[i].cntKeywordImg);
-            dataSet.push(dataList[i].cntKeywordMov);
-            dataSet.push(dataList[i].cntImg);
-            dataSet.push(dataList[i].cntMov);
-            dataSetList.push({label: dataList[i].userNm, data: dataSet, backgroundColor: bgList[i]});
+        if(dataList.length > 0) {
+            for (var i = 0; i < dataList.length; i++) {
+                let dataSet = [];
+                dataSet.push(dataList[i].cntKeyword);
+                dataSet.push(dataList[i].cntKeywordImg);
+                dataSet.push(dataList[i].cntKeywordMov);
+                dataSet.push(dataList[i].cntImg);
+                dataSet.push(dataList[i].cntMov);
+                dataSetList.push({label: dataList[i].userNm, data: dataSet, backgroundColor: bgList[i]});
+            }
+        // }else{
+        //     dataSetList.push({label:"No Data", data:[], backgroundColor: bgList[0]});
         }
         // console.info(dataSetList);
 
+        // var isAllZero = dataSetList[0].data.every(function (value) {
+        //     return value === 0;
+        // });
+
         const ctx = document.querySelector('#' + el).getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labelList,
-                datasets: dataSetList
-            }, options: {
-                datalabels: {
-                    color: 'black',
-                    anchor: 'center',
-                    clamp: true,
-                    clip: true,
-                    // align: '-135',
-                    offset: 1,
-                    formatter: function (value, context){
-                        let result = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                        return result
-                    },
-                    display: 'auto'
-                },
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                    },
-                    title: {
-                        display: true,
-                        text: title,
-                        font: {size:"20px"},
-                        align: 'center'
+
+        // if (isAllZero) {
+        //     ctx.font = '30px Arial';
+        //     ctx.textAlign = 'center';
+        //     ctx.fillText('No data', ctx.canvas.width / 2, ctx.canvas.height / 2);
+        //     ctx.height = 300;
+        // } else {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labelList,
+                    datasets: dataSetList
+                }, options: {
+                    // datalabels: {
+                    //     color: 'black',
+                    //     anchor: 'center',
+                    //     clamp: true,
+                    //     clip: true,
+                    //     // align: '-135',
+                    //     offset: 1,
+                    //     formatter: function (value, context){
+                    //         let result = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    //         return result
+                    //     },
+                    //     display: 'auto'
+                    // },
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: title,
+                            font: {size:"20px"},
+                            align: 'center'
+                        }
                     }
-                }
-            },
-            plugins: [ChartDataLabels]
-        });
+                },
+                plugins: [plugin]
+                // plugins: [ChartDataLabels]
+            });
+            // }
     }
     const plugin = {
         id: 'emptyDoughnut',
