@@ -610,6 +610,7 @@
 
   // 검색 진행률
   const progress = document.querySelectorAll(".dot-wrap.progress");
+  let i = 0;
   progress.forEach(pro => {
     const per = pro.querySelector(".dot-per");
     const loading = pro.querySelector(".dot");
@@ -632,16 +633,16 @@
     const diffMSec = dateA.getTime() - dateB.getTime();
     const diffMin = diffMSec / (60 * 1000);
 
-    //XMLHttpRequest 객체 생성
-    var req = new Req();
-    //요청을 보낼 방식, 주소, 비동기여부 설정
-    req.url = '/history_tsi_uno_count';
-    req.data = { tsi_uno: dotTsiUno }
-    const result = req.async();
+    // //XMLHttpRequest 객체 생성
+    // var req = new Req();
+    // //요청을 보낼 방식, 주소, 비동기여부 설정
+    // req.url = '/history_tsi_uno_count';
+    // req.data = { tsi_uno: dotTsiUno }
+    // const result = req.async(i);
     // console.info(result);
-    if(!result) {
-      tsi_uno_count = false;
-    }
+    // if(!result) {
+    //   tsi_uno_count = false;
+    // }
     //console.info(diffMin+'/diffMin');
     if(diffMin>=1){
       loading.style.display = 'none';
@@ -650,9 +651,10 @@
       per.innerText = "100%";
       pro.nextElementSibling.innerHTML = "검색결과";
       pro.nextElementSibling.style.color = "#e87728";
-      //console.info(tsi_uno_count);
-      //console.info(per.innerText);
+      // console.info(tsi_uno_count);
+      // console.info(per.innerText);
     }
+    i++;
   })
 
   function Req() {
@@ -665,7 +667,8 @@
     this.getQueryString = () => {
       return Object.entries(this.data).map(e => e.join('=')).join('&')
     }
-    this.async = () => {
+    this.async = (i) => {
+      console.info(i)
       if(!this.request) {
         console.error("Can't make request.")
         return false
