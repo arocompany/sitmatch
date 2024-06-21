@@ -140,7 +140,10 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             ", tsr.TSR_ENGINE as tsrEngine, " +
             " ROUND(tmr.TMR_AGE_SCORE, 2)* 100 AS tmrAgeScore, " +
             " ROUND(tmr.TMR_OBJECT_SCORE, 2)* 100 AS tmrObjectScore, " +
-            " ROUND(tmr.TMR_OCW_SCORE, 2)* 100 AS tmrOcwScore " ;
+            " ROUND(tmr.TMR_OCW_SCORE, 2)* 100 AS tmrOcwScore " +
+            ",ROUND(tmr.TMR_AGE, 1) AS tmrAge" +
+            ",ROUND(tmr.TMR_CNT_OBJECT, 1) AS tmrCntObject" +
+            ",ROUND(tmr.TMR_CNT_TEXT, 1) AS tmrCntText";
 
     /*String defaultQeury_4 = "SELECT TSR.TSR_UNO as tsrUno, TSR.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, "+
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, "+
@@ -209,7 +212,11 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             ", tsr.TSR_ENGINE as tsrEngine "+
             ",ROUND(tmr.TMR_AGE_SCORE, 2)* 100 AS tmrAgeScore" +
             ",ROUND(tmr.TMR_OBJECT_SCORE, 2)* 100 AS tmrObjectScore" +
-            ",ROUND(tmr.TMR_OCW_SCORE, 2)* 100 AS tmrOcwScore";
+            ",ROUND(tmr.TMR_OCW_SCORE, 2)* 100 AS tmrOcwScore"+
+            ",ROUND(tmr.TMR_AGE, 1) AS tmrAge"+
+            ",ROUND(tmr.TMR_CNT_OBJECT, 1) AS tmrCntObject"+
+            ",ROUND(tmr.TMR_CNT_TEXT, 1) AS tmrCntText"
+            ;
 
 
     // String defaultQeury_6 = "SELECT tsr.TSR_SITE_URL as tsrSiteUrl";
