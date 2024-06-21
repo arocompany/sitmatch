@@ -176,21 +176,21 @@
                         <span th:case="01">처리중</span>
                         <span th:case="10">SKIP</span>
                         <span th:case="11">
-                            <span>
+                            <span th:if="${list.tsiSearchType.equals('1')}">
                                 <h2 th:if="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat('유사도 ',list.getTmrSimilarity(), '%')}">99%</h2>
                                 <h2 th:unless="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat('유사도 ', 0, '%')}">99%</h2>
                             </span>
+                            <span th:if="${list.tsiSearchType.equals('2')}">
+                                <div>
+                                    <p style="font-size: 16px; font-weight: 500; color: #AE2523;">
+                                        <th:block th:if="${list.tmrAge != null}" th:text="'안면인식: 나이 ' + ${list.tmrAge} + '세'"></th:block>
+                                        <th:block th:if="${list.tmrCntObject != null}" th:text="'인식된 객체 : ' + ${list.tmrCntObject} + '건'"></th:block>
+                                        <th:block th:if="${list.tmrCntText != null}" th:text="'연관어: ' + ${list.tmrCntText} + '건'"></th:block>
+                                    </p>
+                                </div>
+                            </span>
                         </span>
                     </th:block>
-                </div>
-
-                <!-- 수정 부분 -->
-                <div th:if="${list.tsiSearchType.equals('2')}">
-                    <p style="font-size: 16px; font-weight: 500; color: #AE2523;">
-                        <th:block th:if="${list.tmrAge != null}" th:text="'안면인식: 나이 ' + ${list.tmrAge} + '세'"></th:block>
-                        <th:block th:if="${list.tmrCntObject != null}" th:text="'인식된 객체 : ' + ${list.tmrCntObject} + '건'"></th:block>
-                        <th:block th:if="${list.tmrCntText != null}" th:text="'연관어: ' + ${list.tmrCntText} + '건'"></th:block>
-                    </p>
                 </div>
 
                 <a th:href="${list.getTsrSiteUrl()}" target="_blank" class="url blur">
