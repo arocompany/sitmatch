@@ -61,7 +61,7 @@ public interface DefaultQueryDtoInterface {
 
     String getTsrIsBatch();
     String getTsrCycleBatch();
-
+    String getTmrTotalScore();
     String getTmrAgeScore();
     String getTmrObjectScore();
     String getTmrOcwScore();

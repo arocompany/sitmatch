@@ -138,6 +138,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity" +
             ", tsr.TSR_NATION_CODE as tsrNationCode "+
             ", tsr.TSR_ENGINE as tsrEngine, " +
+            " tmr.TMR_TOTAL_SCORE AS tmrTotalScore, " +
             " ROUND(tmr.TMR_AGE_SCORE, 2)* 100 AS tmrAgeScore, " +
             " ROUND(tmr.TMR_OBJECT_SCORE, 2)* 100 AS tmrObjectScore, " +
             " ROUND(tmr.TMR_OCW_SCORE, 2)* 100 AS tmrOcwScore " +
@@ -210,6 +211,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             ") AS maxSimilarity" +
             ", tsr.TSR_NATION_CODE as tsrNationCode "+
             ", tsr.TSR_ENGINE as tsrEngine "+
+            " ,tmr.TMR_TOTAL_SCORE AS tmrTotalScore " +
             ",ROUND(tmr.TMR_AGE_SCORE, 2)* 100 AS tmrAgeScore" +
             ",ROUND(tmr.TMR_OBJECT_SCORE, 2)* 100 AS tmrObjectScore" +
             ",ROUND(tmr.TMR_OCW_SCORE, 2)* 100 AS tmrOcwScore"+
