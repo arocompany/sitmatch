@@ -176,7 +176,7 @@
                         <span th:case="01">처리중</span>
                         <span th:case="10">SKIP</span>
                         <span th:case="11">
-                            <span th:if="${list.tsiSearchType.equals('1')}">
+                            <span>
                                 <h2 th:if="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat('유사도 ',list.getTmrSimilarity(), '%')}">99%</h2>
                                 <h2 th:unless="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" style="display:inline-block" class="unity" th:text="${#strings.concat('유사도 ', 0, '%')}">99%</h2>
                             </span>
