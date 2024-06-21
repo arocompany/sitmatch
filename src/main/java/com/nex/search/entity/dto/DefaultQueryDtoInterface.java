@@ -61,15 +61,15 @@ public interface DefaultQueryDtoInterface {
 
     String getTsrIsBatch();
     String getTsrCycleBatch();
-    String getTmrTotalScore();
+    Integer getTmrTotalScore();
     String getTmrAgeScore();
     String getTmrObjectScore();
     String getTmrOcwScore();
     String getTsrNationCode();
     String getTsrEngine();
-    String getTmrAge();
-    String getTmrCntObject();
-    String getTmrCntText();
+    Float getTmrAge();
+    Integer getTmrCntObject();
+    Integer getTmrCntText();
 
     String getTsiSearchType();
     String getSearchValue();
