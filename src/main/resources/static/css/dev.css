@@ -254,9 +254,13 @@ margin-bottom: 15px;
 }
 .img-box .childIcon{
     position: absolute;
+    top: 7px;
+    left: 0px;
+}
+.img-box .img .childIcon{
+    position: absolute;
     top: -13px;
     left: -18px;
-
 }
 .img-box .img > button {
     position: relative;

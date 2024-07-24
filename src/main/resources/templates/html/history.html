@@ -215,7 +215,7 @@
       <span class="cont column_06" style ="width:15%">내용</span>
       <!--      <span class="social">SNS</span>-->
       <span class="time column_07">검색 일시</span>
-      <span class="progress column_08">검색 진행률</span>
+      <span class="progress column_08">진행률</span>
       <span class="gubun column_09">구분</span>
       <span class="dist column_10"> 검색 결과 / 유사도</span>
       <button class="del-btn btn-off dels" onclick="checkTsiunos();"></button>
@@ -311,6 +311,9 @@
               <span th:if="${searchInfoList.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
               <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="" />
             </div>
+            <div class="" style = "width:30px; height:50px;" th:unless="${searchInfoList.getTsiType() != '11'}">
+              <span th:if="${searchInfoList.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
+            </div>
           </div>
 
           <p class="con1">
@@ -329,6 +332,7 @@
           <input type="hidden" class="dot-tsi-date" th:value="${#dates.format(searchInfoList.getTsiFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></input>
           <span class="dot"></span>
           <span class="dot-per" th:text="${getProgressPercentMap.get(searchInfoList.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(searchInfoList.getTsiUno())}"></span>
+          <span class="dot-per" th:text="${searchInfoList.getTsjStatus() == null || (searchInfoList.getTsjStatus() != null && searchInfoList.getTsjStatus().equals(0)) || (searchInfoList.getTsjStatus() != null && searchInfoList.getTsjStatus().equals(1))  ? '분석중' : '처리완료'}"></span>
         </p>
         <button class="btn-off review gubun column_09" th:onclick="|location.href='@{/result(tsiUno=${searchInfoList.getTsiUno()}, tsiKeyword=${searchInfoList.getTsiKeyword()}, keyword=)}'|">검색중</button>
         <p style="margin-right: 17px;" class = "dist column_10"> 총 <span th:text="${searchInfoList.getResultCnt()}" />건,
@@ -648,7 +652,7 @@
       loading.style.display = 'none';
       per.style.fontSize = '1rem';
       per.style.cssText = "font-size:1rem; color:#545759;";
-      per.innerText = "100%";
+      // per.innerText = "100%";
       pro.nextElementSibling.innerHTML = "검색결과";
       pro.nextElementSibling.style.color = "#e87728";
       // console.info(tsi_uno_count);
