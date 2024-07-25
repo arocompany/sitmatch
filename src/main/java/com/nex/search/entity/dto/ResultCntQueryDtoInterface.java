@@ -31,6 +31,7 @@ public interface ResultCntQueryDtoInterface {
     String getTsiType();
     String getResultCnt();
     String getTmrSimilarityCnt();
+    String getTmrChildCnt();
 
     SearchInfoParamsEntity getParams();
     Integer getTsiIsNationUs();
@@ -57,4 +58,5 @@ public interface ResultCntQueryDtoInterface {
 
     List<VideoInfoEntity> getVideoList();
     void setVideoList(List<VideoInfoEntity> list);
+    Integer getTsjStatus();
 }

@@ -99,7 +99,9 @@ public class SearchService {
                 InputStream inputStream = uploadFile.getInputStream();
                 Tika tika = new Tika();
                 String mimeType = tika.detect(inputStream);
-                if(mimeType.substring(0,mimeType.indexOf("/")).contentEquals("video")){// 비디오
+
+                log.error("123123===" + mimeType);
+                if(mimeType.substring(0,mimeType.indexOf("/")).contentEquals("video") || mimeType.indexOf("octet-stream") > -1){// 비디오
                     param.setTsiImgHeight("");
                     param.setTsiImgWidth("");
                     param.setTsiImgSize(String.valueOf(uploadFile.getSize() / 1024));
