@@ -112,6 +112,9 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " when isnull(tmr.TMR_T_SCORE) then 0 " +
                                     " else 1 " +
                                     " end)) * 100)) > 1) AS tmrSimilarityCnt " +
+                                    ", ( SELECT COUNT(*) FROM tb_search_result tsr_2 INNER JOIN ( SELECT MIN(tsr_uno) tsr_uno FROM tb_search_result WHERE tsi_uno = tsi.tsi_uno GROUP BY tsr_site_url ) tsr2 ON tsr_2.tsr_uno = tsr2.tsr_uno LEFT OUTER JOIN tb_match_result tmr ON tsr_2.TSR_UNO = tmr.tsr_uno" +
+                                        " WHERE tmr.tsi_uno = tsi.tsi_uno AND tsr_2.tsi_uno = tsi.tsi_uno AND tmr.TMR_TOTAL_SCORE > 0 " +
+                                    " ) AS tmrChildCnt" +
                                     ", (SELECT tsj_status FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatus " +
                                     ", coalesce(params.tsi_is_nation_kr, 0) tsiIsNationKr " +
                                     ", coalesce(params.tsi_is_nation_us, 0) tsiIsNationUs " +
@@ -197,6 +200,9 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " when isnull(tmr.TMR_T_SCORE) then 0 " +
                                 " else 1 " +
                                 " end)) * 100)) > 1) AS tmrSimilarityCnt, " +
+                                " ( SELECT COUNT(*) FROM tb_search_result tsr_2 INNER JOIN ( SELECT MIN(tsr_uno) tsr_uno FROM tb_search_result WHERE tsi_uno = tsi.tsi_uno GROUP BY tsr_site_url ) tsr2 ON tsr_2.tsr_uno = tsr2.tsr_uno LEFT OUTER JOIN tb_match_result tmr ON tsr_2.TSR_UNO = tmr.tsr_uno" +
+                                " WHERE tmr.tsi_uno = tsi.tsi_uno AND tsr_2.tsi_uno = tsi.tsi_uno AND tmr.TMR_TOTAL_SCORE > 0 " +
+                                " ) AS tmrChildCnt, " +
                                 " (SELECT tsj_status FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatus, " +
                                 " tsi.tsi_user_file as tsiUserFile " +
                                 " from tb_search_info tsi " +

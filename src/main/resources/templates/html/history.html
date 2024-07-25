@@ -335,8 +335,10 @@
           <span class="dot-per" th:text="${searchInfoList.getTsjStatus() == null || (searchInfoList.getTsjStatus() != null && searchInfoList.getTsjStatus().equals(0)) || (searchInfoList.getTsjStatus() != null && searchInfoList.getTsjStatus().equals(1))  ? '분석중' : '처리완료'}"></span>
         </p>
         <button class="btn-off review gubun column_09" th:onclick="|location.href='@{/result(tsiUno=${searchInfoList.getTsiUno()}, tsiKeyword=${searchInfoList.getTsiKeyword()}, keyword=)}'|">검색중</button>
-        <p style="margin-right: 17px;" class = "dist column_10"> 총 <span th:text="${searchInfoList.getResultCnt()}" />건,
-          &nbsp; 유사도: <span th:text="${searchInfoList.getTmrSimilarityCnt()}" />건
+        <p style="margin-right: 17px;" class = "dist column_10">
+          총 <span th:text="${searchInfoList.getResultCnt()}" />건,
+          유사도: <span th:text="${searchInfoList.getTmrSimilarityCnt()}" />건
+          아청물: <span th:text="${searchInfoList.getTmrChildCnt()}" />건
         </p>
         <button class="del-btn btn-off del" th:value="${searchInfoList.getTsiUno()}">삭제</button>
       </li>

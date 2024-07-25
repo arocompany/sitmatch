@@ -31,6 +31,7 @@ public interface ResultCntQueryDtoInterface {
     String getTsiType();
     String getResultCnt();
     String getTmrSimilarityCnt();
+    String getTmrChildCnt();
 
     SearchInfoParamsEntity getParams();
     Integer getTsiIsNationUs();
