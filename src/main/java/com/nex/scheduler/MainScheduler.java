@@ -4,6 +4,7 @@ import com.nex.common.ConfigData;
 import com.nex.common.ConfigDataManager;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
+import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import java.util.List;
 public class MainScheduler {
     private final int initialDelay = 1000;
     private final SearchService searchService;
+    private final SearchInfoRepository searchInfoRepository;
 
     @Scheduled(fixedDelay = 10 * 1000, initialDelay = initialDelay)
     public void schedule_10() {
@@ -32,6 +34,15 @@ public class MainScheduler {
     private void searchVideo(){
         try {
             List<SearchInfoEntity> list = searchService.getSearchInfoVideoNotReady();
+            if(list != null && !list.isEmpty()){
+                for(SearchInfoEntity item: list){
+                    item.setTsiStat("12");
+                    searchInfoRepository.save(item);
+                }
+            }
+
+
+            List<SearchInfoEntity> list2 = searchService.getSearchInfoVideoReady();
             if(list != null && !list.isEmpty()){
                 for(SearchInfoEntity item: list){
                     SearchInfoDto dto = new SearchInfoDto();
