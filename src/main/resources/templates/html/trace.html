@@ -83,18 +83,16 @@
             <h2 class="unity" style="font-size: 14px;" th:case="10"><strong class="state" style="color: #194894">관리 중</strong>
               <th:block th:switch="${list.getTsjStatus()}"><span th:case="10">(대기중)</span><span th:case="01">(처리중)</span><span th:case="10">(SKIP)</span>
                 <span th:case="11" th:text="${#strings.concat('(',list.getTmrSimilarity(), '%',')')}">(99%)</span>
-                <span style="font-weight: bold; margin-left: 5px; color: #AE2523;"
-                      th:if="${list.getTsiSearchType() == '2' &&
-                                        ( list.getTmrAgeScore() != null || list.getTmrObjectScore() != null || list.getTmrOcwScore() != null)}">
-                         아청물(
-                            <b th:if="${list.getTmrAgeScore() != null && list.getTmrAgeScore() >= '0.2'}">
-                                 나이,&nbsp;</b>
-                            <b th:if="${ list.getTmrObjectScore() != null && list.getTmrObjectScore() > '0'}">
-                                사물,&nbsp;</b>
-                            <b th:if="${list.getTmrOcwScore() != null && list.getTmrOcwScore() > '0'}">
-                                텍스트</b>
-                            )
-              </span>
+
+                <span th:if="${list.tsiSearchType.equals('2')}" style="font-weight: bold; margin-left: 5px; color: #AE2523;">
+                      <div>
+                          <p style="font-size: 16px; font-weight: 500; color: #AE2523;">
+                              <th:block th:if="${list.tmrAge != null && list.tmrAge > 0}" th:text="'안면인식: 나이 ' + ${list.tmrAge} + '세'"></th:block>
+                              <th:block th:if="${list.tmrCntObject != null}" th:text="'인식된 객체 : ' + ${list.tmrCntObject} + '건'"></th:block>
+                              <th:block th:if="${list.tmrCntText != null}" th:text="'연관어: ' + ${list.tmrCntText} + '건'"></th:block>
+                          </p>
+                      </div>
+                  </span>
               </th:block>
             </h2>
             <h2 class="unity" style="font-size: 14px;" th:case="20"><strong class="state">삭제 요청 중</strong>
