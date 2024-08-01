@@ -15,7 +15,6 @@ public class ConfigData {
     private String hostImageUrl;
 
     private String serpApiKey;
-
 //
 //    private String externalLocation;
 

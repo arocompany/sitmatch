@@ -62,10 +62,14 @@
           </div>
         </li>
         <li class="M-box-up bor10 login-btn notice-btn"><a href="/notice">알람</a></li>
-        <li class="M-box-up bor10 login-btn user-btn detail-btn">사용자
+        <li class="M-box-up bor10 login-btn user-btn detail-btn" id = "btnUser">사용자
           <div class="user-detail login-detail bor10">
             <p class="user-name"><strong><span th:text="${sessionInfo.getUserNm()}">홍길동</span> 님</strong>(<span
                     th:text="${sessionInfo.getUserId()}">usertest0001</span>)</p>
+            <p class=""><strong><span>Serp API</span> </strong>
+              <span id = "searchesPerMonth"></span>건 중 / <span id = "thisMonthUsage"></span> 건 사용
+            </p>
+            <p class="">잔여 <span id = "planSearchesLeft"></span> 건</p>
             <input type="hidden" class="bor10 M-box-in" name="userUno" id="userUno" th:value="${sessionInfo.getUserUno()}">
             <a href="/user/info" class="my-info">내정보</a>
             <button class="logout" type="button" onclick="logout()">로그아웃</button>
@@ -101,7 +105,30 @@
             location.reload();
           }
         });
-      })
+      });
+
+      $(function(){
+        $("#btnUser").on("click", function(){
+          getSerpApiStatus();
+        });
+      });
+
+      const getSerpApiStatus = () => {
+        $.ajax({
+          url: "/getSerpApiStatus",
+          type: "POST",
+          data: null,
+          success:function(data) {
+            console.info(data);
+            $("#searchesPerMonth").text(data.searchesPerMonth);
+            $("#thisMonthUsage").text(data.thisMonthUsage);
+            $("#planSearchesLeft").text(data.planSearchesLeft);
+          }, error:function(){
+            // alert("실패")
+            console.log("통신 실패");
+          }
+        })
+      };
     </script>
   </header>
 </nav>
