@@ -21,6 +21,7 @@ public class MainScheduler {
     private final int initialDelay = 1000;
     private final SearchService searchService;
     private final SearchInfoRepository searchInfoRepository;
+    private final SitProperties sitProperties;
 
     @Scheduled(fixedDelay = 10 * 1000, initialDelay = initialDelay)
     public void schedule_10() {
@@ -52,13 +53,11 @@ public class MainScheduler {
                 }
             }
 
-
-            List<SearchInfoEntity> list2 = searchService.getSearchInfoVideoReady();
             if(list != null && !list.isEmpty()){
                 for(SearchInfoEntity item: list){
                     SearchInfoDto dto = new SearchInfoDto();
                     dto.setTsiKeywordHiddenValue(item.getTsiKeyword());
-                    searchService.search(item, dto, item.getTsiImgPath().substring(7));
+                    searchService.search(item, dto, item.getTsiImgPath().replaceAll(sitProperties.getFileLocation1().replaceAll("\\\\", "/"), "").replaceAll("/", ""));
                 }
             }
         }catch (Exception e){
