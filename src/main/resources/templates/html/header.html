@@ -66,8 +66,8 @@
           <div class="user-detail login-detail bor10">
             <p class="user-name"><strong><span th:text="${sessionInfo.getUserNm()}">홍길동</span> 님</strong>(<span
                     th:text="${sessionInfo.getUserId()}">usertest0001</span>)</p>
-            <p class=""><strong><span>Serp API</span> </strong>
-              <span id = "searchesPerMonth"></span>건 중 / <span id = "thisMonthUsage"></span> 건 사용
+            <p class=""><strong><span>Serp API</span> </strong> </p>
+            <p class=""><span id = "searchesPerMonth"></span>건 중 / <span id = "thisMonthUsage"></span> 건 사용
             </p>
             <p class="">잔여 <span id = "planSearchesLeft"></span> 건</p>
             <input type="hidden" class="bor10 M-box-in" name="userUno" id="userUno" th:value="${sessionInfo.getUserUno()}">
