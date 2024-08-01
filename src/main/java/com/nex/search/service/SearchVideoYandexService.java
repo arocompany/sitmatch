@@ -52,7 +52,10 @@ public class SearchVideoYandexService {
     @Async
     public void searchByTextVideo(String tsrSns, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String path, String nationCode, List<String> files) throws Exception {
 //        List<String> files = processVideo(insertResult);
-        if(files == null) return;
+        if(files == null) {
+            saveErrorInfo(insertResult);
+            return;
+        }
 //        for (int i = 0; i < files.size(); i++) {
 //            VideoInfoEntity videoInfo = new VideoInfoEntity();
 //            videoInfo.setTsiUno(insertResult.getTsiUno());
@@ -291,5 +294,10 @@ public class SearchVideoYandexService {
         vie.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         vie.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         return videoInfoRepository.save(vie);
+    }
+
+    public void saveErrorInfo(SearchInfoEntity param){
+        param.setTsiStat("99");
+        if(param != null) searchInfoRepository.save(param);
     }
 }

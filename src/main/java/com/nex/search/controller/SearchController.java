@@ -47,7 +47,10 @@ public class SearchController {
 
         if(resultEntity != null) {
             searchService.saveSearchInfoParams(resultEntity);
-            searchService.search(resultEntity, searchInfoDto, folder);
+
+            if(!resultEntity.getTsiType().equals("15") || resultEntity.getTsiType().equals("19")) {
+                searchService.search(resultEntity, searchInfoDto, folder);
+            }
         }else{
             mv = new ModelAndView("redirect:/");
             return mv;

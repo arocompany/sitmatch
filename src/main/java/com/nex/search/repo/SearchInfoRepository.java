@@ -383,7 +383,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             "LEFT OUTER JOIN tb_user tu " +
             "ON tsi.user_uno = tu.user_uno " +
             "GROUP BY tsi.user_uno";
-
+    List<SearchInfoEntity> findTop10ByTsiTypeInAndTsiStatOrderByTsiUnoDesc(List<String> tsiType, String tsiStat);
     List<SearchInfoEntity> findAllByOrderByTsiUnoDesc();
     Page<SearchInfoEntity> findAllByDataStatCdAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd, String keyword, Pageable pageable);
     Page<SearchInfoEntity> findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd,String searchValue, String keyword, Pageable pageable);
@@ -413,6 +413,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
 
     @Query(value = "SELECT TSI.TSI_TYPE FROM TB_SEARCH_INFO TSI WHERE TSI.TSI_UNO = :tsiUno", nativeQuery = true)
     String getSearchInfoTsiType(Integer tsiUno);
+
+
 
     SearchInfoEntity findByTsiUno(Integer tsiUno);
 
