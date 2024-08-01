@@ -1,7 +1,6 @@
 package com.nex.scheduler;
 
-import com.nex.common.ConfigData;
-import com.nex.common.ConfigDataManager;
+import com.nex.common.*;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
 import com.nex.search.repo.SearchInfoRepository;
@@ -10,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 
@@ -28,6 +29,16 @@ public class MainScheduler {
             log.debug("schedule_10 --------------- start");
             searchVideo();
             log.debug("schedule_10 --------------- end");
+        }
+    }
+
+    @Scheduled(fixedDelay = 60 * 1000, initialDelay = initialDelay)
+    public void schedule_60() {
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+        if(configData != null && configData.getIsMainScheduler() != null && configData.getIsMainScheduler()) {
+            log.debug("schedule_60 --------------- start");
+            loadSerpApiStatus();
+            log.debug("schedule_60 --------------- end");
         }
     }
 
@@ -51,6 +62,20 @@ public class MainScheduler {
                 }
             }
         }catch (Exception e){
+            log.error(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void loadSerpApiStatus(){
+        try {
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("api_key", ConfigDataManager.getInstance().getDefaultConfig().getSerpApiKey());
+            SerpApiStatusVOForApi result = CommonStaticHttpUtil.GetHttpSync("https://serpapi.com", "account", params, SerpApiStatusVOForApi.class);
+            if(result != null) {
+                ConfigDataManager.getInstance().setSerpApiStatus(result);
+            }
+        }catch(Exception e){
             log.error(e.getMessage());
             e.printStackTrace();
         }

@@ -1,6 +1,8 @@
 package com.nex.base.controller;
 
+import com.nex.common.ConfigDataManager;
 import com.nex.common.Consts;
+import com.nex.common.SerpApiStatusVOForApi;
 import com.nex.request.ReqNotice;
 import com.nex.search.entity.dto.DefaultQueryDtoInterface;
 import com.nex.search.entity.dto.SearchResultMonitoringHistoryDto;
@@ -171,5 +173,10 @@ public class BaseController {
         modelAndView.addObject("sessionInfo", sessionInfoDto);
 
         return modelAndView;
+    }
+
+    @PostMapping("/getSerpApiStatus")
+    public SerpApiStatusVOForApi getSerpApiStatus(){
+        return ConfigDataManager.getInstance().getSerpApiStatus();
     }
 }

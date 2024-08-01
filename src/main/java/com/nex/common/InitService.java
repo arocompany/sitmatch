@@ -34,6 +34,8 @@ public class InitService {
                 createConfigFile();
 
             }
+
+            CommonStaticHttpUtil.getInstance();
         }catch (Exception e){
             log.error(e.getMessage());
         }
