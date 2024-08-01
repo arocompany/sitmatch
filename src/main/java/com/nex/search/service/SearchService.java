@@ -920,6 +920,11 @@ public class SearchService {
         return searchInfoRepository.getSearchInfoTsiType(tsiUno);
     }
 
+    public List<SearchInfoEntity> getSearchInfoVideoNotReady(){
+        List<String> videoList = List.of("15", "19");
+        return searchInfoRepository.findTop10ByTsiTypeInAndTsiStatOrderByTsiUnoDesc(videoList, "11");
+    }
+
     public void addTrkStat(int userUno,String userId, Integer tsrUno) {
         String trkStatCd = searchResultRepository.getTrkStatCd(tsrUno);
         if ("10".equals(trkStatCd)) {
