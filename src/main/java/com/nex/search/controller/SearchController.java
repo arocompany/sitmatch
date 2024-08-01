@@ -48,7 +48,7 @@ public class SearchController {
         if(resultEntity != null) {
             searchService.saveSearchInfoParams(resultEntity);
 
-            if(!resultEntity.getTsiType().equals("15") || resultEntity.getTsiType().equals("19")) {
+            if(!(resultEntity.getTsiType().equals("15") || resultEntity.getTsiType().equals("19"))) {
                 searchService.search(resultEntity, searchInfoDto, folder);
             }
         }else{
