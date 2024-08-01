@@ -164,10 +164,10 @@ public class SearchVideoGoogleLensService {
                 if (getErrorFn.apply(info) == null) {
                     results = getResultFn.apply(info);
 
-                    rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
+                    rsalEntity = requestSerpApiLogService.success(rsalEntity, sourcesJsonInString);
                     requestSerpApiLogService.save(rsalEntity);
                 } else {
-                    rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
+                    rsalEntity = requestSerpApiLogService.fail(rsalEntity, sourcesJsonInString);
                     requestSerpApiLogService.save(rsalEntity);
                 }
             } else {

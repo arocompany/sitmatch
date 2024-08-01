@@ -261,7 +261,7 @@ public class CommonStaticSearchUtil {
 
             if(StringUtils.hasText(engine)) {
                 switch (engine) {
-                    case "google" -> {
+                    case "google", "google_reverse_image" -> {
                         if(StringUtils.hasText(keyword)) appendQueryParam(queryString, "q", keyword);
                         if(StringUtils.hasText(country)) appendQueryParam(queryString, "gl", country);
                         if(StringUtils.hasText(imageUrl)) appendQueryParam(queryString, "image_url", imageUrl);
