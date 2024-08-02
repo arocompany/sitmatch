@@ -30,7 +30,7 @@
       </h1>
 <!--      <form class="bor10 L-box-up" name="login_form" method="post" action="/user/login" onsubmit="login();">-->
       <form class="bor10 L-box-up" name="login_form" method="post" action="/user/login">
-        <input type="text" placeholder="아이디를 입력하세요" class="M-box-in bor10" name="loginId">
+        <input type="text" placeholder="아이디를 입력하세요" class="M-box-in bor10" name="loginId" id = "loginId">
         <input type="password" placeholder="비밀번호를 입력하세요" class="M-box-in bor10" name="loginPw">
         <button class="bor10 login-btn" type="submit" disabled>로그인</button>
       </form>
@@ -50,6 +50,8 @@
       if(errMsg1 !== null && errMsg1 !== undefined) {
         alert(errMsg1 + errMsg2 + errMsg3);
       }
+
+      $("#loginId").focus();
     }
 
     const loginId = document.login_form.loginId;
