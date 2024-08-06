@@ -9,6 +9,7 @@ import com.nex.user.entity.SessionInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -43,7 +44,7 @@ public class SearchController {
 
         searchInfoEntity.setUserUno(sessionInfoDto.getUserUno());
         searchInfoEntity.setTsiStat("11");
-        SearchInfoEntity resultEntity = searchService.insertSearchInfo(file.get(), searchInfoEntity, folder);
+        SearchInfoEntity resultEntity = searchService.insertSearchInfo(file.get(), searchInfoEntity, folder, searchInfoDto);
 
         if(resultEntity != null) {
             searchService.saveSearchInfoParams(resultEntity);
@@ -52,7 +53,13 @@ public class SearchController {
                 searchService.search(resultEntity, searchInfoDto, folder);
             }
         }else{
-            mv = new ModelAndView("redirect:/");
+            if(file != null && !file.isEmpty()) {
+                mv = new ModelAndView("redirect:/");
+                mv.addObject("msg", "영상 검색은 mp4 확장자만 업로드 가능합니다");
+            }else if(!StringUtils.hasText(searchInfoDto.getTsiKeywordHiddenValue())){
+                mv = new ModelAndView("redirect:/");
+                mv.addObject("msg", "키워드 내용이 누락되었습니다.");
+            }
             return mv;
         }
 
