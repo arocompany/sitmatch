@@ -109,7 +109,7 @@
                         <div class="search-img">
                             <img th:if="${(imgSrc != null && tsiType != '15' && tsiType != '19')}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt="">
                             <video th:if="${(imgSrc != null && (tsiType == '15' || tsiType == '19'))}" th:src="'/imagePath'+${#strings?.substring(imgSrc,7)}" alt=""></video>
-                            <span th:if="${searchType eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
+                            <span th:if="${searchType eq '2'}" class="childIcon"><img src="/img/common/childicon.png"></span>
                         </div>
                     </div>
                     <img th:if="${!#strings.isEmpty(keyword)}" src="/img/result/double-right.png" alt=""

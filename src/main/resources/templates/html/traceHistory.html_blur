@@ -286,7 +286,7 @@
                     <div th:classappend="${iterStat.index != 0} ? 'blur' : ''" class="img-box">
                         <input type="hidden" th:value="${item.tsrUno}" id="tsrUno">
                         <div class="img">
-                            <span th:if="${item.tsiSearchType eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
+                            <span th:if="${item.tsiSearchType eq '2'}" class="childIcon"><img src="/img/common/childicon.png"></span>
                             <img th:if="${item.tsrImgPath != null}"
                                  th:src="${'/imagePath' + #strings.substring(item.tsrImgPath, 7) + item.tsrImgName}" alt="">
                         </div>

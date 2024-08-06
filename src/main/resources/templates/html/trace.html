@@ -65,7 +65,7 @@
         <div class="img-box">
           <input type="hidden" th:value="${list.getTsrUno()}" id="tsrUno">
           <div class="img">
-            <span th:if="${list.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
+            <span th:if="${list.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childicon.png"></span>
             <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="" loading="lazy" >
             <img th:unless="${not #strings.isEmpty(list.getTsrImgPath())}" src="/img/common/noImage.jpg">
           </div>

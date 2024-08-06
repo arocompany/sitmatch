@@ -305,10 +305,10 @@
             <div class="img" th:if="${searchInfoList.getTsiType() != '11'}">
               <button th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}"
                       class="tsiUnoClass" id="tsiUno" name="tsiUno"  th:value="${searchInfoList.getTsiUno()}" onclick="InfoList(this);">
-                <span th:if="${searchInfoList.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
+                <span th:if="${searchInfoList.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childicon.png"></span>
                 <img th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="">
               </button>
-              <span th:if="${searchInfoList.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
+              <span th:if="${searchInfoList.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childicon.png"></span>
               <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="" />
             </div>
           </div>

@@ -33,15 +33,15 @@ public class MainScheduler {
         }
     }
 
-    @Scheduled(fixedDelay = 60 * 1000, initialDelay = initialDelay)
-    public void schedule_60() {
-        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
-        if(configData != null && configData.getIsMainScheduler() != null && configData.getIsMainScheduler()) {
-            log.debug("schedule_60 --------------- start");
-            loadSerpApiStatus();
-            log.debug("schedule_60 --------------- end");
-        }
-    }
+//    @Scheduled(fixedDelay = 60 * 1000, initialDelay = initialDelay)
+//    public void schedule_60() {
+//        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+//        if(configData != null && configData.getIsMainScheduler() != null && configData.getIsMainScheduler()) {
+//            log.debug("schedule_60 --------------- start");
+//            loadSerpApiStatus();
+//            log.debug("schedule_60 --------------- end");
+//        }
+//    }
 
     private void searchVideo(){
         try {

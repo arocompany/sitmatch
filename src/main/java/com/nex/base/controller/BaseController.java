@@ -1,5 +1,6 @@
 package com.nex.base.controller;
 
+import com.nex.common.CommonStaticHttpUtil;
 import com.nex.common.ConfigDataManager;
 import com.nex.common.Consts;
 import com.nex.common.SerpApiStatusVOForApi;
@@ -17,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -177,6 +180,10 @@ public class BaseController {
 
     @PostMapping("/getSerpApiStatus")
     public SerpApiStatusVOForApi getSerpApiStatus(){
-        return ConfigDataManager.getInstance().getSerpApiStatus();
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("api_key", ConfigDataManager.getInstance().getDefaultConfig().getSerpApiKey());
+        SerpApiStatusVOForApi result = CommonStaticHttpUtil.GetHttpSync("https://serpapi.com", "account", params, SerpApiStatusVOForApi.class);
+
+        return result;
     }
 }

@@ -99,7 +99,7 @@
             <div class='img'>
               <span th:if="${list.getTsiSearchType() eq '2'}" class="childIcon">
                 <img style="margin-top: 15px; margin-left: 20px; width: 35px;"
-                     src="/img/common/childIcon.png"></span>
+                     src="/img/common/childicon.png"></span>
               <img th:if="${not #strings.isEmpty(list.getTsrImgPath())}" th:src="${'/imagePath'+#strings.substring(list.getTsrImgPath(),7)+list.getTsrImgName()}" alt="">
             </div>
 

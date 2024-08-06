@@ -310,10 +310,10 @@
             <div class="img" th:if="${item.tsiType != '11'}">
               <button th:if="${item.tsiType != '15' && item.tsiType != '19'}"
                       class="tsiUnoClass" id="tsiUno" name="tsiUno" th:value="${item.tsiUno}" onclick="InfoList(this);">
-                <span th:if="${item.tsiSearchType == '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
+                <span th:if="${item.tsiSearchType == '2'}" class="childIcon"><img src="/img/common/childicon.png"></span>
                 <img th:if="${item.tsiType != '15' && item.tsiType != '19'}" th:src="'/imagePath' + ${#strings.substring(item.tsiImgPath, 7)} + ${item.tsiImgName}" alt="">
               </button>
-              <span th:if="${item.tsiSearchType == '2'}" class="childIcon"><img src="/img/common/childIcon.png"></span>
+              <span th:if="${item.tsiSearchType == '2'}" class="childIcon"><img src="/img/common/childicon.png"></span>
               <video th:if="${item.tsiType == '15' || item.tsiType == '19'}" th:src="'/imagePath' + ${#strings.substring(item.tsiImgPath, 7)} + ${item.tsiImgName}" alt=""></video>
             </div>
           </div>
