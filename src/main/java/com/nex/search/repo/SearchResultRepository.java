@@ -1035,13 +1035,13 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     // ORDER BY
     // String orderByTmrSimilarityDesc = "  GROUP BY tsrSiteUrl  ORDER BY tmrVScore desc, tmrAScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
-    String orderByTmrSimilarityDesc = "  ORDER BY tsrImgPath DESC, tsjStatus DESC, tmrSimilarity DESC";
-    String orderByTmrSimilarityDesc_1 = " ORDER BY tsrImgPath DESC, tmrVScore desc, tmrSimilarity desc, tsrUno desc";
-    String orderByTmrSimilarityDesc_2 = " ORDER BY tsrImgPath DESC, tmrAScore desc, tmrSimilarity desc, tsrUno desc";
-    String orderByTmrSimilarityDesc_3 = " ORDER BY tsrImgPath DESC, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
-    String orderByTmrSimilarityDesc_4 = " ORDER BY tsrImgPath DESC, tmrVScore desc, tmrAScore desc, tmrSimilarity desc, tsrUno desc";
-    String orderByTmrSimilarityDesc_5 = " ORDER BY tsrImgPath DESC, tmrVScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
-    String orderByTmrSimilarityDesc_6 = " ORDER BY tsrImgPath DESC, tmrVScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
+    String orderByTmrSimilarityDesc = "  ORDER BY tsrImgPath DESC, tsjStatus DESC, tmrSimilarity DESC, tmrTotalScore DESC";
+    String orderByTmrSimilarityDesc_1 = " ORDER BY tsrImgPath DESC, tmrVScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_2 = " ORDER BY tsrImgPath DESC, tmrAScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_3 = " ORDER BY tsrImgPath DESC, tmrTScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_4 = " ORDER BY tsrImgPath DESC, tmrVScore desc, tmrAScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_5 = " ORDER BY tsrImgPath DESC, tmrVScore desc, tmrTScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_6 = " ORDER BY tsrImgPath DESC, tmrVScore desc, tmrTScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
 
     // String orderByTmrSimilarityAsc = " ORDER BY tmrSimilarity asc, tsrUno desc";
     // String orderByTsrUnoDesc = " ORDER BY tsrUno desc";
