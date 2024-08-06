@@ -55,7 +55,7 @@ public class SearchController {
         }else{
             if(file != null && !file.isEmpty()) {
                 mv = new ModelAndView("redirect:/");
-                mv.addObject("msg", "해당 영상은 업로드 불가합니다. mp4 확장자만 업로드 가능합니다");
+                mv.addObject("msg", "영상 검색은 mp4 확장자만 업로드 가능합니다");
             }else if(!StringUtils.hasText(searchInfoDto.getTsiKeywordHiddenValue())){
                 mv = new ModelAndView("redirect:/");
                 mv.addObject("msg", "키워드 내용이 누락되었습니다.");
