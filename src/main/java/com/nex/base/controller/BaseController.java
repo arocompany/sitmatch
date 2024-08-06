@@ -39,12 +39,13 @@ public class BaseController {
     private final SerpServicesService serpServicesService;
 
     @GetMapping("/")
-    public ModelAndView index(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto) {
+    public ModelAndView index(@SessionAttribute(name = Consts.LOGIN_SESSION, required = false) SessionInfoDto sessionInfoDto, @RequestParam(value = "msg", required = false) String msg) {
         ModelAndView mv = new ModelAndView("html/index");
         mv.addObject("headerMenu", "index");
         List<DefaultQueryDtoInterface> defaultQueryDtoInterface = searchService.getNoticeListMain(0);
         List<SerpServicesEntity> serpServicesIsSsActiveList = serpServicesService.serpServicesIsSsActiveList(1);
 
+        mv.addObject("msg", msg);
 
         mv.addObject("traceInfoList", defaultQueryDtoInterface);
         mv.addObject("serpServicesIsSsActiveList", serpServicesIsSsActiveList);

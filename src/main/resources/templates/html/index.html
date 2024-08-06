@@ -136,8 +136,13 @@
   <script>footer();</script>
 </article>
 
-<script>
+<script th:inline="javascript">
 
+  const msg = /*[[${msg}]]*/;
+
+  if(msg && msg.length > 0){
+    alert(msg);
+  }
 
   // 추적대상
   // const list = document.querySelector(".target-card");

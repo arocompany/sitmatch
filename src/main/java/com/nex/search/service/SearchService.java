@@ -91,7 +91,7 @@ public class SearchService {
 
     private final SitProperties sitProperties;
 
-    public SearchInfoEntity insertSearchInfo(MultipartFile uploadFile, SearchInfoEntity param, String folder){
+    public SearchInfoEntity insertSearchInfo(MultipartFile uploadFile, SearchInfoEntity param, String folder, SearchInfoDto sDto){
         boolean isFile = ! uploadFile.isEmpty();
 
         if(isFile){ // 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19: 영상
@@ -111,6 +111,9 @@ public class SearchService {
                     } else {
                         param.setTsiType("15");
                     }
+                    if(!(uploadFile.getOriginalFilename().indexOf(".mp4") > -1)){
+                        return null;
+                    }
                 } else if(mimeType.substring(0,mimeType.indexOf("/")).contentEquals("image")){// 이미지 업로드
                     BufferedImage bi = ImageIO.read(uploadFile.getInputStream());
 
@@ -126,6 +129,10 @@ public class SearchService {
                         param.setTsiType("17");
                     } else {
                         param.setTsiType("13");
+                    }
+                } else {
+                    if(!StringUtils.hasText(sDto.getTsiKeywordHiddenValue())){
+                        return null;
                     }
                 }
 
