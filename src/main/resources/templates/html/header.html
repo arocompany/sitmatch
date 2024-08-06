@@ -120,15 +120,19 @@
           data: null,
           success:function(data) {
             console.info(data);
-            $("#searchesPerMonth").text(data.searchesPerMonth);
-            $("#thisMonthUsage").text(data.thisMonthUsage);
-            $("#planSearchesLeft").text(data.planSearchesLeft);
+            $("#searchesPerMonth").text($.numberWithCommas(data.searchesPerMonth));
+            $("#thisMonthUsage").text($.numberWithCommas(data.thisMonthUsage));
+            $("#planSearchesLeft").text($.numberWithCommas(data.planSearchesLeft));
           }, error:function(){
             // alert("실패")
             console.log("통신 실패");
           }
         })
       };
+
+      $.numberWithCommas = function (x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      }
     </script>
   </header>
 </nav>
