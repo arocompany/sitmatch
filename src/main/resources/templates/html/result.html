@@ -171,7 +171,7 @@
                     </th:block>
                 </div>
                 <div>
-                    <th:block th:if="${tsiType != '11'}" th:switch="${list.getTsjStatus()}">
+                    <th:block th:switch="${list.getTsjStatus()}">
                         <span th:case="00">대기중</span>
                         <span th:case="01">처리중</span>
                         <span th:case="10">SKIP</span>
