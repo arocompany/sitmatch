@@ -111,9 +111,6 @@ public class SearchService {
                     } else {
                         param.setTsiType("15");
                     }
-                    if(!(uploadFile.getOriginalFilename().indexOf(".mp4") > -1)){
-                        return null;
-                    }
                 } else if(mimeType.substring(0,mimeType.indexOf("/")).contentEquals("image")){// 이미지 업로드
                     BufferedImage bi = ImageIO.read(uploadFile.getInputStream());
 
