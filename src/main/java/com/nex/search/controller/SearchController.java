@@ -53,13 +53,7 @@ public class SearchController {
                 searchService.search(resultEntity, searchInfoDto, folder);
             }
         }else{
-            if(file != null && !file.isEmpty()) {
-                mv = new ModelAndView("redirect:/");
-                mv.addObject("msg", "영상 검색은 mp4 확장자만 업로드 가능합니다");
-            }else if(!StringUtils.hasText(searchInfoDto.getTsiKeywordHiddenValue())){
-                mv = new ModelAndView("redirect:/");
-                mv.addObject("msg", "키워드 내용이 누락되었습니다.");
-            }
+            mv = new ModelAndView("redirect:/");
             return mv;
         }
 
