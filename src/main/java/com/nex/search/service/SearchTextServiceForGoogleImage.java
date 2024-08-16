@@ -119,7 +119,7 @@ public class SearchTextServiceForGoogleImage {
         if (Consts.INSTAGRAM.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
         else if (Consts.FACEBOOK.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
         else if (Consts.TWITTER.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
-        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey(), null, "google", null);
+        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey(), null, "google_images", null);
     }
 
     public String getImageUrl(SearchInfoEntity searchInfoEntity, String textGl, Integer index, String engine){
@@ -191,7 +191,7 @@ public class SearchTextServiceForGoogleImage {
             
             // serpAPI url 생성
             String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey()
-                    , null, "google", null);
+                    , null, "google_images", null);
 
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(siEntity.getTsiUno(), url, textGl, "google_images", tsiKeywordHiddenValue, index, configData.getSerpApiKey(), null);
             requestSerpApiLogService.save(rsalEntity);
