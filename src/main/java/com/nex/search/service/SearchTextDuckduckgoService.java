@@ -247,19 +247,15 @@ public class SearchTextDuckduckgoService {
 
         for (RESULT result : results) {
             String imageUrl = getOriginalFn.apply(result) != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
+            SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
             if(StringUtils.hasText(imageUrl)){
                 try {
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
                     if (!tsrSns.equals(sre.getTsrSns())) {
                         continue;
                     }
                     //이미지 파일 저장
                     imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
-                    CommonStaticSearchUtil.setSearchResultDefault(sre);
-                    sre.setTsrNationCode(nationCode);
-                    sre.setTsrEngine(engine);
-                    searchResultRepository.save(sre);
-                    sreList.add(sre);
+
                 } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                     log.error(e.getMessage());
                     throw new IOException(e);
@@ -267,6 +263,12 @@ public class SearchTextDuckduckgoService {
                     log.error(e.getMessage());
                 }
             }
+
+            CommonStaticSearchUtil.setSearchResultDefault(sre);
+            sre.setTsrNationCode(nationCode);
+            sre.setTsrEngine(engine);
+            searchResultRepository.save(sre);
+            sreList.add(sre);
         }
         return sreList;
     }

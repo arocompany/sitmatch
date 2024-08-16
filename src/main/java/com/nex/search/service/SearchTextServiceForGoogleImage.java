@@ -38,7 +38,7 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 @Lazy
-public class SearchTextBingService {
+public class SearchTextServiceForGoogleImage {
     private final ImageService imageService;
     private final SearchInfoRepository searchInfoRepository;
     private final SearchResultRepository searchResultRepository;
@@ -88,7 +88,7 @@ public class SearchTextBingService {
                                 , Images_resultsByText::isInstagram
                                 , Images_resultsByText::isTwitter
                                 , textGl
-                                , "bing"
+                                , "google_images"
                         );
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -119,16 +119,64 @@ public class SearchTextBingService {
         if (Consts.INSTAGRAM.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
         else if (Consts.FACEBOOK.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
         else if (Consts.TWITTER.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
+        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey(), null, "google", null);
+    }
+
+    public String getImageUrl(SearchInfoEntity searchInfoEntity, String textGl, Integer index, String engine){
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+        String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
+        searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
+        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey(), searchImageUrl, engine, null);
+    }
+
+    public String getRerverseImageUrl(SearchInfoEntity searchInfoEntity, String finalTextGl1, int index){
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+        String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
+        searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
 
         String url = sitProperties.getTextUrl()
-                + "?engine=bing"
-                + "&q="+tsiKeywordHiddenValue
+                + "?gl=" + finalTextGl1
+                + "&no_cache=" + sitProperties.getTextNocache()
                 + "&api_key=" + configData.getSerpApiKey()
-                + "&first="+(index * 10)
-                + "&cc="+textGl.toUpperCase()
-                + "&safeSearch=off";
+                + "&safe=off"
+                + "&filter=0"
+                + "&nfpr=0"
+                + "&start=" + String.valueOf(index * 10)
+                // + "&tbm=" + textTbm
+                + "&engine=google_reverse_image"
+                + "&image_url=" + searchImageUrl;
+
         return url;
     }
+
+    public String getYandexImageUrl(SearchInfoEntity searchInfoEntity, String textGl, int index){
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+        String searchImageUrl = searchInfoEntity.getTsiImgPath() + searchInfoEntity.getTsiImgName();
+        searchImageUrl = configData.getHostImageUrl() + searchImageUrl.substring(searchImageUrl.indexOf("/" + sitProperties.getFileLocation3()) + 1);
+
+        String txtNation = "";
+        switch (textGl){
+            case "kr" -> txtNation = "135";
+            case "us" -> txtNation = "84";
+            case "cn" -> txtNation = "134";
+            case "nl" -> txtNation = "118";
+            case "th" -> txtNation = "995";
+            case "ru" -> txtNation = "225";
+        }
+
+        return sitProperties.getTextUrl()
+                + "?lr=" + txtNation
+                + "&engine=yandex_images"
+                + "&url=" + searchImageUrl
+                + "&p=" + (index)
+                + "&api_key=" + configData.getSerpApiKey();
+    }
+
+    public String getGoogleLensPageTokenUrl(String textGl, String pageToken){
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+        return CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), 0, configData.getSerpApiKey(), null, "google_lens_image_sources", pageToken);
+    }
+
 
     public <INFO, RESULT> List<RESULT> searchText(int index, SearchInfoDto searchInfoDto, String tsrSns, String textGl, Class<INFO> infoClass, Function<INFO, String> getErrorFn, Function<INFO, List<RESULT>> getResultFn, SearchInfoEntity siEntity) throws Exception {
         String tsiKeywordHiddenValue = searchInfoDto.getTsiKeywordHiddenValue();
@@ -140,16 +188,12 @@ public class SearchTextBingService {
             if (CommonCode.snsTypeInstagram.equals(tsrSns)) { tsiKeywordHiddenValue = "인스타그램 " + tsiKeywordHiddenValue; }
             else if (CommonCode.snsTypeFacebook.equals(tsrSns)) { tsiKeywordHiddenValue = "페이스북 " + tsiKeywordHiddenValue; }
             else if (CommonCode.snsTypeTwitter.equals(tsrSns)) { tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue; }
+            
+            // serpAPI url 생성
+            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, sitProperties.getTextNocache(), sitProperties.getTextLocation(), index, configData.getSerpApiKey()
+                    , null, "google", null);
 
-            String url = sitProperties.getTextUrl()
-                    + "?engine=bing"
-                    + "&q="+tsiKeywordHiddenValue
-                    + "&api_key=" + configData.getSerpApiKey()
-                    + "&first="+(index * 10)
-                    + "&cc="+textGl.toUpperCase()
-                    + "&safeSearch=off";
-
-            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(siEntity.getTsiUno(), url, textGl, "bing", tsiKeywordHiddenValue, index, configData.getSerpApiKey(), null);
+            RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(siEntity.getTsiUno(), url, textGl, "google_images", tsiKeywordHiddenValue, index, configData.getSerpApiKey(), null);
             requestSerpApiLogService.save(rsalEntity);
             rsalUno = rsalEntity.getRslUno();
 
@@ -161,11 +205,12 @@ public class SearchTextBingService {
 
             if (resultMap.getStatusCodeValue() == 200) {
                 ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                String jsonInString = mapper.writeValueAsString(resultMap.getBody()).replace("organic_results", "images_results");
+                String jsonInString = mapper.writeValueAsString(resultMap.getBody());
                 INFO info = mapper.readValue(jsonInString, infoClass);
 
                 if (getErrorFn.apply(info) == null) {
                     results = getResultFn.apply(info);
+
                     rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
 
@@ -191,7 +236,6 @@ public class SearchTextBingService {
             return results != null ? results : new ArrayList<>();
         }catch(Exception e){
             log.error(e.getMessage());
-
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
             if(rsalEntity != null) {
                 requestSerpApiLogService.fail(rsalEntity, e.getMessage());
@@ -237,6 +281,7 @@ public class SearchTextBingService {
             sre.setTsrEngine(engine);
             searchResultRepository.save(sre);
             sreList.add(sre);
+
         }
 
         return sreList;
@@ -270,14 +315,15 @@ public class SearchTextBingService {
                 e.printStackTrace();
             }
         }
+
         return "저장 완료";
     }
 
 //    public void CompletableFutureByText(int index, String tsrSns, String textGl, SearchInfoEntity insertResult, SearchInfoDto searchInfoDto){
 //        log.info("==== CompletableFutureByText(재귀 함수 진입 ==== index 값: {} sns 값: {} textGl {}", index, tsrSns, textGl);
-//        if(!loop){
-//            return;
-//        }
+////        if(!loop){
+////            return;
+////        }
 //
 //        index++;
 //        int finalIndex = index;
@@ -292,9 +338,9 @@ public class SearchTextBingService {
 //            }
 //        }).thenApply((r) -> {
 //            try {
-//                if (r == null) {
-//                    loop = false;
-//                }
+////                if (r == null) {
+////                    loop = false;
+////                }
 //                // 결과 저장.(이미지)
 //                return save(
 //                        r
