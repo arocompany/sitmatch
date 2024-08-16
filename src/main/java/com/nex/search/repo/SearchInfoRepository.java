@@ -331,11 +331,12 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             "LEFT OUTER JOIN tb_search_result tsr " +
             "ON tsi.tsi_uno = tsr.tsi_uno " +
             "LEFT OUTER JOIN tb_match_result tmr ON tsr.TSR_UNO = tmr.tsr_uno " +
-            "where IF( tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', CEILING( ( ( CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE TMR_V_SCORE END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE TMR_A_SCORE END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE TMR_T_SCORE END ) / " +
-            "( CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE 1 END ) ) * 100 ) ) > 1 " +
-            "AND tsi.tsr_uno IS null " +
+//            "where IF( tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', CEILING( ( ( CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE TMR_V_SCORE END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE TMR_A_SCORE END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE TMR_T_SCORE END ) / " +
+//            "( CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE 1 END ) ) * 100 ) ) > 1 " +
+            "WHERE tsi.tsr_uno IS null " +
             "AND tsi.data_stat_cd = 10 " +
             "AND tsi.search_value = 0 " +
+            "AND tsr.TSR_UNO IS NOT null " +
             "AND tsi.FST_DML_DT >= :searchStartDate AND :searchEndDate >= tsi.FST_DML_DT " +
             "AND tsi.TSI_SEARCH_TYPE = :tsiSearchType " +
             "GROUP BY tsi_type ) tsi ON base.number = tsi.tsi_type";
@@ -355,10 +356,10 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             "LEFT OUTER JOIN tb_search_result tsr " +
             "ON tsi.tsi_uno = tsr.tsi_uno " +
             "LEFT OUTER JOIN tb_match_result tmr ON tsr.TSR_UNO = tmr.tsr_uno " +
-            "where IF(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0,'0',CEILING((( " +
-            "CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE TMR_V_SCORE END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE TMR_A_SCORE END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE TMR_T_SCORE END) " +
-            "/ (CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE 1 END)) * 100)) > 1 " +
-            "AND tsi.tsr_uno IS not null " +
+//            "where IF(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0,'0',CEILING((( " +
+//            "CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE TMR_V_SCORE END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE TMR_A_SCORE END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE TMR_T_SCORE END) " +
+//            "/ (CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE 1 END)) * 100)) > 1 " +
+            "WHERE tsi.tsr_uno IS not null " +
             "AND search_value = 0 " +
             "AND tsi.FST_DML_DT >= :searchStartDate AND :searchEndDate >= tsi.FST_DML_DT " +
             "AND TSI_SEARCH_TYPE = :tsiSearchType " +

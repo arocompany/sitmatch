@@ -80,7 +80,7 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                             " END AS tsrSns, " +
                             " tsr.TSR_SITE_URL as tsrSiteUrl, " +
                             " tsi.TSI_KEYWORD as tsiKeyword, " +
-                            "   if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', ceiling(((case " +
+                            "   CONVERT(if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', ceiling(((case " +
                             " when isnull(tmr.TMR_V_SCORE) then 0  " +
                             " else tmr.TMR_V_SCORE  " +
                             "  end + case  " +
@@ -98,8 +98,9 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                             "        end + case " +
                             "            when isnull(tmr.TMR_T_SCORE) then 0 " +
                             "            else 1 " +
-                            "        end)) * 100)) as tmrSimilarity, " +
-                            "                tu.USER_ID as userId " +
+                            "        end)) * 100)),SIGNED) as tmrSimilarity, " +
+                            " tmr.tmr_total_score tmrTotalScore, " +
+                            " tu.USER_ID as userId " +
                             "    FROM TB_SEARCH_RESULT TSR " +
                             "    INNER JOIN (SELECT MIN(tsr_uno) tsr_uno from tb_search_result WHERE (:tsiUno is null or tsi_uno = :tsiUno) GROUP BY tsr_site_url) tsr2 ON tsr.tsr_uno = tsr2.tsr_uno " +
                             "    INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO " +
@@ -123,7 +124,8 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                             "            OR tsr.TSR_SNS = '15' " +
                             "            OR tsr.TSR_SNS = '17' " +
                             "        ) " +
-                            "    ORDER BY tsrUno desc ";
+                            "    ORDER BY TSR.TSR_IMG_PATH DESC, TSJ.TSJ_STATUS DESC, tmrSimilarity DESC, tmrTotalScore DESC ";
+
 
     String userSearchInfoHistList = " SELECT USER_ID AS userId, " +
                                     " COUNT(*) AS  infoHistCnt " +
