@@ -145,7 +145,6 @@ public class SearchTextServiceForGoogleImage {
                 // + "&tbm=" + textTbm
                 + "&engine=google_reverse_image"
                 + "&image_url=" + searchImageUrl;
-
         return url;
     }
 
