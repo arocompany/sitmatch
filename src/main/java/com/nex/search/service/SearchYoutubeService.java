@@ -181,6 +181,7 @@ public class SearchYoutubeService {
         }
 
         List<SearchResultEntity> sreList = new ArrayList<>();
+        results = results.stream().distinct().toList();
         for (RESULT result : results) {
             try {
                 //검색 결과 엔티티 추출
