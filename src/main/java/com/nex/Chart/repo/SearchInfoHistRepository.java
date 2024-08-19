@@ -73,17 +73,14 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
     String resultExcelList =" SELECT TSI.TSI_UNO as tsiUno, " +
                             " TSR.TSR_UNO as tsrUno, " +
                             " tsr.TSR_TITLE as tsrTitle, " +
-                            " CASE WHEN TSR_SNS='11' " +
-                            " THEN '구글' " +
-                            " WHEN TSR_SNS='13' " +
-                            " THEN '트위터' " +
-                            " WHEN TSR_SNS='15' " +
-                            " THEN '인스타그램' " +
+                            " CASE WHEN TSR_SNS='11' THEN '구글' " +
+                            " WHEN TSR_SNS='13' THEN '트위터' " +
+                            " WHEN TSR_SNS='15' THEN '인스타그램' " +
                             " ELSE '페이스북' " +
-                            "  END AS tsrSns, " +
-                            "  tsr.TSR_SITE_URL as tsrSiteUrl, " +
-                            "  tsi.TSI_KEYWORD as tsiKeyword, " +
-                            "   if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', ceiling(((case " +
+                            " END AS tsrSns, " +
+                            " tsr.TSR_SITE_URL as tsrSiteUrl, " +
+                            " tsi.TSI_KEYWORD as tsiKeyword, " +
+                            "   CONVERT(if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', ceiling(((case " +
                             " when isnull(tmr.TMR_V_SCORE) then 0  " +
                             " else tmr.TMR_V_SCORE  " +
                             "  end + case  " +
@@ -101,25 +98,20 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                             "        end + case " +
                             "            when isnull(tmr.TMR_T_SCORE) then 0 " +
                             "            else 1 " +
-                            "        end)) * 100)) as tmrSimilarity, " +
-                            "                tu.USER_ID as userId " +
+                            "        end)) * 100)),SIGNED) as tmrSimilarity, " +
+                            " tmr.tmr_total_score tmrTotalScore, " +
+                            " tu.USER_ID as userId " +
                             "    FROM TB_SEARCH_RESULT TSR " +
                             "    INNER JOIN (SELECT MIN(tsr_uno) tsr_uno from tb_search_result WHERE (:tsiUno is null or tsi_uno = :tsiUno) GROUP BY tsr_site_url) tsr2 ON tsr.tsr_uno = tsr2.tsr_uno " +
-                            "    INNER JOIN " +
-                            "        TB_SEARCH_INFO TSI " +
-                            "            ON TSR.TSI_UNO = TSI.TSI_UNO " +
-                            "    LEFT OUTER JOIN " +
-                            "        TB_SEARCH_JOB TSJ " +
-                            "            ON TSR.TSR_UNO = TSJ.TSR_UNO " +
-                            "    LEFT OUTER JOIN " +
-                            "        TB_MATCH_RESULT TMR " +
-                            "            ON TSR.TSR_UNO = TMR.TSR_UNO " +
-                            "    LEFT OUTER JOIN " +
-                            "        TB_USER TU " +
-                            "            ON TSI.USER_UNO = TU.USER_UNO " +
-                            "    WHERE " +
-                            "        TSI.TSI_UNO = :tsiUno " +
-                            " AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') or (:keyword = '' and TSR.TSR_TITLE is null) OR TSR.TSR_SITE_URL LIKE CONCAT('%',:keyword, '%')) " +
+                            "    INNER JOIN TB_SEARCH_INFO TSI ON TSR.TSI_UNO = TSI.TSI_UNO " +
+                            "    LEFT OUTER JOIN TB_SEARCH_JOB TSJ ON TSR.TSR_UNO = TSJ.TSR_UNO " +
+                            " LEFT OUTER JOIN " +
+                            " ( SELECT tsi_uno, tsr_uno, tsj_uno, MAX(tmr_v_score) tmr_v_score, MAX(tmr_a_score) tmr_a_score, MAX(tmr_t_score) tmr_t_score, MAX(tmr_total_score) tmr_total_score, MAX(tmr_age_score) tmr_age_score, MAX(tmr_object_score) tmr_object_score, MAX(tmr_ocw_score) tmr_ocw_score, MAX(tmr_similarity) tmr_similarity, MAX(tmr_age) tmr_age, MAX(tmr_cnt_object) tmr_cnt_object, MAX(tmr_cnt_text) tmr_cnt_text, MAX(tmr_stat) tmr_stat " +
+                            " FROM TB_MATCH_RESULT WHERE tsi_uno = :tsiUno GROUP BY tsi_uno, tsr_uno, tsj_uno) TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
+//                            "    LEFT OUTER JOIN TB_MATCH_RESULT TMR ON TSR.TSR_UNO = TMR.TSR_UNO " +
+                            "    LEFT OUTER JOIN TB_USER TU ON TSI.USER_UNO = TU.USER_UNO " +
+                            "    WHERE TSI.TSI_UNO = :tsiUno " +
+                            "    AND (TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') or (:keyword = '' and TSR.TSR_TITLE is null) OR TSR.TSR_SITE_URL LIKE CONCAT('%',:keyword, '%')) " +
                             "        AND ( " +
                             "            tsj.TSJ_STATUS = '0' " +
                             "            OR tsj.TSJ_STATUS = '1' " +
@@ -132,7 +124,8 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                             "            OR tsr.TSR_SNS = '15' " +
                             "            OR tsr.TSR_SNS = '17' " +
                             "        ) " +
-                            "    ORDER BY tsrUno desc ";
+                            "    ORDER BY TSR.TSR_IMG_PATH DESC, TSJ.TSJ_STATUS DESC, tmrSimilarity DESC, tmrTotalScore DESC ";
+
 
     String userSearchInfoHistList = " SELECT USER_ID AS userId, " +
                                     " COUNT(*) AS  infoHistCnt " +
