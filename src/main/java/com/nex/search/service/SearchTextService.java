@@ -256,6 +256,7 @@ public class SearchTextService {
         }
 
         List<SearchResultEntity> sreList = new ArrayList<>();
+        results = results.stream().distinct().toList();
 
         for (RESULT result : results) {
             String imageUrl = getOriginalFn.apply(result) != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
