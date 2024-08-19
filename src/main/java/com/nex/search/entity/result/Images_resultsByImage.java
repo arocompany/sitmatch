@@ -31,16 +31,16 @@ public class Images_resultsByImage {
         return "Twitter".equals(source);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Images_resultsByImage that = (Images_resultsByImage) o;
-        return link == that.link;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(link);
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Images_resultsByImage that = (Images_resultsByImage) o;
+//        return link == that.link;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(link);
+//    }
 }

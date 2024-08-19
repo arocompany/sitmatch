@@ -257,7 +257,7 @@ public class SearchTextServiceForGoogleImage {
         }
 
         List<SearchResultEntity> sreList = new ArrayList<>();
-        results = results.stream().distinct().toList();
+//        results = results.stream().distinct().toList();
         for (RESULT result : results) {
             try {
                 String imageUrl = getOriginalFn.apply(result) != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);

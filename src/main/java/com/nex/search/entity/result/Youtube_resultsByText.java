@@ -12,16 +12,16 @@ public class Youtube_resultsByText {
     private String link;
     private Map<String, String> thumbnail;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Youtube_resultsByText that = (Youtube_resultsByText) o;
-        return link == that.link;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(link);
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Youtube_resultsByText that = (Youtube_resultsByText) o;
+//        return link == that.link;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(link);
+//    }
 }
