@@ -29,6 +29,8 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -258,29 +260,32 @@ public class SearchTextServiceForGoogleImage {
         List<SearchResultEntity> sreList = new ArrayList<>();
         results = results.stream().distinct().toList();
         for (RESULT result : results) {
-            String imageUrl = getOriginalFn.apply(result) != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
-            SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
-            if(StringUtils.hasText(imageUrl)){
-                try {
+            try {
+                String imageUrl = getOriginalFn.apply(result) != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
+                SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                if(StringUtils.hasText(imageUrl)){
+
                     if (!tsrSns.equals(sre.getTsrSns())) {
                         continue;
                     }
                     //이미지 파일 저장
                     imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
-
-                } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
-                    log.error(e.getMessage());
-                    throw new IOException(e);
-                } catch (Exception e) {
-                    log.error(e.getMessage());
                 }
-            }
 
-            CommonStaticSearchUtil.setSearchResultDefault(sre);
-            sre.setTsrNationCode(nationCode);
-            sre.setTsrEngine(engine);
-            searchResultRepository.save(sre);
-            sreList.add(sre);
+                sre.setTsrSiteUrl(URLDecoder.decode(sre.getTsrSiteUrl(), StandardCharsets.UTF_8));
+
+                CommonStaticSearchUtil.setSearchResultDefault(sre);
+                sre.setTsrNationCode(nationCode);
+                sre.setTsrEngine(engine);
+                searchResultRepository.save(sre);
+                sreList.add(sre);
+
+            } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
+                log.error(e.getMessage());
+                throw new IOException(e);
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
 
         }
 
