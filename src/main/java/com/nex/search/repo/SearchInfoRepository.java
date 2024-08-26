@@ -326,20 +326,24 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             "GROUP BY tsi_type ) tsi ON base.number = tsi.tsi_type";
 
     String statisticsSearchResultByTsiType = "SELECT NUMBER tsiType, coalesce(tsi.cnt, 0) cnt FROM (  SELECT 11 AS NUMBER UNION ALL SELECT 13 UNION ALL SELECT 15 UNION ALL SELECT 17 UNION ALL SELECT 19 ) base LEFT OUTER JOIN " +
-            " ( SELECT tsi_type, COUNT(*) cnt " +
-            "FROM tb_search_info tsi " +
-            "LEFT OUTER JOIN tb_search_result tsr " +
-            "ON tsi.tsi_uno = tsr.tsi_uno " +
-            "LEFT OUTER JOIN tb_match_result tmr ON tsr.TSR_UNO = tmr.tsr_uno " +
-//            "where IF( tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', CEILING( ( ( CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE TMR_V_SCORE END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE TMR_A_SCORE END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE TMR_T_SCORE END ) / " +
-//            "( CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE 1 END ) ) * 100 ) ) > 1 " +
-            "WHERE tsi.tsr_uno IS null " +
-            "AND tsi.data_stat_cd = 10 " +
-            "AND tsi.search_value = 0 " +
-            "AND tsr.TSR_UNO IS NOT null " +
-            "AND tsi.FST_DML_DT >= :searchStartDate AND :searchEndDate >= tsi.FST_DML_DT " +
-            "AND tsi.TSI_SEARCH_TYPE = :tsiSearchType " +
-            "GROUP BY tsi_type ) tsi ON base.number = tsi.tsi_type";
+            " ( SELECT tsi_type, SUM(b) cnt FROM ( " +
+            " SELECT tsi.tsi_uno, tsi_type, COUNT(DISTINCT tsr_site_url) b " +
+            " FROM tb_search_info tsi " +
+            " INNER JOIN tb_search_result tsr ON tsi.tsi_uno = tsr.tsi_uno " +
+            " INNER JOIN tb_search_job tsj ON tsr.tsi_uno = tsj.tsi_uno AND tsr.tsr_uno = tsj.tsr_uno " +
+//            " INNER JOIN (SELECT MIN(tsr_uno) tsr_uno, MIN(tsi_uno) tsi_uno from tb_search_result GROUP BY tsr_site_url) tsr2 ON tsr.tsr_uno = tsr2.tsr_uno AND tsr.tsi_uno = tsr2.tsi_uno " +
+//            " LEFT OUTER JOIN tb_match_result tmr ON tsr.TSR_UNO = tmr.tsr_uno" +
+//            " where IF( tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', CEILING( ( ( CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE TMR_V_SCORE END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE TMR_A_SCORE END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE TMR_T_SCORE END ) /" +
+//            " ( CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE 1 END ) ) * 100 ) ) > 1" +
+            " WHERE tsi.tsr_uno IS null " +
+            " AND tsi.data_stat_cd = 10 " +
+            " AND tsi.search_value = 0 " +
+            " AND tsr.TSR_UNO IS NOT null " +
+            " AND tsi.FST_DML_DT >= :searchStartDate AND :searchEndDate >= tsi.FST_DML_DT " +
+            " AND tsi.TSI_SEARCH_TYPE = :tsiSearchType " +
+            " GROUP BY tsi.tsi_uno,tsi_type " +
+            " ) a " +
+            " GROUP BY tsi_type ) tsi ON base.number = tsi.tsi_type ";
 
     String statisticsSearchInfoMonitoringByTsiType = "SELECT NUMBER tsiType, coalesce(tsi.cnt, 0) cnt FROM (  SELECT 11 AS NUMBER UNION ALL SELECT 13 UNION ALL SELECT 15 UNION ALL SELECT 17 UNION ALL SELECT 19 ) base LEFT OUTER JOIN " +
             " ( SELECT tsi_type, COUNT(*) cnt " +
@@ -351,11 +355,11 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             "AND TSI_SEARCH_TYPE = :tsiSearchType " +
             "GROUP BY tsi_type ) tsi ON base.number = tsi.tsi_type";
     String statisticsSearchResultMonitoringByTsiType = "SELECT NUMBER tsiType, coalesce(tsi.cnt, 0) cnt FROM (  SELECT 11 AS NUMBER UNION ALL SELECT 13 UNION ALL SELECT 15 UNION ALL SELECT 17 UNION ALL SELECT 19 ) base LEFT OUTER JOIN " +
-            " ( SELECT tsi_type, COUNT(*) cnt " +
-            "FROM tb_search_info tsi " +
-            "LEFT OUTER JOIN tb_search_result tsr " +
-            "ON tsi.tsi_uno = tsr.tsi_uno " +
-            "LEFT OUTER JOIN tb_match_result tmr ON tsr.TSR_UNO = tmr.tsr_uno " +
+            " ( SELECT tsi_type, SUM(b) cnt FROM ( " +
+            " SELECT tsi.tsi_uno, tsi_type, COUNT(DISTINCT tsr_site_url) b " +
+            " FROM tb_search_info tsi " +
+            " INNER JOIN tb_search_result tsr ON tsi.tsi_uno = tsr.tsi_uno " +
+            " INNER JOIN tb_search_job tsj ON tsr.tsi_uno = tsj.tsi_uno AND tsr.tsr_uno = tsj.tsr_uno " +
 //            "where IF(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0,'0',CEILING((( " +
 //            "CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE TMR_V_SCORE END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE TMR_A_SCORE END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE TMR_T_SCORE END) " +
 //            "/ (CASE WHEN ISNULL(tmr.TMR_V_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_A_SCORE) THEN 0 ELSE 1 END + CASE WHEN ISNULL(tmr.TMR_T_SCORE) THEN 0 ELSE 1 END)) * 100)) > 1 " +
@@ -363,6 +367,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             "AND search_value = 0 " +
             "AND tsi.FST_DML_DT >= :searchStartDate AND :searchEndDate >= tsi.FST_DML_DT " +
             "AND TSI_SEARCH_TYPE = :tsiSearchType " +
+            " GROUP BY tsi.tsi_uno,tsi_type " +
+            " ) a " +
             "GROUP BY tsi_type " +
             "order BY tsi_type ) tsi ON base.number = tsi.tsi_type";
     String statisticsSearchInfoMonitoringByTsiTypeAndUser = "SELECT tsi.user_uno userUno, SUM(cnt) cnt, " +
