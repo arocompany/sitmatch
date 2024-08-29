@@ -1,6 +1,9 @@
 package com.nex.common;
 
 public interface CommonCode {
+    Integer isActive = 1;
+    Integer isInActive =0;
+
     String snsTypeGoogle = "11";
     String snsTypeTwitter = "13";
 

@@ -59,6 +59,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " WHERE tsi.fst_dml_dt LIKE CONCAT(:toDate,'%') " +
                                 " GROUP BY tu.user_uno ";
     String searchInfoResultCnt =    " SELECT tsi.tsi_uno AS tsiUno, " +
+                                    " tsi.tsi_is_deploy AS tsiIsDeploy, " +
                                     " tsi.tsi_search_type AS tsiSearchType, " +
                                     " tsi.data_stat_cd AS tsiDataStatCd, " +
                                     " tsi.fst_dml_dt AS tsiFstDmlDt, " +
@@ -147,6 +148,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " order by  tsi.tsi_uno desc ";
 
     String userSearchInfoList = " SELECT tsi.tsi_uno AS tsiUno, " +
+                                " tsi.tsi_is_deploy AS tsiIsDeploy, " +
                                 " tsi.data_stat_cd AS tsiDataStatCd, " +
                                 " tsi.tsi_search_type AS tsiSearchType, " +
                                 " tsi.fst_dml_dt AS tsiFstDmlDt, " +
@@ -421,7 +423,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
     @Query(value = "SELECT TSI.TSI_TYPE FROM TB_SEARCH_INFO TSI WHERE TSI.TSI_UNO = :tsiUno", nativeQuery = true)
     String getSearchInfoTsiType(Integer tsiUno);
 
-
+    @Query(value = "SELECT TSI.TSI_IS_DEPLOY FROM TB_SEARCH_INFO TSI WHERE TSI.TSI_UNO = :tsiUno", nativeQuery = true)
+    Integer getSearchInfoTsiIsDeploy(Integer tsiUno);
 
     SearchInfoEntity findByTsiUno(Integer tsiUno);
 

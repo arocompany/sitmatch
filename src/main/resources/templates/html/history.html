@@ -213,24 +213,26 @@
       <span class="type column_04">검색 유형</span>
       <span class="column_05">검색 조건</span>
       <span class="cont column_06" style ="width:15%">내용</span>
-      <!--      <span class="social">SNS</span>-->
       <span class="time column_07">검색 일시</span>
       <span class="progress column_08">진행률</span>
       <span class="gubun column_09">구분</span>
       <span class="dist column_10"> 검색 결과 / 유사도</span>
       <button class="del-btn btn-off dels" onclick="checkTsiunos();"></button>
       <input type="hidden" id="tsiUnosValue" name="tsiUnosValue" value="">
-      <!--<input type="button" class="del-btn btn-off dels" onclick="checkTsiunos();"></input>-->
     </h2>
 
     <ul class="history-list history-search-list">
       <li style="width: 1600px; justify-content: start" class="btn-off bor10" th:each="searchInfoList:${searchInfoList}">
         <input type="checkbox" id="tsiUnos" name="tsiUnos" th:value="${searchInfoList.getTsiUno()}">
-        <!--        <div class="tsiUnoclass">
-                <input type="hidden" id="tsiUno" name="tsiUno" th:value="${searchInfoList.getTsiUno()}">
-                </div>-->
         <p class="num column_01" th:text="${searchInfoList.getTsiUno()}"></p> <!-- 순번 -->
-        <td><p class="num column_02" th:text="${searchInfoList.getTsiUserFile()}"></p>   </td>
+        <td>
+          <div class="img-box">
+            <div class="" style = "width:30px; height:50px;">
+              <span th:if="${searchInfoList.getTsiIsDeploy() eq 1}" class="deployIcon"><img src="/img/common/deployIcon.png"></span>
+            </div>
+          </div>
+          <p class="num column_02" th:text="${searchInfoList.getTsiUserFile()}"></p>
+        </td>
         <p class="counselor column_03" th:text="${userIdMap.get(searchInfoList.getTsiUserUno())}">상담사 아이디</p>
         <p class="type column_04" style="text-align: center">
           <th:block th:switch="${searchInfoList.getTsiType()}">
@@ -301,7 +303,7 @@
         </div>
         <div class="cont contImgBox column_06">
           <!-- 0328 아청물작업 필요 부분 -->
-          <div  class="img-box"> <!-- onclick="InfoList();" -->
+          <div  class="img-box">
             <div class="img" th:if="${searchInfoList.getTsiType() != '11'}">
               <button th:if="${searchInfoList.getTsiType() != '15' && searchInfoList.getTsiType() != '19'}"
                       class="tsiUnoClass" id="tsiUno" name="tsiUno"  th:value="${searchInfoList.getTsiUno()}" onclick="InfoList(this);">

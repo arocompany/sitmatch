@@ -97,6 +97,10 @@ public class SearchInfoEntity {
     private String tsiUserFile;
 
     @Basic
+    @Column(name = "TSI_IS_DEPLOY")
+    private Integer tsiIsDeploy;
+
+    @Basic
     @Column(name = "TSI_MONITORING_CNT")
     private Integer tsiMonitoringCnt;
 

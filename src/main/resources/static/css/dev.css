@@ -192,7 +192,7 @@
     text-align: center;
 }
 
-.serpServices input[type=checkbox], .nations input[type=checkbox] {
+.serpServices input[type=checkbox], .nations input[type=checkbox], .isDeploy input[type=checkbox] {
     background: none;
 }
 
@@ -252,7 +252,7 @@ margin-bottom: 15px;
     font-size: 0;
     overflow: unset;
 }
-.img-box .childIcon{
+.img-box .childIcon, .deployIcon{
     position: absolute;
     top: 7px;
     left: 0px;
@@ -323,4 +323,12 @@ form.noticeForm {
 .searchNation {
     margin-left: 10px;
 }
-
+.box_wrap.isDeploy p > span:first-of-type {
+    color: #545759;
+    font-weight: bold;
+    margin-right: 10px;
+}
+.deployIcon img {
+    width: 20px;
+    margin-top: 10px;
+}

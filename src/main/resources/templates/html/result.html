@@ -120,6 +120,7 @@
                     <div class="tab research" th:if="${!#strings.isEmpty(keyword)}">
                         <p>"<span th:text="${keyword}">sitting</span>"에 대한 검색 결과 입니다.</p>
                     </div>
+
                     <div style="margin-left:5px;">
                         <p><span> | 상담사 : </span><span th:text="${userId}">상담사 아이디</span></p>
                     </div>
@@ -131,6 +132,11 @@
                             <img src="/img/common/excelLogo.png">
                         </button>
                     </form>
+                </div>
+                <div class="box_wrap isDeploy" style="margin-left:5px;">
+                    <p><span> 유포 여부 </span>
+                        <span class="select_box"> <input class="selectBox" id="tsiIsDeploy" th:data-idx="${tsiUno}" th:value="${tsiIsDeploy}" type="checkbox" th:checked="${tsiIsDeploy == 1}"> </span>
+                    </p>
                 </div>
             </div>
             <p class="total-num">총 <span th:text="${searchResultListCount}"></span> 건</p>
@@ -506,7 +512,23 @@
             }
         })
     }
-    // --------------------------------------------------------------------------------------------
+
+    // 유포 여부
+    $('#tsiIsDeploy').on('click', function() {
+        const isDeploy = $(this).val();
+        const tsiUno = $(this).data('idx');
+
+        this.disabled = true;
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/isDeploy/'+tsiUno+"/"+isDeploy, true);
+        xhr.send(null);
+        xhr.onload = () => {
+            if (xhr.status === 200) { location.reload(); }
+            else { console.log('통신 실패') }
+            this.disabled = false;
+        }
+    });
+
     view_type();
     /*]]>*/
 </script>

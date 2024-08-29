@@ -1,9 +1,6 @@
 package com.nex.search.entity.result;
 
-import com.nex.search.entity.SearchResultEntity;
 import lombok.Data;
-
-import java.util.Objects;
 
 @Data
 public class Images_resultsByText {
