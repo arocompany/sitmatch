@@ -327,6 +327,17 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
             "AND TSI_SEARCH_TYPE = :tsiSearchType " +
             "GROUP BY tsi_type ) tsi ON base.number = tsi.tsi_type";
 
+    String statisticsSearchInfoByTsiTypeForDeploy = "SELECT NUMBER tsiType, coalesce(tsi.cnt, 0) cnt FROM (  SELECT 11 AS NUMBER UNION ALL SELECT 13 UNION ALL SELECT 15 UNION ALL SELECT 17 UNION ALL SELECT 19 ) base LEFT OUTER JOIN " +
+            " ( SELECT tsi_type, COUNT(*) cnt " +
+            "FROM tb_search_info " +
+            "WHERE tsr_uno IS null " +
+            "AND data_stat_cd = 10 " +
+            "AND search_value = 0 " +
+            "AND tsi_is_deploy = 1 " +
+            "AND FST_DML_DT >= :searchStartDate AND :searchEndDate >= FST_DML_DT " +
+            "AND TSI_SEARCH_TYPE = :tsiSearchType " +
+            "GROUP BY tsi_type ) tsi ON base.number = tsi.tsi_type";
+
     String statisticsSearchResultByTsiType = "SELECT NUMBER tsiType, coalesce(tsi.cnt, 0) cnt FROM (  SELECT 11 AS NUMBER UNION ALL SELECT 13 UNION ALL SELECT 15 UNION ALL SELECT 17 UNION ALL SELECT 19 ) base LEFT OUTER JOIN " +
             " ( SELECT tsi_type, SUM(b) cnt FROM ( " +
             " SELECT tsi.tsi_uno, tsi_type, COUNT(DISTINCT tsr_site_url) b " +
@@ -456,6 +467,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
 
     @Query(value = statisticsSearchInfoByTsiType, nativeQuery = true)
     List<StatisticsDto> statisticsSearchInfoByTsiType(String searchStartDate, String searchEndDate, Integer tsiSearchType);
+    @Query(value = statisticsSearchInfoByTsiTypeForDeploy, nativeQuery = true)
+    List<StatisticsDto> statisticsSearchInfoByTsiTypeForDeploy(String searchStartDate, String searchEndDate, Integer tsiSearchType);
 
     @Query(value = statisticsSearchResultByTsiType, nativeQuery = true)
     List<StatisticsDto> statisticsSearchResultByTsiType(String searchStartDate, String searchEndDate, Integer tsiSearchType);

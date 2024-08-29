@@ -48,13 +48,14 @@ public class StatisticsController {
         modelAndView.addObject("statisticsSearchInfoMonitoringByTsiType1", searchInfoRepository.statisticsSearchInfoMonitoringByTsiType(fromDate, toDate2, 1));
         modelAndView.addObject("statisticsSearchResultMonitoringByTsiType1", searchInfoRepository.statisticsSearchResultMonitoringByTsiType(fromDate, toDate2, 1));
         modelAndView.addObject("statisticsSearchInfoMonitoringByTsiTypeAndUser1", searchInfoRepository.statisticsSearchInfoMonitoringByTsiTypeAndUser(fromDate, toDate2, 1));
+        modelAndView.addObject("statisticsSearchInfoByTsiTypeForDeploy1", searchInfoRepository.statisticsSearchInfoByTsiTypeForDeploy(fromDate, toDate2, 1));
 
         modelAndView.addObject("statisticsSearchInfoByTsiType2", searchInfoRepository.statisticsSearchInfoByTsiType(fromDate, toDate2, 2));
         modelAndView.addObject("statisticsSearchResultByTsiType2", searchInfoRepository.statisticsSearchResultByTsiType(fromDate, toDate2, 2));
         modelAndView.addObject("statisticsSearchInfoMonitoringByTsiType2", searchInfoRepository.statisticsSearchInfoMonitoringByTsiType(fromDate, toDate2, 2));
         modelAndView.addObject("statisticsSearchResultMonitoringByTsiType2", searchInfoRepository.statisticsSearchResultMonitoringByTsiType(fromDate, toDate2, 2));
         modelAndView.addObject("statisticsSearchInfoMonitoringByTsiTypeAndUser2", searchInfoRepository.statisticsSearchInfoMonitoringByTsiTypeAndUser(fromDate, toDate2, 2));
-
+        modelAndView.addObject("statisticsSearchInfoByTsiTypeForDeploy2", searchInfoRepository.statisticsSearchInfoByTsiTypeForDeploy(fromDate, toDate2, 2));
 
         modelAndView.addObject("fromDate", fromDate);
         modelAndView.addObject("toDate", toDate);
@@ -77,12 +78,14 @@ public class StatisticsController {
         modelAndView.addObject("statisticsSearchInfoMonitoringByTsiType1", searchInfoRepository.statisticsSearchInfoMonitoringByTsiType(fromDate, toDate2, 1));
         modelAndView.addObject("statisticsSearchResultMonitoringByTsiType1", searchInfoRepository.statisticsSearchResultMonitoringByTsiType(fromDate, toDate2, 1));
         modelAndView.addObject("statisticsSearchInfoMonitoringByTsiTypeAndUser1", searchInfoRepository.statisticsSearchInfoMonitoringByTsiTypeAndUser(fromDate, toDate2, 1));
+        modelAndView.addObject("statisticsSearchInfoByTsiTypeForDeploy1", searchInfoRepository.statisticsSearchInfoByTsiTypeForDeploy(fromDate, toDate2, 1));
 
         modelAndView.addObject("statisticsSearchInfoByTsiType2", searchInfoRepository.statisticsSearchInfoByTsiType(fromDate, toDate2, 2));
         modelAndView.addObject("statisticsSearchResultByTsiType2", searchInfoRepository.statisticsSearchResultByTsiType(fromDate, toDate2, 2));
         modelAndView.addObject("statisticsSearchInfoMonitoringByTsiType2", searchInfoRepository.statisticsSearchInfoMonitoringByTsiType(fromDate, toDate2, 2));
         modelAndView.addObject("statisticsSearchResultMonitoringByTsiType2", searchInfoRepository.statisticsSearchResultMonitoringByTsiType(fromDate, toDate2, 2));
         modelAndView.addObject("statisticsSearchInfoMonitoringByTsiTypeAndUser2", searchInfoRepository.statisticsSearchInfoMonitoringByTsiTypeAndUser(fromDate, toDate2, 2));
+        modelAndView.addObject("statisticsSearchInfoByTsiTypeForDeploy2", searchInfoRepository.statisticsSearchInfoByTsiTypeForDeploy(fromDate, toDate2, 2));
 
         modelAndView.addObject("fromDate", fromDate);
         modelAndView.addObject("toDate", toDate);
