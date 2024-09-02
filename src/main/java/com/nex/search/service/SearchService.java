@@ -1204,7 +1204,7 @@ public class SearchService {
 
         row=sheet.createRow(rowNum++);
 
-        String[] columnHeader = {"순번", "사례번호", "상담사", "검색유형", "내용", "검색일시"};
+        String[] columnHeader = {"순번", "유포 여부", "사례번호", "상담사", "검색유형", "내용", "검색일시"};
         for(int i=0; i<columnHeader.length; i++){
             cell=row.createCell(i);
             cell.setCellValue(columnHeader[i]);
@@ -1216,18 +1216,21 @@ public class SearchService {
             cell.setCellValue(searchHistoryExcelDtoList.get(i).getTsiUno());
 
             cell = row.createCell(1);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getUserFile());
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTsiIsDeploy());
 
             cell = row.createCell(2);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getUserId());
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getUserFile());
 
             cell = row.createCell(3);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTsiType());
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getUserId());
 
             cell = row.createCell(4);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getKeyword());
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTsiType());
 
             cell = row.createCell(5);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getKeyword());
+
+            cell = row.createCell(6);
             cell.setCellValue(searchHistoryExcelDtoList.get(i).getFstDmlDt());
 
         }

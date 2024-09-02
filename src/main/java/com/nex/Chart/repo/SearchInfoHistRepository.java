@@ -44,6 +44,7 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                                 " ORDER BY DATE ";
     String searchHistoryExcelList = " SELECT TSI.tsi_uno AS tsiUno, " +
                                     " USER.USER_ID AS userId, " +
+                                    " CASE WHEN TSI.TSI_IS_DEPLOY = '1' THEN '유포' ELSE '미유포' END AS tsiIsDeploy, " +
                                     " CASE " +
                                     " WHEN TSI.TSI_TYPE = '11' " +
                                     " THEN '키워드' " +
