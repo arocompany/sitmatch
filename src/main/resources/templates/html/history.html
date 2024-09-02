@@ -168,6 +168,13 @@
     <div class="searchbox">
       <form name="history-search" class="search-box" action="/history" id="searchForm">
         <div class="searchTypeWrap">
+          <div class="searchType" style="margin-right: 150px;">
+            <input type="checkbox" id="tsiIsDeployType" name="tsiIsDeployType" th:value="1" th:checked="${tsiIsDeployType == 1}">
+            <label class="btn-off bor10" for="tsiIsDeployType" tooltip="유포 여부" flow="up">유포 여부</label>
+          </div>
+        </div>
+
+        <div class="searchTypeWrap">
           <div class="searchType">
             <input type="radio" id="all" name="tsiSearchType" th:value="0" th:checked="${tsiSearchType == 0}">
             <label class="btn-off bor10" for="all" tooltip="피해촬영물" flow="up">All</label>
@@ -363,14 +370,12 @@
   </script>
 </article>
 <script th:inline="javascript">
-
   const excelBtn = document.querySelectorAll(".excelBtn")
   excelBtn.forEach((btn) => {
     btn.addEventListener('click', (e) =>{
       const searchType = $('input[name="tsiSearchType"]:checked').val();
       const manageType = $('.chkManageType').val();
       const searchKeyword = $('#searchKeyword').val();
-      // console.log("searchType "+searchType + "셀렉박스 "+manageType);
       window.location.href = '/searchHistory?searchType='+ searchType +'&manageType='+manageType+'&keyword='+searchKeyword;
     })
   })
@@ -418,7 +423,6 @@
           })
         })
       } else {
-        //통신 실패
         console.log("통신 실패");
       }
     }
@@ -431,14 +435,6 @@
       $("input[type=checkbox]").prop("checked", false);
     }
   }
-
-  // function allCheckboxBtnTrace() {
-  //   if($('#traceAllCheckbox').prop("checked")) {
-  //     $("input[type=checkbox]").prop("checked", true);
-  //   } else {
-  //     $("input[type=checkbox]").prop("checked", false);
-  //   }
-  // }
 
   function checkTsiunos() {
     if(confirm("일괄 삭제하시겠습니까?")) {
@@ -457,9 +453,6 @@
         alert("삭제할 데이터를 선택해주세요.");
         return false;
       }
-
-      // alert($('#tsiUnosValue').val());
-
       $.ajax({
         url: "/search/deleteTsiUnos",
         type: "get",
@@ -470,75 +463,20 @@
           alert("삭제가 완료되었습니다.");
           window.location.href="/history";
         }, error:function(){
-          // alert("실패")
           console.log("통신 실패");
         }
       })
     }
   }
 
-  /*
-  // 이미지 클릭시 팝업창
-  const searchImg = document.querySelector('.img');
-  searchImg.addEventListener('click', function () {
-    document.body.style.overflow = 'hidden';
-    modal.style.display = 'block';
-    modal.innerHTML = `<div class='modelImg'>
-        ${this.children[0].outerHTML}
-      <button class="escBtn">닫기</button>
-        </div>`;
-    if (modal.querySelector('video')) {
-      modal.querySelector('video').controls = true;
-    }
-    // const esc = modal.querySelector(".esc-btn");
-    const esc = modal.querySelector(".escBtn");
-    esc.onclick = () => {
-      modal.style.display = 'none';
-      document.body.style.overflow = 'unset';
-    }
-  });
-*/
-
   // 페이징 처리 시에 탭 전환 방지
   const sTit = document.querySelector('.s-tit');
   const tTit = document.querySelector('.t-tit');
   const searchhistory = document.querySelector('.search-history');
-  // const tracehistory = document.querySelector('.trace-history');
-
-
-  // const isTabType = /*[[${tabType}]]*/;
-  // const isTabType = sessionStorage.getItem('tabType') != null ? sessionStorage.getItem('tabType') : 'search';
-  //
-  // console.log(isTabType);
-  // if(isTabType !== 'search') {
-  //   searchhistory.classList.remove('active');
-  //   // tracehistory.classList.add('active');
-  //   sTit.classList.remove('active');
-  //   tTit.classList.add('active');
-  // }
 
   // 히스토리 탭
   const hisTab = document.querySelectorAll('.title span');
   const his = document.querySelectorAll('.history');
-
-  // hisTab.forEach((tab, idx) => {
-  //   tab.onclick = (e) => {
-  //     // console.log(e.target.innerHTML);
-  //     if(e.target.className.substring(0,5) === 's-tit') {
-  //       sessionStorage.setItem('tabType', 'search');
-  //     } else {
-  //       sessionStorage.setItem('tabType', 'trace');
-  //     }
-  //     getSiblings(e.target).forEach(t => {
-  //       t.classList.remove('active');
-  //     });
-  //     his.forEach(gr => {
-  //       gr.classList.remove('active');
-  //     })
-  //     e.target.classList.add('active');
-  //     his[idx].classList.add('active');
-  //   }
-  // })
 
   const searchType = document.querySelector(".selection.selectBox");
   const option2 = document.querySelectorAll(".option.select li");
@@ -555,37 +493,6 @@
     })
   })
 
-  // 셀렉트 구현
-  // const select = document.querySelectorAll(".selection.setTraceHistory");
-  // select.forEach(sel => {
-  //   sel.addEventListener("click", (e) => {
-  //     sel.classList.toggle('active');
-  //     const option = sel.querySelectorAll(".option li");
-  //     option.forEach(btn => {
-  //       btn.addEventListener('click', (e) => {
-  //         let val = e.target.innerText;
-  //         sel.children[0].innerHTML = val;
-  //         sel.children[0].style.color = e.target.style.color;
-  //
-  //         //XMLHttpRequest 객체 생성
-  //         var xhr = new XMLHttpRequest();
-  //         //요청을 보낼 방식, 주소, 비동기여부 설정
-  //         xhr.open('GET', '/search/setTrkStatCd?tsrUno='+sel.dataset.uno+'&trkStatCd='+e.target.dataset.cd, true);
-  //         //요청 전송
-  //         xhr.send(null);
-  //         //통신후 작업
-  //         xhr.onload = () => {
-  //           if (xhr.status === 200) {  //통신 성공
-  //             console.log("통신 성공");
-  //           } else {  //통신 실패
-  //             console.log("통신 실패");
-  //           }
-  //         }
-  //       })
-  //     });
-  //   });
-  // })
-
   const searchForm = document.querySelector("#searchForm");
   const searchPage = document.querySelector("#searchPage");
   const searchEvent = (pageNum) => {
@@ -594,27 +501,10 @@
   }
 
   $(function(){
-    $("input[name='tsiSearchType']").on("change", function(){
+    $("input[name='tsiSearchType'], input[name='tsiIsDeployType']").on("change", function(){
       $("#searchForm").submit();
     });
   });
-
-  // const traceForm = document.querySelector("#traceForm");
-  // const tracePage = document.querySelector("#tracePage");
-  //
-  // const traceEvent = (pageNum) => {
-  //   tracePage.value = pageNum;
-  //   traceForm.submit();
-  // }
-
-  //검색이력 내용 넓이
-  // const context = document.querySelectorAll(".history-search-list .cont");
-  // context.forEach(con => {
-  //   if (con.querySelector('.con2').innerHTML === '') {
-  //     con.querySelector('.con2').style.display = 'none';
-  //     con.querySelector('.con1').style.maxWidth = '100%';
-  //   }
-  // })
 
   // 검색 진행률
   const progress = document.querySelectorAll(".dot-wrap.progress");
@@ -641,26 +531,12 @@
     const diffMSec = dateA.getTime() - dateB.getTime();
     const diffMin = diffMSec / (60 * 1000);
 
-    // //XMLHttpRequest 객체 생성
-    // var req = new Req();
-    // //요청을 보낼 방식, 주소, 비동기여부 설정
-    // req.url = '/history_tsi_uno_count';
-    // req.data = { tsi_uno: dotTsiUno }
-    // const result = req.async(i);
-    // console.info(result);
-    // if(!result) {
-    //   tsi_uno_count = false;
-    // }
-    //console.info(diffMin+'/diffMin');
     if(diffMin>=1){
       loading.style.display = 'none';
       per.style.fontSize = '1rem';
       per.style.cssText = "font-size:1rem; color:#545759;";
-      // per.innerText = "100%";
       pro.nextElementSibling.innerHTML = "검색결과";
       pro.nextElementSibling.style.color = "#e87728";
-      // console.info(tsi_uno_count);
-      // console.info(per.innerText);
     }
     i++;
   })
@@ -725,223 +601,7 @@
     })
   });
 
-  // // 추적 이력 메모
-  // const trkHistMemo = document.querySelectorAll(".memo");
-  // trkHistMemo.forEach((memo) => {
-  //   memo.addEventListener('focusout', () => {
-  //     //XMLHttpRequest 객체 생성
-  //     var xhr = new XMLHttpRequest();
-  //     //요청을 보낼 방식, 주소, 비동기여부 설정
-  //     xhr.open('GET', '/search/setTrkHistMemo?tsrUno='+memo.dataset.uno+'&memo='+memo.value, true);
-  //     //요청 전송
-  //     xhr.send(null);
-  //     //통신후 작업
-  //     xhr.onload = () => {
-  //       if (xhr.status === 200) {  //통신 성공
-  //         console.log("통신 성공");
-  //       } else {  //통신 실패
-  //         console.log("통신 실패");
-  //       }
-  //     }
-  //   })
-  // });
-
-  // 2차 검증 버튼
-  // const chkBtn = document.querySelectorAll(".btn-off.double-chk")
-  // chkBtn.forEach((btn) => {
-  //    btn.addEventListener('click', () => {
-  //         window.open(btn.value, '_blank');
-  //    })
-  // });
-  /*]]>*/
-
-  // const chkBtn = document.querySelectorAll(".btn-off.double-chk")
-  // chkBtn.forEach((btn) => {
-  //   btn.addEventListener('click', () => {
-  //     if(btn.getAttribute("tsiUno")) {
-  //       let url = '/notice?tsiUno=' + btn.getAttribute("tsiUno");
-  //       // window.location.href = '/notice?tsrUno=' + btn.value + '&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno");
-  //       if(btn.getAttribute("tsiKeyword") !== null){
-  //         url += '&tsiKeyword=' + btn.getAttribute("tsiKeyword");
-  //       }
-  //       window.location.href = url;
-  //     }else{
-  //       alert('조회대상이 없습니다.');
-  //     }
-  //   })
-  // });
-
-  /*
-  const chkBtn = document.querySelectorAll(".btn-off.double-chk")
-  chkBtn.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      if(btn.getAttribute("tsiuno")) {
-        // window.location.href = '/notice?tsrUno=' + btn.value + '&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno");
-        window.location.href = '/notice?'+'&keyword=' + btn.getAttribute("keyword") + '&tsiuno=' + btn.getAttribute("tsiuno");
-      }else{
-        alert('조회대상이 없습니다.');
-      }
-    })
-  });
-  */
-
-  // 대상 디테일
   const imgBtn = document.querySelectorAll(".img-box");
-  // const tsiUnoClass = document.querySelectorAll(".history-search-list");
-  // const modal = document.querySelector("#modal");
-
-  /*
-  tsiUnoClass.forEach((btn)=> {
-    const tsiUno = btn.querySelector("#tsiUno");
-    btn.addEventListener('click', () => {
-      alert("tsiUno 임" + tsiUno)
-      xhr.open('GET', 'result-detail?tsrUno=' + tsiUno.value, true);
-    })
-
-  })
-  */
-
-  // imgBtn.forEach((btn) => {
-  //   const tsrUno = btn.querySelector("#tsrUno");
-  //
-  //   btn.addEventListener('click', () => {
-  //     //XMLHttpRequest 객체 생성
-  //     var xhr = new XMLHttpRequest();
-  //     //요청을 보낼 방식, 주소, 비동기여부 설정
-  //     xhr.open('GET', 'trace-detail?tsrUno='+tsrUno.value, true);
-  //     //요청 전송
-  //     xhr.send(null);
-  //     //통신후 작업
-  //     xhr.onload = () => {
-  //       //통신 성공
-  //       if (xhr.status == 200) {
-  //         document.body.style.overflow = 'hidden';
-  //         modal.style.display = 'block';
-  //         modal.innerHTML = xhr.response;
-  //         const esc = document.querySelector(".trace-detail .esc-btn");
-  //         esc.onclick = () => {
-  //           modal.style.display = 'none';
-  //           document.body.style.overflow = 'unset';
-  //         }
-  //         const _CANVASBOX = document.querySelectorAll(`.preview-img `);
-  //         //비디오 태그의 메타데이터가 들어오면
-  //         _CANVASBOX.forEach(img => {
-  //           let _VIDEO = img.querySelector('video');
-  //           _VIDEO.addEventListener('loadedmetadata', function (e) {
-  //             img.children[0].width = _VIDEO.videoWidth;
-  //             img.children[0].height = _VIDEO.videoHeight;
-  //             const time = Math.random() * _VIDEO.duration;
-  //             _VIDEO.currentTime = time; //비디오의 영상길이 중 랜덤 타임을 뽑음
-  //             img.children[1].getContext("2d").drawImage(_VIDEO, 0, 0, _VIDEO.videoWidth, _VIDEO.videoHeight);
-  //             // 비디오 플레이
-  //             const video = document.querySelectorAll(".img-box .video");
-  //             if (video) {
-  //               video.forEach(vid => {
-  //                 const btn = vid.querySelector('.play-btn');
-  //                 btn.onclick = () => {
-  //                   vid.querySelector("video").play();
-  //                   vid.querySelector("video").controls = true;
-  //                   vid.querySelector(".play-wrap").style.display = 'none';
-  //                 }
-  //               })
-  //             }
-  //           })
-  //         })
-  //       } else {
-  //         console.log("통신 실패");
-  //       }
-  //     }
-  //   })
-  // });
-
-  // 24시간 모니터링 버튼 활성화
-  // const allTime = document.querySelectorAll(".all-time");
-  // for (let i = 0; i < allTime.length; i++) {
-  //   allTime[i].addEventListener('click', function () {
-  //     var inputValue = this.parentElement.querySelector('.area_input').value;
-  //
-  //     if(! (6 <= inputValue && inputValue <= 720)){
-  //       alert("최소 6시간 최대 720까지 설정 가능합니다.");
-  //       return false;
-  //     }
-  //
-  //     this.disabled = true;
-  //     //XMLHttpRequest 객체 생성
-  //     var xhr = new XMLHttpRequest();
-  //     //요청을 보낼 방식, 주소, 비동기여부 설정
-  //     xhr.open('GET', 'search/monitoring/'+this.value+"/"+inputValue, true);
-  //     //요청 전송
-  //     xhr.send(null);
-  //     //통신후 작업
-  //     xhr.onload = () => {
-  //       if (xhr.status === 200) {   //통신 성공
-  //         this.classList.toggle('active');
-  //         location.reload();
-  //       } else {
-  //         console.log('통신 실패')
-  //       }
-  //       this.disabled = false;
-  //     }
-  //   })
-  // }
-
-  // 추적이력 삭제 단건
-  // function traceDelete(){
-  //   const delBtn = document.getElementById('traceTsrUno');
-  //   // alert(delBtn.value);
-  //   if((confirm("삭제하시겠습니까?"))) {
-  //     $.ajax({
-  //       url: "/deleteTsrUno",
-  //       type: "post",
-  //       data: {
-  //         tsrUno: delBtn.value
-  //       },
-  //       success:function(data) {
-  //         alert("삭제가 완료되었습니다.");
-  //         window.location.href="/history";
-  //       }, error:function(){
-  //         console.log("통신 실패");
-  //       }
-  //     })
-  //   }
-  // }
-
-  // 추적이력 삭제 다건
-  // function deleteTsrunos(){
-  //   if((confirm("일괄 삭제 하시겠습니까?"))){
-  //     var obj = $("[name=tsrUnos]");
-  //
-  //     var chkArray = new Array(); // 배열 선언
-  //
-  //     $('input:checkbox[name=tsrUnos]:checked').each(function() {
-  //       chkArray.push(this.value);
-  //     });
-  //
-  //     $('#tsrUnoValues').val(chkArray);
-  //
-  //     const tsrUnoValues = document.getElementById('tsrUnoValues').value;
-  //
-  //     if(tsrUnoValues === null || tsrUnoValues === "") {
-  //       alert("삭제할 데이터를 선택해주세요.");
-  //       return false;
-  //     }
-  //
-  //     $.ajax({
-  //       url: "/deleteTsrUnos",
-  //       type: "get",
-  //       data: {
-  //         tsrUnoValues: $('#tsrUnoValues').val()
-  //       },
-  //       success:function(data) {
-  //         alert("삭제가 완료되었습니다.");
-  //         window.location.href="/history";
-  //       }, error:function(){
-  //         console.log("통신 실패");
-  //       }
-  //     })
-  //   }
-  // }
-
   function traceList(){
     window.location.href = "/history";
   }
@@ -977,58 +637,6 @@
       });
 
       $(".btnShowMovieImg").on("click", function(){
-        // let tsiUno = document.getElementById('imgTsiUno').value;
-
-        // $.ajax({
-        //   url: '/download/zip/'+tsiUno,
-        //   type: "get",
-        //   // data: {
-        //   //   tsiUno: $('#imgTsiUno').val()
-        //   // },
-        //   xhrFields:{
-        //     responseType: 'blob'
-        //   },
-        //   success: function(data){
-        //     var anchor = document.getElementById('a');
-        //     var url = window.URL || window.webkitURL;
-        //     anchor.href = url.createObjectURL(data);
-        //     anchor.download = 'archive.zip';
-        //     document.body.append(anchor);
-        //     anchor.click();
-        //     setTimeout(function(){
-        //       document.body.removeChild(anchor);
-        //       url.revokeObjectURL(anchor.href);
-        //     }, 1);
-        //   },
-        //   error:function(){
-        //     // alert("실패")
-        //     console.log("통신 실패");
-        //   }
-        // })
-
-        // let xhr = new XMLHttpRequest();
-        // //요청을 보낼 방식, 주소, 비동기여부 설정
-        // xhr.open('GET', '/download/zip/'+tsiUno, true);
-        // //요청 전송
-        // xhr.send(null);
-        //통신후 작업
-
-        // xhr.onload = () => {
-        //   if (xhr.status === 200) {   //통신 성공
-        //     alert('이미지 다운로드 완료되었습니다.')
-        //     // this.classList.toggle('active');
-        //     // location.reload();
-        //   } else {
-        //     alert('이미지가 존재하지 않습니다.')
-        //   }
-        //   this.disabled = false;
-        // }
-
-        // $.each($(this).next().find(".movieImg"), function(item, idx){
-        //   let width = $(this).width();
-        //   let height = $(this).height();
-        //   alert(width + "/" + height);
-        // });
 
       });
 

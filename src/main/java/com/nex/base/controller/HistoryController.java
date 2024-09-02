@@ -43,7 +43,8 @@ public class HistoryController {
                                 @RequestParam(required = false, defaultValue = "") String searchUserFile,
                                 @RequestParam(required = false, defaultValue = "") String traceKeyword,
                                 @RequestParam(required = false, defaultValue = "검색어") String manageType,
-                                @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType) {
+                                @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType,
+                                @RequestParam(required = false, defaultValue = "0") Integer tsiIsDeployType) {
 
         ModelAndView modelAndView = new ModelAndView("html/history");
         modelAndView.addObject("manageType", manageType);
@@ -54,14 +55,14 @@ public class HistoryController {
         searchService.searchInfoHistInsert(userUno, userId, searchKeyword, traceKeyword);
 
         modelAndView.addObject("tsiSearchType", tsiSearchType);
-
+        modelAndView.addObject("tsiIsDeployType", tsiIsDeployType);
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("headerMenu", "history");
 
         if(sessionInfoDto.isAdmin()) {
-            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, tsiSearchType, manageType, searchUserFile);
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, tsiSearchType, manageType, searchUserFile, tsiIsDeployType);
         } else {
-            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, userUno, tsiSearchType, manageType, searchUserFile);
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, userUno, tsiSearchType, manageType, searchUserFile, tsiIsDeployType);
         }
 
         if(searchUserFile != null && !searchUserFile.isEmpty()){

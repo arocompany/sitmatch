@@ -145,6 +145,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " and ((:manageType = '검색어' and tsi.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
                                     " and tsi.TSR_UNO is null " +
                                     "  AND (tsi.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) "+
+                                    "  AND (tsi.TSI_IS_DEPLOY = :tsiIsDeployType OR :tsiIsDeployType = 0 ) "+
                                     " order by  tsi.tsi_uno desc ";
 
     String userSearchInfoList = " SELECT tsi.tsi_uno AS tsiUno, " +
@@ -215,7 +216,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " and ((:manageType = '검색어' and tsi.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
                                 " and tsi.TSR_UNO is null " +
                                 " and tsi.user_uno = :userUno " +
-                                "  AND (tsi.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) "+
+                                "  AND (tsi.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " +
+                                "  AND (tsi.TSI_IS_DEPLOY = :tsiIsDeployType OR :tsiIsDeployType = 0 ) " +
                                 " order by  tsi.tsi_uno desc ";
     String searchInfoCount= " select count(tsi.TSI_UNO) " +
                             " from tb_search_info tsi " +
@@ -411,10 +413,10 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
     Page<SearchInfoEntity> findAllByDataStatCdAndSearchValueAndTsiKeywordContainingAndUserUnoAndTsrUnoIsNullOrderByTsiUnoDesc(String dataStatCd, String searchValue, String keyword, Integer userUno, Pageable pageable);
 
     @Query(value = searchInfoResultCnt, nativeQuery = true, countQuery=searchInfoCount)
-    Page<ResultCntQueryDtoInterface> getSearchInfoResultCnt(String dataStatCd, String searchValue, String keyword, Integer tsiSearchType, String manageType, String searchUserFile, Pageable pageable);
+    Page<ResultCntQueryDtoInterface> getSearchInfoResultCnt(String dataStatCd, String searchValue, String keyword, Integer tsiSearchType, String manageType, String searchUserFile, Integer tsiIsDeployType, Pageable pageable);
 
     @Query(value = userSearchInfoList, nativeQuery = true, countQuery=userSearchInfoCount)
-    Page<ResultCntQueryDtoInterface> getUserSearchInfoList(String dataStatCd, String searchValue, String keyword, Integer userUno, Integer tsiSearchType, String manageType, String searchUserFile, Pageable pageable);
+    Page<ResultCntQueryDtoInterface> getUserSearchInfoList(String dataStatCd, String searchValue, String keyword, Integer userUno, Integer tsiSearchType, String manageType, String searchUserFile, Integer tsiIsDeployType, Pageable pageable);
 
     @Query(value = allUserSearchHistoryList, nativeQuery = true, countQuery=userSearchHistoryCount)
     Page<UserSearchHistoryDtoInterface> getAllUserSearchHistoryList(Pageable pageable, String searchKeyword);
