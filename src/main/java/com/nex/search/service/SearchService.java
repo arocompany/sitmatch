@@ -1204,7 +1204,7 @@ public class SearchService {
 
         row=sheet.createRow(rowNum++);
 
-        String[] columnHeader = {"순번", "유포 여부", "사례번호", "상담사", "검색유형", "내용", "검색일시"};
+        String[] columnHeader = {"순번", "유포여부", "사례번호", "상담사", "검색유형", "내용", "검색일시", "검색결과", "유사도", "아청물"};
         for(int i=0; i<columnHeader.length; i++){
             cell=row.createCell(i);
             cell.setCellValue(columnHeader[i]);
@@ -1233,6 +1233,14 @@ public class SearchService {
             cell = row.createCell(6);
             cell.setCellValue(searchHistoryExcelDtoList.get(i).getFstDmlDt());
 
+            cell = row.createCell(7);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getResultCnt());
+
+            cell = row.createCell(8);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTmrSimilarityCnt());
+
+            cell = row.createCell(9);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTmrChildCnt());
         }
 
         String fileName = "검색 이력";

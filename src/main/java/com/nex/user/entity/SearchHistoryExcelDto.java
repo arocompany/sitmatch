@@ -8,4 +8,7 @@ public interface SearchHistoryExcelDto {
     String getKeyword();
     String getUserFile();
     String getFstDmlDt();
+    Integer getResultCnt();
+    Integer getTmrSimilarityCnt();
+    Integer getTmrChildCnt();
 }

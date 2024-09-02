@@ -58,7 +58,40 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                                     " END AS tsiType, " +
                                     " TSI.tsi_keyword AS keyword, " +
                                     " TSI.tsi_user_file AS userFile, " +
-                                    " TSI.fst_dml_dt AS fstDmlDt " +
+                                    " TSI.fst_dml_dt AS fstDmlDt, " +
+                                    " (SELECT COUNT(distinct tsr_site_url)  FROM tb_search_result tsr " +
+                                    " INNER JOIN tb_search_job tsj ON tsr.TSI_UNO = tsj.tsi_uno AND tsr.tsr_uno = tsj.tsr_uno" +
+                                    " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt, " +
+                                    " (SELECT COUNT(*) " +
+                                    " FROM tb_search_result tsr_2 " +
+                                    " INNER JOIN (SELECT MIN(tsr_uno) tsr_uno from tb_search_result WHERE tsi_uno = tsi.tsi_uno GROUP BY tsr_site_url) tsr2 ON tsr_2.tsr_uno = tsr2.tsr_uno " +
+                                    " LEFT OUTER JOIN tb_match_result tmr " +
+                                    " ON tsr_2.TSR_UNO = tmr.tsr_uno " +
+                                    " WHERE tmr.tsi_uno = tsi.tsi_uno " +
+                                    " AND tsr_2.tsi_uno = tsi.tsi_uno " +
+                                    " AND if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', " +
+                                    " ceiling(((case " +
+                                    " when isnull(tmr.TMR_V_SCORE) then 0 " +
+                                    " ELSE TMR_V_SCORE " +
+                                    " end + case " +
+                                    " when isnull(tmr.TMR_A_SCORE) then 0 " +
+                                    " ELSE TMR_A_SCORE " +
+                                    " end + case " +
+                                    " when isnull(tmr.TMR_T_SCORE) then 0 " +
+                                    " ELSE TMR_T_SCORE " +
+                                    " end) / (case " +
+                                    " when isnull(tmr.TMR_V_SCORE) then 0 " +
+                                    " else 1 " +
+                                    " end + case " +
+                                    " when isnull(tmr.TMR_A_SCORE) then 0 " +
+                                    " else 1 " +
+                                    " end + case " +
+                                    " when isnull(tmr.TMR_T_SCORE) then 0 " +
+                                    " else 1 " +
+                                    " end)) * 100)) > 1) AS tmrSimilarityCnt, " +
+                                    " ( SELECT COUNT(*) FROM tb_search_result tsr_2 INNER JOIN ( SELECT MIN(tsr_uno) tsr_uno FROM tb_search_result WHERE tsi_uno = tsi.tsi_uno GROUP BY tsr_site_url ) tsr2 ON tsr_2.tsr_uno = tsr2.tsr_uno LEFT OUTER JOIN tb_match_result tmr ON tsr_2.TSR_UNO = tmr.tsr_uno" +
+                                    " WHERE tmr.tsi_uno = tsi.tsi_uno AND tsr_2.tsi_uno = tsi.tsi_uno AND tmr.TMR_TOTAL_SCORE > 0 " +
+                                    " ) AS tmrChildCnt" +
                                     " FROM " +
                                     " TB_SEARCH_INFO TSI " +
                                     " LEFT OUTER JOIN " +
