@@ -1,7 +1,9 @@
 package com.nex.base.controller;
 
 import com.nex.Chart.repo.SearchInfoHistRepository;
+import com.nex.common.CommonCode;
 import com.nex.common.Consts;
+import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchInfoParamsEntity;
 import com.nex.search.entity.VideoInfoEntity;
 import com.nex.search.entity.dto.DefaultQueryDtoInterface;
@@ -41,7 +43,8 @@ public class HistoryController {
                                 @RequestParam(required = false, defaultValue = "") String searchUserFile,
                                 @RequestParam(required = false, defaultValue = "") String traceKeyword,
                                 @RequestParam(required = false, defaultValue = "검색어") String manageType,
-                                @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType) {
+                                @RequestParam(required = false, defaultValue = "0") Integer tsiSearchType,
+                                @RequestParam(required = false, defaultValue = "0") Integer tsiIsDeployType) {
 
         ModelAndView modelAndView = new ModelAndView("html/history");
         modelAndView.addObject("manageType", manageType);
@@ -52,14 +55,14 @@ public class HistoryController {
         searchService.searchInfoHistInsert(userUno, userId, searchKeyword, traceKeyword);
 
         modelAndView.addObject("tsiSearchType", tsiSearchType);
-
+        modelAndView.addObject("tsiIsDeployType", tsiIsDeployType);
         modelAndView.addObject("sessionInfo", sessionInfoDto);
         modelAndView.addObject("headerMenu", "history");
 
         if(sessionInfoDto.isAdmin()) {
-            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, tsiSearchType, manageType, searchUserFile);
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, tsiSearchType, manageType, searchUserFile, tsiIsDeployType);
         } else {
-            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, userUno, tsiSearchType, manageType, searchUserFile);
+            searchHistMap = searchService.getSearchInfoList(searchPage, searchKeyword, userUno, tsiSearchType, manageType, searchUserFile, tsiIsDeployType);
         }
 
         if(searchUserFile != null && !searchUserFile.isEmpty()){
@@ -277,6 +280,7 @@ public class HistoryController {
 
         if(tsiUno.isPresent()) {
             modelAndView.addObject("tsiUno", tsiUno.get());
+            modelAndView.addObject("tsiIsDeploy", searchInfoRepository.getSearchInfoTsiIsDeploy(tsiUno.get()));
             modelAndView.addObject("imgSrc", searchService.getSearchInfoImgUrl(tsiUno.get()));
             modelAndView.addObject("tsiType", searchService.getSearchInfoTsiType(tsiUno.get()));
 
@@ -417,6 +421,38 @@ public class HistoryController {
     public void resultExcelList(HttpServletResponse response, String tsiUno, String keyword) throws IOException {
         List<ResultListExcelDto> resultListExcelDtoList = searchInfoHistRepository.resultExcelList(tsiUno, keyword);
         searchService.resultExcelList(response, resultListExcelDtoList);
+    }
+
+    @GetMapping("/isDeploy/{tsiUno}/{tsiIsDeploy}")
+    public String setIsDeploy(@PathVariable("tsiUno") Integer tsiUno, @PathVariable("tsiIsDeploy") Integer tsiIsDeploy) {
+        try {
+            if (!validateInteger(tsiUno)) {
+                return "fail";
+            }
+            if (!validateInteger(tsiIsDeploy)) {
+                return "fail";
+            }
+
+            SearchInfoEntity searchInfoEntity = searchInfoRepository.findByTsiUno(tsiUno);
+            if(searchInfoEntity == null){ return "fail"; }
+            else {
+                if(tsiIsDeploy.equals(CommonCode.isActive)){
+                    searchInfoEntity.setTsiIsDeploy(CommonCode.isInActive);
+                } else { searchInfoEntity.setTsiIsDeploy((CommonCode.isActive)); }
+
+                searchInfoRepository.save(searchInfoEntity);
+            }
+        } catch(Exception e){
+            log.error(e.getMessage());
+        }
+
+        return "success";
+    }
+
+    private boolean validateInteger(Integer param){
+        if(param == null) return false;
+        if(param < 0) return false;
+        else return true;
     }
 
 }

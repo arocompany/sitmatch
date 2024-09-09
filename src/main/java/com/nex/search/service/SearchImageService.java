@@ -297,7 +297,7 @@ public class SearchImageService {
 
         // RestTemplate restTemplate = new RestTemplate();
         List<SearchResultEntity> sreList = new ArrayList<>();
-        results = results.stream().distinct().toList();
+//        results = results.stream().distinct().toList();
         for (RESULT result : results) {
 
             try {

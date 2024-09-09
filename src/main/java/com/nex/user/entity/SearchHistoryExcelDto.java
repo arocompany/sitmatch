@@ -2,9 +2,13 @@ package com.nex.user.entity;
 
 public interface SearchHistoryExcelDto {
     String getTsiUno();
+    String getTsiIsDeploy();
     String getUserId();
-    String getTsiType(); // 검색타입
-    String getKeyword(); // 키워드
+    String getTsiType();
+    String getKeyword();
     String getUserFile();
-    String getFstDmlDt(); // 검색 날짜
+    String getFstDmlDt();
+    Integer getResultCnt();
+    Integer getTmrSimilarityCnt();
+    Integer getTmrChildCnt();
 }

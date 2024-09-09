@@ -183,7 +183,7 @@ public class SearchImageGoogleLensService {
         }
         // RestTemplate restTemplate = new RestTemplate();
         List<SearchResultEntity> sreList = new ArrayList<>();
-        results = results.stream().distinct().toList();
+//        results = results.stream().distinct().toList();
         //SearchResultEntity sre = null;
         for (RESULT result : results) {
             try {

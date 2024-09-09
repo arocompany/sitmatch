@@ -249,11 +249,6 @@
             </form>
         </div>
 
-        <!--        <div class="chart_btn_wrap">-->
-        <!--            <button type="button" id="btnTable">표</button>-->
-        <!--            <button type="button" id="btnChart">챠트</button>-->
-        <!--        </div>-->
-
         <div class="areaList" style="display: none">
             <div class="areaList1">
                 <h2>피해촬영물</h2>
@@ -342,6 +337,27 @@
                 </div>
 
                 <div>
+                    <div>유포 대상(이력관리 촬영물 수)</div>
+                    <table style="display: block" id='statisticsSearchInfoByTsiTypeForDeploy1'>
+                        <thead>
+                        <tr>
+                            <th>타입</th>
+                            <th>카운트</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="info : ${statisticsSearchInfoByTsiTypeForDeploy1}">
+                            <td th:text="${info.tsiType}"></td>
+                            <td th:text="${info.cnt}"></td>
+                        </tr>
+                        <tr th:if="${statisticsSearchInfoByTsiTypeForDeploy1.size() == 0}">
+                            <td colspan="2">No Data</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div>
                     <div>담당자별 모니터링 대상(이력관리 촬영물 수)</div>
                     <table style="display: block" id='statisticsSearchInfoMonitoringByTsiTypeAndUser1'>
                         <thead>
@@ -373,7 +389,7 @@
                 </div>
             </div>
 
-
+<!-- =============== 아동촬영물 시작 ============== -->
             <div class="areaList2">
                 <h2>아동촬영물</h2>
                 <div>
@@ -399,7 +415,7 @@
 
                 <div>
                     <div>모니터링 결과(이력관리-검색결과)</div>
-                    <table style="display: block" id='statisticsSearchResultByTsiType1'>
+                    <table style="display: block" id='statisticsSearchResultByTsiType2'>
                         <thead>
                         <tr>
                             <th>타입</th>
@@ -461,6 +477,27 @@
                 </div>
 
                 <div>
+                    <div>유포 대상(이력관리 촬영물 수)</div>
+                    <table style="display: block" id='statisticsSearchInfoByTsiTypeForDeploy2'>
+                        <thead>
+                        <tr>
+                            <th>타입</th>
+                            <th>카운트</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="info : ${statisticsSearchInfoByTsiTypeForDeploy2}">
+                            <td th:text="${info.tsiType}"></td>
+                            <td th:text="${info.cnt}"></td>
+                        </tr>
+                        <tr th:if="${statisticsSearchInfoByTsiTypeForDeploy2.size() == 0}">
+                            <td colspan="2">No Data</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div>
                     <div>담당자별 모니터링(이력관리 촬영물 수)</div>
                     <table style="display: block" id='statisticsSearchInfoMonitoringByTsiTypeAndUser2'>
                         <thead>
@@ -513,6 +550,10 @@
 <!--                    <p>24시 모니터링 결과(재유포 수)</p>-->
                     <canvas id="myChart4"></canvas>
                 </div>
+                <div class="first parent" id="div_myAreaChart11">
+                    <!--                    <p>유포 대상(이력관리 촬영물 수)</p>-->
+                    <canvas id="myChart11"></canvas>
+                </div>
                 <div class="five parent" id="div_myAreaChart5">
 <!--                    <p>담당자별 모니터링 대상(이력관리 촬영물 수)</p>-->
                     <canvas id="myChart5"></canvas>
@@ -537,6 +578,10 @@
 <!--                    <p>24시 모니터링 결과(재유포 수)</p>-->
                     <canvas id="myChart9"></canvas>
                 </div>
+                <div class="first parent" id="div_myAreaChart12">
+                    <!--                    <p>유포 대상(이력관리 촬영물 수)</p>-->
+                    <canvas id="myChart12"></canvas>
+                </div>
                 <div class="five parent" id="div_myAreaChart10">
 <!--                    <p>담당자별 모니터링 대상(이력관리 촬영물 수)</p>-->
                     <canvas id="myChart10"></canvas>
@@ -554,11 +599,6 @@
                         style="margin-right: 10px; height: 60px; font-size: 17px; width: 121px; font-weight: bold; color: #e88550;"
                         type="submit">Excel <br> Download
                 </button>
-                <!--
-                <button  class="bor10 btn-off manager-add" style="height: 60px; font-size: 17px; width: 121px; font-weight: bold; color: #e88550;"
-                         type="button" onclick="pdfDown();"> PDF <br> Download</button>
-                -->
-                <!-- createPdf(); -->
             </div>
         </form>
 
@@ -581,34 +621,31 @@
         let dataList3 = /*[[${statisticsSearchInfoMonitoringByTsiType1}]]*/ [];
         let dataList4 = /*[[${statisticsSearchResultMonitoringByTsiType1}]]*/ [];
         let dataList5 = /*[[${statisticsSearchInfoMonitoringByTsiTypeAndUser1}]]*/ [];
+        let dataList11 = /*[[${statisticsSearchInfoByTsiTypeForDeploy1}]]*/ [];
 
         let dataList6 = /*[[${statisticsSearchInfoByTsiType2}]]*/ [];
         let dataList7 = /*[[${statisticsSearchResultByTsiType2}]]*/ [];
         let dataList8 = /*[[${statisticsSearchInfoMonitoringByTsiType2}]]*/ [];
         let dataList9 = /*[[${statisticsSearchResultMonitoringByTsiType2}]]*/ [];
         let dataList10 = /*[[${statisticsSearchInfoMonitoringByTsiTypeAndUser2}]]*/ [];
+        let dataList12 = /*[[${statisticsSearchInfoByTsiTypeForDeploy2}]]*/ [];
 
         drawChart("myChart1", dataList1, '모니터링 대상(이력관리 촬영물 수)');
         drawChart("myChart2", dataList2, '모니터링 결과(이력관리-검색결과)');
         drawChart("myChart3", dataList3, '24시 모니터링 대상');
         drawChart("myChart4", dataList4, '24시 모니터링 결과(재유포 수)');
         drawChart2("myChart5", dataList5, '담당자별 모니터링 대상(이력관리 촬영물 수)');
+        drawChart("myChart11", dataList11, '유포 대상(이력관리 촬영물 수)');
 
         drawChart("myChart6", dataList6, '모니터링 대상(이력관리 촬영물 수)');
         drawChart("myChart7", dataList7, '모니터링 결과(이력관리-검색결과)');
         drawChart("myChart8", dataList8, '24시 모니터링 대상');
         drawChart("myChart9", dataList9, '24시 모니터링 결과(재유포 수)');
         drawChart2("myChart10", dataList10, '담당자별 모니터링 대상(이력관리 촬영물 수)');
-
-        //     버튼 탭 구성
-        // $("#areaList, #areaChart").style("display", "none");
-        // $("#btnList").on("click", function () {
-        //     $("#areaList").style("display", "block");
-        // });
+        drawChart("myChart12", dataList12, '유포 대상(이력관리 촬영물 수)');
     });
 
     const drawChart = (el, list, title) => {
-        // console.info(el, list, title);
         let parentEl = $('#' + el).parent("div.parent");
         $('#' + el).remove(); //그래프 그리는 영역 지움
         parentEl.append('<canvas id="' + el + '" ></canvas>');

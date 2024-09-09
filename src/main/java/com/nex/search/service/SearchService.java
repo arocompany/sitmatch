@@ -1070,11 +1070,11 @@ public class SearchService {
         return true;
     }
 
-    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer tsiSearchType, String manageType, String searchUserFile) {
+    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer tsiSearchType, String manageType, String searchUserFile, Integer tsiIsDeployType) {
         log.info("getSearchInfoList page: " + page);
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getSearchInfoResultCnt("10","0", keyword, tsiSearchType, manageType, searchUserFile, pageRequest);
+        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getSearchInfoResultCnt("10","0", keyword, tsiSearchType, manageType, searchUserFile, tsiIsDeployType, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
@@ -1086,10 +1086,10 @@ public class SearchService {
     }
 
     // admin 아닐 때
-    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno, Integer tsiSearchType, String manageType, String searchUserFile) {
+    public Map<String, Object> getSearchInfoList(Integer page, String keyword, Integer userUno, Integer tsiSearchType, String manageType, String searchUserFile, Integer tsiIsDeployType) {
         Map<String, Object> outMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page - 1, Consts.PAGE_SIZE);
-        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getUserSearchInfoList("10","0", keyword, userUno, tsiSearchType, manageType,searchUserFile, pageRequest);
+        Page<ResultCntQueryDtoInterface> searchInfoListPage = searchInfoRepository.getUserSearchInfoList("10","0", keyword, userUno, tsiSearchType, manageType,searchUserFile, tsiIsDeployType, pageRequest);
 
         outMap.put("searchInfoList", searchInfoListPage);
         outMap.put("totalPages", searchInfoListPage.getTotalPages());
@@ -1204,7 +1204,7 @@ public class SearchService {
 
         row=sheet.createRow(rowNum++);
 
-        String[] columnHeader = {"순번", "사례번호", "상담사", "검색유형", "내용", "검색일시"};
+        String[] columnHeader = {"순번", "유포여부", "사례번호", "상담사", "검색유형", "내용", "검색일시", "검색결과", "유사도", "아청물"};
         for(int i=0; i<columnHeader.length; i++){
             cell=row.createCell(i);
             cell.setCellValue(columnHeader[i]);
@@ -1216,20 +1216,31 @@ public class SearchService {
             cell.setCellValue(searchHistoryExcelDtoList.get(i).getTsiUno());
 
             cell = row.createCell(1);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getUserFile());
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTsiIsDeploy());
 
             cell = row.createCell(2);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getUserId());
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getUserFile());
 
             cell = row.createCell(3);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTsiType());
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getUserId());
 
             cell = row.createCell(4);
-            cell.setCellValue(searchHistoryExcelDtoList.get(i).getKeyword());
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTsiType());
 
             cell = row.createCell(5);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getKeyword());
+
+            cell = row.createCell(6);
             cell.setCellValue(searchHistoryExcelDtoList.get(i).getFstDmlDt());
 
+            cell = row.createCell(7);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getResultCnt());
+
+            cell = row.createCell(8);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTmrSimilarityCnt());
+
+            cell = row.createCell(9);
+            cell.setCellValue(searchHistoryExcelDtoList.get(i).getTmrChildCnt());
         }
 
         String fileName = "검색 이력";

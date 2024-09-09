@@ -244,7 +244,7 @@ public class SearchTextDuckduckgoService {
         }
 
         List<SearchResultEntity> sreList = new ArrayList<>();
-        results = results.stream().distinct().toList();
+//        results = results.stream().distinct().toList();
         for (RESULT result : results) {
             String imageUrl = getOriginalFn.apply(result) != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
             SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);

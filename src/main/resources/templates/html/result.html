@@ -120,17 +120,26 @@
                     <div class="tab research" th:if="${!#strings.isEmpty(keyword)}">
                         <p>"<span th:text="${keyword}">sitting</span>"에 대한 검색 결과 입니다.</p>
                     </div>
+
                     <div style="margin-left:5px;">
-                        <p><span> | 상담사 : </span><span th:text="${userId}">상담사 아이디</span></p>
+                        <p><span style="margin-right: 2px;"> | </span>
+                            <span> 상담사 : </span>
+                            <span th:text="${userId}">상담사 아이디</span></p>
                     </div>
                     <form action="/resultExcelList" method="get">
                         <input type="hidden" name="tsiUno" th:value="${tsiUno}">
                         <input type="hidden" name="keyword" th:value="${keyword}">
 
-                        <button type="submit" style="margin-left: 20px;" >
-                            <img src="/img/common/excelLogo.png">
+                        <button type="submit" style="margin-left: 15px;" >
+                            <img src="/img/common/excelLogo.png" style="vertical-align: middle;">
                         </button>
                     </form>
+                    <div class="box_wrap isDeploy" style="margin-left:5px;">
+                        <p><span style="color: #545759; margin-left: 25px; font-size: 16px;"> | </span>
+                            <span style="font-weight: 500;"> 유포 여부 </span>
+                            <span class="select_box" style="margin-left: 7px;"> <input class="selectBox" id="tsiIsDeploy" th:data-idx="${tsiUno}" th:value="${tsiIsDeploy}" type="checkbox" th:checked="${tsiIsDeploy == 1}"> </span>
+                        </p>
+                    </div>
                 </div>
             </div>
             <p class="total-num">총 <span th:text="${searchResultListCount}"></span> 건</p>
@@ -506,7 +515,23 @@
             }
         })
     }
-    // --------------------------------------------------------------------------------------------
+
+    // 유포 여부
+    $('#tsiIsDeploy').on('click', function() {
+        const isDeploy = $(this).val();
+        const tsiUno = $(this).data('idx');
+
+        this.disabled = true;
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/isDeploy/'+tsiUno+"/"+isDeploy, true);
+        xhr.send(null);
+        xhr.onload = () => {
+            if (xhr.status === 200) { location.reload(); }
+            else { console.log('통신 실패') }
+            this.disabled = false;
+        }
+    });
+
     view_type();
     /*]]>*/
 </script>
