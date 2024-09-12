@@ -159,7 +159,7 @@
   resultCntBtn.forEach((btn) => {
       btn.addEventListener('click', (e) => {
           let userFile = "사례번호";
-          window.location.href = '/history?manageType='+userFile+'&searchUserFile='+btn.getAttribute("searchUserFile");
+          window.location.href = '/history?manageType='+userFile+'&searchUserFile='+encodeURIComponent(btn.getAttribute("searchUserFile"));
       })
   })
 

@@ -8,10 +8,7 @@ import com.nex.common.Consts;
 import com.nex.common.SitProperties;
 import com.nex.nations.entity.NationCodeEntity;
 import com.nex.nations.repository.NationCodeRepository;
-import com.nex.search.entity.SearchInfoEntity;
-import com.nex.search.entity.SearchInfoParamsEntity;
-import com.nex.search.entity.SearchResultEntity;
-import com.nex.search.entity.VideoInfoEntity;
+import com.nex.search.entity.*;
 import com.nex.search.entity.dto.*;
 import com.nex.search.repo.*;
 import com.nex.serpServices.entity.SerpServicesEntity;
@@ -91,6 +88,7 @@ public class SearchService {
     private final SearchInfoParamsRepository searchInfoParamsRepository;
 
     private final SitProperties sitProperties;
+    private final SearchUserFileRepository searchUserFileRepository;
 
     public SearchInfoEntity insertSearchInfo(MultipartFile uploadFile, SearchInfoEntity param, String folder, SearchInfoDto sDto){
         boolean isFile = ! uploadFile.isEmpty();
@@ -149,7 +147,11 @@ public class SearchService {
 
                 uploadFile.transferTo(new File(destDir+File.separator+uuid+extension));
 
-                param.setTsiUserFile(userFile);
+                {
+                    param.setTsiUserFile(userFile);
+
+
+                }
                 param.setTsiImgName(uuid+extension);
                 param.setTsiImgPath((destDir+File.separator).replaceAll("\\\\", "/"));
                 param.setTsiImgExt(extension.substring(1));
@@ -161,6 +163,23 @@ public class SearchService {
         } else {
             param.setTsiType("11");
         }
+
+        try{
+            if(StringUtils.hasText(param.getTsiUserFile())){
+                SearchUserFileEntity searchUserFileEntity = searchUserFileRepository.findByTsufUserFile(param.getTsiUserFile());
+                if(searchUserFileEntity == null){
+                    searchUserFileEntity = new SearchUserFileEntity();
+                    searchUserFileEntity.setTsufUserFile(param.getTsiUserFile());
+                }
+                searchUserFileEntity.setLastDmlDt(Timestamp.valueOf(LocalDateTime.now()));
+                searchUserFileEntity = searchUserFileRepository.save(searchUserFileEntity);
+                if(searchUserFileEntity != null) param.setTsufUno(searchUserFileEntity.getTsufUno());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
 
         return saveSearchInfo(param);
     }

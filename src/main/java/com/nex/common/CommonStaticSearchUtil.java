@@ -103,6 +103,10 @@ public class CommonStaticSearchUtil {
         sie.setTsiMonitoringCnt(0);
         sie.setDataStatCd("10");
         sie.setSearchValue("0");
+        sie.setTsiIsDeploy(0);
+        sie.setTsiCntTsr(0);
+        sie.setTsiCntSimilarity(0);
+        sie.setTsiCntChild(0);
 
         if(! StringUtils.hasText(sie.getTsiUserFile())){
             sie.setTsiUserFile(null);

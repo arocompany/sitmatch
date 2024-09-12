@@ -1,9 +1,13 @@
 package com.nex.scheduler;
 
 import com.nex.common.*;
+import com.nex.search.entity.MatchResultEntity;
 import com.nex.search.entity.SearchInfoEntity;
+import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
+import com.nex.search.repo.MatchResultRepository;
 import com.nex.search.repo.SearchInfoRepository;
+import com.nex.search.repo.SearchResultRepository;
 import com.nex.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +24,21 @@ import java.util.List;
 public class MainScheduler {
     private final int initialDelay = 1000;
     private final SearchService searchService;
-    private final SearchInfoRepository searchInfoRepository;
     private final SitProperties sitProperties;
+    private final SearchInfoRepository searchInfoRepository;
+    private final SearchResultRepository searchResultRepository;
+    private final MatchResultRepository matchResultRepository;
+
+    @Scheduled(fixedDelay = 5 * 1000, initialDelay = initialDelay)
+    public void schedule_5() {
+        ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
+        if(configData != null && configData.getIsMainScheduler() != null && configData.getIsMainScheduler()) {
+            log.debug("schedule_5 --------------- start");
+//            updateInfoCnt();
+//            updateResultCnt();
+            log.debug("schedule_5 --------------- end");
+        }
+    }
 
     @Scheduled(fixedDelay = 10 * 1000, initialDelay = initialDelay)
     public void schedule_10() {
@@ -79,4 +96,60 @@ public class MainScheduler {
             e.printStackTrace();
         }
     }
+
+    private void updateInfoCnt(){
+        String tsiStat = "13";
+        String dataStatCd = "10";
+        List<SearchInfoEntity> list = searchInfoRepository.findTop10ByTsiStatAndDataStatCdOrderByTsiUnoAsc(tsiStat, dataStatCd);
+
+        if(list != null && !list.isEmpty()){
+            for(SearchInfoEntity item: list){
+                item.setTsiStat("15");
+                searchInfoRepository.save(item);
+
+                {
+                    Integer cntTsr = searchResultRepository.countResult(item.getTsiUno());
+                    Integer cntSimilarity = matchResultRepository.countSimilarity(item.getTsiUno());
+                    Integer cntChild = matchResultRepository.countChild(item.getTsiUno());
+                    item.setTsiCntTsr(cntTsr);
+                    item.setTsiCntSimilarity(cntSimilarity);
+                    item.setTsiCntChild(cntChild);
+                    item.setTsiStat("17");
+                    searchInfoRepository.save(item);
+                }
+            }
+        }
+    }
+
+    private void updateResultCnt(){
+        List<SearchResultEntity> list = searchResultRepository.selectResultWithJob();
+
+        if(list != null && !list.isEmpty()){
+            for(SearchResultEntity item: list){
+                try {
+                    MatchResultEntity data = matchResultRepository.selectByTsiUnoAndTsrUno(item.getTsiUno(), item.getTsrUno());
+
+                    if (data != null) {
+                        if (data.getTmrVScore() != null) {
+
+                            Integer similarity = (int) ((Double) data.getTmrVScore() * 100);
+                            item.setTsrSimilarity(similarity);
+                        }
+
+                        if (data.getTmrTotalScore() != null) {
+                            Integer child = Integer.valueOf(String.valueOf(data.getTmrTotalScore()));
+                            item.setTsrTotalScore(child);
+                        }
+                    }
+
+                    item.setTsrState(1);
+                    searchResultRepository.save(item);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
 }

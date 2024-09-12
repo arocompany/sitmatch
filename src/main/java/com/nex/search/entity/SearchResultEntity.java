@@ -92,6 +92,18 @@ public class SearchResultEntity {
     @Column(name = "TSR_ENGINE")
     private String tsrEngine;
 
+    @Basic
+    @Column(name = "TSR_STATE")
+    private Integer tsrState;
+
+    @Basic
+    @Column(name = "TSR_TOTAL_SCORE")
+    private Integer tsrTotalScore;
+
+    @Basic
+    @Column(name = "TSR_SIMILARITY")
+    private Integer tsrSimilarity;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
