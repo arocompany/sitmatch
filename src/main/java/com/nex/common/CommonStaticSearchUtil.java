@@ -110,6 +110,7 @@ public class CommonStaticSearchUtil {
 
         if(! StringUtils.hasText(sie.getTsiUserFile())){
             sie.setTsiUserFile(null);
+            sie.setTsufUno(0);
         }
     }
 
@@ -123,6 +124,9 @@ public class CommonStaticSearchUtil {
         sre.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sre.setDataStatCd("10");
         sre.setMonitoringCd("10");
+        sre.setTsrSimilarity(0);
+        sre.setTsrTotalScore(0);
+        sre.setTsrState(0);
     }
 
     /**

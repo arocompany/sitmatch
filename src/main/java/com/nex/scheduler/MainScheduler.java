@@ -1,6 +1,7 @@
 package com.nex.scheduler;
 
 import com.nex.common.*;
+
 import com.nex.search.entity.MatchResultEntity;
 import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchResultEntity;
