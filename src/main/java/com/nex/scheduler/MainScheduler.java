@@ -35,8 +35,8 @@ public class MainScheduler {
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
         if(configData != null && configData.getIsMainScheduler() != null && configData.getIsMainScheduler()) {
             log.debug("schedule_5 --------------- start");
-//            updateInfoCnt();
-//            updateResultCnt();
+            updateInfoCnt();
+            updateResultCnt();
             log.debug("schedule_5 --------------- end");
         }
     }

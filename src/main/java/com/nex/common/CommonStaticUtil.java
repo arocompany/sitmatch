@@ -18,7 +18,7 @@ public class CommonStaticUtil {
             rootDir = "C:/";
         } else if (osName.contains("nix") || osName.contains("nux") || osName.contains("mac")) {
             // Unix 또는 macOS일 경우
-            rootDir = "/";
+            rootDir = System.getProperty("user.home")+"/";
         } else {
             // 다른 플랫폼에 대한 처리
             rootDir = "Unknown";
