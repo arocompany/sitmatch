@@ -972,27 +972,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
     String whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike = " WHERE TSR.DATA_STAT_CD = :tsrDataStatCd AND TSR.TRK_STAT_CD != :trkStatCd AND TSR.TRK_STAT_CD LIKE CONCAT('%',:trkStatCd2,'%') AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
     // String whereSimilarity =" AND if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / (case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) >= :percent";
-    String whereSimilarity_2 = " AND " +
-            "  if(TMR.TMR_V_SCORE + TMR.TMR_A_SCORE + TMR.TMR_T_SCORE = 0, '0', ceiling(((case " +
-            "            when isnull(TMR.TMR_V_SCORE) then 0 " +
-            "            else TMR.TMR_V_SCORE " +
-            "        end + case " +
-            "            when isnull(TMR.TMR_A_SCORE) then 0 " +
-            "            else TMR.TMR_A_SCORE " +
-            "        end + case " +
-            "            when isnull(TMR.TMR_T_SCORE) then 0 " +
-            "            else TMR.TMR_T_SCORE " +
-            "        end) / (case " +
-            "            when isnull(TMR.TMR_V_SCORE) then 0 " +
-            "            else 1 " +
-            "        end + case " +
-            "            when isnull(TMR.TMR_A_SCORE) then 0 " +
-            "            else 1 " +
-            "        end + case " +
-            "            when isnull(TMR.TMR_T_SCORE) then 0 " +
-            "            else 1 " +
-            "        end)) * 100)) > :percent" +
-            "       ORDER BY tsr.MST_DML_DT, tsr.tsr_uno desc";
+    String whereSimilarity_2 = " AND tsr.tsr_similarity > :percent" +
+                               " ORDER BY tsr.MST_DML_DT, tsr.tsr_uno desc";
 
     String whereSimilarity_3 = " ORDER BY tsr.MST_DML_DT, tsr.tsr_uno desc";
 
