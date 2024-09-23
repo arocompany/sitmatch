@@ -1,5 +1,11 @@
 // 헤더 유저(상세) 버튼 
 document.addEventListener("DOMContentLoaded", function () {
+  $(document).on("click", ".esc-btn", function(){
+    modal.style.display = 'none';
+    document.body.style.overflow = 'unset';
+  });
+
+
   const detailBtn = document.querySelectorAll("header .detail-btn");
   if (detailBtn) {
     for (let i = 0; i < detailBtn.length; i++) {
@@ -260,11 +266,11 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         })
 
-        const esc = document.querySelector(".esc-btn");
-        esc.onclick = () => {
-          modal.style.display = 'none';
-          document.body.style.overflow = 'unset';
-        }
+        // const esc = document.querySelector(".esc-btn");
+        // esc.onclick = () => {
+        //   modal.style.display = 'none';
+        //   document.body.style.overflow = 'unset';
+        // }
       } else {
         //통신 실패
         console.log("통신 실패");
@@ -293,11 +299,11 @@ document.addEventListener("DOMContentLoaded", function () {
           modal.innerHTML = xhr.response;
 
         }
-        const esc = document.querySelector(".esc-btn");
-        esc.onclick = () => {
-          modal.style.display = 'none';
-          document.body.style.overflow = 'unset';
-        }
+        // const esc = document.querySelector(".esc-btn");
+        // esc.onclick = () => {
+        //   modal.style.display = 'none';
+        //   document.body.style.overflow = 'unset';
+        // }
       }
     })
   });
@@ -314,12 +320,12 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.style.display = 'flex';
         modal.innerHTML = xhr.response;
 
-        const esc = document.querySelector("#modal .esc-btn");
-        esc.onclick = () => {
-          console.info("123");
-          modal.style.display = 'none';
-          document.body.style.overflow = 'unset';
-        }
+        // const esc = document.querySelector("#modal .esc-btn");
+        // esc.onclick = () => {
+        //   console.info("123");
+        //   modal.style.display = 'none';
+        //   document.body.style.overflow = 'unset';
+        // }
 
         if ($(".nations .chkItem:checked").length === $(".nations .chkItem").length){
           $(".nations .chkAll").prop("checked", true);
@@ -364,11 +370,11 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.style.display = 'flex';
         modal.innerHTML = xhr.response;
 
-        const esc = document.querySelector("#modal .esc-btn");
-        esc.onclick = () => {
-          modal.style.display = 'none';
-          document.body.style.overflow = 'unset';
-        }
+        // const esc = document.querySelector("#modal .esc-btn");
+        // esc.onclick = () => {
+        //   modal.style.display = 'none';
+        //   document.body.style.overflow = 'unset';
+        // }
 
         $(".chkServiceItem").on("click", function(){
           if($(this).is(":checked")){
