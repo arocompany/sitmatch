@@ -5,7 +5,6 @@ import com.nex.common.ConfigDataManager;
 import com.nex.common.Consts;
 import com.nex.common.SerpApiStatusVOForApi;
 import com.nex.request.ReqNotice;
-import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.dto.DefaultQueryDtoInterface;
 import com.nex.search.entity.dto.SearchResultMonitoringHistoryDto;
 import com.nex.search.repo.SearchJobRepository;
