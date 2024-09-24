@@ -59,4 +59,6 @@ public interface ResultCntQueryDtoInterface {
     void setVideoList(List<VideoInfoEntity> list);
     Integer getTsjStatus();
     Integer getTsiIsDeploy();
+
+    String getTviImagePath();
 }

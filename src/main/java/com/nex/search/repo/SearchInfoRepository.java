@@ -105,6 +105,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     ", coalesce(params.tsi_is_engine_yandex_image, 0) tsiIsEngineYandexImage " +
                                     ", coalesce(params.tsi_is_engine_naver, 0) tsiIsEngineNaver " +
                                     ", tsi.TSI_USER_FILE as tsiUserFile " +
+                                    ", (SELECT CONCAT(MIN(tvi.TVI_IMG_REAL_PATH), '', MIN(tvi.TVI_IMG_NAME)) FROM tb_video_info tvi WHERE tvi.tsi_uno = tsi.tsi_uno) tviImagePath "+
                                     " from tb_search_info tsi " +
                                     " LEFT OUTER JOIN TB_SEARCH_INFO_PARAMS params ON tsi.TSI_UNO = params.TSI_UNO "+
                                     " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
@@ -145,7 +146,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " tsi.tsi_cnt_similarity AS tmrSimilarityCnt, " +
                                 " tsi.tsi_cnt_child AS tmrChildCnt, " +
                                 " (SELECT tsj_status FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatus, " +
-                                " tsi.tsi_user_file as tsiUserFile " +
+                                " tsi.tsi_user_file as tsiUserFile, " +
+                                " (SELECT CONCAT(MIN(tvi.TVI_IMG_REAL_PATH), '', MIN(tvi.TVI_IMG_NAME)) FROM tb_video_info tvi WHERE tvi.tsi_uno = tsi.tsi_uno) tviImagePath "+
                                 " from tb_search_info tsi " +
                                 " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
                                 " and tsi.SEARCH_VALUE= :searchValue" +
