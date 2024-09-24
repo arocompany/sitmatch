@@ -137,7 +137,7 @@ public class MainScheduler {
                         }
 
                         if (data.getTmrTotalScore() != null) {
-                            Integer child = Integer.valueOf(String.valueOf(data.getTmrTotalScore()));
+                            Integer child = Integer.valueOf(String.valueOf(((Double) data.getTmrTotalScore()).intValue()));
                             item.setTsrTotalScore(child);
                         }
                     }
