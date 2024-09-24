@@ -350,7 +350,7 @@
                   <p>추출 중..</p>
                 </div>
                 <img th:if="${(searchInfoList.tsiStat != '11' && searchInfoList.tsiStat != '12' && searchInfoList.tsiStat != '99') && searchInfoList.getTviImagePath() != null}" th:src="'/imagePath'+${searchInfoList.getTviImagePath().substring(7)}" alt="" />
-                <div th:if="${(searchInfoList.tsiStat == '99' || searchInfoList.tviImagePath == null)}" style = "font-size: 12px">
+                <div th:if="${(searchInfoList.tsiStat == '99' || (searchInfoList.tsiStat != '11' && searchInfoList.tsiStat != '12' && searchInfoList.tsiStat != '99' && searchInfoList.tviImagePath == null))}" style = "font-size: 12px; padding-left:0">
                   <p>추출 실패</p>
                 </div>
               </th:block>
