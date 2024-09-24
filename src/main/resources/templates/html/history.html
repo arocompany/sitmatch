@@ -345,11 +345,11 @@
               </button>
               <span th:if="${searchInfoList.getTsiSearchType() eq '2'}" class="childIcon"><img src="/img/common/childicon.png"></span>
               <th:block th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}">
-                <div th:if="${(searchInfoList.tsiStat == '11' || searchInfoList.tsiStat == '12' || searchInfoList.tstStat == '99') || searchInfoList.getTviImagePath() == null}" class = "animation-container">
+                <div th:if="${(searchInfoList.tsiStat == '11' || searchInfoList.tsiStat == '12' || searchInfoList.tsiStat == '99') || searchInfoList.getTviImagePath() == null}" class = "animation-container">
                   <img class="moving-image" src="/img/result/progress-icon-png-13.jpg" alt="" />
                   <p>추출 중..</p>
                 </div>
-                <img th:if="${(searchInfoList.tsiStat != '11' && searchInfoList.tsiStat != '12' && searchInfoList.tstStat != '99') && searchInfoList.getTviImagePath() != null}" th:src="'/imagePath'+${searchInfoList.getTviImagePath().substring(7)}" alt="" />
+                <img th:if="${(searchInfoList.tsiStat != '11' && searchInfoList.tsiStat != '12' && searchInfoList.tsiStat != '99') && searchInfoList.getTviImagePath() != null}" th:src="'/imagePath'+${searchInfoList.getTviImagePath().substring(7)}" alt="" />
               </th:block>
               <!--              <video th:if="${searchInfoList.getTsiType() == '15' || searchInfoList.getTsiType() == '19'}" th:src="'/imagePath'+${#strings.substring(searchInfoList.getTsiImgPath(),7)}+${searchInfoList.getTsiImgName()}" alt="" />-->
             </div>
