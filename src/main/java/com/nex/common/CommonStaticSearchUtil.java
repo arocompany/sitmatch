@@ -103,9 +103,14 @@ public class CommonStaticSearchUtil {
         sie.setTsiMonitoringCnt(0);
         sie.setDataStatCd("10");
         sie.setSearchValue("0");
+        sie.setTsiIsDeploy(0);
+        sie.setTsiCntTsr(0);
+        sie.setTsiCntSimilarity(0);
+        sie.setTsiCntChild(0);
 
         if(! StringUtils.hasText(sie.getTsiUserFile())){
             sie.setTsiUserFile(null);
+            sie.setTsufUno(0);
         }
     }
 
@@ -119,6 +124,9 @@ public class CommonStaticSearchUtil {
         sre.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sre.setDataStatCd("10");
         sre.setMonitoringCd("10");
+        sre.setTsrSimilarity(0);
+        sre.setTsrTotalScore(0);
+        sre.setTsrState(0);
     }
 
     /**

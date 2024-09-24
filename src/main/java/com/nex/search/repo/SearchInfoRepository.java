@@ -82,40 +82,9 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " tsi.tsi_type AS tsiType, " +
                                     " tsi.tsr_uno AS tsrUno, " +
                                     " tsi.user_uno AS tsiUserUno, " +
-                                    " (SELECT COUNT(distinct tsr_site_url)  FROM tb_search_result tsr " +
-                                    " INNER JOIN tb_search_job tsj ON tsr.TSI_UNO = tsj.tsi_uno AND tsr.tsr_uno = tsj.tsr_uno" +
-                                    " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt, " +
-                                    " (SELECT COUNT(*) " +
-                                    " FROM tb_search_result tsr_2 " +
-                                    " INNER JOIN (SELECT MIN(tsr_uno) tsr_uno from tb_search_result WHERE tsi_uno = tsi.tsi_uno GROUP BY tsr_site_url) tsr2 ON tsr_2.tsr_uno = tsr2.tsr_uno " +
-                                    " LEFT OUTER JOIN tb_match_result tmr " +
-                                    " ON tsr_2.TSR_UNO = tmr.tsr_uno " +
-                                    " WHERE tmr.tsi_uno = tsi.tsi_uno " +
-                                    " AND tsr_2.tsi_uno = tsi.tsi_uno " +
-//                                    " AND tmr.tmr_stat=11 " +
-                                    " AND if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', " +
-                                    " ceiling(((case " +
-                                    " when isnull(tmr.TMR_V_SCORE) then 0 " +
-                                    " ELSE TMR_V_SCORE " +
-                                    " end + case " +
-                                    " when isnull(tmr.TMR_A_SCORE) then 0 " +
-                                    " ELSE TMR_A_SCORE " +
-                                    " end + case " +
-                                    " when isnull(tmr.TMR_T_SCORE) then 0 " +
-                                    " ELSE TMR_T_SCORE " +
-                                    " end) / (case " +
-                                    " when isnull(tmr.TMR_V_SCORE) then 0 " +
-                                    " else 1 " +
-                                    " end + case " +
-                                    " when isnull(tmr.TMR_A_SCORE) then 0 " +
-                                    " else 1 " +
-                                    " end + case " +
-                                    " when isnull(tmr.TMR_T_SCORE) then 0 " +
-                                    " else 1 " +
-                                    " end)) * 100)) > 1) AS tmrSimilarityCnt " +
-                                    ", ( SELECT COUNT(*) FROM tb_search_result tsr_2 INNER JOIN ( SELECT MIN(tsr_uno) tsr_uno FROM tb_search_result WHERE tsi_uno = tsi.tsi_uno GROUP BY tsr_site_url ) tsr2 ON tsr_2.tsr_uno = tsr2.tsr_uno LEFT OUTER JOIN tb_match_result tmr ON tsr_2.TSR_UNO = tmr.tsr_uno" +
-                                        " WHERE tmr.tsi_uno = tsi.tsi_uno AND tsr_2.tsi_uno = tsi.tsi_uno AND tmr.TMR_TOTAL_SCORE > 0 " +
-                                    " ) AS tmrChildCnt" +
+                                    " tsi.tsi_cnt_tsr resultCnt, " +
+                                    " tsi.tsi_cnt_similarity AS tmrSimilarityCnt, " +
+                                    " tsi.tsi_cnt_child AS tmrChildCnt" +
                                     ", (SELECT tsj_status FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatus " +
                                     ", coalesce(params.tsi_is_nation_kr, 0) tsiIsNationKr " +
                                     ", coalesce(params.tsi_is_nation_us, 0) tsiIsNationUs " +
@@ -172,40 +141,9 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " tsi.tsi_type AS tsiType, " +
                                 " tsi.tsr_uno AS tsrUno, " +
                                 " tsi.user_uno AS tsiUserUno, " +
-                                " (SELECT COUNT(DISTINCT tsr.tsr_site_url)  FROM tb_search_result tsr " +
-                                " inner JOIN tb_search_info tsi_2 " +
-                                " ON tsr.TSI_UNO = tsi_2.tsi_uno " +
-                                " WHERE tsr.TSI_UNO = tsi.tsi_uno) AS resultCnt, " +
-                                " (SELECT COUNT(DISTINCT(tsr_2.tsr_site_url)) " +
-                                " FROM tb_search_result tsr_2 " +
-                                " LEFT OUTER JOIN tb_match_result tmr " +
-                                " ON tsr_2.TSR_UNO = tmr.tsr_uno " +
-                                " WHERE tmr.tsi_uno = tsi.tsi_uno " +
-                                " AND tsr_2.tsi_uno = tsi.tsi_uno " +
-//                                " AND tmr.tmr_stat=11 " +
-                                " AND if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', " +
-                                " ceiling(((case " +
-                                " when isnull(tmr.TMR_V_SCORE) then 0 " +
-                                " ELSE TMR_V_SCORE " +
-                                " end + case " +
-                                " when isnull(tmr.TMR_A_SCORE) then 0 " +
-                                " ELSE TMR_A_SCORE " +
-                                " end + case " +
-                                " when isnull(tmr.TMR_T_SCORE) then 0 " +
-                                " ELSE TMR_T_SCORE " +
-                                " end) / (case " +
-                                " when isnull(tmr.TMR_V_SCORE) then 0 " +
-                                " else 1 " +
-                                " end + case " +
-                                " when isnull(tmr.TMR_A_SCORE) then 0 " +
-                                " else 1 " +
-                                " end + case " +
-                                " when isnull(tmr.TMR_T_SCORE) then 0 " +
-                                " else 1 " +
-                                " end)) * 100)) > 1) AS tmrSimilarityCnt, " +
-                                " ( SELECT COUNT(*) FROM tb_search_result tsr_2 INNER JOIN ( SELECT MIN(tsr_uno) tsr_uno FROM tb_search_result WHERE tsi_uno = tsi.tsi_uno GROUP BY tsr_site_url ) tsr2 ON tsr_2.tsr_uno = tsr2.tsr_uno LEFT OUTER JOIN tb_match_result tmr ON tsr_2.TSR_UNO = tmr.tsr_uno" +
-                                " WHERE tmr.tsi_uno = tsi.tsi_uno AND tsr_2.tsi_uno = tsi.tsi_uno AND tmr.TMR_TOTAL_SCORE > 0 " +
-                                " ) AS tmrChildCnt, " +
+                                " tsi.tsi_cnt_tsr AS resultCnt, " +
+                                " tsi.tsi_cnt_similarity AS tmrSimilarityCnt, " +
+                                " tsi.tsi_cnt_child AS tmrChildCnt, " +
                                 " (SELECT tsj_status FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatus, " +
                                 " tsi.tsi_user_file as tsiUserFile " +
                                 " from tb_search_info tsi " +
@@ -227,7 +165,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                             " and ((:manageType = '사례번호' and tsi.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND tsi.tsi_user_file IS NULL )) OR :manageType != '사례번호' )  " +
                             " and ((:manageType = '검색어' and tsi.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
                             " and tsi.TSR_UNO is NULL"+
-                            "  AND (tsi.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
+                            "  AND (tsi.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " +
+                            "  AND (tsi.TSI_IS_DEPLOY = :tsiIsDeployType OR :tsiIsDeployType = 0 ) " ;
 
     String userSearchInfoCount= " select count(tsi.TSI_UNO) " +
                                 " from tb_search_info tsi " +
@@ -254,22 +193,19 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
     String userSearchHistoryCount = " SELECT COUNT(*) FROM tb_search_info tsi WHERE tsi_user_file IS NOT NULL and tsi_user_file LIKE CONCAT('%',:searchKeyword,'%') AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10' GROUP BY tsi_user_file ";
 
     String allUserSearchHistoryList =  "SELECT" +
-            " tsi_user_file as tsiUserFile, " +
-            " (SELECT GROUP_CONCAT(TSIMH_CREATE_DATE ORDER BY TSIMH_CREATE_DATE DESC SEPARATOR '   ') FROM tb_search_info_monitoring_history WHERE tsi_uno IN (SELECT TSI_UNO FROM tb_search_info WHERE tsi_user_file = tsi.tsi_user_file AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10')) tsimhCreateDate," +
-            " (SELECT COUNT(*) FROM tb_search_result tsr WHERE tsr.TSI_UNO IN (SELECT TSI_UNO FROM tb_search_info WHERE tsi_user_file = tsi.tsi_user_file AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10') AND tsr.TRK_STAT_CD = '10'	) AS monitoringCnt," +
-            " (SELECT COUNT(*) FROM tb_search_result tsr WHERE tsr.TSI_UNO IN (SELECT TSI_UNO FROM tb_search_info WHERE tsi_user_file = tsi.tsi_user_file AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10') AND tsr.TRK_STAT_CD = '20' ) AS deleteReqCnt," +
-            " (SELECT COUNT(*) FROM tb_search_result tsr WHERE tsr.TSI_UNO IN (SELECT TSI_UNO FROM tb_search_info WHERE tsi_user_file = tsi.tsi_user_file AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10') AND tsr.TRK_STAT_CD = '30' ) AS deleteConfirmCnt," +
-            " if((SELECT COUNT(*) FROM tb_search_result tsr WHERE tsr.TSI_UNO IN (SELECT TSI_UNO FROM tb_search_info WHERE tsi_user_file = tsi.tsi_user_file AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10') AND tsr.MONITORING_CD = '20' )>0, 'Y', 'N') AS allDayMonitoringYn," +
-            " (SELECT COUNT(*) FROM tb_search_result tsr WHERE tsr.TSI_UNO IN (SELECT TSI_UNO FROM tb_search_info WHERE tsi_user_file = tsi.tsi_user_file AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10') AND tsr.MONITORING_CD = '20' ) AS reDsmnCnt," +
-            " (SELECT COUNT(DISTINCT tsr.tsr_site_url) FROM tb_search_result tsr WHERE tsr.TSI_UNO IN (SELECT TSI_UNO FROM tb_search_info WHERE tsi_user_file = tsi.tsi_user_file 	AND SEARCH_VALUE = '0' AND DATA_STAT_CD = '10')  ) AS resultCnt," +
-            " sum(tsi_monitoring_cnt) AS allTimeCnt" +
-            " FROM tb_search_info tsi" +
-            " WHERE tsi_user_file IS NOT NULL" +
-            " and tsi_user_file LIKE CONCAT('%',:searchKeyword,'%')  " +
-            " AND SEARCH_VALUE = '0'" +
-            " AND DATA_STAT_CD = '10'" +
-            " GROUP BY tsi_user_file" +
-            " ORDER BY MAX(FST_DML_DT) DESC";
+            " tsuf_user_file as tsiUserFile, " +
+            " (SELECT GROUP_CONCAT(TSIMH_CREATE_DATE ORDER BY TSIMH_CREATE_DATE DESC SEPARATOR '   ') FROM tb_search_info_monitoring_history tsimh INNER JOIN tb_search_info tsi2 ON tsimh.TSI_UNO = tsi2.tsi_uno WHERE tsi2.tsuf_uno = tsuf.tsuf_uno AND tsi2.SEARCH_VALUE = '0' AND tsi2.DATA_STAT_CD = '10') tsimhCreateDate," +
+            " (SELECT COUNT(*) FROM tb_search_result tsr INNER JOIN tb_search_info tsi2 ON tsr.TSI_UNO = tsi2.tsi_uno WHERE tsi2.tsuf_uno = tsuf.tsuf_uno AND tsi2.SEARCH_VALUE = '0' AND tsi2.DATA_STAT_CD = '10' AND tsr.TRK_STAT_CD = '10' ) AS monitoringCnt," +
+            " (SELECT COUNT(*) FROM tb_search_result tsr INNER JOIN tb_search_info tsi2 ON tsr.TSI_UNO = tsi2.tsi_uno WHERE tsi2.tsuf_uno = tsuf.tsuf_uno AND tsi2.SEARCH_VALUE = '0' AND tsi2.DATA_STAT_CD = '10' AND tsr.TRK_STAT_CD = '20' ) AS deleteReqCnt," +
+            " (SELECT COUNT(*) FROM tb_search_result tsr INNER JOIN tb_search_info tsi2 ON tsr.TSI_UNO = tsi2.tsi_uno WHERE tsi2.tsuf_uno = tsuf.tsuf_uno AND tsi2.SEARCH_VALUE = '0' AND tsi2.DATA_STAT_CD = '10' AND tsr.TRK_STAT_CD = '30' ) AS deleteConfirmCnt," +
+            " if((SELECT COUNT(*) FROM tb_search_result tsr INNER JOIN tb_search_info tsi2 ON tsr.TSI_UNO = tsi2.tsi_uno WHERE tsi2.tsuf_uno = tsuf.tsuf_uno AND tsi2.SEARCH_VALUE = '0' AND tsi2.DATA_STAT_CD = '10' AND tsr.MONITORING_CD = '20' )>0, 'Y', 'N') AS allDayMonitoringYn," +
+            " (SELECT COUNT(*) FROM tb_search_result tsr INNER JOIN tb_search_info tsi2 ON tsr.TSI_UNO = tsi2.tsi_uno WHERE tsi2.tsuf_uno = tsuf.tsuf_uno AND tsi2.SEARCH_VALUE = '0' AND tsi2.DATA_STAT_CD = '10' AND tsr.MONITORING_CD = '20' ) AS reDsmnCnt," +
+            " (SELECT sum(tsi_cnt_tsr) FROM tb_search_info WHERE tsuf_uno = tsuf.tsuf_uno) resultCnt " +
+            " , (SELECT sum(tsi_monitoring_cnt) FROM tb_search_info WHERE tsuf_uno = tsuf.tsuf_uno) allTimeCnt" +
+            " FROM tb_search_user_file tsuf" +
+            " WHERE tsuf_user_file IS NOT NULL" +
+            " and tsuf_user_file LIKE CONCAT('%',:searchKeyword,'%')  " +
+            " ORDER BY LAST_DML_DT DESC ";
     String userSearchHistoryList =  " SELECT " +
                                     " tsi.tsi_uno AS tsiUno, " +
                                     " tsi.tsi_user_file AS tsiUserFile, " +
@@ -483,4 +419,6 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
 
     @Query(value = statisticsSearchInfoMonitoringByTsiTypeAndUser, nativeQuery = true)
     List<StatisticsDto> statisticsSearchInfoMonitoringByTsiTypeAndUser(String searchStartDate, String searchEndDate, Integer tsiSearchType);
+
+    List<SearchInfoEntity> findTop10ByTsiStatAndDataStatCdOrderByTsiUnoAsc(String tsiStat, String dataStatCd);
 }

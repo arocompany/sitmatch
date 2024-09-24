@@ -127,18 +127,10 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, TSR.MONITORING_CD as monitoringCd, "+
             "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
             "tmr.TMR_STAT as tmrStat, tmr.TMR_MESSAGE as tmrMessage, tu.USER_ID as tuUserId, " +
-            "if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', "+
-            "ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + "+
-            "case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + "+
-            "case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / "+
-            "(case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + "+
-//                    "(case when isnull(tmr.TMR_V_SCORE) || tmr.TMR_V_SCORE = 0 then 0 else 1 end + "+
-            "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
-//                    "case when isnull(tmr.TMR_A_SCORE) || tmr.TMR_A_SCORE = 0 then 0 else 1 end + "+
-            "case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) as tmrSimilarity" +
+            " tsr.tsr_similarity as tmrSimilarity" +
             ", tsr.TSR_NATION_CODE as tsrNationCode "+
             ", tsr.TSR_ENGINE as tsrEngine, " +
-            " tmr.TMR_TOTAL_SCORE AS tmrTotalScore, " +
+            " tsr.TSR_TOTAL_SCORE AS tmrTotalScore, " +
             " ROUND(tmr.TMR_AGE_SCORE, 2)* 100 AS tmrAgeScore, " +
             " ROUND(tmr.TMR_OBJECT_SCORE, 2)* 100 AS tmrObjectScore, " +
             " ROUND(tmr.TMR_OCW_SCORE, 2)* 100 AS tmrOcwScore " +
@@ -178,40 +170,10 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, tsr.TRK_STAT_CD as trkStatCd,"+
             "tsi.TSI_KEYWORD as tsiKeyword, tsj.TSJ_STATUS as tsjStatus, tu.USER_ID as tuUserId, tsi.TSI_TYPE as tsiType, tsr.TSR_IMG_EXT as tsrImgExt," +
             "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
-            "CONVERT(if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', "+
-            "ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + "+
-            "case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + "+
-            "case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / "+
-            "(case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + "+
-//                    "(case when isnull(tmr.TMR_V_SCORE) || tmr.TMR_V_SCORE = 0 then 0 else 1 end + "+
-            "case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + "+
-//                    "case when isnull(tmr.TMR_A_SCORE) || tmr.TMR_A_SCORE = 0 then 0 else 1 end + "+
-            " case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)),SIGNED) as tmrSimilarity, " +
-            " (SELECT " +
-            " CONVERT(MAX(if(TMR_V_SCORE + TMR_A_SCORE + TMR_T_SCORE = 0, '0', ceiling(((case " +
-            " when isnull(TMR_V_SCORE) then 0 " +
-            " else TMR_V_SCORE " +
-            " end + case " +
-            " when isnull(TMR_A_SCORE) then 0 " +
-            " else TMR_A_SCORE " +
-            " end + case " +
-            " when isnull(TMR_T_SCORE) then 0 " +
-            " else TMR_T_SCORE " +
-            " end) / (case " +
-            " when isnull(TMR_V_SCORE) then 0 " +
-            " else 1 " +
-            " end + case " +
-            " when isnull(TMR_A_SCORE) then 0 " +
-            " else 1 " +
-            " end + case " +
-            " when isnull(TMR_T_SCORE) then 0 " +
-            " else 1 end)) * 100))),SIGNED)" +
-            " FROM TB_MATCH_RESULT " +
-            " WHERE tsr.tsi_uno = tsi_uno " +
-            ") AS maxSimilarity" +
+            " tsr.tsr_similarity as tmrSimilarity " +
             ", tsr.TSR_NATION_CODE as tsrNationCode "+
             ", tsr.TSR_ENGINE as tsrEngine "+
-            " ,tmr.TMR_TOTAL_SCORE AS tmrTotalScore " +
+            " ,tsr.TSR_TOTAL_SCORE AS tmrTotalScore " +
             ",ROUND(tmr.TMR_AGE_SCORE, 2)* 100 AS tmrAgeScore" +
             ",ROUND(tmr.TMR_OBJECT_SCORE, 2)* 100 AS tmrObjectScore" +
             ",ROUND(tmr.TMR_OCW_SCORE, 2)* 100 AS tmrOcwScore"+
@@ -1010,40 +972,21 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String whereTrkStatCdNotNullAndTsrTitleContainingANDTsiUno = " WHERE TSR.TRK_STAT_CD IS NOT NULL AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND TSR.TSI_UNO = :tsiUno AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
     String whereDataStatCdAndTrkStatCdNotAndTrkStatCdTsrTitleLike = " WHERE TSR.DATA_STAT_CD = :tsrDataStatCd AND TSR.TRK_STAT_CD != :trkStatCd AND TSR.TRK_STAT_CD LIKE CONCAT('%',:trkStatCd2,'%') AND TSR.TSR_TITLE LIKE CONCAT('%',:keyword,'%') AND (TSI.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) ";
     // String whereSimilarity =" AND if(tmr.TMR_V_SCORE + tmr.TMR_A_SCORE + tmr.TMR_T_SCORE = 0, '0', ceiling(((case when isnull(tmr.TMR_V_SCORE) then 0 else tmr.TMR_V_SCORE end + case when isnull(tmr.TMR_A_SCORE) then 0 else tmr.TMR_A_SCORE end + case when isnull(tmr.TMR_T_SCORE) then 0 else tmr.TMR_T_SCORE end) / (case when isnull(tmr.TMR_V_SCORE) then 0 else 1 end + case when isnull(tmr.TMR_A_SCORE) then 0 else 1 end + case when isnull(tmr.TMR_T_SCORE) then 0 else 1 end)) * 100)) >= :percent";
-    String whereSimilarity_2 = " AND " +
-            "  if(TMR.TMR_V_SCORE + TMR.TMR_A_SCORE + TMR.TMR_T_SCORE = 0, '0', ceiling(((case " +
-            "            when isnull(TMR.TMR_V_SCORE) then 0 " +
-            "            else TMR.TMR_V_SCORE " +
-            "        end + case " +
-            "            when isnull(TMR.TMR_A_SCORE) then 0 " +
-            "            else TMR.TMR_A_SCORE " +
-            "        end + case " +
-            "            when isnull(TMR.TMR_T_SCORE) then 0 " +
-            "            else TMR.TMR_T_SCORE " +
-            "        end) / (case " +
-            "            when isnull(TMR.TMR_V_SCORE) then 0 " +
-            "            else 1 " +
-            "        end + case " +
-            "            when isnull(TMR.TMR_A_SCORE) then 0 " +
-            "            else 1 " +
-            "        end + case " +
-            "            when isnull(TMR.TMR_T_SCORE) then 0 " +
-            "            else 1 " +
-            "        end)) * 100)) > :percent" +
-            "       ORDER BY tsr.MST_DML_DT, tsr.tsr_uno desc";
+    String whereSimilarity_2 = " AND tsr.tsr_similarity > :percent" +
+                               " ORDER BY tsr.MST_DML_DT, tsr.tsr_uno desc";
 
     String whereSimilarity_3 = " ORDER BY tsr.MST_DML_DT, tsr.tsr_uno desc";
 
 
     // ORDER BY
     // String orderByTmrSimilarityDesc = "  GROUP BY tsrSiteUrl  ORDER BY tmrVScore desc, tmrAScore desc, tmrTScore desc, tmrSimilarity desc, tsrUno desc";
-    String orderByTmrSimilarityDesc = "  ORDER BY tsrImgPath DESC, tsjStatus DESC, tmrSimilarity DESC, tmrTotalScore DESC";
-    String orderByTmrSimilarityDesc_1 = " ORDER BY tsrImgPath DESC, tmrVScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
-    String orderByTmrSimilarityDesc_2 = " ORDER BY tsrImgPath DESC, tmrAScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
-    String orderByTmrSimilarityDesc_3 = " ORDER BY tsrImgPath DESC, tmrTScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
-    String orderByTmrSimilarityDesc_4 = " ORDER BY tsrImgPath DESC, tmrVScore desc, tmrAScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
-    String orderByTmrSimilarityDesc_5 = " ORDER BY tsrImgPath DESC, tmrVScore desc, tmrTScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
-    String orderByTmrSimilarityDesc_6 = " ORDER BY tsrImgPath DESC, tmrVScore desc, tmrTScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
+    String orderByTmrSimilarityDesc = "  ORDER BY tsr.tsr_img_path IS not NULL DESC, tsr.tsr_state DESC, tsr.tsr_similarity DESC, tsr.tsr_total_score desc";
+    String orderByTmrSimilarityDesc_1 = " ORDER BY tsr.tsr_img_path IS not NULL DESC, tmrVScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_2 = " ORDER BY tsr.tsr_img_path IS not NULL DESC, tmrAScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_3 = " ORDER BY tsr.tsr_img_path IS not NULL DESC, tmrTScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_4 = " ORDER BY tsr.tsr_img_path IS not NULL DESC, tmrVScore desc, tmrAScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_5 = " ORDER BY tsr.tsr_img_path IS not NULL DESC, tmrVScore desc, tmrTScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
+    String orderByTmrSimilarityDesc_6 = " ORDER BY tsr.tsr_img_path IS not NULL DESC, tmrVScore desc, tmrTScore desc, tmrSimilarity desc, tmrTotalScore desc, tsrUno desc";
 
     // String orderByTmrSimilarityAsc = " ORDER BY tmrSimilarity asc, tsrUno desc";
     // String orderByTsrUnoDesc = " ORDER BY tsrUno desc";
@@ -1259,6 +1202,21 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     List<String> keywordResultCntList(String fromDate, String toDate);
 */
 
+    String countResult = "SELECT COUNT(*) " +
+            " FROM tb_search_result tsr_2 " +
+            " INNER JOIN ( " +
+            " SELECT MIN(tsr_uno) tsr_uno FROM tb_search_result WHERE tsi_uno = :tsiUno GROUP BY tsr_site_url " +
+            " ) tsr2 ON tsr_2.tsr_uno = tsr2.tsr_uno " +
+            " INNER JOIN tb_search_job tsj ON tsr_2.TSI_UNO = tsj.tsi_uno AND tsr_2.tsr_uno = tsj.tsr_uno" +
+            " WHERE tsr_2.tsi_uno = :tsiUno ";
+    @Query(value = countResult, nativeQuery = true)
+    Integer countResult(Integer tsiUno);
+
+    String selectResultWithJob = "SELECT tsr.* FROM tb_search_result tsr " +
+            " INNER JOIN tb_search_job tsj ON tsr.TSI_UNO = tsj.tsi_uno AND tsr.tsr_uno = tsj.tsr_uno " +
+            " WHERE tsr_state = 0 AND data_stat_cd = 10 AND tsj_status = 11 ORDER BY tsr.tsr_uno LIMIT 10 ";
+    @Query(value = selectResultWithJob, nativeQuery = true)
+    List<SearchResultEntity> selectResultWithJob();
 }
 
 

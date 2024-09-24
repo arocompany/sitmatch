@@ -103,6 +103,18 @@ public class SearchInfoEntity {
     @Basic
     @Column(name = "TSI_MONITORING_CNT")
     private Integer tsiMonitoringCnt;
+    @Basic
+    @Column(name = "TSI_CNT_TSR")
+    private Integer tsiCntTsr;
+    @Basic
+    @Column(name = "TSI_CNT_SIMILARITY")
+    private Integer tsiCntSimilarity;
+    @Basic
+    @Column(name = "TSI_CNT_CHILD")
+    private Integer tsiCntChild;
+    @Basic
+    @Column(name = "TSUF_UNO")
+    private Integer tsufUno;
 
     @Override
     public boolean equals(Object o) {

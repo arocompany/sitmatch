@@ -55,7 +55,6 @@ public interface ResultCntQueryDtoInterface {
 
     String getTsiSearchType();
     String getTsiUserFile();
-
     List<VideoInfoEntity> getVideoList();
     void setVideoList(List<VideoInfoEntity> list);
     Integer getTsjStatus();

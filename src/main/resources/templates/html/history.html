@@ -177,7 +177,7 @@
         <div class="searchTypeWrap">
           <div class="searchType">
             <input type="radio" id="all" name="tsiSearchType" th:value="0" th:checked="${tsiSearchType == 0}">
-            <label class="btn-off bor10" for="all" tooltip="피해촬영물" flow="up">All</label>
+            <label class="btn-off bor10" for="all" tooltip="All" flow="up">All</label>
 
             <input type="radio" id="searchType1" name="tsiSearchType" th:value="1" th:checked="${tsiSearchType == 1}">
             <label class="btn-off bor10" for="searchType1" tooltip="피해촬영물" flow="up">피해촬영물</label>
@@ -213,7 +213,7 @@
       <p class="total-num">총 <span th:text="${searchInfoListCount}"></span>건</p>
     </div>
     <h2 class="list-tit" style="padding: 10px 20px 20px; width: 1600px; justify-content: start">
-      <input type="checkbox" id="allCheckbox" onclick="allCheckboxBtn();">
+      <input type="checkbox" id="allCheckbox">
       <span class="num column_01" >순번</span>
       <span class="num column_02" style="margin-left: 30px;">사례번호</span>
       <span class="counselor column_03">상담사</span>
@@ -428,13 +428,9 @@
     }
   }
 
-  function allCheckboxBtn(){
-    if($('#allCheckbox').prop("checked")) {
-      $("input[type=checkbox]").prop("checked", true);
-    } else {
-      $("input[type=checkbox]").prop("checked", false);
-    }
-  }
+  $('#allCheckbox').on('click', function() {
+    $('input[name="tsiUnos"]').prop('checked', this.checked);
+  });
 
   function checkTsiunos() {
     if(confirm("일괄 삭제하시겠습니까?")) {
