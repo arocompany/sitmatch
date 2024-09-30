@@ -33,7 +33,7 @@ public class SearchJob {
                                                from   SearchJobEntity sj
                                                where  sj.tsrUno = sr.tsrUno
                                                )
-                             and sr.tsrUno = """ + tsrUno;
+                             and si.tsrUno = """ + tsrUno;
         return new JpaPagingItemReaderBuilder<SearchResultEntity>()
                 .name("searchJobReader")
                 .pageSize(CHUNK_SIZE)
