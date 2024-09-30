@@ -96,10 +96,14 @@ public class NewKeywordController {
             searchInfoEntity.setTsiInstagram((byte) 1);
             searchInfoEntity.setUserUno(sessionInfoDto.getUserUno());
             searchInfoEntity.setTsiStat("11");
+            searchInfoEntity.setTsufUno(0);
             searchInfoEntity.setTsiKeyword(newKeyword);
 
             SearchInfoEntity insertResult = newKeywordService.saveNewKeywordSearchInfo(searchInfoEntity);
             searchInfoDto.setTsiKeywordHiddenValue(newKeyword);
+
+            if(insertResult != null){ searchService.saveSearchInfoParams(insertResult); }
+
             searchService.search(insertResult, searchInfoDto, folder);
         }
         return true;

@@ -206,7 +206,6 @@ public class SearchService {
 
             int cntNation = 0;
             for (NationCodeEntity ncInfo : ncList) {
-                // 검색 타입 11:키워드, 13:키워드+이미지, 15:키워드+영상, 17:이미지, 19:영상
                 switch (param.getTsiType()) {
                     // 11:키워드
                     case CommonCode.searchTypeKeyword -> {
