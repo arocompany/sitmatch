@@ -178,7 +178,9 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " and ((:manageType = '사례번호' and tsi.TSI_USER_FILE LIKE CONCAT('%',:keyword,'%') OR (:keyword = '' AND tsi.tsi_user_file IS NULL )) OR :manageType != '사례번호' )  " +
                                 " and ((:manageType = '검색어' and tsi.TSI_KEYWORD like '%' :keyword '%' ) OR :manageType != '검색어')" +
                                 " AND tsi.USER_UNO = :userUno " +
-                                " and tsi.TSR_UNO is NULL";
+                                " and tsi.TSR_UNO is NULL" +
+                                "  AND (tsi.TSI_SEARCH_TYPE = :tsiSearchType OR :tsiSearchType = 0 ) " +
+                                "  AND (tsi.TSI_IS_DEPLOY = :tsiIsDeployType OR :tsiIsDeployType = 0 ) " ;
 
     String searchKeywordDateCnt = "SELECT DATE_FORMAT(tsi.fst_dml_dt,'%Y%m%d') AS searchDate " +
                                 " FROM tb_search_info tsi " +
