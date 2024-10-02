@@ -1214,7 +1214,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     String selectResultWithJob = "SELECT tsr.* FROM tb_search_result tsr " +
             " INNER JOIN tb_search_job tsj ON tsr.TSI_UNO = tsj.tsi_uno AND tsr.tsr_uno = tsj.tsr_uno " +
-            " WHERE tsr_state = 0 AND data_stat_cd = 10 AND tsj_status = 11 ORDER BY tsr.tsr_uno LIMIT 10 ";
+            " WHERE tsr_state = 0 AND data_stat_cd = 10 AND (tsj_status = 11 OR tsj_status = 10) ORDER BY tsr.tsr_uno LIMIT 10 ";
     @Query(value = selectResultWithJob, nativeQuery = true)
     List<SearchResultEntity> selectResultWithJob();
 
