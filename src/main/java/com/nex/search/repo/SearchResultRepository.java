@@ -1217,6 +1217,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             " WHERE tsr_state = 0 AND data_stat_cd = 10 AND tsj_status = 11 ORDER BY tsr.tsr_uno LIMIT 10 ";
     @Query(value = selectResultWithJob, nativeQuery = true)
     List<SearchResultEntity> selectResultWithJob();
+
+    SearchResultEntity findTop1ByTsiUnoAndTsrImgPathIsNotNullOrderByTsrUnoDesc(Integer tsiUno);
 }
 
 
