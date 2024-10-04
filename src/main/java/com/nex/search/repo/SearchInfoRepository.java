@@ -86,6 +86,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " tsi.tsi_cnt_similarity AS tmrSimilarityCnt, " +
                                     " tsi.tsi_cnt_child AS tmrChildCnt" +
                                     ", (SELECT tsj_status FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatus " +
+                                    ", (SELECT tsj_status_child FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatusChild " +
                                     ", coalesce(params.tsi_is_nation_kr, 0) tsiIsNationKr " +
                                     ", coalesce(params.tsi_is_nation_us, 0) tsiIsNationUs " +
                                     ", coalesce(params.tsi_is_nation_cn, 0) tsiIsNationCn " +
@@ -146,6 +147,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " tsi.tsi_cnt_similarity AS tmrSimilarityCnt, " +
                                 " tsi.tsi_cnt_child AS tmrChildCnt, " +
                                 " (SELECT tsj_status FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatus, " +
+                                ", (SELECT tsj_status_child FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatusChild " +
                                 " tsi.tsi_user_file as tsiUserFile, " +
                                 " (SELECT CONCAT(MIN(tvi.TVI_IMG_REAL_PATH), '', MIN(tvi.TVI_IMG_NAME)) FROM tb_video_info tvi WHERE tvi.tsi_uno = tsi.tsi_uno) tviImagePath "+
                                 " from tb_search_info tsi " +

@@ -37,6 +37,7 @@ public interface DefaultQueryDtoInterface {
     String getTsiDataStatCd();
     String getTsiFstDmlDt();
     String getTsjStatus();
+    String getTsjStatusChild();
     String getTmrVScore();
     String getTmrTScore();
     String getTmrAScore();

@@ -124,7 +124,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
             "tsi.TSI_IMG_PATH as tsiImgPath, tsi.TSI_IMG_NAME as tsiImgName, tsi.TSI_IMG_EXT as tsiImgExt, "+
             "tsi.TSI_IMG_HEIGHT as tsiImgHeight, tsi.TSI_IMG_WIDTH as tsiImgWidth, tsi.TSI_IMG_SIZE as tsiImgSize, "+
             "tsi.TSI_STAT as tsiStat, tsi.TSI_DNA_PATH as tsiDnaPath, tsi.TSI_DNA_TEXT as tsiDnaText, tsi.SEARCH_VALUE, "+
-            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, TSR.MONITORING_CD as monitoringCd, "+
+            "tsi.DATA_STAT_CD as tsiDataStatCd, tsi.FST_DML_DT as tsiFstDmlDt, tsj.TSJ_STATUS as tsjStatus, tsj.TSJ_STATUS_CHILD as tsjStatusChild, TSR.MONITORING_CD as monitoringCd, "+
             "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
             "tmr.TMR_STAT as tmrStat, tmr.TMR_MESSAGE as tmrMessage, tu.USER_ID as tuUserId, " +
             " tsr.tsr_similarity as tmrSimilarity" +
@@ -1214,9 +1214,15 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     String selectResultWithJob = "SELECT tsr.* FROM tb_search_result tsr " +
             " INNER JOIN tb_search_job tsj ON tsr.TSI_UNO = tsj.tsi_uno AND tsr.tsr_uno = tsj.tsr_uno " +
-            " WHERE tsr_state = 0 AND data_stat_cd = 10 AND tsj_status = 11 ORDER BY tsr.tsr_uno LIMIT 10 ";
+            " WHERE tsr_state = 0 AND data_stat_cd = 10 AND (tsj_status = 11 OR tsj_status = 10) ORDER BY tsr.tsr_uno LIMIT 10 ";
     @Query(value = selectResultWithJob, nativeQuery = true)
     List<SearchResultEntity> selectResultWithJob();
+
+    String selectResultWithJobForChild = "SELECT tsr.* FROM tb_search_result tsr " +
+            " INNER JOIN tb_search_job tsj ON tsr.TSI_UNO = tsj.tsi_uno AND tsr.tsr_uno = tsj.tsr_uno " +
+            " WHERE tsr_state = 0 AND data_stat_cd = 10 AND (tsj_status_child = 11 OR tsj_status_child = 10) ORDER BY tsr.tsr_uno LIMIT 10 ";
+    @Query(value = selectResultWithJobForChild, nativeQuery = true)
+    List<SearchResultEntity> selectResultWithJobForChild();
 
     SearchResultEntity findTop1ByTsiUnoAndTsrImgPathIsNotNullOrderByTsrUnoDesc(Integer tsiUno);
 }
