@@ -137,7 +137,7 @@ public class SearchService {
                 String userFile =origName.substring(0, idx);
 
                 String uuid = UUID.randomUUID().toString();
-                String extension = origName.substring(origName.lastIndexOf("."));
+                String extension = origName.substring(origName.lastIndexOf(".")).toLowerCase();
 
                 String filePath = sitProperties.getFileLocation1()+folder;
                 File destDir = new File(filePath);
