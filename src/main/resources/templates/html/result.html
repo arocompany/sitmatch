@@ -180,9 +180,9 @@
                     </th:block>
                 </div>
                 <div>
-                    <span th:if="${list.getTsjStatus() eq '00' }">대기중</span>
-                    <span th:if="${list.getTsjStatus() eq '01' }">처리중</span>
-                    <span th:if="${list.getTsjStatus() eq '10' }">
+                    <span th:if="${(list.getTsiSearchType().equals(1) && list.getTsjStatus() eq '00') || (list.getTsiSearchType().equals(2) && list.getTsjStatusChild() eq '00')}">대기중</span>
+                    <span th:if="${(list.getTsiSearchType().equals(1) && list.getTsjStatus() eq '01') || (list.getTsiSearchType().equals(2) && list.getTsjStatusChild() eq '01')}">처리중</span>
+                    <span th:if="${(list.getTsiSearchType().equals(1) && list.getTsjStatus() eq '10') || (list.getTsiSearchType().equals(2) && list.getTsjStatusChild() eq '10')}">
                         <th:block th:if = "${list.tsiSearchType.equals('1')}">SKIP</th:block>
                         <th:block  th:if="${list.tsiSearchType.equals('2')}">
                             <span>

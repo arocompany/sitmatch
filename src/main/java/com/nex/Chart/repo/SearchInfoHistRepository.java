@@ -151,6 +151,10 @@ public interface SearchInfoHistRepository extends JpaRepository<SearchInfoHistEn
                             "            OR tsj.TSJ_STATUS = '1' " +
                             "            OR tsj.TSJ_STATUS = '10' " +
                             "            OR tsj.TSJ_STATUS = '11' " +
+                            "            OR tsj.TSJ_STATUS_CHILD = '0' " +
+                            "            OR tsj.TSJ_STATUS_CHILD = '1' " +
+                            "            OR tsj.TSJ_STATUS_CHILD = '10' " +
+                            "            OR tsj.TSJ_STATUS_CHILD = '11' " +
                             "        ) " +
                             "        AND ( " +
                             "            tsr.TSR_SNS = '11' " +

@@ -38,6 +38,9 @@ public class SearchJobEntity {
     @Basic
     @Column(name = "TSJ_STATUS", nullable = false, length = 10)
     private int tsjStatus;
+    @Basic
+    @Column(name = "TSJ_STATUS_CHILD", nullable = false, length = 10)
+    private int tsjStatusChild;
 
     @Override
     public boolean equals(Object o) {

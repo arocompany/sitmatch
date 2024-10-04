@@ -105,20 +105,25 @@ public class MainScheduler {
         if(list != null && !list.isEmpty()){
             for(SearchInfoEntity item: list){
                 SearchResultEntity sre = searchResultRepository.findTop1ByTsiUnoAndTsrImgPathIsNotNullOrderByTsrUnoDesc(item.getTsiUno());
-                if(sre != null && sre.getTsrState().equals(1)) {
-                    item.setTsiStat("15");
-                    searchInfoRepository.save(item);
-
-                    {
-                        Integer cntTsr = searchResultRepository.countResult(item.getTsiUno());
-                        Integer cntSimilarity = matchResultRepository.countSimilarity(item.getTsiUno());
-                        Integer cntChild = matchResultRepository.countChild(item.getTsiUno());
-                        item.setTsiCntTsr(cntTsr);
-                        item.setTsiCntSimilarity(cntSimilarity);
-                        item.setTsiCntChild(cntChild);
-                        item.setTsiStat("17");
+                if(sre != null) {
+                    if(sre.getTsrState().equals(1)) {
+                        item.setTsiStat("15");
                         searchInfoRepository.save(item);
+
+                        {
+                            Integer cntTsr = searchResultRepository.countResult(item.getTsiUno());
+                            Integer cntSimilarity = matchResultRepository.countSimilarity(item.getTsiUno());
+                            Integer cntChild = matchResultRepository.countChild(item.getTsiUno());
+                            item.setTsiCntTsr(cntTsr);
+                            item.setTsiCntSimilarity(cntSimilarity);
+                            item.setTsiCntChild(cntChild);
+                            item.setTsiStat("17");
+                            searchInfoRepository.save(item);
+                        }
                     }
+                }else{
+                    item.setTsiStat("17");
+                    searchInfoRepository.save(item);
                 }
             }
         }
@@ -152,7 +157,33 @@ public class MainScheduler {
                 }
             }
         }
+
+        List<SearchResultEntity> listForChild = searchResultRepository.selectResultWithJobForChild();
+
+        if(listForChild != null && !listForChild.isEmpty()){
+            for(SearchResultEntity item: listForChild){
+                try {
+                    MatchResultEntity data = matchResultRepository.selectByTsiUnoAndTsrUno(item.getTsiUno(), item.getTsrUno());
+
+                    if (data != null) {
+                        if (data.getTmrVScore() != null) {
+
+                            Integer similarity = (int) ((Double) data.getTmrVScore() * 100);
+                            item.setTsrSimilarity(similarity);
+                        }
+
+                        if (data.getTmrTotalScore() != null) {
+                            Integer child = Integer.valueOf(String.valueOf(((Double) data.getTmrTotalScore()).intValue()));
+                            item.setTsrTotalScore(child);
+                        }
+                    }
+
+                    item.setTsrState(1);
+                    searchResultRepository.save(item);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
     }
-
-
 }

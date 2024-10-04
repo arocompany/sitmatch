@@ -87,6 +87,7 @@ public class CommonStaticSearchUtil {
         sje.setTsrImgName(sre.getTsrImgName());
         sje.setTsrImgExt(sre.getTsrImgExt());
         sje.setTsjStatus(0);
+        sje.setTsjStatusChild(0);
         sje.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sje.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         return sje;
@@ -138,6 +139,7 @@ public class CommonStaticSearchUtil {
         sje.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sje.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sje.setTsjStatus(0);
+        sje.setTsjStatusChild(0);
     }
 
     public static String generateRandomFileName(int length) {
