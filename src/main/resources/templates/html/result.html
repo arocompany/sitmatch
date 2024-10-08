@@ -180,14 +180,14 @@
                     </th:block>
                 </div>
                 <div>
-                    <span th:if="${(list.getTsiSearchType().equals(1) && list.getTsjStatus() eq '00') || (list.getTsiSearchType().equals(2) && list.getTsjStatusChild() eq '00')}">대기중</span>
-                    <span th:if="${(list.getTsiSearchType().equals(1) && list.getTsjStatus() eq '01') || (list.getTsiSearchType().equals(2) && list.getTsjStatusChild() eq '01')}">처리중</span>
-                    <span th:if="${(list.getTsiSearchType().equals(1) && list.getTsjStatus() eq '10') || (list.getTsiSearchType().equals(2) && list.getTsjStatusChild() eq '10')}">
+                    <span th:if="${(list.getTsiSearchType().equals('1') && list.getTsjStatus() eq '00') || (list.getTsiSearchType().equals('2') && list.getTsjStatusChild() eq '00')}">대기중</span>
+                    <span th:if="${(list.getTsiSearchType().equals('1') && list.getTsjStatus() eq '01') || (list.getTsiSearchType().equals('2') && list.getTsjStatusChild() eq '01')}">처리중</span>
+                    <span th:if="${(list.getTsiSearchType().equals('1') && list.getTsjStatus() eq '10') || (list.getTsiSearchType().equals('2') && list.getTsjStatusChild() eq '10')}">
                         <th:block th:if = "${list.tsiSearchType.equals('1')}">SKIP</th:block>
                         <th:block  th:if="${list.tsiSearchType.equals('2')}">
                             <span>
                                 <h2 style="display:inline-block" class="unity" >
-                                    <th:block th:if="${list.tsiSearchType.equals('2') && list.tmrTotalScore != null}" th:text="'아청물여부: ' + ${list.tmrTotalScore} + '%'"></th:block>
+                                    <th:block th:if="${list.tsiSearchType.equals(2) && list.tmrTotalScore != null}" th:text="'아청물여부: ' + ${list.tmrTotalScore} + '%'"></th:block>
                                 </h2>
                             </span>
                             <span>
@@ -201,7 +201,7 @@
                             </span>
                         </th:block>
                     </span>
-                    <span th:if="${list.getTsjStatus() eq '11' }">
+                    <span th:if="${(list.getTsiSearchType().equals('1') && list.getTsjStatus() eq '11') || (list.getTsiSearchType().equals('2') && list.getTsjStatusChild() eq '11')}">
                         <span>
                                 <h2 style="display:inline-block" class="unity" >
                                     <th:block  th:if="${list.getTmrSimilarity() != null && list.getTmrSimilarity() > '0'}" th:text="${#strings.concat('유사도 ',list.getTmrSimilarity(), '%')}">99%</th:block>

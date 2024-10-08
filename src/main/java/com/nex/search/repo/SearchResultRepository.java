@@ -168,7 +168,7 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     String defaultQeury_5 = "SELECT TSR.TSR_UNO as tsrUno, TSI.TSI_SEARCH_TYPE AS tsiSearchType, TSI.TSI_UNO as tsiUno, tsr.TSR_TITLE as tsrTitle, tsr.TSR_SNS as tsrSns, tsi.search_value as searchValue, "+
             "tsr.TSR_SITE_URL as tsrSiteUrl, tsr.TSR_IMG_PATH as tsrImgPath, tsr.TSR_IMG_NAME as tsrImgName, tsr.TRK_STAT_CD as trkStatCd,"+
-            "tsi.TSI_KEYWORD as tsiKeyword, tsj.TSJ_STATUS as tsjStatus, tu.USER_ID as tuUserId, tsi.TSI_TYPE as tsiType, tsr.TSR_IMG_EXT as tsrImgExt," +
+            "tsi.TSI_KEYWORD as tsiKeyword, tsj.TSJ_STATUS as tsjStatus, tsj.TSJ_STATUS_CHILD as tsjStatusChild, tu.USER_ID as tuUserId, tsi.TSI_TYPE as tsiType, tsr.TSR_IMG_EXT as tsrImgExt," +
             "ROUND(tmr.TMR_V_SCORE, 2)*100 as tmrVScore, ROUND(tmr.TMR_T_SCORE, 2)*100 as tmrTScore, ROUND(tmr.TMR_A_SCORE, 2)*100 as tmrAScore, " +
             " tsr.tsr_similarity as tmrSimilarity " +
             ", tsr.TSR_NATION_CODE as tsrNationCode "+
