@@ -1215,14 +1215,14 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     String selectResultWithJob = "SELECT tsr.* FROM tb_search_result tsr " +
             " INNER JOIN tb_search_info tsi ON tsr.tsi_UNO = tsi.tsi_uno AND tsi_search_type = 1 " +
             " INNER JOIN tb_search_job tsj ON tsr.TSI_UNO = tsj.tsi_uno AND tsr.tsr_uno = tsj.tsr_uno " +
-            " WHERE tsr_state = 0 AND tsr.data_stat_cd = 10 AND (tsj_status = 11 OR tsj_status = 10) ORDER BY tsr.tsr_uno LIMIT 10 ";
+            " WHERE tsr_state = 0 AND tsr.data_stat_cd = 10 AND (tsj_status = 11 OR tsj_status = 10) ORDER BY tsi.tsi_uno LIMIT 10 ";
     @Query(value = selectResultWithJob, nativeQuery = true)
     List<SearchResultEntity> selectResultWithJob();
 
     String selectResultWithJobForChild = "SELECT tsr.* FROM tb_search_result tsr " +
             " INNER JOIN tb_search_info tsi ON tsr.tsi_UNO = tsi.tsi_uno AND tsi_search_type = 2 " +
             " INNER JOIN tb_search_job tsj ON tsr.TSI_UNO = tsj.tsi_uno AND tsr.tsr_uno = tsj.tsr_uno " +
-            " WHERE tsr_state = 0 AND tsr.data_stat_cd = 10 AND (tsj_status_child = 11 OR tsj_status_child = 10) ORDER BY tsr.tsr_uno LIMIT 10 ";
+            " WHERE tsr_state = 0 AND tsr.data_stat_cd = 10 AND (tsj_status_child = 11 OR tsj_status_child = 10) ORDER BY tsi.tsi_uno LIMIT 10 ";
     @Query(value = selectResultWithJobForChild, nativeQuery = true)
     List<SearchResultEntity> selectResultWithJobForChild();
 
