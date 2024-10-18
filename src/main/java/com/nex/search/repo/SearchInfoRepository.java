@@ -147,8 +147,26 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " tsi.tsi_cnt_similarity AS tmrSimilarityCnt, " +
                                 " tsi.tsi_cnt_child AS tmrChildCnt, " +
                                 " (SELECT tsj_status FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatus, " +
-                                " (SELECT tsj_status_child FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatusChild, " +
-                                " tsi.tsi_user_file as tsiUserFile, " +
+                                " (SELECT tsj_status_child FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatusChild " +
+                                ", coalesce(params.tsi_is_nation_kr, 0) tsiIsNationKr " +
+                                ", coalesce(params.tsi_is_nation_us, 0) tsiIsNationUs " +
+                                ", coalesce(params.tsi_is_nation_cn, 0) tsiIsNationCn " +
+                                ", coalesce(params.tsi_is_nation_nl, 0) tsiIsNationNl " +
+                                ", coalesce(params.tsi_is_nation_th, 0) tsiIsNationTh " +
+                                ", coalesce(params.tsi_is_nation_ru, 0) tsiIsNationRu " +
+                                ", coalesce(params.tsi_is_nation_vn, 0) tsiIsNationVn " +
+                                ", coalesce(params.tsi_is_engine_google, 0) tsiIsEngineGoogle " +
+                                ", coalesce(params.tsi_is_engine_youtube, 0) tsiIsEngineYoutube " +
+                                ", coalesce(params.tsi_is_engine_google_reverse_image, 0) tsiIsEngineGoogleReverseImage " +
+                                ", coalesce(params.tsi_is_engine_google_lens, 0) tsiIsEngineGoogleLens " +
+                                ", coalesce(params.tsi_is_engine_baidu, 0) tsiIsEngineBaidu " +
+                                ", coalesce(params.tsi_is_engine_bing, 0) tsiIsEngineBing " +
+                                ", coalesce(params.tsi_is_engine_duckduckgo, 0) tsiIsEngineDuckduckgo " +
+                                ", coalesce(params.tsi_is_engine_yahoo, 0) tsiIsEngineYahoo " +
+                                ", coalesce(params.tsi_is_engine_yandex, 0) tsiIsEngineYandex " +
+                                ", coalesce(params.tsi_is_engine_yandex_image, 0) tsiIsEngineYandexImage " +
+                                ", coalesce(params.tsi_is_engine_naver, 0) tsiIsEngineNaver " +
+                                " , tsi.tsi_user_file as tsiUserFile, " +
                                 " (SELECT CONCAT(MIN(tvi.TVI_IMG_REAL_PATH), '', MIN(tvi.TVI_IMG_NAME)) FROM tb_video_info tvi WHERE tvi.tsi_uno = tsi.tsi_uno) tviImagePath "+
                                 " from tb_search_info tsi " +
                                 " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
