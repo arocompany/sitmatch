@@ -82,7 +82,7 @@ public class CommonStaticSearchUtil {
         if (StringUtils.hasText(sre.getTsrImgPath())) {
             sje.setTsrImgPath(sre.getTsrImgPath().replaceAll("\\\\", "/"));
         } else {
-            sje.setTsrImgPath("");
+            sje.setTsrImgPath(null);
         }
         sje.setTsrImgName(sre.getTsrImgName());
         sje.setTsrImgExt(sre.getTsrImgExt());
@@ -127,7 +127,10 @@ public class CommonStaticSearchUtil {
         sre.setMonitoringCd("10");
         sre.setTsrSimilarity(0);
         sre.setTsrTotalScore(0);
-        sre.setTsrState(0);
+        if(StringUtils.hasText(sre.getTsrImgPath()))
+            sre.setTsrState(0);
+        else
+            sre.setTsrState(1);
     }
 
     /**
@@ -138,8 +141,14 @@ public class CommonStaticSearchUtil {
     public static void setSearchJobDefault(SearchJobEntity sje) {
         sje.setFstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
         sje.setLstDmlDt(Timestamp.valueOf(LocalDateTime.now()));
-        sje.setTsjStatus(0);
-        sje.setTsjStatusChild(0);
+
+        if(StringUtils.hasText(sje.getTsrImgPath())) {
+            sje.setTsjStatus(0);
+            sje.setTsjStatusChild(0);
+        }else{
+            sje.setTsjStatus(10);
+            sje.setTsjStatusChild(10);
+        }
     }
 
     public static String generateRandomFileName(int length) {
