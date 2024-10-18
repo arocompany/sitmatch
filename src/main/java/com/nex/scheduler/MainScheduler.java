@@ -110,18 +110,21 @@ public class MainScheduler {
                         item.setTsiStat("15");
                         searchInfoRepository.save(item);
 
-                        {
-                            Integer cntTsr = searchResultRepository.countResult(item.getTsiUno());
-                            Integer cntSimilarity = matchResultRepository.countSimilarity(item.getTsiUno());
-                            Integer cntChild = matchResultRepository.countChild(item.getTsiUno());
-                            item.setTsiCntTsr(cntTsr);
-                            item.setTsiCntSimilarity(cntSimilarity);
-                            item.setTsiCntChild(cntChild);
-                            item.setTsiStat("17");
-                            searchInfoRepository.save(item);
-                        }
+                        item.setTsiStat("17");
+                    }
+                    {
+                        Integer cntTsr = searchResultRepository.countResult(item.getTsiUno());
+                        Integer cntSimilarity = matchResultRepository.countSimilarity(item.getTsiUno());
+                        Integer cntChild = matchResultRepository.countChild(item.getTsiUno());
+                        item.setTsiCntTsr(cntTsr);
+                        item.setTsiCntSimilarity(cntSimilarity);
+                        item.setTsiCntChild(cntChild);
+
+                        searchInfoRepository.save(item);
                     }
                 }else{
+                    Integer cntTsr = searchResultRepository.countResult(item.getTsiUno());
+                    item.setTsiCntTsr(cntTsr);
                     item.setTsiStat("17");
                     searchInfoRepository.save(item);
                 }
