@@ -169,6 +169,7 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " , tsi.tsi_user_file as tsiUserFile, " +
                                 " (SELECT CONCAT(MIN(tvi.TVI_IMG_REAL_PATH), '', MIN(tvi.TVI_IMG_NAME)) FROM tb_video_info tvi WHERE tvi.tsi_uno = tsi.tsi_uno) tviImagePath "+
                                 " from tb_search_info tsi " +
+                                " LEFT OUTER JOIN TB_SEARCH_INFO_PARAMS params ON tsi.TSI_UNO = params.TSI_UNO "+
                                 " WHERE tsi.DATA_STAT_CD= :dataStatCd" +
                                 " and tsi.SEARCH_VALUE= :searchValue" +
                                 " and ((:searchUserFile IS NOT NULL AND tsi.TSI_USER_FILE = :searchUserFile ) OR :searchUserFile = '' )" +
