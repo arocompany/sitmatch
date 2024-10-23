@@ -96,7 +96,7 @@ public class SearchImageService {
                                 , Images_resultsByImage::getOriginal
                                 , Images_resultsByImage::getThumbnail
                                 , Images_resultsByImage::getTitle
-                                , Images_resultsByImage::getSource
+                                , Images_resultsByImage::getLink
                                 , Images_resultsByImage::isFacebook
                                 , Images_resultsByImage::isInstagram
                                 , Images_resultsByImage::isTwitter
