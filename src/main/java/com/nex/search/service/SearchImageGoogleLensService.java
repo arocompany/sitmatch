@@ -15,6 +15,7 @@ import com.nex.search.entity.result.Images_resultsByGoogleLens;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -30,7 +31,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -173,7 +176,7 @@ public class SearchImageGoogleLensService {
         }
         return null;
     }
-
+    @Transactional
     public <RESULT> List<SearchResultEntity> saveGoogleLens(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn
     , String nationCode, String engine) throws Exception {
@@ -184,16 +187,28 @@ public class SearchImageGoogleLensService {
         // RestTemplate restTemplate = new RestTemplate();
         List<SearchResultEntity> sreList = new ArrayList<>();
 //        results = results.stream().distinct().toList();
-        //SearchResultEntity sre = null;
+        Map<String, Object> uniqueResults = new HashMap<>();
+        Thread.sleep(1000);
+        List<String> tempList = searchResultRepository.findDistinctSiteUrlsByTsiUno(insertResult.getTsiUno());
+
+        for(String item: tempList){
+            uniqueResults.put(item, null);
+        }
+
         for (RESULT result : results) {
             try {
-                //검색 결과 엔티티 추출
-                SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleLensEntity(insertResult.getTsiUno(), tsrSns, result, getThumbnailFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                String siteUrl = getLinkFn.apply(result); // siteUrl 가져오기
 
-                //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
-                if (!tsrSns.equals(sre.getTsrSns())) {
-                    continue;
-                }
+                // siteUrl이 중복되지 않는 경우만 추가
+                if (!uniqueResults.containsKey(siteUrl)) {
+                    uniqueResults.put(siteUrl, result);
+                    //검색 결과 엔티티 추출
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleLensEntity(insertResult.getTsiUno(), tsrSns, result, getThumbnailFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+
+                    //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
+                    if (!tsrSns.equals(sre.getTsrSns())) {
+                        continue;
+                    }
 
 //                int cnt = searchResultRepository.countByTsrSiteUrl(sre.getTsrSiteUrl());
 //                if (cnt > 0) {
@@ -207,6 +222,7 @@ public class SearchImageGoogleLensService {
                     searchResultRepository.save(sre);
                     sreList.add(sre);
 //                }
+                }
             } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());
                 throw new IOException(e);

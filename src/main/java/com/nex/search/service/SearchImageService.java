@@ -32,7 +32,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -298,9 +300,22 @@ public class SearchImageService {
         // RestTemplate restTemplate = new RestTemplate();
         List<SearchResultEntity> sreList = new ArrayList<>();
 //        results = results.stream().distinct().toList();
+
+        Map<String, Object> uniqueResults = new HashMap<>();
+        Thread.sleep(1000);
+        List<String> tempList = searchResultRepository.findDistinctSiteUrlsByTsiUno(insertResult.getTsiUno());
+
+        for(String item: tempList){
+            uniqueResults.put(item, null);
+        }
+
         for (RESULT result : results) {
 
             try {
+                String siteUrl = getLinkFn.apply(result); // siteUrl 가져오기
+                // siteUrl이 중복되지 않는 경우만 추가
+                if (!uniqueResults.containsKey(siteUrl)) {
+                    uniqueResults.put(siteUrl, result);
                     //검색 결과 엔티티 추출
                     SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultGoogleReverseEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 
@@ -313,15 +328,16 @@ public class SearchImageService {
 //                    if(cnt > 0) {
 //                        log.info("file cnt === {}", cnt);
 //                    }else {
-                        //이미지 파일 저장
-                        imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
-                        CommonStaticSearchUtil.setSearchResultDefault(sre);
-                        sre.setTsrNationCode(nationCode);
-                        sre.setTsrEngine(engine);
-                        searchResultRepository.save(sre);
+                    //이미지 파일 저장
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
+                    CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    sre.setTsrNationCode(nationCode);
+                    sre.setTsrEngine(engine);
+                    searchResultRepository.save(sre);
 
-                        sreList.add(sre);
+                    sreList.add(sre);
 //                    }
+                }
             } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                 log.error(e.getMessage());
                 throw new IOException(e);

@@ -252,7 +252,6 @@ public class SearchTextService {
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn, String nationCode, String engine) throws Exception {
 
-        Thread.sleep(1000);
         // 검색결과가 없으면 false처리 후 return
         if (results == null) {
 //            loop = false;
@@ -263,6 +262,7 @@ public class SearchTextService {
 //        results = results.stream().distinct().toList();
         // 중복 제거를 위한 Map
         Map<String, Object> uniqueResults = new HashMap<>();
+        Thread.sleep(1000);
         List<String> tempList = searchResultRepository.findDistinctSiteUrlsByTsiUno(insertResult.getTsiUno());
 
         for(String item: tempList){
