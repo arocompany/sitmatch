@@ -1227,6 +1227,9 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
     List<SearchResultEntity> selectResultWithJobForChild();
 
     SearchResultEntity findTop1ByTsiUnoAndTsrImgPathIsNotNullOrderByTsrUnoDesc(Integer tsiUno);
+
+    @Query("SELECT DISTINCT sr.tsrSiteUrl, sr.tsiUno FROM SearchResultEntity sr WHERE sr.tsiUno = :tsiUno")
+    List<SearchResultEntity> findDistinctSiteUrlsByTsiUno(int tsiUno);
 }
 
 
