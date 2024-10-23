@@ -202,7 +202,7 @@ public class SearchTextNaverService {
         }
         return null;
     }
-    @Transactional
+
     public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn, String nationCode, String engine) throws Exception {
@@ -225,34 +225,38 @@ public class SearchTextNaverService {
             uniqueResults.put(item, null);
         }
         for (RESULT result : results) {
-            String siteUrl = getLinkFn.apply(result); // siteUrl 가져오기
+            try {
+                String siteUrl = getLinkFn.apply(result); // siteUrl 가져오기
 
-            // siteUrl이 중복되지 않는 경우만 추가
-            if (!uniqueResults.containsKey(siteUrl)) {
-                uniqueResults.put(siteUrl, result);
-                String imageUrl = getOriginalFn.apply(result) != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
-                SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
-                if (StringUtils.hasText(imageUrl)) {
-                    try {
-                        if (!tsrSns.equals(sre.getTsrSns())) {
-                            continue;
+                // siteUrl이 중복되지 않는 경우만 추가
+                if (!uniqueResults.containsKey(siteUrl)) {
+                    uniqueResults.put(siteUrl, result);
+                    String imageUrl = getOriginalFn.apply(result) != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                    if (StringUtils.hasText(imageUrl)) {
+                        try {
+                            if (!tsrSns.equals(sre.getTsrSns())) {
+                                continue;
+                            }
+                            //이미지 파일 저장
+                            imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
+
+                        } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
+                            log.error(e.getMessage());
+                            throw new IOException(e);
+                        } catch (Exception e) {
+                            log.error(e.getMessage());
                         }
-                        //이미지 파일 저장
-                        imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
-
-                    } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
-                        log.error(e.getMessage());
-                        throw new IOException(e);
-                    } catch (Exception e) {
-                        log.error(e.getMessage());
                     }
-                }
 
-                CommonStaticSearchUtil.setSearchResultDefault(sre);
-                sre.setTsrNationCode(nationCode);
-                sre.setTsrEngine(engine);
-                searchResultRepository.save(sre);
-                sreList.add(sre);
+                    CommonStaticSearchUtil.setSearchResultDefault(sre);
+                    sre.setTsrNationCode(nationCode);
+                    sre.setTsrEngine(engine);
+                    searchResultRepository.save(sre);
+                    sreList.add(sre);
+                }
+            }catch (Exception e){
+                log.error(e.getMessage());
             }
         }
         return sreList;

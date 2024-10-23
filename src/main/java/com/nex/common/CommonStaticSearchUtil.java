@@ -10,7 +10,9 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -27,7 +29,7 @@ public class CommonStaticSearchUtil {
         sre.setTsrJson(result.toString());
         sre.setTsrDownloadUrl(getOriginalFn.apply(result));
         sre.setTsrTitle(getTitleFn.apply(result));
-        sre.setTsrSiteUrl(getLinkFn.apply(result));
+        sre.setTsrSiteUrl(URLDecoder.decode(getLinkFn.apply(result)));
         sre.setTsrSearchValue(CommonCode.methodSerpApiTypeGoogleReverse);
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
@@ -52,7 +54,7 @@ public class CommonStaticSearchUtil {
         sre.setTsrJson(result.toString());
         sre.setTsrDownloadUrl(getOriginalFn.apply(result).get("link").toString());
         sre.setTsrTitle(getTitleFn.apply(result));
-        sre.setTsrSiteUrl(getLinkFn.apply(result));
+        sre.setTsrSiteUrl(URLDecoder.decode(getLinkFn.apply(result)));
         sre.setTsrSearchValue(CommonCode.methodSerpApiTypeGoogleReverse);
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
@@ -176,7 +178,7 @@ public class CommonStaticSearchUtil {
         sre.setTsrDownloadUrl(getOriginalFn.apply(result));
         // sre.setTsrImgName(imageUrl);
         sre.setTsrTitle(getTitleFn.apply(result));
-        sre.setTsrSiteUrl(getLinkFn.apply(result));
+        sre.setTsrSiteUrl(URLDecoder.decode(getLinkFn.apply(result)));
         sre.setTsrSearchValue(CommonCode.methodSerpApiTypeGoogleLens);
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
@@ -201,7 +203,7 @@ public class CommonStaticSearchUtil {
         sre.setTsrJson(result.toString());
         sre.setTsrDownloadUrl(getOriginalFn.apply(result));
         sre.setTsrTitle(getTitleFn.apply(result));
-        sre.setTsrSiteUrl(getLinkFn.apply(result));
+        sre.setTsrSiteUrl(URLDecoder.decode(getLinkFn.apply(result)));
         sre.setTsrSearchValue(CommonCode.methodSerpApiTypeETC);
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
@@ -226,7 +228,7 @@ public class CommonStaticSearchUtil {
         sre.setTsrJson(result.toString());
         sre.setTsrDownloadUrl(getOriginalFn.apply(result));
         sre.setTsrTitle(getTitleFn.apply(result));
-        sre.setTsrSiteUrl(getLinkFn.apply(result));
+        sre.setTsrSiteUrl(URLDecoder.decode(getLinkFn.apply(result)));
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
         if (CommonCode.snsTypeFacebook.equals(tsrSns) && isFacebookFn.apply(result)) {
@@ -250,7 +252,7 @@ public class CommonStaticSearchUtil {
         sre.setTsrJson(result.toString());
         sre.setTsrDownloadUrl(getOriginalMapFn.apply(result).get("link").toString());
         sre.setTsrTitle(getTitleFn.apply(result));
-        sre.setTsrSiteUrl(getLinkFn.apply(result));
+        sre.setTsrSiteUrl(URLDecoder.decode(getLinkFn.apply(result)));
 
         // (Google: 11, Twitter: 13, Instagram:15, Facebook: 17)
         if (CommonCode.snsTypeFacebook.equals(tsrSns) && isFacebookFn.apply(result)) {

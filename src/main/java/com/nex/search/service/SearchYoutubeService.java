@@ -28,6 +28,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -173,7 +174,7 @@ public class SearchYoutubeService {
         }
         return null;
     }
-    @Transactional
+    
     public <RESULT> List<SearchResultEntity> saveYoutube(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getPositionFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn, Function<RESULT, Map<String, String>> getThumnailFn
     , String nationCode, String engine) throws Exception {
@@ -273,7 +274,7 @@ public class SearchYoutubeService {
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
         sre.setTsrDownloadUrl(getPositionFn.apply(result));
-        sre.setTsrSiteUrl(getLinkFn.apply(result));
+        sre.setTsrSiteUrl(URLDecoder.decode(getLinkFn.apply(result)));
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSns(CommonCode.snsTypeGoogle);
         return sre;
