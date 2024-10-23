@@ -14,6 +14,7 @@ import com.nex.search.entity.result.Youtube_resultsByText;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -172,7 +173,7 @@ public class SearchYoutubeService {
         }
         return null;
     }
-
+    @Transactional
     public <RESULT> List<SearchResultEntity> saveYoutube(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getPositionFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn, Function<RESULT, Map<String, String>> getThumnailFn
     , String nationCode, String engine) throws Exception {
