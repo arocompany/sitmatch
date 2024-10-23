@@ -14,6 +14,7 @@ import com.nex.search.entity.result.SerpApiTextResult;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -246,11 +247,12 @@ public class SearchTextService {
         }
         return null;
     }
-
+    @Transactional
     public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
             , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn, String nationCode, String engine) throws Exception {
 
+        Thread.sleep(1000);
         // 검색결과가 없으면 false처리 후 return
         if (results == null) {
 //            loop = false;
@@ -260,11 +262,11 @@ public class SearchTextService {
         List<SearchResultEntity> sreList = new ArrayList<>();
 //        results = results.stream().distinct().toList();
         // 중복 제거를 위한 Map
-        Map<String, RESULT> uniqueResults = new HashMap<>();
-        List<SearchResultEntity> tempList = searchResultRepository.findDistinctSiteUrlsByTsiUno(insertResult.getTsiUno());
+        Map<String, Object> uniqueResults = new HashMap<>();
+        List<String> tempList = searchResultRepository.findDistinctSiteUrlsByTsiUno(insertResult.getTsiUno());
 
-        for(SearchResultEntity item: tempList){
-            uniqueResults.put(item.getTsrSiteUrl(), null);
+        for(String item: tempList){
+            uniqueResults.put(item, null);
         }
 
         for (RESULT result : results) {

@@ -1228,8 +1228,8 @@ public interface SearchResultRepository extends JpaRepository<SearchResultEntity
 
     SearchResultEntity findTop1ByTsiUnoAndTsrImgPathIsNotNullOrderByTsrUnoDesc(Integer tsiUno);
 
-    @Query("SELECT DISTINCT sr.tsrSiteUrl, sr.tsiUno FROM SearchResultEntity sr WHERE sr.tsiUno = :tsiUno")
-    List<SearchResultEntity> findDistinctSiteUrlsByTsiUno(int tsiUno);
+    @Query("SELECT DISTINCT sr.tsrSiteUrl FROM SearchResultEntity sr WHERE sr.tsiUno = :tsiUno")
+    List<String> findDistinctSiteUrlsByTsiUno(int tsiUno);
 }
 
 
