@@ -420,7 +420,7 @@ public class TrackingSearchResultService{
                 HttpHeaders sourcesHeader = new HttpHeaders();
                 HttpEntity<?> sourcesEntity = new HttpEntity<>(sourcesHeader);
                 UriComponents sourcesUri = UriComponentsBuilder.fromHttpUrl(sourcesUrl).build();
-                ResponseEntity<?> sourcesResultMap = new RestTemplate().exchange(sourcesUri.toString(), HttpMethod.GET, sourcesEntity, Object.class);
+                ResponseEntity<?> sourcesResultMap = restTemplate.exchange(sourcesUri.toString(), HttpMethod.GET, sourcesEntity, Object.class);
 
                 if (sourcesResultMap.getStatusCodeValue() == 200) {
                     resultMap = sourcesResultMap;
