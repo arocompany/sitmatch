@@ -53,6 +53,7 @@ public class SearchTextServiceForGoogleImage {
 
 //    private Boolean loop = true;
     private final RestTemplate restTemplate;
+    private final RestTemplateConfig restTemplateConfig;
 
     public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode, String tsrSns){
         this.nationCode = nationCode;
@@ -201,7 +202,7 @@ public class SearchTextServiceForGoogleImage {
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+            ResponseEntity<?> resultMap = restTemplateConfig.customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
             List<RESULT> results = null;
 
             if (resultMap.getStatusCodeValue() == 200) {

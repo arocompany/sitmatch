@@ -136,7 +136,7 @@ public class SearchVideoGoogleLensService {
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+            ResponseEntity<?> resultMap = restTemplateConfig.customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
 
 
 

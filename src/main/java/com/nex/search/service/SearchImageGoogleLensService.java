@@ -52,6 +52,8 @@ public class SearchImageGoogleLensService {
     private final SitProperties sitProperties;
     private final RestTemplate restTemplate;
 
+    private final RestTemplateConfig restTemplateConfig;
+
     public void searchByGoogleLensImage(String tsrSns, SearchInfoEntity insertResult, String nationCode, String customTag) throws JsonProcessingException {
         ConfigData configData = ConfigDataManager.getInstance().getDefaultConfig();
 
@@ -123,7 +125,7 @@ public class SearchImageGoogleLensService {
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+            ResponseEntity<?> resultMap = restTemplateConfig.customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
 
             List<RESULT> results = null;
 

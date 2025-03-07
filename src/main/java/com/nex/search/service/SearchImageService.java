@@ -2,10 +2,7 @@ package com.nex.search.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nex.common.CommonStaticSearchUtil;
-import com.nex.common.ConfigData;
-import com.nex.common.ConfigDataManager;
-import com.nex.common.SitProperties;
+import com.nex.common.*;
 import com.nex.requestSerpApiLog.RequestSerpApiLogService;
 import com.nex.search.entity.RequestSerpApiLogEntity;
 import com.nex.search.entity.SearchInfoEntity;
@@ -54,6 +51,7 @@ public class SearchImageService {
     private final SitProperties sitProperties;
 //    private Boolean loop = true;
     private final RestTemplate restTemplate;
+    private final RestTemplateConfig restTemplateConfig;
 
     public void search(SearchInfoEntity insertResult, SearchInfoDto searchInfoDto, String nationCode){
 
@@ -149,7 +147,7 @@ public class SearchImageService {
             HttpHeaders header = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(header);
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
-            ResponseEntity<?> resultMap = restTemplate.exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
+            ResponseEntity<?> resultMap = restTemplateConfig.customRestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
 
             List<RESULT> results = null;
 
