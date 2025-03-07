@@ -339,7 +339,7 @@ public static String getSerpApiUrl(String url, String keyword, String country, I
         if (queryString.length() > 0) {
             queryString.append("&");
         }
-        if(! key.equals("q") && ! key.equals("search_query") && ! key.equals("url") && ! key.equals("image_url")) {
+        if(! key.equals("q") && ! key.equals("search_query") && ! key.equals("url") && ! key.equals("imageUrl")) {
             queryString.append(URLEncoder.encode(key, StandardCharsets.UTF_8.toString()));
             queryString.append("=");
             queryString.append(URLEncoder.encode(value, StandardCharsets.UTF_8.toString()));
