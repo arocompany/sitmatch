@@ -154,6 +154,8 @@ public class SearchTextBingService {
                     + "&cc="+textGl.toUpperCase()
                     + "&safeSearch=off";
 
+            url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, index, null, "bing", null);
+
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(siEntity.getTsiUno(), url, textGl, "bing", tsiKeywordHiddenValue, index, configData.getSerpApiKey(), null);
             requestSerpApiLogService.save(rsalEntity);
             rsalUno = rsalEntity.getRslUno();

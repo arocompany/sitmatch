@@ -152,6 +152,8 @@ public class SearchTextNaverService {
                         + "&where=image"
                         + "&api_key=" + configData.getSerpApiKey();
 
+            url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, index, null, "naver", null);
+
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(siEntity.getTsiUno(), url, textGl, "naver", tsiKeywordHiddenValue, index, configData.getSerpApiKey(), null);
             requestSerpApiLogService.save(rsalEntity);
             rsalUno = rsalEntity.getRslUno();

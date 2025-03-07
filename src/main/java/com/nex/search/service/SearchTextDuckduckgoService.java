@@ -182,6 +182,8 @@ public class SearchTextDuckduckgoService {
                     + "&kl=" + txtNation
                     + "&safe=-2";
 
+            url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, index, null, "duckduckgo", null);
+
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(siEntity.getTsiUno(), url, textGl, "duckduckgo", tsiKeywordHiddenValue, index, configData.getSerpApiKey(), null);
             requestSerpApiLogService.save(rsalEntity);
             rsalUno = rsalEntity.getRslUno();

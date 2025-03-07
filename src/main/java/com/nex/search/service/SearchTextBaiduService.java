@@ -152,6 +152,8 @@ public class SearchTextBaiduService {
                     + "&pn=" + (index * 10)
                     + "&api_key=" + configData.getSerpApiKey();
 
+            url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, index, null, "baidu", null);
+
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(siEntity.getTsiUno(), url, textGl, "baidu", tsiKeywordHiddenValue, index, configData.getSerpApiKey(), null);
             requestSerpApiLogService.save(rsalEntity);
             rsalUno = rsalEntity.getRslUno();

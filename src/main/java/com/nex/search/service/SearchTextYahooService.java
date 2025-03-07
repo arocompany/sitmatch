@@ -156,6 +156,8 @@ public class SearchTextYahooService {
                     + "&b=" + (index * 10 + 1)
                     + "&vc=" + textGl;
 
+            url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, textGl, index, null, "yahoo", null);
+
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(siEntity.getTsiUno(), url, textGl, "yahoo", tsiKeywordHiddenValue, index, configData.getSerpApiKey(), null);
             requestSerpApiLogService.save(rsalEntity);
             rsalUno = rsalEntity.getRslUno();
