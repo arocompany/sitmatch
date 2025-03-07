@@ -330,7 +330,7 @@ public class SearchImageService {
 //                        log.info("file cnt === {}", cnt);
 //                    }else {
                     //이미지 파일 저장
-                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getThumbnailFn, false);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
                     sre.setTsrNationCode(nationCode);
                     sre.setTsrEngine(engine);

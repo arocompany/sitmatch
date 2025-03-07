@@ -9,12 +9,11 @@ import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
-import com.nex.search.entity.result.Images_resultsByText;
-import com.nex.search.entity.result.SerpApiTextResult;
+import com.nex.search.entity.result.CustomResult;
+import com.nex.search.entity.result.CustomResults;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -71,7 +70,7 @@ public class SearchTextDuckduckgoService {
                 .supplyAsync(() -> {
                     try {
                         //serpApi를 통하여 검색
-                        return searchText(index, searchInfoDto, tsrSns, textGl, SerpApiTextResult.class, SerpApiTextResult::getError, SerpApiTextResult::getImages_results, insertResult);
+                        return searchText(index, searchInfoDto, tsrSns, textGl, CustomResult.class, CustomResult::getError, CustomResult::getResults, insertResult);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -83,13 +82,12 @@ public class SearchTextDuckduckgoService {
                                 r
                                 , tsrSns
                                 , insertResult
-                                , Images_resultsByText::getOriginal
-                                , Images_resultsByText::getThumbnail
-                                , Images_resultsByText::getTitle
-                                , Images_resultsByText::getLink
-                                , Images_resultsByText::isFacebook
-                                , Images_resultsByText::isInstagram
-                                , Images_resultsByText::isTwitter
+                                , CustomResults::getImage
+                                , CustomResults::getTitle
+                                , CustomResults::getLink
+                                , CustomResults::isFacebook
+                                , CustomResults::isInstagram
+                                , CustomResults::isTwitter
                                 , textGl
                                 , "duckduckgo"
                         );
@@ -236,7 +234,7 @@ public class SearchTextDuckduckgoService {
         return null;
     }
     public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
-            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn, String nationCode, String engine) throws Exception {
 
         // 검색결과가 없으면 false처리 후 return
@@ -262,15 +260,15 @@ public class SearchTextDuckduckgoService {
                 // siteUrl이 중복되지 않는 경우만 추가
                 if (!uniqueResults.containsKey(siteUrl)) {
                     uniqueResults.put(siteUrl, result);
-                    String imageUrl = getOriginalFn.apply(result) != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                    String imageUrl = getThumbnailFn.apply(result);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
                     if (StringUtils.hasText(imageUrl)) {
                         try {
                             if (!tsrSns.equals(sre.getTsrSns())) {
                                 continue;
                             }
                             //이미지 파일 저장
-                            imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
+                            imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getThumbnailFn, false);
 
                         } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                             log.error(e.getMessage());

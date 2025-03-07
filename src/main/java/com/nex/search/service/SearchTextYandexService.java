@@ -259,14 +259,14 @@ public class SearchTextYandexService {
                 if (!uniqueResults.containsKey(siteUrl)) {
                     uniqueResults.put(siteUrl, result);
                     String imageUrl = getOriginalFn.apply(result) != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultTextEntity(insertResult.getTsiUno(), tsrSns, result, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
                     if (StringUtils.hasText(imageUrl)) {
                         try {
                             if (!tsrSns.equals(sre.getTsrSns())) {
                                 continue;
                             }
                             //이미지 파일 저장
-                            imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getOriginalFn, getThumbnailFn, false);
+                            imageService.saveImageFile(insertResult.getTsiUno(), restTemplate, sre, result, getThumbnailFn, false);
 
                         } catch (IOException e) {// IOException 의 경우 해당 Thread 를 종료하도록 처리.
                             log.error(e.getMessage());

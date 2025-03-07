@@ -9,12 +9,11 @@ import com.nex.search.entity.SearchInfoEntity;
 import com.nex.search.entity.SearchJobEntity;
 import com.nex.search.entity.SearchResultEntity;
 import com.nex.search.entity.dto.SearchInfoDto;
-import com.nex.search.entity.result.YoutubeByResult;
-import com.nex.search.entity.result.Youtube_resultsByText;
+import com.nex.search.entity.result.CustomResult;
+import com.nex.search.entity.result.CustomResults;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -64,7 +63,7 @@ public class SearchYoutubeService {
                 tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue;
             }
 
-            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, null, null, null, configData.getSerpApiKey(), null, "youtube", null);
+            String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, null,null, "youtube", null);
 
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(insertResult.getTsiUno(), url, nationCode, "youtube", tsiKeywordHiddenValue, null, configData.getSerpApiKey(), null);
             requestSerpApiLogService.save(rsalEntity);
@@ -85,7 +84,7 @@ public class SearchYoutubeService {
             tsiKeywordHiddenValue = "트위터 " + tsiKeywordHiddenValue;
         }
 
-        String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, null, null, null, configData.getSerpApiKey(), null, "youtube", null);
+        String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, null, null, "youtube", null);
         return url;
     }
 
@@ -95,7 +94,7 @@ public class SearchYoutubeService {
                 .supplyAsync(() -> {
                     try {
                         // text기반 검색
-                        return searchByYoutube(url, YoutubeByResult.class, YoutubeByResult::getError, YoutubeByResult::getVideo_results, rsalUno);
+                        return searchByYoutube(url, CustomResult.class, CustomResult::getError, CustomResult::getResults, rsalUno);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         return null;
@@ -108,10 +107,9 @@ public class SearchYoutubeService {
                                 r
                                 , tsrSns
                                 , insertResult
-                                , Youtube_resultsByText::getPosition_on_page
-                                , Youtube_resultsByText::getLink
-                                , Youtube_resultsByText::getTitle
-                                , Youtube_resultsByText::getThumbnail
+                                , CustomResults::getLink
+                                , CustomResults::getTitle
+                                , CustomResults::getImage
                                 , nationCode
                                 , engine
                         );
@@ -176,7 +174,7 @@ public class SearchYoutubeService {
     }
     
     public <RESULT> List<SearchResultEntity> saveYoutube(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
-            , Function<RESULT, String> getPositionFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn, Function<RESULT, Map<String, String>> getThumnailFn
+            , Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getThumnailFn
     , String nationCode, String engine) throws Exception {
         if (results == null) {
             log.info("result null");
@@ -201,7 +199,7 @@ public class SearchYoutubeService {
                 if (!uniqueResults.containsKey(siteUrl)) {
                     uniqueResults.put(siteUrl, result);
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = getYoutubeResultEntity(insertResult.getTsiUno(), result, getPositionFn, getLinkFn, getTitleFn);
+                    SearchResultEntity sre = getYoutubeResultEntity(insertResult.getTsiUno(), result, getLinkFn, getTitleFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {
@@ -269,11 +267,10 @@ public class SearchYoutubeService {
     }
 
     public <RESULT> SearchResultEntity getYoutubeResultEntity(int tsiUno, RESULT result
-            , Function<RESULT, String> getPositionFn, Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn) {
+            , Function<RESULT, String> getLinkFn, Function<RESULT, String> getTitleFn) {
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
-        sre.setTsrDownloadUrl(getPositionFn.apply(result));
         sre.setTsrSiteUrl(URLDecoder.decode(getLinkFn.apply(result)));
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSns(CommonCode.snsTypeGoogle);

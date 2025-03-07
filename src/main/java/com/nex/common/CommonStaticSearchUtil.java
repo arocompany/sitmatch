@@ -196,12 +196,11 @@ public class CommonStaticSearchUtil {
     }
 
     public static <RESULT> SearchResultEntity getSearchResultTextEntity(int tsiUno, String tsrSns, RESULT result
-            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
-        sre.setTsrDownloadUrl(getOriginalFn.apply(result));
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(URLDecoder.decode(getLinkFn.apply(result)));
         sre.setTsrSearchValue(CommonCode.methodSerpApiTypeETC);
@@ -221,12 +220,11 @@ public class CommonStaticSearchUtil {
     }
 
     public static <RESULT> SearchResultEntity getSearchResultEntity2(int tsiUno, String tsrSns, RESULT result
-            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn) {
         SearchResultEntity sre = new SearchResultEntity();
         sre.setTsiUno(tsiUno);
         sre.setTsrJson(result.toString());
-        sre.setTsrDownloadUrl(getOriginalFn.apply(result));
         sre.setTsrTitle(getTitleFn.apply(result));
         sre.setTsrSiteUrl(URLDecoder.decode(getLinkFn.apply(result)));
 
@@ -268,42 +266,68 @@ public class CommonStaticSearchUtil {
         return sre;
     }
 
-    public static String getSerpApiUrl(String url, String keyword, String country, String noCache, String location, Integer pageNo, String key, String imageUrl, String engine, String pageToken){
+//    public static String getSerpApiUrl(String url, String keyword, String country, String noCache, String location, Integer pageNo, String key, String imageUrl, String engine, String pageToken){
+public static String getSerpApiUrl(String url, String keyword, String country, Integer pageNo, String imageUrl, String engine, String lensType){
 
         StringBuilder queryString = new StringBuilder();
         try {
-            if(StringUtils.hasText(noCache)) appendQueryParam(queryString, "no_cache", noCache);
-            if(StringUtils.hasText(location)) appendQueryParam(queryString, "location", location);
-            if(StringUtils.hasText(key)) appendQueryParam(queryString, "api_key", key);
+//            if(StringUtils.hasText(noCache)) appendQueryParam(queryString, "no_cache", noCache);
+//            if(StringUtils.hasText(location)) appendQueryParam(queryString, "location", location);
+//            if(StringUtils.hasText(key)) appendQueryParam(queryString, "api_key", key);
             if(StringUtils.hasText(engine)) appendQueryParam(queryString, "engine", engine);
-            if(StringUtils.hasText(pageToken)) appendQueryParam(queryString, "page_token", pageToken);
+//            if(StringUtils.hasText(pageToken)) appendQueryParam(queryString, "page_token", pageToken);
 
             if(pageNo != null && pageNo > -1) appendQueryParam(queryString, "start", String.valueOf(pageNo * 10));
 
-            if(StringUtils.hasText(engine)) {
-                switch (engine) {
-                    case "google", "google_reverse_image", "google_images" -> {
-                        if(StringUtils.hasText(keyword)) appendQueryParam(queryString, "q", keyword);
-                        if(StringUtils.hasText(country)) appendQueryParam(queryString, "gl", country);
-                        if(StringUtils.hasText(imageUrl)) appendQueryParam(queryString, "image_url", imageUrl);
-                    }
-                    case "youtube" -> {
-                        if(StringUtils.hasText(keyword)) appendQueryParam(queryString, "search_query", keyword);
-                        if(StringUtils.hasText(country)) appendQueryParam(queryString, "gl", country);
-                        if(StringUtils.hasText(imageUrl)) appendQueryParam(queryString, "image_url", imageUrl);
-                    }
-                    case "google_lens" -> {
-                        if(StringUtils.hasText(country)) appendQueryParam(queryString, "country", country);
-                        if(StringUtils.hasText(imageUrl)) appendQueryParam(queryString, "url", imageUrl);
-                    }
-                    case "google_lens_image_sources" -> {
-                        if(StringUtils.hasText(country)) appendQueryParam(queryString, "country", country);
-                    }
+            if(StringUtils.hasText(keyword)) appendQueryParam(queryString, "q", keyword);
+
+            if(StringUtils.hasText(country)){
+                switch (country){
+                    case "kr" -> appendQueryParam(queryString, "hl", "ko");
+                    case "us" -> appendQueryParam(queryString, "hl", "en");
+                    case "nl" -> appendQueryParam(queryString, "hl", "nl");
+                    case "th" -> appendQueryParam(queryString, "hl", "th");
+                    case "ru" -> appendQueryParam(queryString, "hl", "ru");
+                    case "vn" -> appendQueryParam(queryString, "hl", "vi");
+                    case "cn" -> appendQueryParam(queryString, "hl", "zh-cn");
                 }
             }
-            appendQueryParam(queryString, "safe", "off");
-            appendQueryParam(queryString, "filter", "0");
-            appendQueryParam(queryString, "nfpr", "0");
+
+            if(StringUtils.hasText(country)) appendQueryParam(queryString, "country", country);
+            if(StringUtils.hasText(imageUrl)) appendQueryParam(queryString, "imageUrl", imageUrl);
+
+            if(StringUtils.hasText(lensType)){
+                switch (lensType){
+                    case "emimage" -> appendQueryParam(queryString, "webtype", "emimage");
+                    case "vmimage" -> appendQueryParam(queryString, "webtype", "vmimage");
+                    case "about-this-image" -> appendQueryParam(queryString, "webtype", "about-this-image");
+                }
+            }
+
+//            if(StringUtils.hasText(engine)) {
+//                switch (engine) {
+//                    case "google", "google_reverse_image", "google_images" -> {
+//                        if(StringUtils.hasText(keyword)) appendQueryParam(queryString, "q", keyword);
+//                        if(StringUtils.hasText(country)) appendQueryParam(queryString, "gl", country);
+//                        if(StringUtils.hasText(imageUrl)) appendQueryParam(queryString, "image_url", imageUrl);
+//                    }
+//                    case "youtube" -> {
+//                        if(StringUtils.hasText(keyword)) appendQueryParam(queryString, "search_query", keyword);
+//                        if(StringUtils.hasText(country)) appendQueryParam(queryString, "gl", country);
+//                        if(StringUtils.hasText(imageUrl)) appendQueryParam(queryString, "image_url", imageUrl);
+//                    }
+//                    case "google_lens" -> {
+//                        if(StringUtils.hasText(country)) appendQueryParam(queryString, "country", country);
+//                        if(StringUtils.hasText(imageUrl)) appendQueryParam(queryString, "url", imageUrl);
+//                    }
+//                    case "google_lens_image_sources" -> {
+//                        if(StringUtils.hasText(country)) appendQueryParam(queryString, "country", country);
+//                    }
+//                }
+//            }
+//            appendQueryParam(queryString, "safe", "off");
+//            appendQueryParam(queryString, "filter", "0");
+//            appendQueryParam(queryString, "nfpr", "0");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

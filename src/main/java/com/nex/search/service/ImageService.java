@@ -31,7 +31,7 @@ public class ImageService {
     private final SitProperties sitProperties;
 
     public <RESULT> void saveImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
-            , RESULT result, Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, boolean isForGoogleLens) throws IOException {
+            , RESULT result, Function<RESULT, String> getThumbnailFn, boolean isForGoogleLens) throws IOException {
 
         try {
             String fileName = "";
@@ -42,8 +42,7 @@ public class ImageService {
                 fileName = UUID.randomUUID().toString();
             }
 
-            String imageUrl = getOriginalFn.apply(result);
-            imageUrl = imageUrl != null ? getOriginalFn.apply(result) : getThumbnailFn.apply(result);
+            String imageUrl = getThumbnailFn.apply(result);
 
             byte[] imageBytes;
             if (imageUrl != null) {
@@ -108,8 +107,8 @@ public class ImageService {
     }
 
     public <RESULT> void saveYoutubeImageFile(int tsiUno, RestTemplate restTemplate, SearchResultEntity sre
-            , RESULT result, Function<RESULT, Map<String,String>> getThumnailFn) throws IOException {
-        String imageUrl = getThumnailFn.apply(result).get("static");
+            , RESULT result, Function<RESULT, String> getThumnailFn) throws IOException {
+        String imageUrl = getThumnailFn.apply(result);
         byte[] imageBytes = null;
         if (imageUrl != null) { // .toString()
             Resource resource = resourceLoader.getResource(imageUrl);

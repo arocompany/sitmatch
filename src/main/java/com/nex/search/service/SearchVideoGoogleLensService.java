@@ -6,13 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nex.common.*;
 import com.nex.requestSerpApiLog.RequestSerpApiLogService;
 import com.nex.search.entity.*;
-import com.nex.search.entity.result.GoogleLensImagesByImageResult;
-import com.nex.search.entity.result.Images_resultsByGoogleLens;
+import com.nex.search.entity.result.CustomResult;
+import com.nex.search.entity.result.CustomResults;
 import com.nex.search.repo.SearchInfoRepository;
 import com.nex.search.repo.SearchJobRepository;
 import com.nex.search.repo.SearchResultRepository;
 import com.nex.search.repo.VideoInfoRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -54,7 +53,7 @@ public class SearchVideoGoogleLensService {
     private final RequestSerpApiLogService requestSerpApiLogService;
 
     @Async
-    public void searchByGoogleLensVideo(String tsrSns, SearchInfoEntity insertResult, String path, String nationCode, List<String> files) throws Exception {
+    public void searchByGoogleLensVideo(String tsrSns, SearchInfoEntity insertResult, String path, String nationCode, List<String> files, String lensType) throws Exception {
 //        List<String> files = processVideo(insertResult);
         if(files == null || (files != null && files.isEmpty()))  { saveErrorInfo(insertResult);  return;}
 //        for (int i = 0; i < files.size(); i++) {
@@ -73,7 +72,7 @@ public class SearchVideoGoogleLensService {
 
                 int rsalUno = 0;
                 try {
-                    String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, nationCode, null, null, null, configData.getSerpApiKey(), searchImageUrl, "google_lens", null);
+                    String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, nationCode, null, searchImageUrl, "google_lens", lensType);
                     RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(insertResult.getTsiUno(), url, nationCode, "google_lens", null, null, configData.getSerpApiKey(), searchImageUrl);
                     requestSerpApiLogService.save(rsalEntity);
                     rsalUno = rsalEntity.getRslUno();
@@ -82,7 +81,7 @@ public class SearchVideoGoogleLensService {
                             .supplyAsync(() -> {
                                 try {
                                     // text기반 검색 및 결과 저장.(이미지)
-                                    return search(url, nationCode,  GoogleLensImagesByImageResult.class, GoogleLensImagesByImageResult::getError, GoogleLensImagesByImageResult::getImage_sources, finalRsalUno);
+                                    return search(url, nationCode,  CustomResult.class, CustomResult::getError, CustomResult::getResults, finalRsalUno);
                                 } catch (Exception e) {
                                     log.error(e.getMessage(), e);
                                     return null;
@@ -94,13 +93,12 @@ public class SearchVideoGoogleLensService {
                                             r
                                             , tsrSns
                                             , insertResult
-                                            , Images_resultsByGoogleLens::getOriginal
-                                            , Images_resultsByGoogleLens::getThumbnail
-                                            , Images_resultsByGoogleLens::getTitle
-                                            , Images_resultsByGoogleLens::getLink
-                                            , Images_resultsByGoogleLens::isFacebook
-                                            , Images_resultsByGoogleLens::isInstagram
-                                            , Images_resultsByGoogleLens::isTwitter
+                                            , CustomResults::getImage
+                                            , CustomResults::getTitle
+                                            , CustomResults::getLink
+                                            , CustomResults::isFacebook
+                                            , CustomResults::isInstagram
+                                            , CustomResults::isTwitter
                                             , nationCode
                                             , "google_lens"
                                     );
@@ -140,37 +138,24 @@ public class SearchVideoGoogleLensService {
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
             ResponseEntity<?> resultMap = new RestTemplate().exchange(uri.toString(), HttpMethod.GET, entity, Object.class);
 
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String jsonInString = mapper.writeValueAsString(resultMap.getBody());
-            JsonNode rootNode = mapper.readTree(jsonInString);
-            String pageToken = rootNode.at("/image_sources_search/page_token").asText();
 
-            // pageToken값 출력
-            log.info("google_lens page_token === {} ", pageToken);
-
-            String sourcesUrl = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, nationCode, null, null, null, configData.getSerpApiKey(), null, "google_lens_image_sources", pageToken);
-
-            HttpHeaders sourcesHeader = new HttpHeaders();
-            HttpEntity<?> sourcesEntity = new HttpEntity<>(sourcesHeader);
-            UriComponents sourcesUri = UriComponentsBuilder.fromHttpUrl(sourcesUrl).build();
-            ResponseEntity<?> sourcesResultMap = new RestTemplate().exchange(sourcesUri.toString(), HttpMethod.GET, sourcesEntity, Object.class);
 
             List<RESULT> results = null;
 
             RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.select(rsalUno);
 
-            if (sourcesResultMap.getStatusCodeValue() == 200) {
-                ObjectMapper sourcesMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                String sourcesJsonInString = sourcesMapper.writeValueAsString(sourcesResultMap.getBody());
-                INFO info = sourcesMapper.readValue(sourcesJsonInString, infoClass);
+            if (resultMap.getStatusCodeValue() == 200) {
+                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                String jsonInString = mapper.writeValueAsString(resultMap.getBody());
+                INFO info = mapper.readValue(jsonInString, infoClass);
 
                 if (getErrorFn.apply(info) == null) {
                     results = getResultFn.apply(info);
 
-                    rsalEntity = requestSerpApiLogService.success(rsalEntity, sourcesJsonInString);
+                    rsalEntity = requestSerpApiLogService.success(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
                 } else {
-                    rsalEntity = requestSerpApiLogService.fail(rsalEntity, sourcesJsonInString);
+                    rsalEntity = requestSerpApiLogService.fail(rsalEntity, jsonInString);
                     requestSerpApiLogService.save(rsalEntity);
                 }
             } else {
@@ -191,7 +176,7 @@ public class SearchVideoGoogleLensService {
         return null;
     }
     public <RESULT> List<SearchResultEntity> save(List<RESULT> results, String tsrSns, SearchInfoEntity insertResult
-            , Function<RESULT, String> getOriginalFn, Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
+            , Function<RESULT, String> getThumbnailFn, Function<RESULT, String> getTitleFn, Function<RESULT, String> getLinkFn
             , Function<RESULT, Boolean> isFacebookFn, Function<RESULT, Boolean> isInstagramFn, Function<RESULT, Boolean> isTwitterFn, String nationCode, String engine) throws Exception {
 
         if (results == null) {
@@ -217,7 +202,7 @@ public class SearchVideoGoogleLensService {
                 if (!uniqueResults.containsKey(siteUrl)) {
                     uniqueResults.put(siteUrl, result);
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultEntity2(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultEntity2(insertResult.getTsiUno(), tsrSns, result, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {
@@ -229,7 +214,7 @@ public class SearchVideoGoogleLensService {
 //                    log.info("file cnt === {}", cnt);
 //                } else {
                     //이미지 파일 저장
-                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplateConfig.customRestTemplate(), sre, result, getOriginalFn, getThumbnailFn, false);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplateConfig.customRestTemplate(), sre, result, getThumbnailFn, false);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
                     sre.setTsrNationCode(nationCode);
                     sre.setTsrEngine(engine);

@@ -355,12 +355,12 @@ public class TrackingSearchResultService{
 //                                searchResultEntity = CommonStaticSearchUtil.getSearchResultEntity3(getTsiUnoFn.apply(result), tsrSns, result, getOriginalMapFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 //                            }else {
 
-                                searchResultEntity = CommonStaticSearchUtil.getSearchResultEntity2(getTsiUnoFn.apply(result), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                                searchResultEntity = CommonStaticSearchUtil.getSearchResultEntity2(getTsiUnoFn.apply(result), tsrSns, result, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 //                            }
 
                             try {
                                 //이미지 파일 저장
-                                imageService.saveImageFile(getTsiUnoFn.apply(result), restTemplate, searchResultEntity, result, getOriginalFn, getThumbnailFn, false);
+                                imageService.saveImageFile(getTsiUnoFn.apply(result), restTemplate, searchResultEntity, result, getThumbnailFn, false);
                             } catch (IOException e) {
                                 log.error(e.getMessage(), e);
                                 e.printStackTrace();
@@ -415,7 +415,7 @@ public class TrackingSearchResultService{
                 JsonNode rootNode = mapper.readTree(jsonInString);
                 String pageToken = rootNode.at("/image_sources_search/page_token").asText();
 
-                String sourcesUrl = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, rsalEntity.getRslNation(), null, null, null, configData.getSerpApiKey(), null, "google_lens_image_sources", pageToken);
+                String sourcesUrl = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), null, rsalEntity.getRslNation(), null, null, "google_lens_image_sources", pageToken);
 
                 HttpHeaders sourcesHeader = new HttpHeaders();
                 HttpEntity<?> sourcesEntity = new HttpEntity<>(sourcesHeader);

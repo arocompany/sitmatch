@@ -85,7 +85,7 @@ public class SearchVideoService {
 
                 int rsalUno = 0;
                 try {
-                    String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, sitProperties.getTextNocache(), sitProperties.getTextLocation(), null, configData.getSerpApiKey(), searchImageUrl, "google_reverse_image", null);
+                    String url = CommonStaticSearchUtil.getSerpApiUrl(sitProperties.getTextUrl(), tsiKeywordHiddenValue, nationCode, null, searchImageUrl, "google_reverse_image", null);
 
                     RequestSerpApiLogEntity rsalEntity = requestSerpApiLogService.init(insertResult.getTsiUno(), url, nationCode, "google_reverse_image", tsiKeywordHiddenValue, null, configData.getSerpApiKey(), searchImageUrl);
                     requestSerpApiLogService.save(rsalEntity);
@@ -213,7 +213,7 @@ public class SearchVideoService {
                 if (!uniqueResults.containsKey(siteUrl)) {
                     uniqueResults.put(siteUrl, result);
                     //검색 결과 엔티티 추출
-                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultEntity2(insertResult.getTsiUno(), tsrSns, result, getOriginalFn, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
+                    SearchResultEntity sre = CommonStaticSearchUtil.getSearchResultEntity2(insertResult.getTsiUno(), tsrSns, result, getTitleFn, getLinkFn, isFacebookFn, isInstagramFn, isTwitterFn);
 
                     //Facebook, Instagram 인 경우 SNS 아이콘이 구글 인 경우 스킵
                     if (!tsrSns.equals(sre.getTsrSns())) {
@@ -225,7 +225,7 @@ public class SearchVideoService {
 //                    log.info("file cnt === {}", cnt);
 //                } else {
                     //이미지 파일 저장
-                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplateConfig.customRestTemplate(), sre, result, getOriginalFn, getThumbnailFn, false);
+                    imageService.saveImageFile(insertResult.getTsiUno(), restTemplateConfig.customRestTemplate(), sre, result, getThumbnailFn, false);
                     CommonStaticSearchUtil.setSearchResultDefault(sre);
                     sre.setTsrNationCode(nationCode);
                     sre.setTsrEngine(engine);
