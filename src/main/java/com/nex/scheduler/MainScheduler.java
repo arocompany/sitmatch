@@ -104,6 +104,21 @@ public class MainScheduler {
 
         if(list != null && !list.isEmpty()){
             for(SearchInfoEntity item: list){
+                Integer cntTsr = searchResultRepository.countResult(item.getTsiUno());
+                item.setTsiStat("14");
+                item.setTsiCntTsr(cntTsr);
+                searchInfoRepository.save(item);
+            }
+        }
+    }
+    private void updateInfoCnt2(String tsiSearchType){
+        String tsiStat = "14";
+        String dataStatCd = "10";
+
+        List<SearchInfoEntity> list = searchInfoRepository.findTop10ByTsiStatAndDataStatCdAndTsiSearchTypeOrderByTsiUnoAsc(tsiStat, dataStatCd, tsiSearchType);
+
+        if(list != null && !list.isEmpty()){
+            for(SearchInfoEntity item: list){
                 SearchResultEntity sre = searchResultRepository.findTop1ByTsiUnoAndTsrImgPathIsNotNullOrderByTsrUnoDesc(item.getTsiUno());
                 if(sre != null) {
                     if(sre.getTsrState().equals(1)) {

@@ -380,8 +380,13 @@
           <input type="hidden" class="dot-tsi-uon" th:value="${searchInfoList.getTsiUno()}"></input>
           <input type="hidden" class="dot-tsi-date" th:value="${#dates.format(searchInfoList.getTsiFstDmlDt(), 'yyyy.MM.dd &nbsp; HH:mm:ss')}"></input>
           <span class="dot"></span>
-          <span class="dot-per" th:text="${getProgressPercentMap.get(searchInfoList.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(searchInfoList.getTsiUno())}"></span>
-          <span class="dot-per" th:text="${searchInfoList.getResultCnt().equals('0') ? '결과없음' : ((searchInfoList.getTsjStatus() != null && searchInfoList.getTsjStatus().equals(0)) || (searchInfoList.getTsjStatus() != null && searchInfoList.getTsjStatus().equals(1)) || ((searchInfoList.getTsjStatusChild() != null && searchInfoList.getTsjStatusChild().equals(0)) || (searchInfoList.getTsjStatusChild() != null && searchInfoList.getTsjStatusChild().equals(1)))  ? '분석중' : '처리완료')}"></span>
+          <span class="dot-per" th:text="${searchInfoList.getResultCnt().equals('0') ? '100%' : (getProgressPercentMap.get(searchInfoList.getTsiUno()) == null ? '0%' : getProgressPercentMap.get(searchInfoList.getTsiUno()))}"></span>
+          <th:block th:if="${searchInfoList.getTsiSearchType.equals('1')}">
+            <span class="dot-per" th:text="${searchInfoList.getResultCnt().equals('0') ? '결과없음' : ((searchInfoList.getTsjStatus() != null && searchInfoList.getTsjStatus().equals(0)) || (searchInfoList.getTsjStatus() != null && searchInfoList.getTsjStatus().equals(1))  ? '분석중' : '처리완료')}"></span>
+          </th:block>
+          <th:block th:if="${searchInfoList.getTsiSearchType.equals('2')}">
+            <span class="dot-per" th:text="${searchInfoList.getResultCnt().equals('0') ? '결과없음' : ((searchInfoList.getTsjStatusChild() != null && searchInfoList.getTsjStatusChild().equals(0)) || (searchInfoList.getTsjStatusChild() != null && searchInfoList.getTsjStatusChild().equals(1))  ? '분석중' : '처리완료')}"></span>
+          </th:block>
         </p>
         <button class="btn-off review gubun column_09" th:onclick="|location.href='@{/result(tsiUno=${searchInfoList.getTsiUno()}, tsiKeyword=${searchInfoList.getTsiKeyword()}, keyword=)}'|">검색중</button>
         <p style="margin-right: 17px;" class = "dist column_10">

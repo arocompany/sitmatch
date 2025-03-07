@@ -85,8 +85,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                     " tsi.tsi_cnt_tsr resultCnt, " +
                                     " tsi.tsi_cnt_similarity AS tmrSimilarityCnt, " +
                                     " tsi.tsi_cnt_child AS tmrChildCnt" +
-                                    ", (SELECT tsj_status FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatus " +
-                                    ", (SELECT tsj_status_child FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatusChild " +
+                                    ", (SELECT tsj_status FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno AND tsr_img_path IS NOT null ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatus " +
+                                    ", (SELECT tsj_status_child FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno AND tsr_img_path IS NOT null ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatusChild " +
                                     ", coalesce(params.tsi_is_nation_kr, 0) tsiIsNationKr " +
                                     ", coalesce(params.tsi_is_nation_us, 0) tsiIsNationUs " +
                                     ", coalesce(params.tsi_is_nation_cn, 0) tsiIsNationCn " +
@@ -146,8 +146,8 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
                                 " tsi.tsi_cnt_tsr AS resultCnt, " +
                                 " tsi.tsi_cnt_similarity AS tmrSimilarityCnt, " +
                                 " tsi.tsi_cnt_child AS tmrChildCnt, " +
-                                " (SELECT tsj_status FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatus, " +
-                                " (SELECT tsj_status_child FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatusChild " +
+                                " (SELECT tsj_status FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno AND tsr_img_path IS NOT null ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatus " +
+                                ", (SELECT tsj_status_child FROM tb_search_job WHERE tsi_uno = tsi.tsi_uno AND tsr_img_path IS NOT null ORDER BY tsj_uno DESC LIMIT 1) AS tsjStatusChild " +
                                 ", coalesce(params.tsi_is_nation_kr, 0) tsiIsNationKr " +
                                 ", coalesce(params.tsi_is_nation_us, 0) tsiIsNationUs " +
                                 ", coalesce(params.tsi_is_nation_cn, 0) tsiIsNationCn " +
@@ -446,4 +446,5 @@ public interface SearchInfoRepository extends JpaRepository<SearchInfoEntity, In
     List<StatisticsDto> statisticsSearchInfoMonitoringByTsiTypeAndUser(String searchStartDate, String searchEndDate, Integer tsiSearchType);
 
     List<SearchInfoEntity> findTop10ByTsiStatAndDataStatCdOrderByTsiUnoAsc(String tsiStat, String dataStatCd);
+    List<SearchInfoEntity> findTop10ByTsiStatAndDataStatCdAndTsiSearchTypeOrderByTsiUnoAsc(String tsiStat, String dataStatCd, String tsiSearchType);
 }
